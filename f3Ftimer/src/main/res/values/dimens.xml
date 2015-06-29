@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="ten">10dp</dimen>
+    <dimen name="small_width">320dp</dimen>
+    <dimen name="twenty">20dp</dimen>
+</resources>

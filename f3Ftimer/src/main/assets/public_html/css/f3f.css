@@ -1,0 +1,171 @@
+body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 14px;
+	color: #fff;
+	
+	background: #000000;
+	
+	-webkit-user-select: none;
+  	-moz-user-select: none;
+  	-ms-user-select: none;
+  	user-select: none;
+  	
+  	min-width: 320px;
+  	overflow: hidden;
+}
+
+h1 {
+	margin: 0;
+	padding: 8px;
+	font-size: 2em;
+	margin-left: 56px;
+}
+
+h2 {
+	margin: 0;
+	padding: 4px;
+	font-size: 1.75em;
+	margin-left: 10px;
+}
+
+h3 {
+	width: 100%;
+	text-align: center;
+	font-size: 1.75em;
+}
+
+#top {
+	width: 100%;
+	
+	background: #000000; /* Old browsers */
+	
+	background-image: url(../img/ic_launcher.png), -moz-linear-gradient(left,  #000000 0%, #0ea4e3 100%); /* FF3.6+ */
+	background-image: url(../img/ic_launcher.png), -webkit-gradient(linear, left top, right top, color-stop(0%,#000000), color-stop(100%,#0ea4e3)); /* Chrome,Safari4+ */
+	background-image: url(../img/ic_launcher.png), -webkit-linear-gradient(left,  #000000 0%,#0ea4e3 100%); /* Chrome10+,Safari5.1+ */
+	background-image: url(../img/ic_launcher.png), -o-linear-gradient(left,  #000000 0%,#0ea4e3 100%); /* Opera 11.10+ */
+	background-image: url(../img/ic_launcher.png), -ms-linear-gradient(left,  #000000 0%,#0ea4e3 100%); /* IE10+ */
+	background-image: url(../img/ic_launcher.png), linear-gradient(to right,  #000000 0%,#0ea4e3 100%); /* W3C */
+	background-repeat: no-repeat;
+	background-position: 10px 4px, 0 0;
+	background-size: 40px 40px, cover;
+	
+	color: #0ea4e3;
+}
+
+#race-name {
+	background: #075271;
+	color: #fff;
+	width: 100%;
+}
+
+#race-name a.back {
+	width: 56px;
+	height: 100px;
+	background: transparent;
+	position: absolute;
+	cursor: pointer;
+	text-indent: 56px;
+	overflow: hidden;
+}
+
+#top div#race-name a.back {
+	display: none;
+}
+
+#top.back div#race-name a.back {
+	display: block;
+}
+
+#top.back div#race-name h2 {
+	margin-left: 60px;
+}
+
+#top.back div#race-name {
+	background-image: url(../img/back.png);
+	background-repeat: no-repeat;
+	background-position: 10px center;
+	background-size: 40px 40px;
+}
+
+#window {
+	width: 100%;
+	height: 0px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	position: absolute;
+	min-width: 320px;
+	
+}
+
+#view-stack {
+	width: 1000%;
+	position: absolute;
+}
+
+.list {
+	width: 10%;
+	background: #000;
+	margin-left: 0;
+	float: left;
+	color: #ffa500;
+}
+
+.list-item {
+	width: 100%;
+	padding: 10px 0;
+	color: #ffa500;
+	font-size: 1.5em;
+	border-bottom: 2px solid #fff;
+	cursor: pointer;
+}
+
+.list-item:active {
+	background: #333;
+}
+
+.list-item span {
+	margin-left: 10px;
+}
+
+.pilot-position {
+	float: right;
+	width: 20px;
+	padding-right: 10px;
+	text-align: right;
+}
+
+.pilot-points {
+	float:right;
+	width: 76px;
+	text-align: right;
+	padding-right: 10px;
+}
+
+.pilot-penalty {
+	float: right;
+	color: #f00;
+}
+
+.pilot-time {
+	float: right;
+	text-align: right;
+	width: 60px;
+	padding-right: 10px;
+}
+
+.out {
+	height: 1px;
+	overflow: hidden;
+}
+
+#warn { display: none; text-align: center;}
+
+@media screen and (max-width:400px){
+    #window { display: none; }
+    #warn { display: block; }
+
+}

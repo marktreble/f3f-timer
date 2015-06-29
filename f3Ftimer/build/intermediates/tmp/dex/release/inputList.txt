@@ -1,0 +1,10 @@
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/classes/release
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/support-annotations-21.0.3-06ebb1ba0fa3dbd38981e86c54babd67106db773.jar
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/classes-373b2b2df4ede550c7299254913dff07a651c53f.jar
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/classes-5bd8d50a24f69358a88da4529f2240f77fd0ff29.jar
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/classes-3199664fde9fb018ba5a469b65ec057cc58584a9.jar
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/classes-d0126e391c45ef4ac33065cb69e942fda1c0950e.jar
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/acra-4.4.0-703abbf96917e90be3d470369a361e5f3f1aeb2f.jar
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/internal_impl-21.0.3-d414b061bafeec84e9aa96b8a4091b92f6101210.jar
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/TestFlightLib-ba2222272b41558c613adfba93c06fd1b00e526b.jar
+/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/build/intermediates/pre-dexed/release/classes-d1a71db57cdf197455e9aeda42d2dcd0dc82caf0.jar

@@ -1,0 +1,21 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/toast_layout_root"
+              android:orientation="horizontal"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:padding="24dp"
+              android:background="@drawable/carbon_background"
+              >
+    <ImageView android:src="@android:drawable/ic_dialog_alert"
+        	 android:contentDescription="@string/app_pilots"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_marginRight="24dp"
+               />
+    <TextView android:id="@+id/text"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:textColor="@color/text2"
+              android:textSize="24sp"
+              />
+</LinearLayout><!-- From: file:/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/src/main/res/layout/custom_toast.xml -->

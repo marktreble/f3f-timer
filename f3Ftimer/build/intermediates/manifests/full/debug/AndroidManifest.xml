@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.marktreble.f3ftimer"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="12"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+
+    <android:uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
+    <application
+        android:name="com.marktreble.f3ftimer.F3FtimerApplication"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <uses-library
+            android:name="com.android.future.usb.accessory"
+            android:required="false" />
+
+        <!-- Race Manager App -->
+        <activity
+            android:name="com.marktreble.f3ftimer.racemanager.RaceListActivity"
+            android:clearTaskOnLaunch="true"
+            android:label="@string/app_race"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
+                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"
+                android:resource="@xml/accessory_filter" />
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+                android:resource="@xml/device_filter" />
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.racemanager.RaceActivity"
+            android:label="@string/app_race"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
+        </activity>
+
+        <!-- Human Input Drivers -->
+        <service
+            android:name="com.marktreble.f3ftimer.driver.USBJEService"
+            android:exported="false"
+            android:label="F3F Race Timer Server"
+            android:process="com.marktreble.f3ftimer.driver" >
+            <intent-filter>
+                <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.marktreble.f3ftimer.driver.USBArduinoService"
+            android:exported="false"
+            android:label="F3F Race Timer Server"
+            android:process="com.marktreble.f3ftimer.driver" >
+            <intent-filter>
+                <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.marktreble.f3ftimer.driver.SoftBuzzerService"
+            android:exported="false"
+            android:label="F3F Race Timer Server"
+            android:process="com.marktreble.f3ftimer.driver" >
+            <intent-filter>
+                <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.marktreble.f3ftimer.racemanager.RaceResultsService"
+            android:exported="false"
+            android:label="F3F Race Results Server" >
+            <intent-filter>
+                <action android:name="com.marktreble.f3ftimer.RaceResultsService" />
+            </intent-filter>
+        </service>
+
+        <!-- Results Manager App -->
+        <activity
+            android:name="com.marktreble.f3ftimer.resultsmanager.ResultsActivity"
+            android:clearTaskOnLaunch="true"
+            android:label="@string/app_results"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.resultsmanager.ResultsRaceActivity"
+            android:label="@string/app_results"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.resultsmanager.ResultsRoundInProgressActivity"
+            android:label="@string/app_results"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.resultsmanager.ResultsCompletedRoundsActivity"
+            android:label="@string/app_results"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.resultsmanager.ResultsCompletedRoundActivity"
+            android:label="@string/app_results"
+            android:theme="@style/AppTheme" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.resultsmanager.ResultsLeaderBoardActivity"
+            android:label="@string/app_results"
+            android:theme="@style/AppTheme" >
+        </activity>
+
+        <!-- Pilot Manager App -->
+        <activity
+            android:name="com.marktreble.f3ftimer.pilotmanager.PilotsActivity"
+            android:clearTaskOnLaunch="true"
+            android:label="@string/app_pilots"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Dialogs -->
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.NewRaceActivity"
+            android:theme="@style/Theme.Transparent"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.PilotsEditActivity"
+            android:theme="@style/Theme.Transparent"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.AboutActivity"
+            android:theme="@style/Theme.Transparent" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.HelpActivity"
+            android:theme="@style/Theme.Transparent" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.RaceTimerActivity"
+            android:theme="@style/Theme.Transparent" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.NextRoundActivity"
+            android:theme="@style/Theme.Transparent" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.SettingsActivity"
+            android:theme="@style/Theme.Transparent" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.TimeEntryActivity"
+            android:theme="@style/Theme.Transparent"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.RaceRoundTimeoutActivity"
+            android:theme="@style/Theme.Transparent" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.GroupScoreEditActivity"
+            android:theme="@style/Theme.Transparent"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.dialog.FlyingOrderEditActivity"
+            android:theme="@style/Theme.Transparent" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.bluetooth.BluetoothImport"
+            android:theme="@style/Theme.Overlay" >
+        </activity>
+        <activity
+            android:name="com.marktreble.f3ftimer.bluetooth.BluetoothExport"
+            android:theme="@style/Theme.Overlay" >
+        </activity>
+    </application>
+
+</manifest>
