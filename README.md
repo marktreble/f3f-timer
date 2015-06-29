@@ -19,3 +19,14 @@ We have used the IOIO successfully in the MK III Timer System developed by Jon E
 
 ###Compatibility
 
+Devices connect using Android's <a href="http://source.android.com/accessories/protocol.html">Open Accessory Protocol</a>. Older devices may not support this, but some can communicate through <a href="http://developer.android.com/tools/help/adb.html">ADB</a> also. If your device does not support Open Accessory, then you can try adb by going to Settings > Developers Options and enable USB Debugging. Otherwise USB Debugging should be switched off.
+
+The following table lists know device compatibility:
+
+| Device                  | IOIO (ADB) | IOIO (Open Accessory) | Arduino |
+| ----------------------- | ---------- | --------------------- | ------- |
+| Nexus 7                 |            | ✔                     |         |
+| Asus Transformer TF101  | ✔          |                       |         |
+| Samsung Galaxy S4       |            |                       |✔        |
+| Leagoo Lead 3           |            | ✔                     |         |
+
