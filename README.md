@@ -12,7 +12,7 @@ The app currently supports 2 flavours of USB boards. You can either use an <a hr
 ###Arduino
 We have an arduino based system which is still under development (29/6/15). Details will be added here soon.
 
-The Arduino does have limited compatibility with Android Devices. Extra compatibility can be acheieved by <a href="https://en.wikipedia.org/wiki/Rooting_(Android_OS)">rooting</a> your device, but we have tried to make this work with off-the-shelf devices. See the <a href="https://github.com/marktreble/f3f-timer/blob/master/README.md#compatibility">compatibility</a> table below for details of which devices are known to work.
+The Arduino does have limited compatibility with Android Devices. Extra compatibility can be achieved by <a href="https://en.wikipedia.org/wiki/Rooting_(Android_OS)">rooting</a> your device, but we have tried to make this work with off-the-shelf devices. See the <a href="https://github.com/marktreble/f3f-timer/blob/master/README.md#compatibility">compatibility</a> table below for details of which devices are known to work.
 
 ###IOIO
 We have used the IOIO successfully in the MK III Timer System developed by Jon Edison. Full constuction details can be found at http://www.nymrsc.org.uk/Jons%20Timer%20mk3.htm
