@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_share"
+        android:title="@string/menu_share"/>
+
+    <item
+        android:id="@+id/menu_pilot_manager"
+        android:title="@string/app_pilots"/>
+
+    <item
+        android:id="@+id/menu_race_manager"
+        android:title="@string/app_race"/>
+
+    <item
+        android:id="@+id/menu_help"
+        android:title="@string/menu_help"/>
+    
+    <item
+        android:id="@+id/menu_about"
+        android:title="@string/menu_about"/>
+</menu>

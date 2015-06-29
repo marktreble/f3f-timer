@@ -1,0 +1,58 @@
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:orientation="vertical"
+        android:paddingBottom="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp" >
+     
+   		<TextView android:id="@+id/current_pilot"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/empty"
+		    android:layout_gravity="center_horizontal"
+		    android:textColor="@color/text3"
+		    android:textAppearance="?android:attr/textAppearanceLarge" >
+		</TextView>
+		
+		<TextView
+		    android:id="@+id/countdown"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/thirty"
+		    android:layout_gravity="center_horizontal"
+		    android:textColor="@color/text3"
+		    android:textSize="100sp" >
+
+		</TextView>
+		
+   		<TextView
+		    android:id="@+id/status"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:text="@string/minutes_remaining"
+		    android:layout_gravity="center_horizontal"
+		    android:textColor="@color/text3"
+		    android:textAppearance="?android:attr/textAppearanceLarge" >
+		</TextView>
+		
+
+   			
+        <LinearLayout
+            	android:layout_width="fill_parent"
+            	android:layout_height="wrap_content"
+            	android:orientation="horizontal"
+			    android:layout_marginTop="@dimen/twenty"
+            	style="?android:attr/buttonBarButtonStyle"> 
+	        <Button
+			    android:id="@+id/button_resume"
+			    android:layout_width="0dp"
+	            android:layout_weight="1"
+			    android:layout_height="80dp"
+			    android:text="@string/resume"
+	            style="?android:attr/buttonBarButtonStyle">
+	        </Button>
+        </LinearLayout>    		
+    </LinearLayout>
