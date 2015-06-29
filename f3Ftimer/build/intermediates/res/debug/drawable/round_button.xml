@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <corners android:radius="10dp" />
-    <solid android:color="@color/text"/>
-</shape><!-- From: file:/Users/marktreble/AndroidstudioProjects/F3Ftimer/f3Ftimer/src/main/res/drawable/round_button.xml -->

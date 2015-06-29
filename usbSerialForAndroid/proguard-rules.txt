@@ -1,6 +1,0 @@
--dontobfuscate
-
--keep public class <CdcAcmSerialDriver>
--keep public class <Cp21xxSerialDriver>
--keep public class <FtdiSerialDriver>
--keep public class <ProlificSerialDriver>

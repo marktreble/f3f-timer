@@ -1,4 +1,0 @@
-include ':iOIOLibAndroid', ':usbSerialForAndroid'
-include ':iOIOLibAccessory'
-include ':iOIOLibBT'
-include ':f3Ftimer'
