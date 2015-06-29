@@ -30,3 +30,41 @@ The following table lists known device compatibility:
 | Samsung Galaxy S4       |            |                       |✔        |
 | Leagoo Lead 3           |            | ✔                     |         |
 
+###Features
+
+- Permanent database of pilot names (Pilot Manager App)
+- Quick and easy race set up (Just type a name, and select pilots from the list)
+- Random shuffle of flying order
+- Flying order offset each round
+- Real-time results over WiFi (Requires mobile wifi hotspot)
+- Real-time results through Results Manager App
+- In-app group scoring
+- Multi-lingual voice synthesis
+- Transfer of race data between devices over bluetooth
+
+###Installation
+
+The latest stable release can be downloaded here:
+(to come)
+
+###Getting Started
+
+You can't do anything without some pilots, so open the 'Pilot Manager' and use the menu to add some pilots.
+
+Now open the 'Race Manager' (accessible from the Pilot Manager's menu, or by going back to your apps screen). From the menu, choose Settings. Under 'Input Source', choose the correct driver for your hardware. There is also a 'Demo Mode' option which allows you to emulate the hardware in it's absence.
+
+Press the 'Back' key to exit the settings screen, and choose 'New Race' from the menu. Enter the name of your race, and press 'Next'.
+
+Now choose pilots from the list. The order picked will be the flying order, although this can be changed later if required. If you make a mistake, you can press the 'Back' key to undo your last selection. Press 'Next'.
+
+The next screen shows the pilots in flying order. You can perform a random shuffle (S) or manually adjust the order of any pilots (M). Press (+) to add any pilots you may have missed. Press 'Next'.
+
+You are now ready to race!
+
+The next pilot to fly is highlighted, and a short press on their name will start their flight. Pilot names can also be long pressed for other functions such as reflights, retirements, zero-score or manual time entry.
+
+
+
+
+
+
