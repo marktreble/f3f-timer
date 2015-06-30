@@ -235,7 +235,7 @@ public class USBJEService extends IOIOService implements DriverInterface {
 		                    	code=str_in.substring(0, 1);
 		                    	
 		                    	// We have data/command from the timer, pass this on to the server
-			                    if (code.equals(FT_WIND_LEGAL)){
+								if (code.equals(FT_WIND_LEGAL)){
 			                    	mDriver.windLegal();
 			                    } else
 			                    

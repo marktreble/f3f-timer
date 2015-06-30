@@ -1,5 +1,5 @@
 /*
- * RaceTimerFrag1
+ * RaceTimerFrag4
  * Clock has started
  */
 package com.marktreble.f3ftimer.dialog;
@@ -204,12 +204,19 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		mFinalTime = time;
 	}
 		
-	public void next(){
-		RaceTimerActivity a = (RaceTimerActivity)getActivity();
-    	// Tell Driver to finalise the score
+	public void next() {
+		RaceTimerActivity a = (RaceTimerActivity) getActivity();
+		// Tell Driver to finalise the score
 		// Driver will post back run_finalised when finished
-    	 a.sendOrderedCommand("finalise");
+		a.sendOrderedCommand("finalise");
 
+	}
+
+	public void cont(){
+		RaceTimerActivity a = (RaceTimerActivity) getActivity();
+		RaceTimerFrag5 f = new RaceTimerFrag5();
+		f.mFinalTime = mFinalTime;
+		a.getFragment(f, 5);
 	}
 	
     public void reflight(){

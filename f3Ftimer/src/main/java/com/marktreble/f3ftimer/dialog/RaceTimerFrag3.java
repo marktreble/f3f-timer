@@ -1,6 +1,5 @@
 /*
- * RaceTimerFrag1
- * Entry Point for Timer UI
+ * RaceTimerFrag3
  * Climbout
  */
 package com.marktreble.f3ftimer.dialog;
@@ -125,6 +124,7 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
         	if (s==30){
         		// Runout of climbout time
         		// Force the server to start the clock
+				a.sendCommand("0"); // Informs the driver that this was a late entry
         		next();
         		
         	} else {

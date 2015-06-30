@@ -28,6 +28,7 @@ public class Pilot {
 	public Integer penalty = 0;
 	public float points = -1;
 	public Integer position = 0;
+	public Integer round = 0;
 
     public Pilot(){
         // Default constructor

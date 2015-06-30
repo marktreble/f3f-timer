@@ -65,6 +65,8 @@ public class Driver implements TextToSpeech.OnInitListener {
 	public Handler mHandler = new Handler();
 	
 	private String mCalled;
+	private boolean mOmitOffCourse;
+	private boolean mLateEntry;
 
 	static float SHOW_TIMEOUT_DELAY = 3f; // minutes
 	static int ROUND_TIMEOUT = 33; // minutes
@@ -115,6 +117,7 @@ public class Driver implements TextToSpeech.OnInitListener {
         Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
         i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_started");
         mContext.sendBroadcast(i);
+
 	}
 
 
@@ -143,6 +146,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 				Bundle extras = intent.getExtras();
 				String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
 				Log.d("UI->Service", data);
+
 				
 				if (data.equals("start_pilot")){
 					startPilot(extras);
@@ -169,7 +173,8 @@ public class Driver implements TextToSpeech.OnInitListener {
 					return;
                 }
 
-				if (data.equals("abort")){			
+				if (data.equals("abort")){
+					mHandler.removeCallbacks(announceWorkingTime);
 					((DriverInterface)mContext).sendAbort();
 					return;
 				}
@@ -238,6 +243,12 @@ public class Driver implements TextToSpeech.OnInitListener {
 					mCalled = data;
 				}
 
+				if ( number<=10)
+					mOmitOffCourse = true;
+
+				if ( number == 0)
+					mLateEntry = true;
+
 			}
 		}
     };
@@ -258,7 +269,11 @@ public class Driver implements TextToSpeech.OnInitListener {
   		datasource.close();
   		
   		mCalled = "";
-  		
+
+
+		mOmitOffCourse = false;
+		mLateEntry = false;
+
   		if (mSpeechFXon && mTTSStatus == TextToSpeech.SUCCESS){
             mHandler.postDelayed(new Runnable() {
                 @Override
@@ -281,11 +296,13 @@ public class Driver implements TextToSpeech.OnInitListener {
                     if (pilot.language!= null && !pilot.language.equals("")){
                         mPilotLang = String.format("%s_%s", pilot.language, pilot.nationality);
                     }
+					/*
                     Log.i("startPilot:", "Race ID = "+Integer.toString(mRid));
                     Log.i("startPilot:", "Pilot ID = "+Integer.toString(mPid));
                     Log.i("startPilot:", "Round ID = "+Integer.toString(mRnd));
                     Log.i("startPilot:", pilot.toString());
                     Log.i("startPilot:", "lang = "+pilot.language + ":" + mPilotLang);
+					*/
 
                     // Try to set speech lang - if not available then setSpeechFXLanguage returns the default Language
                     mPilotLang = setSpeechFXLanguage();
@@ -300,9 +317,24 @@ public class Driver implements TextToSpeech.OnInitListener {
 	
 	public void startWorkingTime(){
 		cancelTimeout();
+		if (mSpeechFXon){
+			mHandler.postDelayed(announceWorkingTime, 1000);
+
+		}
 	}
-	
+
+	Runnable announceWorkingTime = new Runnable(){
+		@Override
+		public void run() {
+			Resources r = Languages.useLanguage(mContext, mPilotLang);
+			String lang = r.getString(R.string.working_time_started);
+			Languages.useLanguage(mContext, mDefaultLang);
+			speak(lang, TextToSpeech.QUEUE_ADD);
+		}
+	};
+
 	public void modelLaunched(){
+		mHandler.removeCallbacks(announceWorkingTime);
 		cancelTimeout();
 		
 	    // Send Launch command to HID
@@ -324,7 +356,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 			speak(number, TextToSpeech.QUEUE_ADD);
 	}	
 	
-	public void offCourse(){	
+	public void offCourse(){
 		// Post to the UI that the model has exited the course
 		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
 		i.putExtra("com.marktreble.f3ftimer.service_callback", "off_course");
@@ -333,7 +365,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 		// Buzzer Sound
 		if (mSoundFXon) mPlayer.start();
 		// Synthesized Call
-		if (mSpeechFXon){
+		if (mSpeechFXon && !mOmitOffCourse){
             mHandler.postDelayed(new Runnable() {
                 public void run() {
                     String lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.off_course);
@@ -358,9 +390,16 @@ public class Driver implements TextToSpeech.OnInitListener {
 		if (mSpeechFXon){
             mHandler.postDelayed(new Runnable() {
                 public void run() {
-                    String lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.on_course);
-                    Languages.useLanguage(mContext, mDefaultLang);
-                    speak(lang, TextToSpeech.QUEUE_ADD);
+					String lang;
+					if (mLateEntry) {
+						lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.late_entry);
+					} else {
+						lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.on_course);
+
+					}
+					Languages.useLanguage(mContext, mDefaultLang);
+					speak(lang, TextToSpeech.QUEUE_ADD);
+
                 }
             }, SPEECH_DELAY_TIME);
 		}
@@ -412,13 +451,13 @@ public class Driver implements TextToSpeech.OnInitListener {
 		// Save the time to the database
 
 		RacePilotData datasource = new RacePilotData(mContext);
-  		datasource.open();
-  		datasource.setPilotTimeInRound(mRid, mPid, mRnd, mPilot_Time);
+		datasource.open();
+		datasource.setPilotTimeInRound(mRid, mPid, mRnd, mPilot_Time);
         datasource.close();
-        Log.i("FTR", String.format("%s %s %s %s", mRid, mPid, mRnd, mPilot_Time));
-		if (mSoundFXon) mPlayer.start();
+        //Log.i("FTR", String.format("%s %s %s %s", mRid, mPid, mRnd, mPilot_Time));
 		String str_time = String.format("%.2f", mPilot_Time);
 		str_time = str_time.replace(".", " ");
+		//str_time+=" round "+mRnd+" Pilot "+mPid+" Race "+mRid;
 		if (mSpeechFXon) speak(str_time, TextToSpeech.QUEUE_ADD);
 	
         
@@ -431,7 +470,8 @@ public class Driver implements TextToSpeech.OnInitListener {
 		intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
 		mContext.sendOrderedBroadcast(intent, null);
 	}
-    
+
+
 	public void windLegal(){
 		mWindLegal = true;
 		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");

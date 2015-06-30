@@ -1,6 +1,5 @@
 /*
- * RaceTimerFrag1
- * Entry Point for Timer UI
+ * RaceTimerFrag2
  * Working time
  */
 package com.marktreble.f3ftimer.dialog;
@@ -31,7 +30,8 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+		RaceTimerActivity a = (RaceTimerActivity)getActivity();
+
         if (savedInstanceState != null) {
 	    } else {
 	    	mStart = System.currentTimeMillis();
@@ -41,7 +41,6 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
         // Begin the timeout dialog timeout
         // Confusing? - yes. This stops the timeout being annoyingly invoked when working time has started
         // Unless of course the model is not launched before time is up!
-        RaceTimerActivity a = (RaceTimerActivity)getActivity();
     	a.sendCommand("timeout_resumed");
     }
 	
@@ -94,12 +93,28 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 			TextView cd = (TextView) mView.findViewById(R.id.countdown);
 			String str_time = String.format("%.2f", 30-seconds);
 			cd.setText(str_time);
-			
+
+			int s = (int) Math.floor(seconds);
+			RaceTimerActivity a = (RaceTimerActivity)getActivity();
+
+
+			if (s==10) a.sendCommand("20");
+			if (s==15) a.sendCommand("15");
+			if (s==20) a.sendCommand("10");
+			if (s==21) a.sendCommand("9");
+			if (s==22) a.sendCommand("8");
+			if (s==23) a.sendCommand("7");
+			if (s==24) a.sendCommand("6");
+			if (s==25) a.sendCommand("5");
+			if (s==26) a.sendCommand("4");
+			if (s==27) a.sendCommand("3");
+			if (s==28) a.sendCommand("2");
+			if (s==29) a.sendCommand("1");
+
         	if (seconds==30){
         		// Runout of working time
         		// -- pilot scores zero!
         		
-        		RaceTimerActivity a = (RaceTimerActivity)getActivity();
         		a.scorePilotZero(a.mPilot);
 	        	a.setResult(RaceActivity.RESULT_OK, null);
 	        	a.finish();

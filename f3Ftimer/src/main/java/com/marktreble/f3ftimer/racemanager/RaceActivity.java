@@ -225,16 +225,21 @@ public class RaceActivity extends ListActivity {
 	@Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("round", mRid);
+        outState.putInt("round", mRnd);
+        outState.putInt("raceid", mRid);
+        outState.putSerializable("mArrRounds", mArrRounds);
         outState.putBoolean("connection_status", mConnectionStatus);
         mListViewScrollPos = mListView.onSaveInstanceState();
         Log.i("RACEACTIVITY", "SAVEINSTANCE");
 
     }
-	
+
+    @SuppressWarnings("unchecked")
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState){
-		mRid=savedInstanceState.getInt("round");
+        mRnd=savedInstanceState.getInt("round");
+        mRid=savedInstanceState.getInt("raceid");
+        mArrRounds = (ArrayList<Integer>)savedInstanceState.getSerializable("mArrRounds");
         mConnectionStatus=savedInstanceState.getBoolean("connection_status");
         if (mListView != null)
             mListView.onRestoreInstanceState(mListViewScrollPos);
@@ -675,6 +680,8 @@ public class RaceActivity extends ListActivity {
                         && (mNextPilot == null || mNextPilot.position>position)) {
                     mNextPilot = p;
                     mNextPilot.position = position;
+                    // Log the round number against the next pilot, so that the data is avaailable to the external "start_pressed" message
+                    mNextPilot.round = mRnd+r;
                 }
 
                 ftg[g] = (p.time > 0) ? Math.min(ftg[g], p.time) : ftg[g];
@@ -933,7 +940,8 @@ public class RaceActivity extends ListActivity {
 						if (mNextPilot != null){
 							Intent intent2 = new Intent(mContext, RaceTimerActivity.class);
 							intent2.putExtra("pilot_id", mNextPilot.id);
-							intent2.putExtra("race_id", mRid);
+                            intent2.putExtra("race_id", mRid);
+                            intent2.putExtra("round", mNextPilot.round);
 							startActivityForResult(intent2, DLG_TIMER);
 						}
 					}

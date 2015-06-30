@@ -226,7 +226,8 @@ public class RaceTimerActivity extends FragmentActivity {
 	public void sendOrderedCommand(String cmd){
 		Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
 		i.putExtra("com.marktreble.f3ftimer.ui_callback", cmd);
-		sendOrderedBroadcast(i, null);		
+		i.putExtra("com.marktreble.f3ftimer.round", mRound);
+		sendOrderedBroadcast(i, null);
 	}
 
 	// Binding for Service->UI Communication
@@ -284,9 +285,13 @@ public class RaceTimerActivity extends FragmentActivity {
 				}
 
 				if (data.equals("run_finalised")){
+					if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
+						((RaceTimerFrag4) mCurrentFragment).cont();
+					}
 			    	// End the activity
-			    	mActivity.setResult(RaceActivity.RESULT_OK);
-			    	mActivity.finish();	
+
+			    	//mActivity.setResult(RaceActivity.RESULT_OK);
+			    	//mActivity.finish();
 					
 				}
 				

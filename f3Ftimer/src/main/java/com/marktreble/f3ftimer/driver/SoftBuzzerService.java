@@ -139,6 +139,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 	
 	// Driver Interface implementations
 	public void sendLaunch(){
+        mTimerStatus = 0;
 	}
 
 	public void sendAbort(){
