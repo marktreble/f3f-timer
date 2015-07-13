@@ -54,6 +54,7 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
 
     public void next(){
         RaceTimerActivity a = (RaceTimerActivity)getActivity();
+        a.sendCommand("abort");
         a.setResult(RaceActivity.RESULT_OK);
         a.finish();
     }

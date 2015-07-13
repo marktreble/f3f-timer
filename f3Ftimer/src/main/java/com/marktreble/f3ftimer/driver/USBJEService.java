@@ -273,7 +273,7 @@ public class USBJEService extends IOIOService implements DriverInterface {
 			                    		mBuffer = str_in.substring(8);
 			                    		// Don't take more than 8 or parseFloat will cause an exception + reflight!
 			                    		str_in = str_in.substring(0, 8);
-			                    		mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim().replace(",","."));
+			                    		mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim());
 			                    		mDriver.runComplete();
 			                    		// Reset these here, as sometimes READY is not received!?
 			                    		mTimerStatus = 0;
