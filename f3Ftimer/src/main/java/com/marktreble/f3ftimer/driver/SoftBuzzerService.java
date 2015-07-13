@@ -165,7 +165,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     
     public void finished(String time){
         Log.d(TAG + "TIME", time.trim());
-        mDriver.mPilot_Time = Float.parseFloat(time.trim());
+        mDriver.mPilot_Time = Float.parseFloat(time.trim().replace(",", "."));
         Log.d(TAG + "TIME", Float.toString(mDriver.mPilot_Time) );
         mDriver.runComplete();
         mTimerStatus = 0;
