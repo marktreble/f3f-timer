@@ -159,5 +159,16 @@ function round2Fixed(value, places) {
 	  integer = Math.floor(value);
 	  precision = Math.floor((value-integer) * multiplier)
 
-	  return integer + (precision/multiplier);
+	  return fixDec(integer + (precision/multiplier));
+}
+
+function fixDec(n){
+    int = Math.floor(n);
+    dec = Math.floor(n*100)-(int*100);
+    dec = dec.toString();
+    while (dec.length<2) dec='0'+dec;
+    dec ="."+dec;
+    int = int.toString();
+
+    return int+dec;
 }

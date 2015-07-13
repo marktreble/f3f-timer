@@ -407,7 +407,7 @@ public class RaceResultsService extends Service {
             data += this.addParam("round_winners", "[]", false) + ",";
             data += this.addParam("pilots", pilots_array, false) + ",";
             data += this.addParam("times", times_array, false) + ",";
-            data += this.addParam("penalties", penalties_array, false);
+            data += this.addParam("penalties", penalties_array, false) + ",";
             data += this.addParam("groups", groups_array, false);
             data += "}]";
             

@@ -80,7 +80,7 @@ function render_completedrounds_results(){
 	for (var p in times){
 		pilot_time = times[p].time;
 		penalty = times[p].penalty;
-		var points = round2Fixed(fastest/pilot_time*1000, 2) - penalty;
+		var points = round2Fixed((fastest/pilot_time*1000)-penalty, 2);
 		if (pilot_time == 0) points = 0 - penalty;
 		times[p].points = points;
 	}
