@@ -36,6 +36,17 @@
         android:summary="Broadcast results over wifi (http://192.168.43.1:8080)"
         android:defaultValue="false" />
 
+    <CheckBoxPreference
+        android:key="pref_results_display"
+        android:title="Run External Results Display"
+        android:summary="Broadcast results over Bluetooth to a remote android Device"
+        android:defaultValue="false" />
+
+    <ListPreference
+        android:key="pref_external_display"
+        android:title="Paired Device to use as external display"
+        android:dependency="pref_results_display" />
+
     <CheckBoxPreference android:key="acra.enable"
         android:title="@string/pref_enable_acra"
         android:summaryOn="@string/pref_acra_enabled"

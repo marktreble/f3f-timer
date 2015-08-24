@@ -3,11 +3,14 @@ package com.marktreble.f3ftimer.dialog;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.languages.Languages;
 import com.marktreble.f3ftimer.wifi.Wifi;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -125,8 +128,16 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     
     @Override
 	public void onInit(int status) {
-    	String[] languages = Languages.getAvailableLanguages(getActivity());
-        
+        // Populate pref_voice_lang with installed voices
+        populateVoices();
+
+        // Populate pref_external_display with paired devics
+        populateExternalDisplayDevices();
+    }
+
+    private void populateVoices() {
+        String[] languages = Languages.getAvailableLanguages(getActivity());
+
         // Now check the available languages against the installed TTS Voices
         Locale[] locales = Locale.getAvailableLocales();
         List<String> list_values = new ArrayList<String>();
@@ -136,27 +147,54 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             int ttsres = TextToSpeech.LANG_NOT_SUPPORTED;
             try {
                 ttsres = mTts.isLanguageAvailable(locale);
-            } catch (IllegalArgumentException e){
+            } catch (IllegalArgumentException e) {
             }
 
             boolean hasLang = false;
-            for (String lang : languages){
-            	if (lang.equals(locale.getLanguage())) hasLang = true;
+            for (String lang : languages) {
+                if (lang.equals(locale.getLanguage())) hasLang = true;
             }
             if ((ttsres == TextToSpeech.LANG_COUNTRY_AVAILABLE) && hasLang) {
-            	list_labels.add(locale.getDisplayName());
-            	list_values.add(locale.getLanguage()+"_"+locale.getCountry());
-            	Log.i("AVAILABLE LANGUAGES", locale.getDisplayName() +":" + locale.getLanguage()+"_"+locale.getCountry() );
+                list_labels.add(locale.getDisplayName());
+                list_values.add(locale.getLanguage() + "_" + locale.getCountry());
+                Log.i("AVAILABLE LANGUAGES", locale.getDisplayName() + ":" + locale.getLanguage() + "_" + locale.getCountry());
             }
         }
-        
+
         ListPreference pref = (ListPreference) findPreference("pref_voice_lang");
         CharSequence[] labels = list_labels.toArray(new CharSequence[list_labels.size()]);
         CharSequence[] values = list_values.toArray(new CharSequence[list_values.size()]);
         pref.setEntries(labels);
         pref.setEntryValues(values);
 
-	}
+    }
+    private void populateExternalDisplayDevices(){
+        CharSequence[] labels = {"No Devices Paired"};
+        CharSequence[] values = {""};
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter != null) {
+            if (bluetoothAdapter.isEnabled()) {
+                Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+                if (pairedDevices.size() > 0) {
+                    List<String> list_values = new ArrayList<>();
+                    List<String> list_labels = new ArrayList<>();
+                    for (BluetoothDevice device : pairedDevices) {
+                        list_labels.add(device.getName());
+                        list_values.add(device.getAddress());
+                    }
+
+                    labels = list_labels.toArray(new CharSequence[list_labels.size()]);
+                    values = list_values.toArray(new CharSequence[list_values.size()]);
+                }
+            }
+        }
+
+        ListPreference pref = (ListPreference) findPreference("pref_external_display");
+        pref.setEntries(labels);
+        pref.setEntryValues(values);
+
+    }
 	
     @Override
     public void onDestroy(){

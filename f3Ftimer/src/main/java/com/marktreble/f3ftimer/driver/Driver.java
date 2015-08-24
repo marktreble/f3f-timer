@@ -93,7 +93,7 @@ public class Driver implements TextToSpeech.OnInitListener {
     	}
 		
     	// Listen for inputs from the UI
-		mContext.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));	  
+		mContext.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
 
      	mPlayer  = MediaPlayer.create(mContext, R.raw.base1);
         
@@ -454,21 +454,41 @@ public class Driver implements TextToSpeech.OnInitListener {
 		datasource.open();
 		datasource.setPilotTimeInRound(mRid, mPid, mRnd, mPilot_Time);
         datasource.close();
-        //Log.i("FTR", String.format("%s %s %s %s", mRid, mPid, mRnd, mPilot_Time));
+
+		// Get the time
 		String str_time = String.format("%.2f", mPilot_Time);
 		str_time = str_time.replace(".", " ");
-		//str_time+=" round "+mRnd+" Pilot "+mPid+" Race "+mRid;
+
+		// Get the pilot's name
+		RacePilotData datasource2 = new RacePilotData(mContext);
+		datasource2.open();
+		Pilot pilot = datasource2.getPilot(mPid, mRid);
+		datasource2.close();
+		String str_name = String.format("%s %s", pilot.firstname, pilot.lastname);
+		String str_nationality = pilot.nationality;
+
+
+		// Speak the time
 		if (mSpeechFXon) speak(str_time, TextToSpeech.QUEUE_ADD);
 	
         
-
+		// Update the .txt file
         new SpreadsheetExport().writeFile(mContext, mRace);
 		SystemClock.sleep(1000);
-        
+
 		// Post back to the UI (RaceTimerActivity);
   		Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
 		intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
 		mContext.sendOrderedBroadcast(intent, null);
+
+		// Post to the Race Results Display Service
+		Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
+		intent2.putExtra("com.marktreble.f3ftimer.external_results_callback", "run_finalised");
+		intent2.putExtra("com.marktreble.f3ftimer.pilot_nationality", str_nationality);
+		intent2.putExtra("com.marktreble.f3ftimer.pilot_name", str_name);
+		intent2.putExtra("com.marktreble.f3ftimer.pilot_time", String.format("%.2f", mPilot_Time));
+		mContext.sendBroadcast(intent2);
+
 	}
 
 

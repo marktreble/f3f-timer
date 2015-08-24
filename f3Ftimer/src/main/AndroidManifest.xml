@@ -88,8 +88,15 @@
     		<intent-filter>
         		<action android:name="com.marktreble.f3ftimer.RaceResultsService" />
     		</intent-filter>
-		</service>		
-        
+		</service>
+
+        <service android:name="com.marktreble.f3ftimer.racemanager.RaceResultsDisplayService" android:label="F3F Race Results Display Server" android:exported="false">
+            <intent-filter>
+                <action android:name="com.marktreble.f3ftimer.RaceResultsDisplayService" />
+            </intent-filter>
+        </service>
+
+
         <!--  Results Manager App -->
         <activity
             android:name=".resultsmanager.ResultsActivity"

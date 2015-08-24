@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/F3Ftimer.iml" filepath="$PROJECT_DIR$/F3Ftimer.iml" />
       <module fileurl="file://$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" filepath="$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/f3f-timer.iml" filepath="$PROJECT_DIR$/f3f-timer.iml" />
       <module fileurl="file://$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" filepath="$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" />
       <module fileurl="file://$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" filepath="$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/iOIOLibBT/iOIOLibBT.iml" filepath="$PROJECT_DIR$/iOIOLibBT/iOIOLibBT.iml" />

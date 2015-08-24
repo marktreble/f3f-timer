@@ -82,8 +82,10 @@ public class RaceActivity extends ListActivity {
 	private Race mRace;
 	private String mInputSource;
 	private boolean mPrefResults;
-	
-	private boolean mRoundComplete;
+    private boolean mPrefResultsDisplay;
+    private String mPrefExternalDisplay;
+
+    private boolean mRoundComplete;
 	private boolean mRoundNotStarted;
 	private Pilot mNextPilot;
 
@@ -184,6 +186,14 @@ public class RaceActivity extends ListActivity {
 	    	startService(serviceIntent);
 		}
 
+        // Start Results Display Server
+        if (mPrefResultsDisplay && !mPrefExternalDisplay.equals("")){
+            Log.i("START SERVICE", "RESULTS Display");
+            RaceResultsDisplayService.stop(this);
+
+            RaceResultsDisplayService.startRDService(this,  mPrefExternalDisplay);
+        }
+
         // Stop Any Timer Drivers
         USBJEService.stop(this);
         USBArduinoService.stop(this);
@@ -215,6 +225,8 @@ public class RaceActivity extends ListActivity {
 				Wifi.disableWifiHotspot(this, mWifiSavedState);
 			}
        	}
+
+        RaceResultsDisplayService.stop(this);
 
         USBJEService.stop(this);
         USBArduinoService.stop(this);
@@ -291,7 +303,9 @@ public class RaceActivity extends ListActivity {
 	private void getPreferences(){
      	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		mInputSource = sharedPref.getString("pref_input_src", getString(R.string.Demo));
-		mPrefResults = sharedPref.getBoolean("pref_results_server", false);
+        mPrefResults = sharedPref.getBoolean("pref_results_server", false);
+        mPrefResultsDisplay = sharedPref.getBoolean("pref_results_display", false);
+        mPrefExternalDisplay = sharedPref.getString("pref_external_display", "");
 	}
 	
 	private void setRound(){
@@ -393,7 +407,7 @@ public class RaceActivity extends ListActivity {
                     // Update the spread file
                     new SpreadsheetExport().writeFile(mContext, mRace);
                 }
-					
+
 			}
 			if (requestCode == RaceActivity.DLG_TIMEOUT){
 				// Send command to Service to say that timeout has been resumed
@@ -583,6 +597,10 @@ public class RaceActivity extends ListActivity {
   		datasource.open();
 		datasource.setPilotTimeInRound(mRid, p.id, mRnd, 0);
 		datasource.close();
+
+        getNamesArray();
+        mArrAdapter.notifyDataSetChanged();
+        invalidateOptionsMenu();
 	}
 	
 	/*
@@ -1043,7 +1061,7 @@ public class RaceActivity extends ListActivity {
 		setRound();
         getNamesArray();
         mArrAdapter.notifyDataSetChanged();
-        invalidateOptionsMenu(); // Refresh menu so that next round becomes deactive
+        invalidateOptionsMenu(); // Refresh menu so that next round becomes active
 
         new Handler().postDelayed(new Runnable() {
             @Override
