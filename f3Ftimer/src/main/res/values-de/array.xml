@@ -3,19 +3,19 @@
 
 	<string-array name="nationalities">
 	    <item></item>
-        <item>Australia</item>
-        <item>Czech Republic</item>
-        <item>Denmark</item>
-        <item>France</item>
-        <item>Germany</item>
-        <item>India</item>
-        <item>Netherlands</item>
-        <item>Norway</item>
+        <item>Australien</item>
+        <item>Tschechien</item>
+        <item>Dänemark</item>
+        <item>Framkreich</item>
+        <item>Deutschland</item>
+        <item>Indien</item>
+        <item>Niederlande</item>
+        <item>Morwegen</item>
    	    <item>Portugal</item>
-        <item>Spain</item>
-        <item>Switzerland</item>
-    	<item>United Kingdom</item>
-    	<item>United States</item>
+        <item>Spanien</item>
+        <item>Schweiz</item>
+        <item>Großbritannien</item>
+        <item>Vereinigte Staaten</item>
     </string-array>
 
 	
