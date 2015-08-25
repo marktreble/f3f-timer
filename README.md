@@ -45,7 +45,7 @@ The following table lists known device compatibility:
 ###Installation
 
 The latest stable release can be downloaded here:
-<a href="http://www.marktreble.co.uk/clients/f3f/f3Ftimer13.7.15.apk">F3FTimer13.7.15.apk</a>
+<a href="http://www.marktreble.co.uk/clients/f3f/f3Ftimer25.8.15.apk">F3FTimer25.8.15.apk</a>
 
 ###Getting Started
 
@@ -62,6 +62,9 @@ The next screen shows the pilots in flying order. You can perform a random shuff
 You are now ready to race!
 
 The next pilot to fly is highlighted, and a short press on their name will start their flight. Pilot names can also be long pressed for other functions such as reflights, retirements, zero-score or manual time entry. All other function can be found from the main menu.
+
+###Thanks
+Thanks to Tilman Baumann for the German Translations
 
 
 
