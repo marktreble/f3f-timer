@@ -142,7 +142,9 @@ public class RacePilotData {
 		values.put("models", p.models);
 		values.put("nationality", p.nationality);
 		values.put("language", p.language);
-		return database.insert("racepilots", null, values);
+		long insert_id = database.insert("racepilots", null, values);
+
+		return insert_id;
 	}
 
 	public void updatePilot(Pilot p) {

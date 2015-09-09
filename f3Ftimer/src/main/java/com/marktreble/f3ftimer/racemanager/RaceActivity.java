@@ -873,13 +873,33 @@ public class RaceActivity extends ListActivity {
 						
 					}
 					// Dismiss picker, so update the listview!
-		   	   		getNamesArray();
-                    mArrAdapter.notifyDataSetChanged();
+                    Log.d("RACEMANAGERY", "CALLING");
+                    updateListView();
+
 		   	   		mDlg = null;
 					break;
 			}
 		}
 	}
+
+    Runnable updateListView = new Runnable(){
+        public void run(){
+            getNamesArray();
+            mArrAdapter.notifyDataSetChanged();
+        }
+    };
+
+    public void updateListView(){
+        Log.d("RACEMANAGERY", "UPDATELISTVIEW");
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("RACEMANAGERY", "UPDATELISTVIEW RUNONUITHREAD");
+                runOnUiThread(updateListView);
+            }
+        }, 1000);
+
+    }
 
     private boolean showPilotDialog(int round, int pilot_id){
         if (mPilotDialogShown) return true;
