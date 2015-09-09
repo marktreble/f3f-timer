@@ -24,6 +24,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
+import android.support.annotation.NonNull;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -44,16 +45,19 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 	}
 	
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        view.setBackgroundColor(getResources().getColor(R.color.background_dialog ));
-        
-        setSummary("pref_input_src");
-        setSummary("pref_voice_lang");
+        if (view!=null)
+            view.setBackgroundColor(getResources().getColor(R.color.background_dialog ));
+
+        // Set values
+        setLangSummary("pref_input_src");
+        setLangSummary("pref_voice_lang");
+        setBTDeviceSummary("pref_external_display");
         
     	Preference pref = findPreference("pref_results_server");
-        if (Wifi.canEnableWifiHotspot(getActivity()) == false){
+        if (!Wifi.canEnableWifiHotspot(getActivity())){
         	pref.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
         } else {
         	pref.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)");        	
@@ -63,12 +67,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     }
     
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    	Intent i = null;
+    	Intent i;
 
     	// Update value of any list preference
     	Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
-            setSummary(key);
+            setLangSummary(key);
         }
         
         // Callbacks to input driver
@@ -108,7 +112,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
     
-    private void setSummary(String key){
+    private void setLangSummary(String key){
     	Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
             ListPreference listPref = (ListPreference) pref;
@@ -125,6 +129,30 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             pref.setSummary(value);
         }	
     }
+
+    private void setBTDeviceSummary(String key){
+        Preference pref = findPreference(key);
+        if (pref instanceof ListPreference) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String value = sharedPref.getString(key, "No Devices Paired");
+
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (bluetoothAdapter != null) {
+                if (bluetoothAdapter.isEnabled()) {
+                    Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+                    if (pairedDevices.size() > 0) {
+                        for (BluetoothDevice device : pairedDevices) {
+                            if (device.getAddress().equals(value)) {
+                                value = device.getName();
+                            }
+                        }
+                    }
+                }
+            }
+            pref.setSummary(value);
+
+        }
+    }
     
     @Override
 	public void onInit(int status) {
@@ -140,14 +168,15 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
         // Now check the available languages against the installed TTS Voices
         Locale[] locales = Locale.getAvailableLocales();
-        List<String> list_values = new ArrayList<String>();
-        List<String> list_labels = new ArrayList<String>();
+        List<String> list_values = new ArrayList<>();
+        List<String> list_labels = new ArrayList<>();
         for (Locale locale : locales) {
 
             int ttsres = TextToSpeech.LANG_NOT_SUPPORTED;
             try {
                 ttsres = mTts.isLanguageAvailable(locale);
             } catch (IllegalArgumentException e) {
+                e.printStackTrace();
             }
 
             boolean hasLang = false;

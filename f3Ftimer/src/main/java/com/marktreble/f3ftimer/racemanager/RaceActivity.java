@@ -37,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -235,24 +236,26 @@ public class RaceActivity extends ListActivity {
     }
 	
 	@Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("round", mRnd);
         outState.putInt("raceid", mRid);
         outState.putSerializable("mArrRounds", mArrRounds);
         outState.putBoolean("connection_status", mConnectionStatus);
         mListViewScrollPos = mListView.onSaveInstanceState();
+        outState.putParcelable("listviewscrollpos", mListViewScrollPos);
         Log.i("RACEACTIVITY", "SAVEINSTANCE");
 
     }
 
     @SuppressWarnings("unchecked")
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState){
+	public void onRestoreInstanceState(@NonNull Bundle savedInstanceState){
         mRnd=savedInstanceState.getInt("round");
         mRid=savedInstanceState.getInt("raceid");
         mArrRounds = (ArrayList<Integer>)savedInstanceState.getSerializable("mArrRounds");
         mConnectionStatus=savedInstanceState.getBoolean("connection_status");
+        mListViewScrollPos = savedInstanceState.getParcelable("listviewscrollpos");
         if (mListView != null)
             mListView.onRestoreInstanceState(mListViewScrollPos);
         Log.i("RACEACTIVITY", "RESTOREINSTANCE");
@@ -442,7 +445,7 @@ public class RaceActivity extends ListActivity {
             if (requestCode== RaceActivity.DLG_GROUP_SCORE_EDIT){
                 String num_groups = data.getStringExtra("num_groups");
                 
-                int num = 0;
+                int num;
                 try {
                     num = Integer.parseInt(num_groups);
                 } catch (NumberFormatException e){
