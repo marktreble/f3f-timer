@@ -152,7 +152,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
                             }
                         }
 
-                        String str_t = String.format("%.2f",p_times.get(i)[rnd]);
+                        String str_t = String.format("%.2f",p_times.get(i)[rnd]).trim().replace(",", ".");
 			 			float t = Float.parseFloat(str_t);
 						if (t>0)
                             ftg[g] = Math.min( t, ftg[g]);
@@ -181,7 +181,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
                             }
                         }
 
-			  			String str_t = String.format("%.2f",p_times.get(i)[rnd]);
+			  			String str_t = String.format("%.2f",p_times.get(i)[rnd]).trim().replace(",", ".");
 			 			float time = Float.parseFloat(str_t);
 			  			float pnts = 0;
 			  			if (time>0)

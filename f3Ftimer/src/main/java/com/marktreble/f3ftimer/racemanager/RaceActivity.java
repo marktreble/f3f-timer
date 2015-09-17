@@ -675,6 +675,7 @@ public class RaceActivity extends ListActivity {
                 Log.d("GROUPSDEBUG", "SZ:" + Integer.toString(group_size) + " G:" + Integer.toString(g) + " REM:" + Integer.toString(remainder));
                 int position = (c * mRace.rounds_per_flight) + r;
 
+                Log.d("GET NAMES ARRAY", String.format("%s %s", p.firstname, p.lastname));
                 mArrNames.set(position, String.format("%s %s", p.firstname, p.lastname));
                 mArrNumbers.set(position, String.format("%d.", c + 1));
                 mArrPilots.set(position, p);
@@ -873,7 +874,6 @@ public class RaceActivity extends ListActivity {
 						
 					}
 					// Dismiss picker, so update the listview!
-                    Log.d("RACEMANAGERY", "CALLING");
                     updateListView();
 
 		   	   		mDlg = null;
@@ -890,11 +890,9 @@ public class RaceActivity extends ListActivity {
     };
 
     public void updateListView(){
-        Log.d("RACEMANAGERY", "UPDATELISTVIEW");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                Log.d("RACEMANAGERY", "UPDATELISTVIEW RUNONUITHREAD");
                 runOnUiThread(updateListView);
             }
         }, 1000);

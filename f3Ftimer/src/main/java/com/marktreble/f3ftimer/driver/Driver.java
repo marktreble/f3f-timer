@@ -71,7 +71,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 	static float SHOW_TIMEOUT_DELAY = 3f; // minutes
 	static int ROUND_TIMEOUT = 33; // minutes
 	
-    private final static int SPEECH_DELAY_TIME = 750;
+    private final static int SPEECH_DELAY_TIME = 250;
 
     HashMap<String, String> utterance_ids = new HashMap<>();
     
@@ -273,6 +273,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 		mOmitOffCourse = false;
 		mLateEntry = false;
+		mLeg = 0;
 
   		if (mSpeechFXon && mTTSStatus == TextToSpeech.SUCCESS){
             mHandler.postDelayed(new Runnable() {

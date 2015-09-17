@@ -125,7 +125,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
             Pilot p = allPilots.get(i);
 			mArrPilots.add(p);
 			
-			String t_str = String.format("%.2f", p.time);
+			String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
 			float time = Float.parseFloat(t_str);
 
 			ftg[g] = (time>0) ? Math.min(ftg[g], time) : ftg[g];
@@ -147,7 +147,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
             Pilot p = allPilots.get(i);
 
 
-			String t_str = String.format("%.2f", p.time);
+			String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
 			float time = Float.parseFloat(t_str);
 			
 			if (time>0)
