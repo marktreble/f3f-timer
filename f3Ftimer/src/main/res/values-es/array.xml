@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	
+	<string-array name="Nacionalidades">
+	    <item></item>
+        <item>Australia</item>
+        <item>Republica checa</item>
+        <item>Dinamarca</item>
+        <item>Francia</item>
+        <item>Alemania</item>
+        <item>India</item>
+        <item>Holanda</item>
+        <item>Noruega</item>
+   	    <item>Portugal</item>
+        <item>España</item>
+        <item>Suiza</item>
+    	<item>Reino Unido</item>
+    	<item>Eestados Unidos</item>
+    </string-array>
+
+	
+</resources>
