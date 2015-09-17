@@ -64,7 +64,7 @@ You are now ready to race!
 The next pilot to fly is highlighted, and a short press on their name will start their flight. Pilot names can also be long pressed for other functions such as reflights, retirements, zero-score or manual time entry. All other function can be found from the main menu.
 
 ###Thanks
-Thanks to Tilman Baumann for the German Translations
+Thanks to Tilman Baumann (German Translations) and Alejandro Gil Garcia (Spanish Translations)
 
 
 
