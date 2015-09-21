@@ -60,6 +60,7 @@ public class RaceResultsService extends Service {
     }
     
     public int onStartCommand(Intent intent, int flags, int startId){
+		if (intent == null) return 0;
     	if (intent.hasExtra("com.marktreble.f3ftimer.race_id")){
 
 			Bundle extras = intent.getExtras();
