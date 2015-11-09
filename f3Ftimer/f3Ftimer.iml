@@ -89,10 +89,10 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 5.0.1 Google APIs" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="acra-4.4.0" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
-    <orderEntry type="library" exported="" name="TestFlightLib" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-21.0.3" level="project" />
+    <orderEntry type="library" exported="" name="acra-4.4.0" level="project" />
+    <orderEntry type="library" exported="" name="TestFlightLib" level="project" />
     <orderEntry type="module" module-name="iOIOLibBT" exported="" />
     <orderEntry type="module" module-name="iOIOLibAndroid" exported="" />
     <orderEntry type="module" module-name="usbSerialForAndroid" exported="" />

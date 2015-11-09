@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -31,6 +32,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.dialog.AboutActivity;
+import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
+import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 public class ResultsLeaderBoardActivity extends ListActivity {
 	
@@ -42,6 +47,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 	private ArrayList<String> mArrNumbers;
 	private ArrayList<Pilot> mArrPilots;
 	private ArrayList<Float> mArrScores;
+
 	private float mFTD;
 	private String mFTDName;
 	private int mFTDRound;
@@ -101,29 +107,38 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 		RacePilotData datasource2 = new RacePilotData(ResultsLeaderBoardActivity.this);
   		datasource2.open();
   		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0);
-  		ArrayList<String> p_names = new ArrayList<>();
+		ArrayList<String> p_names = new ArrayList<>();
+		ArrayList<String> p_bib_numbers = new ArrayList<>();
   		ArrayList<String> p_nationalities = new ArrayList<>();
   		ArrayList<float[]> p_times = new ArrayList<>();
   		ArrayList<float[]> p_points = new ArrayList<>();
   		ArrayList<int[]> p_penalty = new ArrayList<>();
-  		Float[] p_totals = new Float[allPilots.size()];
-  		int[] p_positions = new int[allPilots.size()];
+  		Float[] p_totals;
+  		int[] p_positions;
   		
   		mFTD = 9999;
   		
   		if (allPilots != null){
   			
   			// Get all times for pilots in all rounds
+			int c=0; // Counter for bib numbers
   			for (Pilot p : allPilots){
-  				p_names.add(String.format("%s %s", p.firstname, p.lastname));
-  				p_nationalities.add(p.nationality);
-  				float[] sc = new float[race.round];
-  				for (int rnd=0; rnd<race.round; rnd++){
-  					sc[rnd] = datasource2.getPilotTimeInRound(mRid, p.id, rnd+1);
-					Log.i("PILOT TIME", String.format("%s %s", p.firstname, p.lastname) +":" + Float.toString(sc[rnd]));
-  				}
-  				p_times.add(sc);
+				if (p.pilot_id>0) {
+					p_names.add(String.format("%s %s", p.firstname, p.lastname));
+					p_bib_numbers.add(Integer.toString(c + 1));
+					p_nationalities.add(p.nationality);
+					float[] sc = new float[race.round];
+					for (int rnd = 0; rnd < race.round; rnd++) {
+						sc[rnd] = datasource2.getPilotTimeInRound(mRid, p.id, rnd + 1);
+					}
+					p_times.add(sc);
+					Log.d("LEADERBOARD", String.format("%s %s %d", p.firstname, p.lastname, c+1));
+				}
+				c++;
   			}
+
+			p_totals = new Float[p_names.size()];
+			p_positions = new int[p_names.size()];
 
   			if (race.round>1){
 	  			// Loop through each round to find the winner, then populate the scores
@@ -224,7 +239,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 				for (int i=0; i<p_names.size(); i++){
 					for (int j=0; j<p_names.size(); j++){
 						if (p_totals[i] == p_sorted_totals[j])
-							p_positions[i] = (int)j + 1;
+							p_positions[i] = j + 1;
 								
 					}
 				}  			
@@ -246,21 +261,21 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 	  			for (int i=0; i<sz; i++){
 	  				int pos = p_positions[i]-1;
 	  				mArrNames.set(pos, String.format("%s", p_names.get(i)));
-	  				mArrNumbers.set(pos, String.format("%d.", p_positions[i]));
+	  				mArrNumbers.set(pos, p_bib_numbers.get(i));
 	  				Pilot p = new Pilot();
 	  				p.points = round2Fixed(p_totals[i].floatValue(), 2);
 	  				p.nationality = p_nationalities.get(i);
 	  				mArrPilots.set(pos, p);
 	  			}
+
 	  			float top_score = mArrPilots.get(0).points;
                 float previousscore = 1000.0f;
+
+				int pos = 1, lastpos = 1; // Last pos is for ties
 	  			for (int i=1; i<sz; i++){
 	  				float pilot_points = mArrPilots.get(i).points;
 	  				float normalised = round2Fixed(pilot_points/top_score * 1000, 2);
 
-                    // Check for tied scores - use the same position qualifier
-                    if (normalised == previousscore)
-                        mArrNumbers.set(i, mArrNumbers.get(i-1));
                     previousscore = normalised;
 
 	  				mArrScores.set(i, Float.valueOf(normalised));
@@ -300,10 +315,19 @@ public class ResultsLeaderBoardActivity extends ListActivity {
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
                 p_name.setTextColor(getResources().getColor(R.color.text3 ));
-                
+
+				Drawable rosette = null;
+				if (position == 0){
+					rosette = ContextCompat.getDrawable(mContext, R.drawable.gold);
+				} else if (position == 1){
+					rosette = ContextCompat.getDrawable(mContext, R.drawable.silver);
+				} else if (position == 2){
+					rosette = ContextCompat.getDrawable(mContext, R.drawable.bronze);
+				}
+
                 Drawable flag = p.getFlag(mContext);
         		if (flag != null){
-        		    p_name.setCompoundDrawablesWithIntrinsicBounds(flag, null, null, null);
+        		    p_name.setCompoundDrawablesWithIntrinsicBounds(flag, null, rosette, null);
         		    int padding = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
         		    p_name.setCompoundDrawablePadding(padding);
         		}
@@ -361,18 +385,50 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
-	    	case R.id.menu_share:
-	    		share();
-	    		return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
+			case R.id.menu_share:
+				share();
+				return true;
+			case R.id.menu_pilot_manager:
+				pilotManager();
+				return true;
+			case R.id.menu_race_manager:
+				raceManager();
+				return true;
+			case R.id.menu_help:
+				help();
+				return true;
+			case R.id.menu_about:
+				about();
+				return true;
+
+
+			default:
+				return super.onOptionsItemSelected(item);
 	    }
 	}
-			
+
 	public void share(){
-		/*Intent intent = new Intent(mContext, SettingsActivity.class);
-    	startActivityForResult(intent, 1);
-    	*/
+
+	}
+
+	public void pilotManager(){
+		Intent intent = new Intent(mContext,PilotsActivity.class);
+		startActivity(intent);
+	}
+
+	public void raceManager(){
+		Intent intent = new Intent(mContext, RaceListActivity.class);
+		startActivity(intent);
+	}
+
+	public void help(){
+		Intent intent = new Intent(mContext, HelpActivity.class);
+		startActivity(intent);
+	}
+
+	public void about(){
+		Intent intent = new Intent(mContext, AboutActivity.class);
+		startActivity(intent);
 	}
 
 }

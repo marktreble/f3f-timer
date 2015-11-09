@@ -4,15 +4,59 @@
     <shared>
       <config />
     </shared>
+    <layouts>
+      <layout url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_pickpilots.xml">
+        <config>
+          <theme>@android:style/Theme.Holo</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_reorder.xml">
+        <config>
+          <theme>@style/AppTheme</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag2.xml">
+        <config>
+          <theme>@android:style/Theme.Holo</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag3.xml">
+        <config>
+          <theme>@android:style/Theme.Holo</theme>
+        </config>
+      </layout>
+    </layouts>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="GET NAMES ARRAY" />
     <option name="TOOL_WINDOW_LOG_LEVEL" value="DEBUG" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0fdffe9f-1db8-4115-a888-13fa91fc6576" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable-mdpi/circle.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/effects_Google_Inc__Google_APIs_19.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/maps_Google_Inc__Google_APIs_19.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/libraries/usb_Google_Inc__Google_APIs_19.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/bluetooth/BluetoothExport.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/bluetooth/BluetoothExport.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag2.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag2.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag3.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag3.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundsActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundsActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" afterPath="$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" afterPath="$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" afterPath="$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/iOIOLibBT/iOIOLibBT.iml" afterPath="$PROJECT_DIR$/iOIOLibBT/iOIOLibBT.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_pickpilots.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_pickpilots.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_racepilots.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_racepilots.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/listrow_racepilots.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/listrow_racepilots.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_reorder.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_reorder.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag1.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag1.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag2.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag2.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag3.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag3.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/support_v4_21_0_3.xml" afterPath="$PROJECT_DIR$/.idea/libraries/support_v4_21_0_3.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="f3f-timer.iws" />
@@ -34,68 +78,107 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values-de/strings.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values-fr/strings.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="strings.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values-nl/strings.xml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Driver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="275" column="17" selection-start-line="275" selection-start-column="17" selection-end-line="275" selection-end-column="17" />
-              <folding>
-                <element signature="e#2114#2115#0" expanded="true" />
-                <element signature="e#2139#2140#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="RaceActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="619" column="77" selection-start-line="619" selection-start-column="71" selection-end-line="619" selection-end-column="77" />
+            <state vertical-scroll-proportion="-4.551724">
+              <caret line="951" column="26" selection-start-line="951" selection-start-column="23" selection-end-line="951" selection-end-column="26" />
+              <folding>
+                <element signature="e#28670#28712#0" expanded="true" />
+                <element signature="e#28785#28825#0" expanded="true" />
+                <element signature="e#29026#29067#0" expanded="true" />
+                <element signature="e#38831#38958#0" expanded="true" />
+                <element signature="e#38957#38958#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ResultsLeaderBoardActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-7.5925927">
+              <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RaceResultsService.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java">
+      <file leaf-file-name="BluetoothExport.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/bluetooth/BluetoothExport.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-1.6338462">
-              <caret line="62" column="37" selection-start-line="62" selection-start-column="37" selection-end-line="62" selection-end-column="37" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="107" column="71" selection-start-line="107" selection-start-column="36" selection-end-line="107" selection-end-column="71" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ResultsCompletedRoundActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-6.9259257">
+              <caret line="214" column="57" selection-start-line="214" selection-start-column="57" selection-end-line="214" selection-end-column="57" />
               <folding>
-                <element signature="e#9072#9073#0" expanded="true" />
-                <element signature="e#9090#9091#0" expanded="true" />
+                <element signature="e#7736#7777#0" expanded="true" />
+                <element signature="e#8309#8351#0" expanded="true" />
+                <element signature="e#8427#8467#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ResultsRoundInProgressActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-52.0">
+              <caret line="162" column="13" selection-start-line="162" selection-start-column="13" selection-end-line="162" selection-end-column="13" />
+              <folding>
+                <element signature="e#7569#7610#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="NewRaceFrag3.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag3.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.60583943">
+              <caret line="324" column="38" selection-start-line="324" selection-start-column="38" selection-end-line="324" selection-end-column="38" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="listrow_reorder.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_reorder.xml">
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-3.724138">
+              <caret line="6" column="25" selection-start-line="6" selection-start-column="25" selection-end-line="6" selection-end-column="25" />
+              <folding>
+                <element signature="e#1531#1543#0" expanded="true" />
+                <element signature="e#1579#1591#0" expanded="true" />
+                <element signature="e#1703#1722#0" expanded="true" />
+                <element signature="e#2003#2015#0" expanded="true" />
+                <element signature="e#2051#2063#0" expanded="true" />
+                <element signature="e#2143#2164#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="listrow_racepilots.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_racepilots.xml">
+          <provider editor-type-id="android-designer">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-77.586205">
+              <caret line="125" column="19" selection-start-line="125" selection-start-column="4" selection-end-line="125" selection-end-column="19" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -104,7 +187,7 @@
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="47" column="24" selection-start-line="47" selection-start-column="8" selection-end-line="47" selection-end-column="24" />
+              <caret line="143" column="5" selection-start-line="121" selection-start-column="4" selection-end-line="143" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -115,16 +198,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ResultsRoundInProgressActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="155" column="41" selection-start-line="155" selection-start-column="31" selection-end-line="155" selection-end-column="41" />
               <folding />
             </state>
           </provider>
@@ -3946,18 +4019,30 @@
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/FlyingOrderEditActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/bluetooth/BluetoothImport.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/racepilot/RacePilotData.java" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values-es/array.xml" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values-en/strings.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values-de/strings.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values-fr/strings.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values-nl/strings.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRaceActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag3.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag1.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable-mdpi/circle.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_pickpilots.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag2.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag2.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/bluetooth/BluetoothExport.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundsActivity.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/listrow_racepilots.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_racepilots.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_reorder.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag3.java" />
       </list>
     </option>
   </component>
@@ -3965,9 +4050,9 @@
     <order />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="138" />
+    <option name="x" value="15" />
     <option name="y" value="23" />
-    <option name="width" value="1416" />
+    <option name="width" value="1714" />
     <option name="height" value="1053" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -3993,8 +4078,9 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
+      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="ProjectPane" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -4069,12 +4155,8 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="values" />
+              <option name="myItemId" value="menu" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="strings.xml" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResGroupNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -4091,12 +4173,8 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="values" />
+              <option name="myItemId" value="layout" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="array.xml" />
-              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResGroupNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -4113,8 +4191,12 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="raw" />
+              <option name="myItemId" value="layout" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="listrow_racepilots.xml" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResGroupNode" />
             </PATH_ELEMENT>
           </PATH>
           <PATH>
@@ -4197,7 +4279,7 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="pilotmanager" />
+              <option name="myItemId" value="filesystem" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -4219,11 +4301,7 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="data" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="racepilot" />
+              <option name="myItemId" value="dialog" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -4245,14 +4323,13 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="data" />
+              <option name="myItemId" value="bluetooth" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="ProjectPane" />
+      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -4268,20 +4345,26 @@
     <property name="options.searchVisible" value="true" />
     <property name="android.project.structure.last.selected" value="SDK Location" />
     <property name="android.project.structure.proportion" value="0.17625" />
-    <property name="settings.editor.selected.configurable" value="android.sdk-updates" />
+    <property name="settings.editor.selected.configurable" value="reference.settingsdialog.IDE.editor.colors.File Status" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="recentsLimit" value="5" />
     <property name="last_opened_file_path" value="$USER_HOME$/Documents/android-sdk/marktreble.keystore" />
     <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/f3Ftimer" />
     <property name="ExportApk.Flavors" value="" />
     <property name="ExportApk.BuildType" value="release" />
-    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="0123456789ABCDEF" />
+    <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="FA53FYJ03490" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="AVD_for_3_2in_HVGA_slider_ADP1" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable-mdpi" />
+    </key>
   </component>
   <component name="RunManager" selected="Android Application.f3Ftimer">
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
       <module name="" />
       <option name="ACTIVITY_CLASS" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
       <option name="DEPLOY" value="true" />
       <option name="ARTIFACT_NAME" value="" />
@@ -4296,7 +4379,39 @@
       <option name="NETWORK_LATENCY" value="none" />
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
+      <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
+      <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
+      <option name="SELECTED_CLOUD_DEVICE_PROJECT_ID" value="" />
+      <option name="IS_VALID_CLOUD_MATRIX_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_MATRIX_SELECTION_ERROR" value="" />
+      <option name="IS_VALID_CLOUD_DEVICE_SELECTION" value="false" />
+      <option name="INVALID_CLOUD_DEVICE_SELECTION_ERROR" value="" />
+      <option name="CLOUD_DEVICE_SERIAL_NUMBER" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Tests">
+      <module name="" />
+      <option name="TESTING_TYPE" value="0" />
+      <option name="INSTRUMENTATION_RUNNER_CLASS" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TARGET_SELECTION_MODE" value="EMULATOR" />
+      <option name="USE_LAST_SELECTED_DEVICE" value="false" />
+      <option name="PREFERRED_AVD" value="" />
+      <option name="USE_COMMAND_LINE" value="true" />
+      <option name="COMMAND_LINE" value="" />
+      <option name="WIPE_USER_DATA" value="false" />
+      <option name="DISABLE_BOOT_ANIMATION" value="false" />
+      <option name="NETWORK_SPEED" value="full" />
+      <option name="NETWORK_LATENCY" value="none" />
+      <option name="CLEAR_LOGCAT" value="false" />
+      <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
       <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
       <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
       <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
@@ -4344,6 +4459,11 @@
       <patterns />
       <method />
     </configuration>
+    <configuration default="true" type="JarApplication" factoryName="JAR Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <envs />
+      <method />
+    </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
       <option name="USE_SOCKET_TRANSPORT" value="true" />
       <option name="SERVER_MODE" value="false" />
@@ -4383,6 +4503,7 @@
     <configuration default="false" name="f3Ftimer" type="AndroidRunConfigurationType" factoryName="Android Application">
       <module name="f3Ftimer" />
       <option name="ACTIVITY_CLASS" value="" />
+      <option name="ACTIVITY_EXTRA_FLAGS" value="" />
       <option name="MODE" value="default_activity" />
       <option name="DEPLOY" value="true" />
       <option name="ARTIFACT_NAME" value="" />
@@ -4397,7 +4518,8 @@
       <option name="NETWORK_LATENCY" value="none" />
       <option name="CLEAR_LOGCAT" value="false" />
       <option name="SHOW_LOGCAT_AUTOMATICALLY" value="true" />
-      <option name="FILTER_LOGCAT_AUTOMATICALLY" value="true" />
+      <option name="SKIP_NOOP_APK_INSTALLATIONS" value="true" />
+      <option name="FORCE_STOP_RUNNING_APP" value="true" />
       <option name="SELECTED_CLOUD_MATRIX_CONFIGURATION_ID" value="0" />
       <option name="SELECTED_CLOUD_MATRIX_PROJECT_ID" value="" />
       <option name="SELECTED_CLOUD_DEVICE_CONFIGURATION_ID" value="0" />
@@ -4470,43 +4592,51 @@
       <option name="project" value="LOCAL" />
       <updated>1442522793395</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Added catch for null intent exception">
+      <created>1442822746203</created>
+      <option name="number" value="00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1442822746203</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="138" y="23" width="1416" height="1053" extended-state="0" />
+    <frame x="15" y="23" width="1714" height="1053" extended-state="0" />
     <editor active="false" />
     <layout>
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32870865" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32996434" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.5314835" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.29066986" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32870865" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Captures" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32870865" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Android" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24759872" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.21471292" sideWeight="0.50147057" order="0" side_tool="true" content_ui="combo" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32996434" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.18850073" sideWeight="0.4985294" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32996434" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.23435226" sideWeight="0.50147057" order="0" side_tool="true" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32870865" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="combo" />
-      <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.17405914" sideWeight="0.4985294" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
-      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32996434" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="combo" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
+      <window_info id="Android" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24759872" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
   <component name="Vcs.Log.UiProperties">
@@ -4526,101 +4656,14 @@
     <MESSAGE value="Bug Fixed (non english float parsing in results manager)" />
     <MESSAGE value="Updated README" />
     <MESSAGE value="Fixed broken menu items in ResultsManager" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed broken menu items in ResultsManager" />
+    <MESSAGE value="Added catch for null intent exception" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added catch for null intent exception" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values-de/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values-fr/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values-nl/strings.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="86" column="38" selection-start-line="86" selection-start-column="38" selection-end-line="86" selection-end-column="38" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="275" column="17" selection-start-line="275" selection-start-column="17" selection-end-line="275" selection-end-column="17" />
-          <folding>
-            <element signature="e#2114#2115#0" expanded="true" />
-            <element signature="e#2139#2140#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="47" column="24" selection-start-line="47" selection-start-column="8" selection-end-line="47" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRaceActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="155" column="41" selection-start-line="155" selection-start-column="31" selection-end-line="155" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsDisplayService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="435" column="22" selection-start-line="435" selection-start-column="22" selection-end-line="435" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag4.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="138" column="0" selection-start-line="138" selection-start-column="0" selection-end-line="138" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="178" column="36" selection-start-line="178" selection-start-column="36" selection-end-line="178" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/F3FtimerApplication.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -4632,7 +4675,13 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#28670#28712#0" expanded="true" />
+            <element signature="e#28785#28825#0" expanded="true" />
+            <element signature="e#29026#29067#0" expanded="true" />
+            <element signature="e#38831#38958#0" expanded="true" />
+            <element signature="e#38957#38958#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -4758,20 +4807,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.0740743">
-          <caret line="248" column="54" selection-start-line="248" selection-start-column="41" selection-end-line="248" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-3.7407408">
-          <caret line="145" column="13" selection-start-line="145" selection-start-column="13" selection-end-line="145" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values-es/array.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -4832,8 +4867,12 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="275" column="17" selection-start-line="275" selection-start-column="17" selection-end-line="275" selection-end-column="17" />
           <folding>
-            <element signature="e#2114#2115#0" expanded="true" />
-            <element signature="e#2139#2140#0" expanded="true" />
+            <element signature="e#0#21060#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#15445#15446#0" expanded="false" />
+            <element signature="e#15463#15464#0" expanded="false" />
+            <element signature="e#15505#15506#0" expanded="false" />
+            <element signature="e#15560#15561#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -4846,10 +4885,114 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java">
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="155" column="41" selection-start-line="155" selection-start-column="31" selection-end-line="155" selection-end-column="41" />
+          <caret line="62" column="37" selection-start-line="62" selection-start-column="37" selection-end-line="62" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values/colours.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="2" column="28" selection-start-line="2" selection-start-column="28" selection-end-line="2" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="97" column="0" selection-start-line="97" selection-start-column="0" selection-end-line="97" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag1.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.62069">
+          <caret line="76" column="46" selection-start-line="76" selection-start-column="46" selection-end-line="76" selection-end-column="46" />
+          <folding>
+            <element signature="e#1007#1026#0" expanded="true" />
+            <element signature="e#1650#1682#0" expanded="true" />
+            <element signature="e#2258#2279#0" expanded="true" />
+            <element signature="e#3267#3288#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/drawable-mdpi/circle.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="5" column="34" selection-start-line="5" selection-start-column="34" selection-end-line="5" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.333333">
+          <caret line="82" column="32" selection-start-line="82" selection-start-column="32" selection-end-line="82" selection-end-column="32" />
+          <folding>
+            <element signature="e#2398#2576#0" expanded="false" />
+            <element signature="e#2575#2576#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag3.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.120155">
+          <caret line="111" column="0" selection-start-line="108" selection-start-column="0" selection-end-line="111" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_pickpilots.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5232558">
+          <caret line="15" column="32" selection-start-line="15" selection-start-column="8" selection-end-line="15" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag2.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6937984">
+          <caret line="40" column="37" selection-start-line="40" selection-start-column="37" selection-end-line="40" selection-end-column="37" />
+          <folding>
+            <element signature="e#2728#2749#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/drawable-hdpi/gn.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/drawable-xhdpi/bronze.png">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/bluetooth/BluetoothExport.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="107" column="71" selection-start-line="107" selection-start-column="36" selection-end-line="107" selection-end-column="71" />
           <folding />
         </state>
       </provider>
@@ -4857,7 +5000,7 @@
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="47" column="24" selection-start-line="47" selection-start-column="8" selection-end-line="47" selection-end-column="24" />
+          <caret line="143" column="5" selection-start-line="121" selection-start-column="4" selection-end-line="143" selection-end-column="5" />
           <folding />
         </state>
       </provider>
@@ -4870,22 +5013,103 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundsActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="619" column="77" selection-start-line="619" selection-start-column="71" selection-end-line="619" selection-end-column="77" />
+        <state vertical-scroll-proportion="2.8047338">
+          <caret line="120" column="57" selection-start-line="120" selection-start-column="57" selection-end-line="120" selection-end-column="57" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java">
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-1.6338462">
-          <caret line="62" column="37" selection-start-line="62" selection-start-column="37" selection-end-line="62" selection-end-column="37" />
+        <state vertical-scroll-proportion="-4.551724">
+          <caret line="951" column="26" selection-start-line="951" selection-start-column="23" selection-end-line="951" selection-end-column="26" />
           <folding>
-            <element signature="e#9072#9073#0" expanded="true" />
-            <element signature="e#9090#9091#0" expanded="true" />
+            <element signature="e#28670#28712#0" expanded="true" />
+            <element signature="e#28785#28825#0" expanded="true" />
+            <element signature="e#29026#29067#0" expanded="true" />
+            <element signature="e#38831#38958#0" expanded="true" />
+            <element signature="e#38957#38958#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-7.5925927">
+          <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.9259257">
+          <caret line="214" column="57" selection-start-line="214" selection-start-column="57" selection-end-line="214" selection-end-column="57" />
+          <folding>
+            <element signature="e#7736#7777#0" expanded="true" />
+            <element signature="e#8309#8351#0" expanded="true" />
+            <element signature="e#8427#8467#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/listrow_racepilots.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5671642">
+          <caret line="39" column="36" selection-start-line="32" selection-start-column="7" selection-end-line="39" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_racepilots.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-77.586205">
+          <caret line="125" column="19" selection-start-line="125" selection-start-column="4" selection-end-line="125" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-52.0">
+          <caret line="162" column="13" selection-start-line="162" selection-start-column="13" selection-end-line="162" selection-end-column="13" />
+          <folding>
+            <element signature="e#7569#7610#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_reorder.xml">
+      <provider editor-type-id="android-designer">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.724138">
+          <caret line="6" column="25" selection-start-line="6" selection-start-column="25" selection-end-line="6" selection-end-column="25" />
+          <folding>
+            <element signature="e#1531#1543#0" expanded="true" />
+            <element signature="e#1579#1591#0" expanded="true" />
+            <element signature="e#1703#1722#0" expanded="true" />
+            <element signature="e#2003#2015#0" expanded="true" />
+            <element signature="e#2051#2063#0" expanded="true" />
+            <element signature="e#2143#2164#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag3.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.60583943">
+          <caret line="324" column="38" selection-start-line="324" selection-start-column="38" selection-end-line="324" selection-end-column="38" />
+          <folding />
         </state>
       </provider>
     </entry>

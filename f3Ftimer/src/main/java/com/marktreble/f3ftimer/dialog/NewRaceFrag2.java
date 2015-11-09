@@ -33,7 +33,9 @@ public class NewRaceFrag2 extends ListFragment {
 	
 	private ArrayList<String> mArrNames; // ArrayList of all pilots in database
 	private ArrayList<Integer> mArrIds;	 // ArrayList of database ids (order matching mArrNames - alphabetical order)
-	
+
+	private TextView next_number;
+
 	public NewRaceFrag2(){
 		
 	}
@@ -70,8 +72,22 @@ public class NewRaceFrag2 extends ListFragment {
 	        	a.getFragment(new NewRaceFrag3(), "newracefrag3");
 	        }
 	    });
-	    
-	    
+
+		// Listener for skip button
+		Button skip = (Button) v.findViewById(R.id.button_skip);
+		skip.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				// Save to database and quit the activity
+				mArrSelectedIds.add(0);
+				setNextNumber();
+			}
+		});
+
+		next_number = (TextView) v.findViewById(R.id.next_number);
+
+		setNextNumber();
+
 		return v;
 	}
 	
@@ -87,23 +103,25 @@ public class NewRaceFrag2 extends ListFragment {
                 } else {
                 row = convertView;
                 }
-                
-                TextView tv = (TextView) row.findViewById(R.id.text1);
-                
+
+				TextView tv = (TextView) row.findViewById(R.id.text1);
+				TextView nm = (TextView) row.findViewById(R.id.number);
+
+
                 String name = getItem(position);
                 Integer pid = mArrIds.get(position);
                 if (mArrSelectedIds.contains(pid)){
                 	int index = mArrSelectedIds.lastIndexOf(pid) + 1;
-                	name = Integer.toString(index) + ". " + name;
+					nm.setText(Integer.toString(index));
+					nm.setVisibility(View.VISIBLE);
                 	row.setBackgroundColor(getResources().getColor(R.color.lt_grey));
                 } else {
                 	row.setBackgroundColor(getResources().getColor(R.color.transparent));
-
+					nm.setVisibility(View.GONE);
                 }
                 
                 tv.setText(name);
- 
-                
+
                 return row;
             }
    	   	};
@@ -123,6 +141,8 @@ public class NewRaceFrag2 extends ListFragment {
             mArrSelectedIds.add(pid);
         }
         getListView().invalidateViews();
+
+		setNextNumber();
 	}
 
     public boolean onBackPressed(){
@@ -135,10 +155,16 @@ public class NewRaceFrag2 extends ListFragment {
         
         mArrSelectedIds.remove(mArrSelectedIds.size()-1);
         getListView().invalidateViews();
-        
+        setNextNumber();
+
         return true;
     }
-    
+
+	private void setNextNumber(){
+		int index = mArrSelectedIds.size()+1;
+		next_number.setText(Integer.toString(index));
+	}
+
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 	  super.onSaveInstanceState(savedInstanceState);

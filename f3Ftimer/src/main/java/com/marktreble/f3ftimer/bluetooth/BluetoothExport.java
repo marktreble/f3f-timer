@@ -106,10 +106,10 @@ public class BluetoothExport extends Activity {
         try {
             // MY_UUID is the app's UUID string, also used by the client code
             tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord("f3f bluetooth export", uuid);
+            Log.i("BT", "SOCKET OBTAINED");
         } catch (IOException e) {
+            e.printStackTrace();
         }
-        mmServerSocket = tmp;
-        Log.i("BT", "SOCKET OBTAINED");
 
         Thread acceptThread = new Thread(new Runnable()
         {
@@ -135,8 +135,14 @@ public class BluetoothExport extends Activity {
 
             }
         });
-        acceptThread.start();
-        
+        if (tmp!=null) {
+            mmServerSocket = tmp;
+
+            acceptThread.start();
+        } else {
+            mActivity.finish();
+        }
+
     }
 
     public void manageConnectedSocket(BluetoothSocket socket){

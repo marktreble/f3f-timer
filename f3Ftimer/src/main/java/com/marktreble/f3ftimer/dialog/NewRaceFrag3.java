@@ -38,8 +38,9 @@ public class NewRaceFrag3 extends ListFragment {
 	private ArrayList<Integer> mArrSelectedIds;	// ArrayList of selected pilot ids is same order as mArrSelected
 	private boolean manualScramble = false;
 	
-	private ArrayList<String> mArrNames; // ArrayList of all pilots in database
+	public ArrayList<String> mArrNames; // ArrayList of all pilots in database
 	private ArrayList<Integer> mArrIds;	 // ArrayList of database ids (order matching mArrNames - alphabetical order)
+	public ArrayList<Integer> mArrNumbers;	 // ArrayList of database ids (order matching mArrNames - alphabetical order)
 
 	String[] _names;  	// String array of all pilots in database    	
 	Integer[] _ids;  	// String array of all pilots in database    	
@@ -169,7 +170,11 @@ public class NewRaceFrag3 extends ListFragment {
                 }
                 
                 TextView tv = (TextView) row.findViewById(R.id.text1);
-                tv.setText(getItem(position));
+                tv.setText(mArrNames.get(position));
+
+				TextView bib_no = (TextView) row.findViewById(R.id.number);
+				bib_no.setText(String.format("%d", mArrNumbers.get(position)));
+
             	Button btnup = (Button)row.findViewById(R.id.button_up);
                 if (position==0 || !manualScramble){
                 	btnup.setVisibility(View.INVISIBLE);
@@ -295,22 +300,32 @@ public class NewRaceFrag3 extends ListFragment {
 		ArrayList<Pilot> allPilots = datasource.getAllPilots();
 		datasource.close();
 		
-		if (mArrNames == null){
+		if (mArrNames == null) {
 			mArrNames = new ArrayList<>();
 			mArrIds = new ArrayList<>();
-
-			while(mArrNames.size() < mArrSelectedIds.size()) mArrNames.add("");
-			while(mArrIds.size() < mArrSelectedIds.size()) mArrIds.add(0);
-			
+			mArrNumbers = new ArrayList<>();
 		}
-		
+
+		while(mArrNames.size() < mArrSelectedIds.size()) mArrNames.add("");
+		while(mArrIds.size() < mArrSelectedIds.size()) mArrIds.add(0);
+		while(mArrNumbers.size() < mArrSelectedIds.size()) mArrNumbers.add(0);
+
+
 		for (Pilot p : allPilots){
 			if (mArrSelectedIds.contains(p.id)){
 				int index = mArrSelectedIds.lastIndexOf(p.id);
 				mArrNames.set(index, String.format("%s %s", p.firstname, p.lastname));
 				mArrIds.set(index, p.id);
+				mArrNumbers.set(index, index+1);
 			}
-			
+		}
+		// Blank out skipped pilot numbers
+		for (int index =0; index<mArrSelectedIds.size(); index++){
+			if (mArrSelectedIds.get(index) == 0){
+				mArrNames.set(index, "");
+				mArrIds.set(index, 0);
+				mArrNumbers.set(index, index+1);
+			}
 		}
 	}
 	

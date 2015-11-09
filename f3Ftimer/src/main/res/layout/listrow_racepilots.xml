@@ -30,103 +30,99 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
-   <TextView
-        android:id="@+id/number"
-        android:layout_width="40dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="0"
-        android:background="@color/transparent"
-        android:gravity="center_vertical"
-        android:minHeight="68dp"
-        android:minWidth="@dimen/ten"
-        android:paddingLeft="10dp"
-        android:paddingEnd="0dp"
-        android:paddingRight="0dp"
-       android:text="1"
-        android:textColor="@color/text3"
-        android:textSize="16sp"
-        android:textStyle="bold" >
+       <TextView
+           android:id="@+id/number"
+           android:layout_width="32dp"
+           android:layout_height="32dp"
+           android:layout_weight="0"
+           android:background="@drawable/circle"
+           android:gravity="center"
+           android:layout_gravity="center"
+           android:layout_marginRight="8dp"
+           android:minHeight="68dp"
+           android:textColor="@color/text2"
+           android:textSize="16sp"
+           android:textStyle="bold" >
 
-	</TextView>
-    
-    <TextView
-        android:id="@+id/text1"
-        android:layout_width="0dp"
-        android:layout_height="fill_parent"
-        android:layout_weight="1"
-        android:background="@color/transparent"
-        android:gravity="center_vertical"
-        android:minHeight="68dp"
-        android:minWidth="@dimen/ten"
-        android:paddingLeft="0dp"
-        android:paddingRight="10dp"
-        android:text="Jimi Hendrix"
-        android:textColor="@color/text3"
-        android:textSize="16sp"
-        android:textStyle="bold" >
+        </TextView>
 
-	</TextView>
-	
-	<TextView
-        android:id="@+id/penalty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent"
-        android:gravity="end|center_vertical"
-        android:minHeight="68dp"
-        android:paddingBottom="4dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="10dp"
-        android:paddingTop="4dp"
-        android:text="@string/empty"
-        android:textColor="@color/red"
-        android:textSize="16sp"
-        android:textStyle="bold" >
-       </TextView>
-        
-    <TextView
-        android:id="@+id/time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent"
-        android:gravity="end|center_vertical"
-        android:minHeight="68dp"
-        android:paddingBottom="4dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="10dp"
-        android:paddingTop="4dp"
-        android:text="@string/notime"
-        android:textColor="@color/text3"
-        android:textSize="16sp"
-        android:textStyle="bold" >
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:gravity="center_vertical"
+            android:minHeight="68dp"
+            android:minWidth="@dimen/ten"
+            android:paddingLeft="0dp"
+            android:paddingRight="10dp"
+            android:textColor="@color/text3"
+            android:textSize="16sp"
+            android:textStyle="bold" >
 
-	</TextView>
+        </TextView>
 
-    <View
-        android:id="@+id/view1"
-        android:layout_width="0.1dp"
-        android:layout_height="fill_parent"
-        android:background="@color/border" />
-	
-    <TextView
-        android:id="@+id/points"
-        android:layout_width="70dp"
-        android:layout_height="wrap_content"
-        android:background="@color/transparent"
-        android:gravity="end|center_vertical"
-        android:minHeight="68dp"
-        android:paddingBottom="4dp"
-        android:paddingLeft="0dp"
-        android:paddingRight="10dp"
-        android:paddingTop="4dp"
-        android:text="@string/empty"
-        android:textColor="@color/text3"
-        android:textSize="16sp"
-        android:textStyle="bold" >
+        <TextView
+            android:id="@+id/penalty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:gravity="end|center_vertical"
+            android:minHeight="68dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:text="@string/empty"
+            android:textColor="@color/red"
+            android:textSize="16sp"
+            android:textStyle="bold" >
+           </TextView>
 
-	</TextView>
+        <TextView
+            android:id="@+id/time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:gravity="end|center_vertical"
+            android:minHeight="68dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:text="@string/notime"
+            android:textColor="@color/text3"
+            android:textSize="16sp"
+            android:textStyle="bold" >
+
+        </TextView>
+
+        <View
+            android:id="@+id/view1"
+            android:layout_width="0.1dp"
+            android:layout_height="fill_parent"
+            android:background="@color/border" />
+
+        <TextView
+            android:id="@+id/points"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:gravity="end|center_vertical"
+            android:minHeight="68dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="10dp"
+            android:paddingTop="4dp"
+            android:text="@string/empty"
+            android:textColor="@color/text3"
+            android:textSize="16sp"
+            android:textStyle="bold" >
+
+        </TextView>
 
 
-</LinearLayout>
+    </LinearLayout>
     
 </LinearLayout>

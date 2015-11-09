@@ -27,65 +27,91 @@
         android:layout_weight="0"
         android:gravity="bottom" >
 
-        <Button
-            android:id="@+id/button_add"
+        <LinearLayout
+            android:id="@+id/button_add_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="left"
             android:layout_alignParentLeft="true"
-            android:paddingLeft="12dp"
-	        android:paddingRight="12dp"
-	        android:paddingBottom="4dp"
-	        android:text="@string/button_add"
-	        android:textSize="32sp"
-	        android:textStyle="bold"
-	        android:textColor="@color/text2"
-	        android:background="@drawable/round_button"
-	        android:contentDescription="@string/button_add" />
-
-        <Button
-            android:id="@+id/button_scramble"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/button_add"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="left"
+                android:background="@drawable/add"
+                android:contentDescription="@string/button_add" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/text2"
+                android:text="Add Pilot"
+                android:gravity="center"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/button_scramble_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button_add"
+            android:layout_toRightOf="@+id/button_add_wrapper"
             android:layout_marginLeft="12dp"
-            android:paddingLeft="12dp"
-	        android:paddingRight="12dp"
-	        android:paddingBottom="4dp"
-	        android:text="@string/button_scramble"
-	        android:textSize="32sp"
-	        android:textStyle="bold"
-	        android:textColor="@color/text2"
-	        android:background="@drawable/round_button"
-	        android:contentDescription="@string/button_scramble" />
-
-        <Button
-            android:id="@+id/button_manual"
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/button_scramble"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/random"
+                android:contentDescription="@string/button_scramble" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/text2"
+                android:text="Random Shuffle"
+                android:gravity="center"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/button_manual_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button_scramble"
+            android:layout_toRightOf="@+id/button_scramble_wrapper"
             android:layout_marginLeft="12dp"
-            android:paddingLeft="8dp"
-	        android:paddingRight="8dp"
-	        android:paddingBottom="4dp"
-	        android:text="@string/button_manual"
-	        android:textSize="32sp"
-	        android:textStyle="bold"
-	        android:textColor="@color/text2"
-	        android:background="@drawable/round_button"
-	        android:contentDescription="@string/button_manual" />
+            android:orientation="vertical">
+            <Button
+                android:id="@+id/button_manual"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/manual"
+                android:contentDescription="@string/button_manual" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/text2"
+                android:text="Manual Shuffle"
+                android:gravity="center"
+                />
+        </LinearLayout>
         <Button
             android:id="@+id/button_next"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_alignParentBottom="false"
             android:layout_alignParentRight="true"
             android:layout_centerInParent="false"
             android:layout_gravity="right"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:textColor="@color/text2"
             android:gravity="center_vertical|center_horizontal"
-            android:text="@string/button_next" />
+            android:background="@drawable/round_button"
+            android:text="@string/button_save" />
 
 
     </RelativeLayout>

@@ -26,6 +26,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.dialog.AboutActivity;
+import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
+import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 public class ResultsRoundInProgressActivity extends ListActivity {
 	
@@ -106,12 +110,24 @@ public class ResultsRoundInProgressActivity extends ListActivity {
         for (int i=0; i<mGroupScoring+1; i++)
             ftg[i]= 9999;
 
-        boolean first = true;
-        int group_size = (int)Math.floor(allPilots.size()/mGroupScoring);
+		// Find actual number of pilots
+		int num_pilots = 0;
+		for (int i=0;i<allPilots.size();i++){
+			Pilot p = allPilots.get(i);
+			if (p.pilot_id>0) {
+				num_pilots++;
+			}
+		}
+
+		int group_size = (int)Math.floor(num_pilots/mGroupScoring);
         int remainder = allPilots.size() - (mGroupScoring * group_size);
 
-        // Find ftr
-        for (int i=0;i<allPilots.size();i++){
+		boolean first = true;
+
+		// Find ftr
+		int c=0, i = 0;
+        for (int j=0;j<allPilots.size();j++){
+			i = mArrPilots.size();
             if (g<remainder){
                 if (i>= (group_size+1)*(g+1)) {
                     g++;
@@ -123,25 +139,28 @@ public class ResultsRoundInProgressActivity extends ListActivity {
                     first = true;
                 }
             }
-            Pilot p = allPilots.get(i);
-			mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
-            mArrNumbers.add(String.format("%d.", i+1));
-            mArrGroups.add(g);
-            mFirstInGroup.add(first);
-			mArrPilots.add(p);
-			first = false;
+            Pilot p = allPilots.get(j);
+			if (p.pilot_id>0) {
+				mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
+				mArrNumbers.add(String.format("%d", c + 1));
+				mArrGroups.add(g);
+				mFirstInGroup.add(first);
+				mArrPilots.add(p);
+				first = false;
 
-			String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
-			float time = Float.parseFloat(t_str);
+				String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
+				float time = Float.parseFloat(t_str);
 
-            ftg[g] = (time>0) ? Math.min(ftg[g], time) : ftg[g];
+				ftg[g] = (time > 0) ? Math.min(ftg[g], time) : ftg[g];
+			}
+			c++;
 		}
 		
 		// Set points for each pilot
         g=0;
 
         // Set points for each pilot
-        for (int i=0;i<allPilots.size();i++){
+        for (i=0;i<allPilots.size();i++){
             if (g<remainder){
                 if (i>= (group_size+1)*(g+1)) {
                     g++;
@@ -254,18 +273,50 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
-	    	case R.id.menu_share:
-	    		share();
-	    		return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
+			case R.id.menu_share:
+				share();
+				return true;
+			case R.id.menu_pilot_manager:
+				pilotManager();
+				return true;
+			case R.id.menu_race_manager:
+				raceManager();
+				return true;
+			case R.id.menu_help:
+				help();
+				return true;
+			case R.id.menu_about:
+				about();
+				return true;
+
+
+			default:
+				return super.onOptionsItemSelected(item);
 	    }
 	}
-			
+
 	public void share(){
-		/*Intent intent = new Intent(mContext, SettingsActivity.class);
-    	startActivityForResult(intent, 1);
-    	*/
+
+	}
+
+	public void pilotManager(){
+		Intent intent = new Intent(mContext,PilotsActivity.class);
+		startActivity(intent);
+	}
+
+	public void raceManager(){
+		Intent intent = new Intent(mContext, RaceListActivity.class);
+		startActivity(intent);
+	}
+
+	public void help(){
+		Intent intent = new Intent(mContext, HelpActivity.class);
+		startActivity(intent);
+	}
+
+	public void about(){
+		Intent intent = new Intent(mContext, AboutActivity.class);
+		startActivity(intent);
 	}
 
 }

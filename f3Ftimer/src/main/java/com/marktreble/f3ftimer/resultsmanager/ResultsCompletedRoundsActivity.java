@@ -2,6 +2,7 @@ package com.marktreble.f3ftimer.resultsmanager;
 
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.app.ListActivity;
 import android.content.Intent;
@@ -17,6 +18,10 @@ import android.widget.TextView;
 
 import com.marktreble.f3ftimer.data.race.*;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.dialog.AboutActivity;
+import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
+import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 public class ResultsCompletedRoundsActivity extends ListActivity {
 
@@ -26,6 +31,8 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 
 	static final boolean DEBUG = true;
 
+	private Context mContext;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -34,7 +41,9 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 		Resources r = getResources();
 		int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
 		view.setPadding(0, 0, px, 0);
-		
+
+		mContext = this;
+
 		setContentView(R.layout.race);
 	    
 		Intent intent = getIntent();
@@ -91,17 +100,49 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
-	    	case R.id.menu_share:
-	    		share();
-	    		return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
+			case R.id.menu_share:
+				share();
+				return true;
+			case R.id.menu_pilot_manager:
+				pilotManager();
+				return true;
+			case R.id.menu_race_manager:
+				raceManager();
+				return true;
+			case R.id.menu_help:
+				help();
+				return true;
+			case R.id.menu_about:
+				about();
+				return true;
+
+
+			default:
+				return super.onOptionsItemSelected(item);
 	    }
 	}
-			
+
 	public void share(){
-		/*Intent intent = new Intent(mContext, SettingsActivity.class);
-    	startActivityForResult(intent, 1);
-    	*/
+
+	}
+
+	public void pilotManager(){
+		Intent intent = new Intent(mContext,PilotsActivity.class);
+		startActivity(intent);
+	}
+
+	public void raceManager(){
+		Intent intent = new Intent(mContext, RaceListActivity.class);
+		startActivity(intent);
+	}
+
+	public void help(){
+		Intent intent = new Intent(mContext, HelpActivity.class);
+		startActivity(intent);
+	}
+
+	public void about(){
+		Intent intent = new Intent(mContext, AboutActivity.class);
+		startActivity(intent);
 	}
 }

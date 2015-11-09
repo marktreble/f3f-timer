@@ -48,9 +48,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager.LayoutParams;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -219,7 +221,7 @@ public class RaceActivity extends ListActivity {
 	
 	public void stopServers(){
 		// Stop all Servers
-		Log.i("STOP SERVICE","RESULTS");
+		Log.i("STOP SERVICE", "RESULTS");
 
         if (RaceResultsService.stop(this)){
     		if (Wifi.canEnableWifiHotspot(this)){
@@ -370,8 +372,9 @@ public class RaceActivity extends ListActivity {
 			}
 			if (requestCode == RaceActivity.DLG_TIMER){
 				// Response from completed run
-
+                Log.d("ONACTIVITYRESULT", "RET FROM DLG TIMER");
 				if (mNextPilot != null){
+                    Log.d("ONACTIVITYRESULT", "SCROLL");
 					// Bring up next pilot's dialog
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -380,7 +383,9 @@ public class RaceActivity extends ListActivity {
                         }
                     }, 100);
 
+                    Log.d("ONACTIVITYRESULT", "NEXT PILOT");
                     if (!mFirstInGroup.get(mNextPilot.position)) {
+                        Log.d("ONACTIVITYRESULT", "PILOT: "+mNextPilot.position+" in 600ms");
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -611,7 +616,6 @@ public class RaceActivity extends ListActivity {
 	 */
 	
 	private void getNamesArray(){
-        Log.i("RACEACTIVITY", "GET NAMESARRAY");
 
 		RacePilotData datasource = new RacePilotData(this);
 		datasource.open();
@@ -619,10 +623,8 @@ public class RaceActivity extends ListActivity {
         for (int r=mRnd;r<mRnd+mRace.rounds_per_flight; r++)
            allPilots.add(datasource.getAllPilotsForRace(mRid, r, mRace.offset));
 
-
+        // Initialise Arrays if needed
         if (mArrNames == null) {
-            Log.i("RACEACTIVITY", "INITIALISE NAMESARRAY");
-
             mArrNames = new ArrayList<>();
             mArrNumbers = new ArrayList<>();
             mArrPilots = new ArrayList<>();
@@ -631,6 +633,7 @@ public class RaceActivity extends ListActivity {
             mFirstInGroup = new ArrayList<>();
         }
 
+        // Calculate correct sz and increase if needed
         int sz = allPilots.get(0).size() * mRace.rounds_per_flight;
         
         while(mArrNames.size() < sz) mArrNames.add("");
@@ -643,9 +646,13 @@ public class RaceActivity extends ListActivity {
 		mRoundComplete = true;
 		mRoundNotStarted = true;
 		mNextPilot = null;
-		
-		
-		// Find ftr
+        // No. of bib numbers skipped
+        // (used to close up the gaps in the list, and pop the unused ends off the arrays at the end)
+        int skipped = 0;
+
+
+        // Loop through rounds per_flight
+        // Calculations are done round by round when multiple rounds are flown per flight.
         for (int r=0;r<mRace.rounds_per_flight; r++) {
             int c = 0; // Flying order number
 
@@ -655,29 +662,40 @@ public class RaceActivity extends ListActivity {
             for (int i=0; i<mGroupScoring+1; i++)
                 ftg[i]= 9999;
 
-            boolean first = true;
+            // First to fly
+            // (only when r = 0!)
+            boolean first = (r==0);
             int group_size = (int)Math.floor(sz/mGroupScoring);
             int remainder = sz - (mGroupScoring * group_size);
+
+            skipped = 0;
 
             for (Pilot p : allPilots.get(r)) {
                 if (g<remainder){
                     if (c>= (group_size+1)*(g+1)) {
                         g++;
-                        first = true;
+                        first = (r==0);
                     }
                 } else {
                     if (c>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
                         g++;
-                        first = true;
+                        first = (r==0);
                     }
                 }
 
-                Log.d("GROUPSDEBUG", "SZ:" + Integer.toString(group_size) + " G:" + Integer.toString(g) + " REM:" + Integer.toString(remainder));
-                int position = (c * mRace.rounds_per_flight) + r;
+                // Calculate the position in the array
+                int position = (c * mRace.rounds_per_flight) + r - skipped;
 
-                Log.d("GET NAMES ARRAY", String.format("%s %s", p.firstname, p.lastname));
+                // Set the pilot's name
                 mArrNames.set(position, String.format("%s %s", p.firstname, p.lastname));
-                mArrNumbers.set(position, String.format("%d.", c + 1));
+
+                // c+1 id the bib number
+                if (r == 0){
+                    mArrNumbers.set(position, String.format("%d", c + 1));
+                } else {
+                    // Only show the bib number for the first entry in multiple rounds per flight mode
+                    mArrNumbers.set(position, "");
+                }
                 mArrPilots.set(position, p);
                 mArrRounds.set(position, mRnd + r);
                 mArrGroups.set(position, g);
@@ -685,28 +703,33 @@ public class RaceActivity extends ListActivity {
                 c++;
                 first = false;
 
-
-                if (p.time == 0 && (((p.status & Pilot.STATUS_RETIRED) == 0) && (!p.flown))) {
-                    // Unset round complete flag
-                    // Somebody who isn't retired hasn't flown
-                    mRoundComplete = false;
+                if (p.pilot_id == 0){
+                    // Skipped bib number
+                    skipped += mRace.rounds_per_flight;
                 } else {
-                    // Unset round not started flag
-                    // Somebody has flown
-                    mRoundNotStarted = false;
+                    if (p.time == 0 && (((p.status & Pilot.STATUS_RETIRED) == 0) && (!p.flown))) {
+                        // Unset round complete flag
+                        // Somebody who isn't retired hasn't flown
+                        mRoundComplete = false;
+                    } else {
+                        // Unset round not started flag
+                        // Somebody has flown
+                        mRoundNotStarted = false;
+                    }
+
+                    // Get the next pilot in the running order
+                    if (p.time == 0 && !p.flown &&
+                            (((p.status & Pilot.STATUS_NORMAL) == Pilot.STATUS_NORMAL) || ((p.status & Pilot.STATUS_REFLIGHT) == Pilot.STATUS_REFLIGHT))
+                            && (mNextPilot == null || mNextPilot.position > position)) {
+                        mNextPilot = p;
+                        mNextPilot.position = position;
+                        // Log the round number against the next pilot, so that the data is available to the external "start_pressed" message
+                        mNextPilot.round = mRnd + r;
+                    }
+
+                    ftg[g] = (p.time > 0) ? Math.min(ftg[g], p.time) : ftg[g];
                 }
 
-                // Get the next pilot in the running order
-                if (p.time == 0 && !p.flown &&
-                        (((p.status & Pilot.STATUS_NORMAL) == Pilot.STATUS_NORMAL) || ((p.status & Pilot.STATUS_REFLIGHT) == Pilot.STATUS_REFLIGHT))
-                        && (mNextPilot == null || mNextPilot.position>position)) {
-                    mNextPilot = p;
-                    mNextPilot.position = position;
-                    // Log the round number against the next pilot, so that the data is avaailable to the external "start_pressed" message
-                    mNextPilot.round = mRnd+r;
-                }
-
-                ftg[g] = (p.time > 0) ? Math.min(ftg[g], p.time) : ftg[g];
             }
 
             // Set points for each pilot
@@ -724,12 +747,22 @@ public class RaceActivity extends ListActivity {
                     p.points = 0;
             }
         }
+
+        // Remove skipped values from the end of all the arrays
+        for (int i=0; i<skipped; i++){
+            int index = mArrNames.size() - 1;
+            mArrNames.remove(index);
+            mArrNumbers.remove(index);
+            mArrPilots.remove(index);
+            mArrRounds.remove(index);
+            mArrGroups.remove(index);
+            mFirstInGroup.remove(index);
+        }
         
 		datasource.close();
 	}
 	
-	private void setList(){
-        Log.i("RACEACTIVITY", "SET LIST");
+	private void setList() {
 
 	    mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_racepilots , R.id.text1, mArrNames){
    	   		@Override
@@ -746,10 +779,14 @@ public class RaceActivity extends ListActivity {
                 
                 Pilot p = mArrPilots.get(position);
 
-                Log.i("STATUS", Integer.toString(p.status)+":"+Boolean.toString(p.flown)+":" + mArrNames.get(position)+":"+Integer.toString(p.pilot_id));
-                
                 TextView p_number = (TextView) row.findViewById(R.id.number);
-                p_number.setText(mArrNumbers.get(position));
+                String bib_no = mArrNumbers.get(position);
+                if (!bib_no.equals("")) {
+                    p_number.setVisibility(View.VISIBLE);
+                    p_number.setText(bib_no);
+                } else {
+                    p_number.setVisibility(View.INVISIBLE);
+                }
 
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
@@ -911,8 +948,14 @@ public class RaceActivity extends ListActivity {
     }
 
 	private void showNextPilot(){
-        int round = mArrRounds.get(mNextPilot.position);
-		mPilotDialogShown = showPilotDialog(round, mNextPilot.id);
+        Log.d("SHOW NEXT PILOT", "DIALOG");
+        if (mNextPilot.position != null) {
+            Log.d("SHOW NEXT PILOT", "POSITON: "+mNextPilot.position);
+            int round = mArrRounds.get(mNextPilot.position);
+            mPilotDialogShown = showPilotDialog(round, mNextPilot.id);
+        } else {
+            showNextRound();
+        }
 	}
 	
 	private void showNextRound(){

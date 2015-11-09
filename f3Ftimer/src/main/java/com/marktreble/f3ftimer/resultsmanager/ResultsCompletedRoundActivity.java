@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.dialog.AboutActivity;
+import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
+import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 public class ResultsCompletedRoundActivity extends ListActivity {
 	
@@ -38,6 +43,8 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 	private ArrayList<String> mArrNames;
     private ArrayList<String> mArrNumbers;
     private ArrayList<Pilot> mArrPilots;
+	private ArrayList<Integer> mArrGroups;
+	private ArrayList<Boolean> mFirstInGroup;
 	
 	private Integer mRid;
 	private Race mRace;
@@ -99,6 +106,8 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 		mArrNames = new ArrayList<>();
 		mArrPilots = new ArrayList<>();
         mArrNumbers = new ArrayList<>();
+		mArrGroups = new ArrayList<>();
+		mFirstInGroup = new ArrayList<>();
 
         int g = 0; // Current group we are calculating
 
@@ -108,33 +117,55 @@ public class ResultsCompletedRoundActivity extends ListActivity {
         for (int i=0; i<mGroupScoring+1; i++)
             ftg[i]= 9999;
 
-        int group_size = (int)Math.floor(allPilots.size()/mGroupScoring);
-        int remainder = allPilots.size() - (mGroupScoring * group_size);
-		
-		// Find ftr
+		// Find actual number of pilots
+		int num_pilots = 0;
 		for (int i=0;i<allPilots.size();i++){
+			Pilot p = allPilots.get(i);
+			if (p.pilot_id>0) {
+				num_pilots++;
+			}
+		}
+
+        int group_size = (int)Math.floor(num_pilots/mGroupScoring);
+        int remainder = allPilots.size() - (mGroupScoring * group_size);
+
+		boolean first = true;
+
+		// Find ftg
+		int c = 0, i = 0;
+		for (int j=0;j<allPilots.size();j++){
+			i = mArrPilots.size();
             if (g<remainder){
                 if (i>= (group_size+1)*(g+1)) {
                     g++;
+					first = true;
                 }
             } else {
                 if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
                     g++;
+					first = true;
                 }
             }
-            Pilot p = allPilots.get(i);
-			mArrPilots.add(p);
-			
-			String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
-			float time = Float.parseFloat(t_str);
+            Pilot p = allPilots.get(j);
+			if (p.pilot_id>0) {
+				mArrPilots.add(p);
+				p.position = c+1;
+				mArrGroups.add(g);
+				mFirstInGroup.add(first);
+				first = false;
 
-			ftg[g] = (time>0) ? Math.min(ftg[g], time) : ftg[g];
+				String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
+				float time = Float.parseFloat(t_str);
+
+				ftg[g] = (time > 0) ? Math.min(ftg[g], time) : ftg[g];
+			}
+			c++;
 		}
 
         g=0;
 
 		// Set points for each pilot
-        for (int i=0;i<allPilots.size();i++){
+        for (i=0;i<num_pilots;i++){
             if (g<remainder){
                 if (i>= (group_size+1)*(g+1)) {
                     g++;
@@ -144,12 +175,11 @@ public class ResultsCompletedRoundActivity extends ListActivity {
                     g++;
                 }
             }
-            Pilot p = allPilots.get(i);
-
+            Pilot p = mArrPilots.get(i);
 
 			String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
 			float time = Float.parseFloat(t_str);
-			
+
 			if (time>0)
 				p.points = round2Fixed((ftg[g]/time) * 1000, 2);
 			
@@ -160,7 +190,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 			
 			if (time==0 && p.status==Pilot.STATUS_RETIRED) // Avoid division by 0
 				p.points = 0f;
-			
+
 		}
 		
 		Collections.sort(mArrPilots, new Comparator<Pilot>() {
@@ -170,19 +200,22 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 			}
 		});
 		
-		int c = 1,pos=1;
+		int pos=1;
+		c=1;
         float previousscore = 1000.0f;
 		for (Pilot p : mArrPilots){
 			mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
+			mArrNumbers.add(String.format("%d", p.position));
 
-            // Check for tied scores - use the same position qualifier
-            if (p.points < previousscore)
-                pos=c;
-            previousscore = p.points;
-            c++;
-            mArrNumbers.add(String.format("%d.", pos));
+			// Check for tied scores - use the same position qualifier
+			if (p.points < previousscore)
+				pos = c;
+			previousscore = p.points;
+			p.position = pos;
+			Log.d("MARRNAMES", p.firstname+":"+p.position);
+			c++;
 		}
-		
+
 		datasource2.close();
         datasource.close();
 	}
@@ -268,18 +301,50 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
-	    	case R.id.menu_share:
-	    		share();
-	    		return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
+			case R.id.menu_share:
+				share();
+				return true;
+			case R.id.menu_pilot_manager:
+				pilotManager();
+				return true;
+			case R.id.menu_race_manager:
+				raceManager();
+				return true;
+			case R.id.menu_help:
+				help();
+				return true;
+			case R.id.menu_about:
+				about();
+				return true;
+
+
+			default:
+				return super.onOptionsItemSelected(item);
 	    }
 	}
-			
+
 	public void share(){
-		/*Intent intent = new Intent(mContext, SettingsActivity.class);
-    	startActivityForResult(intent, 1);
-    	*/
+
+	}
+
+	public void pilotManager(){
+		Intent intent = new Intent(mContext,PilotsActivity.class);
+		startActivity(intent);
+	}
+
+	public void raceManager(){
+		Intent intent = new Intent(mContext, RaceListActivity.class);
+		startActivity(intent);
+	}
+
+	public void help(){
+		Intent intent = new Intent(mContext, HelpActivity.class);
+		startActivity(intent);
+	}
+
+	public void about(){
+		Intent intent = new Intent(mContext, AboutActivity.class);
+		startActivity(intent);
 	}
 
 }
