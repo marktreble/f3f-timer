@@ -106,7 +106,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 
 		RacePilotData datasource2 = new RacePilotData(ResultsLeaderBoardActivity.this);
   		datasource2.open();
-  		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0);
+  		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0, 0);
 		ArrayList<String> p_names = new ArrayList<>();
 		ArrayList<String> p_bib_numbers = new ArrayList<>();
   		ArrayList<String> p_nationalities = new ArrayList<>();
@@ -143,7 +143,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
   			if (race.round>1){
 	  			// Loop through each round to find the winner, then populate the scores
 				for (int rnd=0; rnd<race.round-1; rnd++){
-					ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0);
+					ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0, 0);
 
                     mGroupScoring = datasource.getGroups(mRid, rnd+1);
 

@@ -50,6 +50,7 @@
     <string name="off_course">Aus Kurs</string>
     <string name="on_course">Im Kurs</string>
     <string name="working_time">Start-Zeitfenster</string>
+    <string name="and_last">und Finale</string>
     <string name="next_round">Nächste Runde</string>
     <string name="wind_warning">Wind ungültig</string>
     <string name="penalty">P</string>
@@ -67,6 +68,7 @@
     <string name="menu_add_pilot">Neuer Pilot</string>
     <string name="menu_group_score">Gruppenscore</string>
     <string name="menu_change_flying_order">Flugreihenfolge ändern</string>
+    <string name="menu_change_start_number">Ändern Start Nummer</string>
     <string name="menu_help">Hilfe</string>
     <string name="menu_about">Über</string>
     <string name="menu_share">Share</string>
@@ -79,6 +81,7 @@
     <string name="pref_acra_enabled">Aktiviert</string>
     <string name="pref_acra_disabled">Deaktiviert</string>
     <string name="enter_num_groups">Anzahl der Gruppen</string>
+    <string name="enter_start_number">Enter Start Number</string>
 
     <string name="en">Englisch</string>
     <string name="fr">Französisch</string>

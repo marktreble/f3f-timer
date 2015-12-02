@@ -142,7 +142,11 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
 	public void next(){
 		mHandler.removeCallbacks(updateClock);
     	RaceTimerActivity a = (RaceTimerActivity)getActivity();
-   		a.getFragment(new RaceTimerFrag4(),4);
+   		a.getFragment(new RaceTimerFrag4(), 4);
+	}
+
+	public void startPressed(){
+		// Ignore
 	}
 	
  }

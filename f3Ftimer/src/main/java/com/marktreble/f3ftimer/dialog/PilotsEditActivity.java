@@ -145,7 +145,12 @@ public class PilotsEditActivity extends Activity {
             @Override
             public CharSequence getItem(int position){
                 String code = (String)super.getItem(position);
-                CharSequence label = getResources().getString(getResources().getIdentifier(code, "string", getPackageName()));
+				CharSequence label = "";
+				try {
+					label = getResources().getString(getResources().getIdentifier(code, "string", getPackageName()));
+				} catch (NotFoundException ex){
+					Log.d("CODE", "Language code not found is resources: "+code);
+				}
                 return label;
             }
         };

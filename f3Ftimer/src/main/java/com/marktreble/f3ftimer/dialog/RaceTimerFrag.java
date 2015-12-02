@@ -25,6 +25,9 @@ public class RaceTimerFrag extends Fragment {
 		    int padding = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
 		    pilot_name.setCompoundDrawablePadding(padding);
 		}
+
+		TextView pilot_number = (TextView) mView.findViewById(R.id.number);
+		pilot_number.setText(a.mNumber);
 	}
 
 	public void setWindWarning(boolean on){

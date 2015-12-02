@@ -18,6 +18,7 @@ public class Race {
 	public Integer status = STATUS_PENDING;
     public Integer round = 1;
     public Integer rounds_per_flight = 1;
+	public Integer start_number = 0;
 
 	public final static String translateStatus(int status){
 		String result = "";
@@ -36,7 +37,7 @@ public class Race {
 	}
     
     public String toString(){
-        return String.format("{\"name\":\"%s\",\"type\":\"%d\",\"offset\":\"%d\",\"status\":\"%d\",\"round\":\"%d\",\"rounds_per_flight\":\"%d\"}", name, type, offset, status, round, rounds_per_flight);
+        return String.format("{\"name\":\"%s\",\"type\":\"%d\",\"offset\":\"%d\",\"status\":\"%d\",\"round\":\"%d\",\"rounds_per_flight\":\"%d\",\"start_number\":\"%d\"}", name, type, offset, status, round, rounds_per_flight, start_number);
     }
     
     public Race(){
@@ -51,7 +52,10 @@ public class Race {
         round = Integer.parseInt(o.optString("round"));
         String rpf = o.optString("rounds_per_flight");
         if (rpf.equals("")) rpf = "1";
-        rounds_per_flight = Integer.parseInt(rpf);
-        
+		rounds_per_flight = Integer.parseInt(rpf);
+		String sn = o.optString("start_number");
+		if (sn.equals("")) sn = "0";
+		start_number = Integer.parseInt(sn);
+
     }
 }

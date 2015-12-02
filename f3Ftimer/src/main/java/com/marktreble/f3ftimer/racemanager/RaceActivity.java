@@ -71,6 +71,7 @@ public class RaceActivity extends ListActivity {
     static int DLG_PILOT_EDIT = 5;
     static int DLG_FLYING_ORDER_EDIT = 6;
     static int DLG_GROUP_SCORE_EDIT = 7;
+    static int DLG_START_NUMBER_EDIT = 8;
 
 	private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
@@ -336,7 +337,8 @@ public class RaceActivity extends ListActivity {
         Pilot p = mArrPilots.get(position);
         int round = mArrRounds.get(position);
         if (p.time==0 && !p.flown && p.status!=Pilot.STATUS_RETIRED){
-        	 mPilotDialogShown = showPilotDialog(round, p.id);
+            String bib_no = mArrNumbers.get(position);
+        	 mPilotDialogShown = showPilotDialog(round, p.id, bib_no);
         }
 	}
 	
@@ -461,6 +463,25 @@ public class RaceActivity extends ListActivity {
                 RaceData datasource = new RaceData(RaceActivity.this);
                 datasource.open();
                 datasource.setGroups(mRid, mRnd, num);
+                datasource.close();
+                setRound();
+            }
+
+            if (requestCode== RaceActivity.DLG_START_NUMBER_EDIT){
+                String start_number = data.getStringExtra("start_number");
+
+                int num;
+                try {
+                    num = Math.max(0, Integer.parseInt(start_number) - 1);
+                } catch (NumberFormatException e){
+                    num = 0;
+                }
+
+                Log.i("FLYING ORDER", "CHANGED START NUMBER TO " + start_number);
+                RaceData datasource = new RaceData(RaceActivity.this);
+                datasource.open();
+                datasource.setStartNumber(mRid, num);
+                mRace = datasource.getRace(mRid); // Update the ram model
                 datasource.close();
                 setRound();
             }
@@ -621,7 +642,7 @@ public class RaceActivity extends ListActivity {
 		datasource.open();
 		ArrayList<ArrayList<Pilot>> allPilots = new ArrayList<>();
         for (int r=mRnd;r<mRnd+mRace.rounds_per_flight; r++)
-           allPilots.add(datasource.getAllPilotsForRace(mRid, r, mRace.offset));
+           allPilots.add(datasource.getAllPilotsForRace(mRid, r, mRace.offset, mRace.start_number));
 
         // Initialise Arrays if needed
         if (mArrNames == null) {
@@ -650,6 +671,15 @@ public class RaceActivity extends ListActivity {
         // (used to close up the gaps in the list, and pop the unused ends off the arrays at the end)
         int skipped = 0;
 
+        // Get the start number
+        int start = 0;
+        int numPilots = allPilots.get(0).size();
+        if (mRace.start_number>0){
+            start = mRace.start_number;
+        } else {
+            if (numPilots > 0)
+                start = ((mRace.round - 1) * mRace.offset) % numPilots;
+        }
 
         // Loop through rounds per_flight
         // Calculations are done round by round when multiple rounds are flown per flight.
@@ -689,9 +719,10 @@ public class RaceActivity extends ListActivity {
                 // Set the pilot's name
                 mArrNames.set(position, String.format("%s %s", p.firstname, p.lastname));
 
-                // c+1 id the bib number
+                // (c+start+1)%numPilots is the bib number
+                int bib_number = ((c + start) % numPilots)+1;
                 if (r == 0){
-                    mArrNumbers.set(position, String.format("%d", c + 1));
+                    mArrNumbers.set(position, String.format("%d", bib_number));
                 } else {
                     // Only show the bib number for the first entry in multiple rounds per flight mode
                     mArrNumbers.set(position, "");
@@ -723,6 +754,7 @@ public class RaceActivity extends ListActivity {
                             && (mNextPilot == null || mNextPilot.position > position)) {
                         mNextPilot = p;
                         mNextPilot.position = position;
+                        mNextPilot.number = mArrNumbers.get(position);
                         // Log the round number against the next pilot, so that the data is available to the external "start_pressed" message
                         mNextPilot.round = mRnd + r;
                     }
@@ -936,12 +968,13 @@ public class RaceActivity extends ListActivity {
 
     }
 
-    private boolean showPilotDialog(int round, int pilot_id){
+    private boolean showPilotDialog(int round, int pilot_id, String bib_no){
         if (mPilotDialogShown) return true;
         Intent intent = new Intent(this, RaceTimerActivity.class);
         intent.putExtra("pilot_id", pilot_id);
         intent.putExtra("race_id", mRid);
         intent.putExtra("round", round);
+        intent.putExtra("bib_no", bib_no);
         startActivityForResult(intent,DLG_TIMER);
 
         return true;
@@ -950,9 +983,9 @@ public class RaceActivity extends ListActivity {
 	private void showNextPilot(){
         Log.d("SHOW NEXT PILOT", "DIALOG");
         if (mNextPilot.position != null) {
-            Log.d("SHOW NEXT PILOT", "POSITON: "+mNextPilot.position);
+            Log.d("SHOW NEXT PILOT", "POSITON: " + mNextPilot.position);
             int round = mArrRounds.get(mNextPilot.position);
-            mPilotDialogShown = showPilotDialog(round, mNextPilot.id);
+            mPilotDialogShown = showPilotDialog(round, mNextPilot.id, mNextPilot.number);
         } else {
             showNextRound();
         }
@@ -1024,7 +1057,9 @@ public class RaceActivity extends ListActivity {
 							intent2.putExtra("pilot_id", mNextPilot.id);
                             intent2.putExtra("race_id", mRid);
                             intent2.putExtra("round", mNextPilot.round);
+                            intent2.putExtra("bib_no", mNextPilot.number);
 							startActivityForResult(intent2, DLG_TIMER);
+                            mPilotDialogShown = true;
 						}
 					}
 				}
@@ -1067,13 +1102,17 @@ public class RaceActivity extends ListActivity {
         getNamesArray(); // just to ensure that the bools below are up to date!
         
         // Round Complete (Only enable when the round is actually complete)
-	    menu.getItem(0).setEnabled(mRoundComplete); 
-        
+	    menu.getItem(0).setEnabled(mRoundComplete);
+
         // Change Flying Order (Only enable before the round is started)
-	    menu.getItem(1).setEnabled(mRoundNotStarted); 
-        
+        menu.getItem(1).setEnabled(mRoundNotStarted);
+
+        // Change Start Number (Only enable before the round is started)
+        menu.getItem(2).setEnabled(mRoundNotStarted);
+
+
         // Group scoring (disable when multiple flights are being used)
-        menu.getItem(2).setEnabled(mRace.rounds_per_flight<2);
+        menu.getItem(3).setEnabled(mRace.rounds_per_flight < 2);
         
 	    return super.onPrepareOptionsMenu(menu);
 
@@ -1089,7 +1128,10 @@ public class RaceActivity extends ListActivity {
 	    	case R.id.menu_change_flying_order:
 	    		changeFlyingOrder();
 	    		return true;
-	    	case R.id.menu_group_score:
+            case R.id.menu_change_start_number:
+                changeStartNumber();
+                return true;
+            case R.id.menu_group_score:
 	    		groupScore();
 	    		return true;
 	        case R.id.menu_add_pilots:
@@ -1149,6 +1191,12 @@ public class RaceActivity extends ListActivity {
         intent.putExtra("race_id", mRid);
     	startActivityForResult(intent, DLG_FLYING_ORDER_EDIT);
 	}
+
+    public void changeStartNumber(){
+        Intent intent = new Intent(mContext, StartNumberEditActivity.class);
+        intent.putExtra("race_id", mRid);
+        startActivityForResult(intent, DLG_START_NUMBER_EDIT);
+    }
 
 	public void groupScore(){
 		Intent intent = new Intent(mContext, GroupScoreEditActivity.class);

@@ -50,6 +50,7 @@
     <string name="off_course">Fuera de pilones</string>
     <string name="on_course">Entre pilones</string>
     <string name="working_time">Tiempo de trabajo</string>
+    <string name="and_last">y última</string>
     <string name="next_round">Siguiente Manga</string>
     <string name="wind_warning">Wind Illegal</string>
     <string name="penalty">P</string>
@@ -67,6 +68,7 @@
     <string name="menu_add_pilot">Nuevo Piloto</string>
     <string name="menu_group_score">Group Score</string>
     <string name="menu_change_flying_order">Cambiar orden de vuelo</string>
+    <string name="menu_change_start_number">Cambio número de inicio</string>
     <string name="menu_help">Ayuda</string>
     <string name="menu_about">About</string>
     <string name="menu_share">Compartir</string>
@@ -78,6 +80,7 @@
     <string name="pref_acra_enabled">Enabled</string>
     <string name="pref_acra_disabled">Disabled</string>
     <string name="enter_num_groups">Introducir numero de grupos</string>
+    <string name="enter_start_number">Enter Start Number</string>
     <string name="wifi">Wifi Buzzers</string>
 
     <string name="en">English</string>

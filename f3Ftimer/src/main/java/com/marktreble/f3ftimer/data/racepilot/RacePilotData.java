@@ -180,7 +180,7 @@ public class RacePilotData {
         }
     }
 
-    public ArrayList<Pilot> getAllPilotsForRace(int race_id, int round, int offset) {
+    public ArrayList<Pilot> getAllPilotsForRace(int race_id, int round, int offset, int start_number) {
 		ArrayList<Pilot> allPilots = new ArrayList<>();
 		String sql = "select *," +
 					 "(select time from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as time, " +
@@ -197,13 +197,18 @@ public class RacePilotData {
 			allPilots.add(p);
 			cursor.moveToNext();
 		}
-		// Shuffle according to offset and round
+		// Shuffle according to offset and round or start_plot (start_number takes priority!)
 		int numPilots = allPilots.size();
 		int start = 0;
-		if (numPilots>0)
-			start = ((round-1) * offset) % numPilots;
+		if (start_number>0){
+			start = start_number;
+		} else {
+			if (numPilots > 0)
+				start = ((round - 1) * offset) % numPilots;
+		}
 		
 		// move all pilots before start number to end
+		Log.d("RACEPILOTDATA", "STARTING FROM PILOT: "+start);
 		for (int i=0; i<start; i++){
 			allPilots.add(allPilots.get(0));
 			allPilots.remove(0);
@@ -242,7 +247,7 @@ public class RacePilotData {
 
     public String getPilotsSerialized(int id){
         String array = "[";
-        ArrayList<Pilot> pilots = getAllPilotsForRace(id, 0, 0);
+        ArrayList<Pilot> pilots = getAllPilotsForRace(id, 0, 0, 0);
         for(int i=0;i<pilots.size(); i++){
             if (i>0) array+=",";
             Pilot p = pilots.get(i);
@@ -259,7 +264,7 @@ public class RacePilotData {
         for (int i=0;i<round; i++){
             if (i>0) array+=",";
             array+="[";
-            ArrayList<Pilot> pilots = getAllPilotsForRace(id, i+1, 0);
+            ArrayList<Pilot> pilots = getAllPilotsForRace(id, i+1, 0, 0);
             for(int j=0;j<pilots.size(); j++) {
                 if (j > 0) array += ",";
                 Pilot p = pilots.get(j);

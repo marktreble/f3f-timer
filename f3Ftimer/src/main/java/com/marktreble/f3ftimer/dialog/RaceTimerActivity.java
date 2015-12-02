@@ -34,6 +34,7 @@ public class RaceTimerActivity extends FragmentActivity {
 	public Pilot mPilot;
 	public Race mRace;
     public int mRound;
+	public String mNumber;
 	public boolean mWindLegal;
 	private RaceTimerFrag mCurrentFragment;
 	private int mCurrentFragmentId;
@@ -58,8 +59,9 @@ public class RaceTimerActivity extends FragmentActivity {
 			Bundle extras = intent.getExtras();
 			pid = extras.getInt("pilot_id");
 			rid = extras.getInt("race_id");
-            mRound = extras.getInt("round");
-            
+			mRound = extras.getInt("round");
+			mNumber = extras.getString("bib_no");
+
 			RaceData datasource = new RaceData(this);
 	  		datasource.open();
 	  		mRace = datasource.getRace(rid);

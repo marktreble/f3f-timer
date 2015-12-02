@@ -42,6 +42,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 	private ArrayAdapter<String> mArrAdapter;
 	private ArrayList<String> mArrNames;
     private ArrayList<String> mArrNumbers;
+	private ArrayList<String> mArrBibNumbers;
     private ArrayList<Pilot> mArrPilots;
 	private ArrayList<Integer> mArrGroups;
 	private ArrayList<Boolean> mFirstInGroup;
@@ -101,7 +102,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 
   		RacePilotData datasource2 = new RacePilotData(this);
 		datasource2.open();
-		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, mRound, mRace.offset);
+		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, mRound, 0, 0);
 		
 		mArrNames = new ArrayList<>();
 		mArrPilots = new ArrayList<>();

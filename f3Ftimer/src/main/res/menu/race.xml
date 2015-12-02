@@ -7,7 +7,11 @@
     <item
         android:id="@+id/menu_change_flying_order"
         android:title="@string/menu_change_flying_order"/>
-    
+
+    <item
+        android:id="@+id/menu_change_start_number"
+        android:title="@string/menu_change_start_number"/>
+
     <item
         android:id="@+id/menu_group_score"
         android:title="@string/menu_group_score"/>

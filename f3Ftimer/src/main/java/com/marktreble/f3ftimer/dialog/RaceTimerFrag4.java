@@ -26,7 +26,8 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 	private Float mFinalTime = -1.0f;
 	
     private boolean mClickedOnce = false;
-    
+    private boolean mStartPressed = false;
+
 	public RaceTimerFrag4(){
 		
 	}
@@ -73,6 +74,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
             public void onClick(View v) {
                 if (mClickedOnce) return;
                 mClickedOnce = true;
+				mStartPressed = true;
                 reflight();
 
             }
@@ -84,6 +86,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 	        public void onClick(View v) {
                 if (mClickedOnce) return;
                 mClickedOnce = true;
+				mStartPressed = true;
 	        	next();
 	            
 	        }
@@ -225,6 +228,11 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         
     }
 	public void startPressed(){
-		next();
+		if (mFinalTime<0) return; // Ignore if the race is still in progress
+		mClickedOnce = true;
+		if (!mStartPressed) {
+			mStartPressed = true;
+			next();
+		}
 	}
  }

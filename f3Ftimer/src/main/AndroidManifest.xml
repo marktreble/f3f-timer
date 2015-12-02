@@ -205,6 +205,10 @@
         </activity>
 
         <activity
+            android:name="com.marktreble.f3ftimer.dialog.StartNumberEditActivity" android:theme="@style/Theme.Transparent">
+        </activity>
+
+        <activity
             android:name="com.marktreble.f3ftimer.bluetooth.BluetoothImport" android:theme="@style/Theme.Overlay">
         </activity>
 

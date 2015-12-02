@@ -23,6 +23,7 @@ package com.hoho.android.usbserial.driver;
 
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
+import android.util.Log;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -107,6 +108,8 @@ public class UsbSerialProber {
             }
             return driver;
         }
+        Log.d("UsbSerialProber", "Failed to find Driver for VendorId: " + vendorId + " productId: " + productId);
+
         return null;
     }
 

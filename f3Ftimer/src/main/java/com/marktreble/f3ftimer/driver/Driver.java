@@ -429,7 +429,8 @@ public class Driver implements TextToSpeech.OnInitListener {
 		if (mSoundFXon) mPlayer.start();
 		// Synthesized Call
 		if (mSpeechFXon && mLeg<10 && mLeg>0){
-            final String leg = Integer.toString(mLeg);
+            final String leg = Integer.toString(mLeg) + ((mLeg == 9)? " " + Languages.useLanguage(mContext, mPilotLang).getString(R.string.and_last):"");
+
             mHandler.postDelayed(new Runnable() {
                 public void run() {
                     

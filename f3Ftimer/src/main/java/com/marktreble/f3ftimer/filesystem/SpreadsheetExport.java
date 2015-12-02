@@ -36,14 +36,14 @@ public class SpreadsheetExport {
             if (file != null){
                 String data = "";
 
-                ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(race.id, 0, 0);
+                ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(race.id, 0, 0, 0);
 
                 if (allPilots != null){
                     ArrayList<int[]> p_penalty = new ArrayList<>();
                     ArrayList<Integer> groups = new ArrayList<>();
                     // Get penalties first
                     for (int rnd=0; rnd<race.round; rnd++){
-                        ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(race.id, rnd+1, 0);
+                        ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(race.id, rnd+1, 0, 0);
                         int[] penalty = new int[allPilots.size()];
                         for (int i=0; i<allPilots.size(); i++){
                             penalty[i] = (pilots_in_round.get(i).penalty != null) ? pilots_in_round.get(i).penalty : 0;

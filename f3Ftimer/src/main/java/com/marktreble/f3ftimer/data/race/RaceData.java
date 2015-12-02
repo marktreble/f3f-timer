@@ -1,12 +1,14 @@
 package com.marktreble.f3ftimer.data.race;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 //import android.util.Log;
 
 public class RaceData {
@@ -48,7 +50,8 @@ public class RaceData {
 		values.put("offset", r.offset);
 		values.put("status", r.status);
         values.put("round", r.round);
-        values.put("rounds_per_flight", r.rounds_per_flight);
+		values.put("rounds_per_flight", r.rounds_per_flight);
+		values.put("start_number", r.start_number);
 		return database.insert("races", null, values);
 	}
 
@@ -85,6 +88,12 @@ public class RaceData {
         values.put("groups", num_groups);
         database.insert("racegroups", null, values);
     }
+
+	public void setStartNumber(int race_id, int start_number){
+		String sql = "update races set start_number=? where id=?";
+		String[] data = {Integer.toString(start_number), Integer.toString(race_id)};
+		database.execSQL(sql, data);
+	}
 
     public int getGroups(int race_id, int round_id){
         String[] cols = {"groups"};
@@ -124,6 +133,7 @@ public class RaceData {
 		r.status = cursor.getInt(4);
         r.round = cursor.getInt(5);
         r.rounds_per_flight = (cursor.getInt(6)>0)?cursor.getInt(6):1;
+		r.start_number = cursor.getInt(7);
 		return r;
 	}
     

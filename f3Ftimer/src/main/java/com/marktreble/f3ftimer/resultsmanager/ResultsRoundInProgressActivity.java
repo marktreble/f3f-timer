@@ -94,7 +94,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
   		RacePilotData datasource2 = new RacePilotData(this);
 		datasource2.open();
-		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, race.round, mRace.offset);
+		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, race.round, 0, 0);
 		
 		mArrNames = new ArrayList<>();
 		mArrPilots = new ArrayList<>();

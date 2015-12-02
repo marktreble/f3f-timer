@@ -41,7 +41,7 @@ public class FlyingOrderEditActivity extends FragmentActivity {
             pilots = new ArrayList<>();
             RacePilotData datasource = new RacePilotData(this);
             datasource.open();
-            ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, 0, 0);
+            ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
             datasource.close();
             for (Pilot p : allPilots) pilots.add(p.pilot_id);
 

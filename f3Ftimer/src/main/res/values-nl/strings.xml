@@ -50,6 +50,7 @@
     <string name="off_course">Af Kurs</string>
     <string name="on_course">Op koers</string>
     <string name="working_time">Working Time</string>
+    <string name="and_last">And Last</string>
     <string name="next_round">Next Round</string>
     <string name="wind_warning">Wind Illegal</string>
     <string name="penalty">P</string>
@@ -67,6 +68,7 @@
     <string name="menu_add_pilot">New Pilot</string>
     <string name="menu_group_score">Group Score</string>
     <string name="menu_change_flying_order">Change Flying Order</string>
+    <string name="menu_change_start_number">Change Start Number</string>
     <string name="menu_help">Help</string>
     <string name="menu_about">About</string>
     <string name="menu_share">Share</string>
@@ -78,6 +80,7 @@
     <string name="pref_acra_enabled">Enabled</string>
     <string name="pref_acra_disabled">Disabled</string>
     <string name="enter_num_groups">Enter Number of Groups</string>
+    <string name="enter_start_number">Enter Start Number</string>
     <string name="wifi">Wifi Buzzers</string>
 
     <string name="en">English</string>

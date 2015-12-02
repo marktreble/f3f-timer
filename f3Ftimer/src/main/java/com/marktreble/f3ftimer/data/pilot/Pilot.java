@@ -29,6 +29,7 @@ public class Pilot {
 	public float points = -1;
 	public Integer position = 0;
 	public Integer round = 0;
+	public String number = "";
 
     public Pilot(){
         // Default constructor

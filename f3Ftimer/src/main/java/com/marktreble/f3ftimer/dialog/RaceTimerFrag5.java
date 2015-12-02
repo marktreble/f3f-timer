@@ -18,6 +18,9 @@ import android.widget.TextView;
 public class RaceTimerFrag5 extends RaceTimerFrag {
 
     public Float mFinalTime;
+
+    private boolean mClickedOnce = false;
+    private boolean mStartPressed = false;
     public RaceTimerFrag5(){
     }
 
@@ -36,6 +39,9 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mClickedOnce) return;
+                mClickedOnce = true;
+                mStartPressed = true;
                 next();
 
             }
@@ -60,7 +66,11 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
     }
 
     public void startPressed(){
-        next();
+        mClickedOnce = true;
+        if (!mStartPressed) {
+            mStartPressed = true;
+            next();
+        }
     }
 
 }

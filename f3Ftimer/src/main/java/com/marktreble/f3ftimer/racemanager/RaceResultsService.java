@@ -341,7 +341,7 @@ public class RaceResultsService extends Service {
 
 			RacePilotData datasource2 = new RacePilotData(RaceResultsService.this);
 	  		datasource2.open();
-	  		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0);
+	  		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0, 0);
 	  		
 	  		long unixTime = System.currentTimeMillis() / 1000L;
 
@@ -385,7 +385,7 @@ public class RaceResultsService extends Service {
 	  		
 	  		ArrayList<ArrayList<String>> p_penalties = new ArrayList<>();
 	  		for (int rnd=0; rnd<race.round; rnd++){
-	  			ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0);
+	  			ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0, 0);
 				ArrayList<String> round = new ArrayList<>();
 				for (int i=0; i<p_names.size(); i++){
 					
