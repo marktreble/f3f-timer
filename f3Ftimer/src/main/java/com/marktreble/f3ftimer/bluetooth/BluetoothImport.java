@@ -455,7 +455,7 @@ public class BluetoothImport extends Activity {
                 JSONObject p = racepilots.optJSONObject(i);
                 Pilot pilot = new Pilot(p);
                 int new_id = (int)datasource2.addPilot(pilot, race_id);
-                pilot_new_ids.add(pilot.id);
+                pilot_new_ids.add(new_id);
                 Log.i("BT", pilot.toString());
             }
             // Import Times

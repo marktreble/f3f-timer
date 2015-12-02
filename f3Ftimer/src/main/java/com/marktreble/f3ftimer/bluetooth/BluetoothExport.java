@@ -268,6 +268,8 @@ public class BluetoothExport extends Activity {
         
         String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
 
+        Log.d("BLUETOOTH::EXPORT", data);
+
         byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
 
         try {
