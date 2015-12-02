@@ -16,10 +16,14 @@ public class RaceTimerFrag extends Fragment {
 	public void setPilotName() {
 	    RaceTimerActivity a = (RaceTimerActivity)getActivity();
 		TextView pilot_name = (TextView) mView.findViewById(R.id.current_pilot);
-			
-		pilot_name.setText(String.format("%s %s", a.mPilot.firstname, a.mPilot.lastname));
+		String name = String.format("%s %s", a.mPilot.firstname, a.mPilot.lastname);
+
+		if (name.trim().equals(""))
+			name="noname! "+ a.mPilot.id;
+
+		pilot_name.setText(name);
 	
-		Drawable flag = a.mPilot.getFlag(getActivity());
+		Drawable flag = a.mPilot.getFlag(a);
 		if (flag != null){
 		    pilot_name.setCompoundDrawablesWithIntrinsicBounds(flag, null, null, null);
 		    int padding = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());

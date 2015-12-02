@@ -472,16 +472,18 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 		// Speak the time
 		if (mSpeechFXon) speak(str_time, TextToSpeech.QUEUE_ADD);
-	
+		Log.d("DRIVER", "TIME SPOKEN");
         
 		// Update the .txt file
         new SpreadsheetExport().writeFile(mContext, mRace);
+		Log.d("DRIVER", "EXPORT FILE WRITTEN");
 		SystemClock.sleep(1000);
 
 		// Post back to the UI (RaceTimerActivity);
   		Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
 		intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
 		mContext.sendOrderedBroadcast(intent, null);
+		Log.d("DRIVER", "POST BACK TO UI");
 
 		// Post to the Race Results Display Service
 		Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
@@ -490,6 +492,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 		intent2.putExtra("com.marktreble.f3ftimer.pilot_name", str_name);
 		intent2.putExtra("com.marktreble.f3ftimer.pilot_time", String.format("%.2f", mPilot_Time));
 		mContext.sendBroadcast(intent2);
+		Log.d("DRIVER", "POST BACK TO EXTERNAL RESULTS");
 
 	}
 

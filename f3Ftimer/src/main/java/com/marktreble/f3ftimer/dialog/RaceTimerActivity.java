@@ -137,22 +137,23 @@ public class RaceTimerActivity extends FragmentActivity {
 	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState){
+		super.onRestoreInstanceState(savedInstanceState);
+
 		int rid=savedInstanceState.getInt("race_id");
 		int pid=savedInstanceState.getInt("pilot_id");
 
-        mRound = savedInstanceState.getInt("round");
-        mCurrentFragmentId = savedInstanceState.getInt("mCurrentFragmentId");
+		mRound = savedInstanceState.getInt("round");
+		mCurrentFragmentId = savedInstanceState.getInt("mCurrentFragmentId");
 
 		RaceData datasource = new RaceData(this);
-  		datasource.open();
-  		mRace = datasource.getRace(rid);
-  		datasource.close();
-  		
-		RacePilotData datasource2 = new RacePilotData(this);
-  		datasource2.open();
-  		mPilot = datasource2.getPilot(pid, 0);
-  		datasource2.close();
+		datasource.open();
+		mRace = datasource.getRace(rid);
+		datasource.close();
 
+		RacePilotData datasource2 = new RacePilotData(this);
+		datasource2.open();
+		mPilot = datasource2.getPilot(pid, mRace.id);
+		datasource2.close();
 	}
 	
 	public void onResume(){

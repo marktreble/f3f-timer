@@ -29,6 +29,7 @@ The following table lists known device compatibility:
 | Asus Transformer TF101  | ✔          |                       |         |
 | Samsung Galaxy S4       |            |                       |✔        |
 | Leagoo Lead 3           |            | ✔                     |         |
+| HTC One M9              |            | ✔                     |         |
 
 ###Features
 

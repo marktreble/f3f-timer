@@ -148,7 +148,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
 	public void setLeg(int number, long estimated){
 		// Stop the clock here
-		if (number == 10){
+		if (number == 10 && mFinalTime<0){
             long elapsed = System.currentTimeMillis() - mStart;
             mHandler.removeCallbacks(updateClock);
             TextView cd = (TextView) mView.findViewById(R.id.time);
