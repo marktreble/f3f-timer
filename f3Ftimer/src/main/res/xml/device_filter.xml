@@ -6,8 +6,11 @@
     <!-- 0x0403 / 0x6015: FTDI FT231X -->
     <usb-device vendor-id="1027" product-id="24597" />
 
-    <!-- 0x2341 / Arduino -->
+    <!-- 0x2341 / Arduino.cc -->
     <usb-device vendor-id="9025" />
+
+    <!-- 0x2A03 / Arduino.org -->
+    <usb-device vendor-id="10755" />
 
     <!-- 0x16C0 / 0x0483: Teensyduino  -->
     <usb-device vendor-id="5824" product-id="1155" />
