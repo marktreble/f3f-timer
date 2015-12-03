@@ -23,7 +23,8 @@ dependencies {
     compile project(':iOIOLibAccessory')
     compile project(':iOIOLibAndroid')
     compile project(':iOIOLibBT')
-    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.android.support:support-annotations:22.2.1'
     compile files('libs/TestFlightLib.jar')
     compile project(':usbSerialForAndroid')
     compile files('libs/acra-4.4.0.jar')

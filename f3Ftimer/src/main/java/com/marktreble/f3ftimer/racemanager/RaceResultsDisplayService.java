@@ -64,7 +64,7 @@ public class RaceResultsDisplayService extends Service{
 
     @Override
     public void onCreate() {
-        Log.i("PrinterService", "Service started");
+        Log.i("RaceResultsDisplay", "Service started");
         this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onExternalUpdate"));
 
         mContext = this;
@@ -76,7 +76,7 @@ public class RaceResultsDisplayService extends Service{
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.d("PrinterService", "ONBIND");
+        Log.d("RaceResultsDisplay", "ONBIND");
         mHandler = ((F3FtimerApplication) getApplication()).getHandler();
         return mBinder;
     }
@@ -102,7 +102,7 @@ public class RaceResultsDisplayService extends Service{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d("PrinterService", "Onstart Command");
+        Log.d("RaceResultsDisplay", "Onstart Command");
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         String chosenDevice = intent.getStringExtra(BT_DEVICE);
         if (mBluetoothAdapter != null && !chosenDevice.equals("")) {
@@ -116,10 +116,10 @@ public class RaceResultsDisplayService extends Service{
             deviceName = device.getName();
             mMacAddress = device.getAddress();
             if (mMacAddress != null && mMacAddress.length() > 0) {
-                Log.d("PrinterService", "Connecting to: "+deviceName);
+                Log.d("RaceResultsDisplay", "Connecting to: "+deviceName);
                 connectToDevice(mMacAddress);
             } else {
-                Log.d("PrinterService", "No macAddress... stopping");
+                Log.d("RaceResultsDisplay", "No macAddress... stopping");
                 stopSelf();
                 return 0;
             }
@@ -129,7 +129,7 @@ public class RaceResultsDisplayService extends Service{
     }
 
     private synchronized void connectToDevice(String macAddress) {
-        Log.d("PrinterService", "Connecting... ");
+        Log.d("RaceResultsDisplay", "Connecting... ");
         BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(macAddress);
         if (mState == STATE_CONNECTING) {
             if (mConnectThread != null) {
@@ -189,7 +189,7 @@ public class RaceResultsDisplayService extends Service{
     }
 
     private void connectionFailed() {
-        Log.d("PrinterService", "Connection Failed");
+        Log.d("RaceResultsDisplay", "Connection Failed");
         //RaceResultsDisplayService.this.stop();
         // Post to UI that connection is off
         if (mState == STATE_NONE) return;
@@ -197,7 +197,7 @@ public class RaceResultsDisplayService extends Service{
     }
 
     public void connectionLost() {
-        Log.d("PrinterService", "Connection Lost");
+        Log.d("RaceResultsDisplay", "Connection Lost");
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
@@ -220,7 +220,7 @@ public class RaceResultsDisplayService extends Service{
     };
 
     public void reconnect(){
-        Log.d("PrinterService", "Reconnecting in 3 seconds...");
+        Log.d("RaceResultsDisplay", "Reconnecting in 3 seconds...");
         mHandler2.postDelayed(reconnect, 3000);
     }
 
@@ -240,7 +240,7 @@ public class RaceResultsDisplayService extends Service{
     }
 
     private synchronized void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice) {
-        Log.d("PrinterService", "Connected");
+        Log.d("RaceResultsDisplay", "Connected");
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
             mConnectThread.cancel();
@@ -304,7 +304,7 @@ public class RaceResultsDisplayService extends Service{
             try {
                 mmSocket.close();
             } catch (IOException e) {
-                Log.e("PrinterService", "close() of connect socket failed", e);
+                Log.e("RaceResultsDisplay", "close() of connect socket failed", e);
             }
         }
 
@@ -332,7 +332,7 @@ public class RaceResultsDisplayService extends Service{
                 tmpOut = socket.getOutputStream();
                 tmpIn = socket.getInputStream();
             } catch (IOException e) {
-                Log.e("Printer Service", "temp sockets not created", e);
+                Log.e("RaceResultsDisplay", "temp sockets not created", e);
             }
             mmOutStream = tmpOut;
             mmInStream = tmpIn;
@@ -347,12 +347,12 @@ public class RaceResultsDisplayService extends Service{
                 long time = System.nanoTime();
                 if (time-last_time > 10000000000l){
                     if (ping_sent) {
-                        Log.d("PrinterService", "PING NOT RETURNED");
+                        Log.d("RaceResultsDisplay", "PING NOT RETURNED");
                         connectionLost();
                     } else {
                         last_time = time;
-                        String ping = String.format("{\"ping\":%d}", time);
-                        Log.d("PrinterService", ping);
+                        String ping = String.format("{\"type\":\"ping\",\"time\":%d}", time);
+                        Log.d("RaceResultsDisplay", ping);
                         write(ping.getBytes());
                         ping_sent = true;
                     }
@@ -365,7 +365,7 @@ public class RaceResultsDisplayService extends Service{
                         byte[] data = new byte[bufferLength];
                         System.arraycopy(buffer, 0, data, 0, bufferLength);
                         final String response = new String(data, "UTF-8");
-                        Log.d("PrinterService", "R:"+response);
+                        Log.d("RaceResultsDisplay", "R:"+response);
                         if (response.equals(String.format("%d", last_time))) {
                             ping_sent = false;
                         }
@@ -382,7 +382,7 @@ public class RaceResultsDisplayService extends Service{
             try {
                 mmOutStream.write(buffer);
             } catch (IOException e) {
-                Log.e("PrinterService", "Exception during write", e);
+                Log.e("RaceResultsDisplay", "Exception during write", e);
             }
         }
 
@@ -430,6 +430,7 @@ public class RaceResultsDisplayService extends Service{
                     String time = extras.getString("com.marktreble.f3ftimer.pilot_time");
                     JSONObject json = new JSONObject();
                     try {
+                        json.put("type", "data");
                         json.put("name", name);
                         json.put("nationality", nationality);
                         json.put("time", time);
