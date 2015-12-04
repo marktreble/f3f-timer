@@ -17,11 +17,11 @@ The Arduino does have limited compatibility with Android Devices. Extra compatib
 **Update**
 We now have compatibility with a variety of USB controllers which will work with Genuine Arduinos and the cheap copies.
 Support has been added for:
-CdcAcm
-Ftdi
-Cp21
-Prolific
-CH340
+- CdcAcm
+- Ftdi
+- Cp21
+- Prolific
+- CH340
 
 ###IOIO
 We have used the IOIO successfully in the MK III Timer System developed by Jon Edison. Full constuction details can be found at http://www.nymrsc.org.uk/Jons%20Timer%20mk3.htm
