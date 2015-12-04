@@ -40,7 +40,7 @@ public class USBOtherService extends Service implements DriverInterface {
     static final String FT_LEG_COMPLETE = "P";
     static final String FT_READY = "R";
     static final String FT_WIND_ILLEGAL = "W";
-    static final String FT_START_BUTTON = "C"; // Conflict with wind legal! Needs sorting Jon
+    static final String FT_START_BUTTON = "S";
 
     // Commands to timer
     static final String TT_ABORT = "A";
@@ -373,7 +373,7 @@ public class USBOtherService extends Service implements DriverInterface {
                             if (code.equals(FT_RACE_COMPLETE)){
                                 // Make sure we get 9 bytes before proceeding
                                 Log.d("BYTES RECEIVED", str_in.length()+"::"+str_in);
-                                if (str_in.length()<8){
+                                if (str_in.length()<9){
                                     mBuffer = str_in;
                                 } else {
                                     // Any more than 8 chars should be passed on to the next loop
@@ -385,6 +385,7 @@ public class USBOtherService extends Service implements DriverInterface {
                                     // Reset these here, as sometimes READY is not received!?
                                     mTimerStatus = 0;
                                     mDriver.ready();
+                                    mBuffer = "";
                                 }
                             }
 
