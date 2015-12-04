@@ -14,6 +14,15 @@ We have an arduino based system which is still under development (29/6/15). Deta
 
 The Arduino does have limited compatibility with Android Devices. Extra compatibility can be achieved by <a href="https://en.wikipedia.org/wiki/Rooting_(Android_OS)">rooting</a> your device, but we have tried to make this work with off-the-shelf devices. See the <a href="https://github.com/marktreble/f3f-timer/blob/master/README.md#compatibility">compatibility</a> table below for details of which devices are known to work.
 
+**Update**
+We now have compatibility with a variety of USB controllers which will work with Genuine Arduinos and the cheap copies.
+Support has been added for:
+CdcAcm
+Ftdi
+Cp21
+Prolific
+CH340
+
 ###IOIO
 We have used the IOIO successfully in the MK III Timer System developed by Jon Edison. Full constuction details can be found at http://www.nymrsc.org.uk/Jons%20Timer%20mk3.htm
 
@@ -46,7 +55,7 @@ The following table lists known device compatibility:
 ###Installation
 
 The latest stable release can be downloaded here:
-<a href="http://www.marktreble.co.uk/clients/f3f/F3Ftimer3.12.15.apk">F3Ftimer3.12.15.apk</a>
+<a href="http://www.marktreble.co.uk/clients/f3f/F3Ftimer4.12.15.apk">F3Ftimer4.12.15.apk</a>
 
 ###Getting Started
 
