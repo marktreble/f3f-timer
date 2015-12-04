@@ -28,9 +28,11 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class USBArduinoService extends Service implements DriverInterface {
+import ioio.lib.api.Uart;
+
+public class USBOtherService extends Service implements DriverInterface {
 		
-    private static final String TAG = "USBArduinoService";
+    private static final String TAG = "USBOtherService";
 
     // Commands from timer
     static final String FT_WIND_LEGAL = "C";
@@ -38,6 +40,7 @@ public class USBArduinoService extends Service implements DriverInterface {
     static final String FT_LEG_COMPLETE = "P";
     static final String FT_READY = "R";
     static final String FT_WIND_ILLEGAL = "W";
+    static final String FT_START_BUTTON = "C"; // Conflict with wind legal! Needs sorting Jon
 
     // Commands to timer
     static final String TT_ABORT = "A";
@@ -58,6 +61,10 @@ public class USBArduinoService extends Service implements DriverInterface {
 
     private SerialInputOutputManager mSerialIoManager = null;
 
+    private int mBaudRate;
+    private int mDataBits;
+    private int mStopBits;
+    private int mParity;
 
 	/*
 	 * General life-cycle function overrides
@@ -94,8 +101,8 @@ public class USBArduinoService extends Service implements DriverInterface {
     }
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
-        if (inputSource.equals(context.getString(R.string.USBArduino))){
-            Intent serviceIntent = new Intent(context, USBArduinoService.class);
+        if (inputSource.equals(context.getString(R.string.USB_OTHER))){
+            Intent serviceIntent = new Intent(context, USBOtherService.class);
             serviceIntent.putExtras(params);
             serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
             context.startService(serviceIntent);
@@ -103,8 +110,8 @@ public class USBArduinoService extends Service implements DriverInterface {
     }
 
     public static boolean stop(RaceActivity context){
-        if (context.isServiceRunning("com.marktreble.f3ftimer.driver.USBArduinoService")) {
-            Intent serviceIntent = new Intent(context, USBArduinoService.class);
+        if (context.isServiceRunning("com.marktreble.f3ftimer.driver.USBOtherService")) {
+            Intent serviceIntent = new Intent(context, USBOtherService.class);
             context.stopService(serviceIntent);
             return true;
         }
@@ -137,7 +144,64 @@ public class USBArduinoService extends Service implements DriverInterface {
     	super.onStartCommand(intent, flags, startId);
 
         Log.i(TAG, "onStartCommand");
-        
+
+        Bundle extras = intent.getExtras();
+
+        mBaudRate = 2400;
+        String baudrate = extras.getString("pref_usb_baudrate");
+        if (baudrate != null)
+            try { mBaudRate = Integer.parseInt(baudrate, 10); } catch (NumberFormatException e){ e.printStackTrace(); }
+
+        String databits = extras.getString("pref_usb_databits");
+
+        switch (databits){
+            case "5":
+                mDataBits = UsbSerialPort.DATABITS_5;
+                break;
+            case "6":
+                mDataBits = UsbSerialPort.DATABITS_6;
+                break;
+            case "7":
+                mDataBits = UsbSerialPort.DATABITS_7;
+                break;
+            case "8":
+            default:
+                mStopBits =UsbSerialPort.DATABITS_8;
+                break;
+        }
+
+        String stopbits = extras.getString("pref_usb_stopbits");
+
+        switch (stopbits){
+            case "2":
+                mStopBits = UsbSerialPort.STOPBITS_2;
+                break;
+            case "1":
+            default:
+                mStopBits =UsbSerialPort.STOPBITS_1;
+                break;
+        }
+
+        String parity = extras.getString("pref_usb_parity");
+        switch (parity){
+            case "Odd":
+                mParity = UsbSerialPort.PARITY_ODD;
+                break;
+            case "Even":
+                mParity = UsbSerialPort.PARITY_EVEN;
+                break;
+            case "Mark":
+                mParity = UsbSerialPort.PARITY_MARK;
+                break;
+            case "Space":
+                mParity = UsbSerialPort.PARITY_SPACE;
+                break;
+            case "None":
+            default:
+                mParity =  UsbSerialPort.PARITY_NONE;
+                break;
+        }
+
         final Runnable make_connection = new Runnable(){
             @Override
             public void run(){
@@ -181,7 +245,7 @@ public class USBArduinoService extends Service implements DriverInterface {
 
                 try {
                     port.open(connection);
-                    port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE);
+                    port.setParameters(mBaudRate, mDataBits, mStopBits, mParity);
                 } catch (IOException e) {
                     e.printStackTrace();
                     try {
@@ -232,76 +296,101 @@ public class USBArduinoService extends Service implements DriverInterface {
 
                 @Override
                 public void onNewData(final byte[] data) {
-                    String str_in = "";
+                    /*
+                    String sb = "";
                     try {
-                        str_in =  new String(data, "US-ASCII");
+                        sb =  new String(data, "US-ASCII");
                     } catch (UnsupportedEncodingException e){
                         e.printStackTrace();
                     }
-                    if (str_in.length()>0){
+                    String str_in = mBuffer+sb.trim();
+                    */
+
+                    char[] charArray = (new String(data, 0,data.length)).toCharArray();
+
+                    StringBuilder sb = new StringBuilder(charArray.length);
+                    StringBuilder hexString = new StringBuilder();
+                    for (char c : charArray) {
+                        if (c < 0) throw new IllegalArgumentException();
+                        sb.append(Character.toString(c));
+
+                        String hex = Integer.toHexString(0xFF & c);
+                        if (hex.length() == 1) {
+                            // could use a for loop, but we're only dealing with a single byte
+                            hexString.append('0');
+                        }
+                        hexString.append(hex);
+                    }
+                    Log.i("NEWDATA", hexString.toString());
+
+                    String str_in = mBuffer+sb.toString().trim();
+                    int len = str_in.length();
+                    if (len>0){
                         Log.i("NEWDATA", str_in);
-                        int len = str_in.length();
-                        if (len>0){
-                            String lastchar = str_in.substring(str_in.length()-1, str_in.length());
-                            if (lastchar.equals("\n")){
-                                // Clear the buffer
-                                mBuffer = "";
+                        String lastchar = hexString.substring(hexString.length()-2, hexString.length());
+                        if (lastchar.equals("0d") || lastchar.equals("0a")){
+                            // Clear the buffer
+                            mBuffer = "";
 
-                                // Get code (first char)
-                                String code = "";
-                                code=str_in.substring(0, 1);
+                            // Get code (first char)
+                            String code = "";
+                            code=str_in.substring(0, 1);
 
-                                // We have data/command from the timer, pass this on to the server
-                                if (code.equals(FT_WIND_LEGAL)){
-                                    mDriver.windLegal();
-                                } else
+                            // We have data/command from the timer, pass this on to the server
+                            if (code.equals(FT_START_BUTTON)){
+                                mDriver.startPressed();
+                            } else
 
-                                if (code.equals(FT_WIND_ILLEGAL)){
-                                    mDriver.windIllegal();
-                                } else
+                            if (code.equals(FT_WIND_LEGAL)){
+                                mDriver.windLegal();
+                            } else
 
-                                if (code.equals(FT_READY)){
+                            if (code.equals(FT_WIND_ILLEGAL)){
+                                mDriver.windIllegal();
+                            } else
+
+                            if (code.equals(FT_READY)){
+                                mTimerStatus = 0;
+                                mDriver.ready();
+                            } else
+
+                            if (code.equals(FT_LEG_COMPLETE)){
+                                switch (mTimerStatus){
+                                    case 0:
+                                        mDriver.offCourse();
+                                        break;
+                                    case 1:
+                                        mDriver.onCourse();
+                                        break;
+                                    default:
+                                        mDriver.legComplete();
+                                        break;
+
+                                }
+                                mTimerStatus++;
+                            } else
+
+                            if (code.equals(FT_RACE_COMPLETE)){
+                                // Make sure we get 9 bytes before proceeding
+                                Log.d("BYTES RECEIVED", str_in.length()+"::"+str_in);
+                                if (str_in.length()<8){
+                                    mBuffer = str_in;
+                                } else {
+                                    // Any more than 8 chars should be passed on to the next loop
+                                    mBuffer = str_in.substring(8);
+                                    // Don't take more than 8 or parseFloat will cause an exception + reflight!
+                                    str_in = str_in.substring(0, 8);
+                                    mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim());
+                                    mDriver.runComplete();
+                                    // Reset these here, as sometimes READY is not received!?
                                     mTimerStatus = 0;
                                     mDriver.ready();
-                                } else
-
-                                if (code.equals(FT_LEG_COMPLETE)){
-                                    switch (mTimerStatus){
-                                        case 0:
-                                            mDriver.offCourse();
-                                            break;
-                                        case 1:
-                                            mDriver.onCourse();
-                                            break;
-                                        default:
-                                            mDriver.legComplete();
-                                            break;
-
-                                    }
-                                    mTimerStatus++;
-                                } else
-
-                                if (code.equals(FT_RACE_COMPLETE)){
-                                    // Make sure we get 9 bytes before proceeding
-                                    if (str_in.length()<8){
-                                        mBuffer = str_in;
-                                    } else {
-                                        // Any more than 8 chars should be passed on to the next loop
-                                        mBuffer = str_in.substring(8);
-                                        // Don't take more than 8 or parseFloat will cause an exception + reflight!
-                                        str_in = str_in.substring(0, 8);
-                                        mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim());
-                                        mDriver.runComplete();
-                                        // Reset these here, as sometimes READY is not received!?
-                                        mTimerStatus = 0;
-                                        mDriver.ready();
-                                    }
                                 }
-
-                            } else {
-                                // Save the characters to the buffer for the next cycle
-                                mBuffer = str_in;
                             }
+
+                        } else {
+                            // Save the characters to the buffer for the next cycle
+                            mBuffer = str_in;
                         }
                     }
                 }

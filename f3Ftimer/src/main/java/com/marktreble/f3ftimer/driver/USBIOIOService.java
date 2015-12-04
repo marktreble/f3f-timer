@@ -25,14 +25,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.util.Xml;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
-public class USBJEService extends IOIOService implements DriverInterface {
+public class USBIOIOService extends IOIOService implements DriverInterface {
 
-    private static final String TAG = "USBJEService";
+    private static final String TAG = "USBIOIOService";
     
     private Intent mIntent;
     
@@ -67,7 +66,11 @@ public class USBJEService extends IOIOService implements DriverInterface {
 	
 	public DigitalInput start;
 	private boolean oStart_status = false;
-	
+
+	private int mBaudRate;
+	private Uart.StopBits mStopBits;
+	private Uart.Parity mParity;
+
 	/*
 	 * General life-cycle function overrides
 	 */
@@ -106,8 +109,8 @@ public class USBJEService extends IOIOService implements DriverInterface {
     }
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
-        if (inputSource.equals(context.getString(R.string.USBJE))){
-            Intent serviceIntent = new Intent(context, USBJEService.class);
+        if (inputSource.equals(context.getString(R.string.USB_IOIO))){
+            Intent serviceIntent = new Intent(context, USBIOIOService.class);
             serviceIntent.putExtras(params);
             serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
             context.startService(serviceIntent);
@@ -115,8 +118,8 @@ public class USBJEService extends IOIOService implements DriverInterface {
     }
 
     public static boolean stop(RaceActivity context){
-        if (context.isServiceRunning("com.marktreble.f3ftimer.driver.USBJEService")) {
-            Intent serviceIntent = new Intent(context, USBJEService.class);
+        if (context.isServiceRunning("com.marktreble.f3ftimer.driver.USBIOIOService")) {
+            Intent serviceIntent = new Intent(context, USBIOIOService.class);
             context.stopService(serviceIntent);
             return true;
         }
@@ -149,6 +152,40 @@ public class USBJEService extends IOIOService implements DriverInterface {
     	super.onStart(intent, startId);
 
         mIntent = intent;
+
+		Bundle extras = intent.getExtras();
+
+		mBaudRate = 2400;
+		String baudrate = extras.getString("pref_usb_baudrate");
+		if (baudrate != null)
+			try { mBaudRate = Integer.parseInt(baudrate, 10); } catch (NumberFormatException e){ e.printStackTrace(); }
+
+		String stopbits = extras.getString("pref_usb_stopbits");
+
+		switch (stopbits){
+			case "2":
+				mStopBits = Uart.StopBits.TWO;
+				break;
+			case "1":
+			default:
+				mStopBits = Uart.StopBits.ONE;
+				break;
+		}
+
+		String parity = extras.getString("pref_usb_parity");
+		switch (parity){
+			case "Odd":
+				mParity = Uart.Parity.ODD;
+				break;
+			case "Even":
+				mParity = Uart.Parity.EVEN;
+				break;
+			case "None":
+			default:
+				mParity = Uart.Parity.NONE;
+				break;
+		}
+
     	return (START_STICKY);    	
     }
        	
@@ -170,7 +207,7 @@ public class USBJEService extends IOIOService implements DriverInterface {
 				led_ = ioio_.openDigitalOutput(IOIO.LED_PIN);
 				
 				// Open comms channels
-				uart = ioio_.openUart(3, 4, 2400, Uart.Parity.NONE, Uart.StopBits.ONE);
+				uart = ioio_.openUart(3, 4, mBaudRate, mParity, mStopBits);
 				data_in = uart.getInputStream();
 				data_out = uart.getOutputStream();
 				

@@ -39,6 +39,7 @@ public final class UsbId {
     public static final int ATMEL_LUFA_CDC_DEMO_APP = 0x2044;
 
     public static final int VENDOR_ARDUINO = 0x2341;
+    public static final int VENDOR_ARDUINO_ALT = 0x2A03;
     public static final int ARDUINO_UNO = 0x0001;
     public static final int ARDUINO_MEGA_2560 = 0x0010;
     public static final int ARDUINO_SERIAL_ADAPTER = 0x003b;
@@ -48,6 +49,9 @@ public final class UsbId {
     public static final int ARDUINO_MEGA_ADK_R3 = 0x0044;
     public static final int ARDUINO_SERIAL_ADAPTER_R3 = 0x0044;
     public static final int ARDUINO_LEONARDO = 0x8036;
+
+    public static final int CHINESE_COPY = 0x1A86;
+    public static final int ARDUINO_COPY_340 = 0x7523;
 
     public static final int VENDOR_VAN_OOIJEN_TECH = 0x16c0;
     public static final int VAN_OOIJEN_TECH_TEENSYDUINO_SERIAL = 0x0483;

@@ -41,18 +41,15 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager.LayoutParams;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -199,8 +196,8 @@ public class RaceActivity extends ListActivity {
         }
 
         // Stop Any Timer Drivers
-        USBJEService.stop(this);
-        USBArduinoService.stop(this);
+        USBIOIOService.stop(this);
+        USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
         
         Intent serviceIntent = null;
@@ -214,8 +211,8 @@ public class RaceActivity extends ListActivity {
             extras.putString(entry.getKey(), entry.getValue().toString());
         }
 
-        USBJEService.startDriver(this, mInputSource, mRid, extras);
-        USBArduinoService.startDriver(this, mInputSource, mRid, extras);
+        USBIOIOService.startDriver(this, mInputSource, mRid, extras);
+        USBOtherService.startDriver(this, mInputSource, mRid, extras);
         SoftBuzzerService.startDriver(this, mInputSource, mRid, extras);
 		
 	}
@@ -232,8 +229,8 @@ public class RaceActivity extends ListActivity {
 
         RaceResultsDisplayService.stop(this);
 
-        USBJEService.stop(this);
-        USBArduinoService.stop(this);
+        USBIOIOService.stop(this);
+        USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
 
     }

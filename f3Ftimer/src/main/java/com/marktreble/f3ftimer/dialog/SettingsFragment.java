@@ -18,6 +18,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
+import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -52,8 +53,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             view.setBackgroundColor(getResources().getColor(R.color.background_dialog ));
 
         // Set values
-        setLangSummary("pref_input_src");
         setLangSummary("pref_voice_lang");
+        setLangSummary("pref_input_src");
+        setStringSummary("pref_usb_baudrate");
+        setListSummary("pref_usb_stopbits", R.array.options_stopbits);
+        setListSummary("pref_usb_databits", R.array.options_databits);
+        setListSummary("pref_usb_parity", R.array.options_parity);
         setBTDeviceSummary("pref_external_display");
         
     	Preference pref = findPreference("pref_results_server");
@@ -153,7 +158,25 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
         }
     }
-    
+
+    private void setStringSummary(String key){
+        Preference pref = findPreference(key);
+        if (pref instanceof EditTextPreference) {
+            EditTextPreference textPref = (EditTextPreference) pref;
+            String value = textPref.getText();
+            pref.setSummary(value);
+        }
+    }
+
+    private void setListSummary(String key, int list){
+        Preference pref = findPreference(key);
+        if (pref instanceof ListPreference) {
+            ListPreference listPref = (ListPreference) pref;
+            String value = (String) listPref.getEntry();
+            pref.setSummary(value);
+        }
+    }
+
     @Override
 	public void onInit(int status) {
         // Populate pref_voice_lang with installed voices

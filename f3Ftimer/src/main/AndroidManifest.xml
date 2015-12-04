@@ -57,7 +57,7 @@
         </activity>
         
         <!-- Human Input Drivers -->
-		<service android:name=".driver.USBJEService"
+		<service android:name=".driver.USBIOIOService"
 		    	 android:label="F3F Race Timer Server"
 		    	 android:exported="false"
 		    	 android:process="com.marktreble.f3ftimer.driver">
@@ -66,7 +66,7 @@
     		</intent-filter>
    		</service>
 
-        <service android:name=".driver.USBArduinoService"
+        <service android:name=".driver.USBOtherService"
             android:label="F3F Race Timer Server"
             android:exported="false"
             android:process="com.marktreble.f3ftimer.driver">

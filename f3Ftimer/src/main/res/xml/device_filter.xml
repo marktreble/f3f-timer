@@ -9,6 +9,12 @@
     <!-- 0x2341 / Arduino -->
     <usb-device vendor-id="9025" />
 
+    <!-- 0x2A03 / Arduino.org -->
+    <usb-device vendor-id="10755" />
+
+    <!-- 0x1A86 / Chinese Copy 340 -->
+    <usb-device vendor-id="6790" />
+
     <!-- 0x16C0 / 0x0483: Teensyduino  -->
     <usb-device vendor-id="5824" product-id="1155" />
 

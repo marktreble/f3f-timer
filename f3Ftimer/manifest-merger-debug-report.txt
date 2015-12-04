@@ -121,7 +121,7 @@ ADDED from AndroidManifest.xml:47:9
 		ADDED from AndroidManifest.xml:49:13
 	android:name
 		ADDED from AndroidManifest.xml:48:13
-service#com.marktreble.f3ftimer.driver.USBJEService
+service#com.marktreble.f3ftimer.driver.USBIOIOService
 ADDED from AndroidManifest.xml:55:3
 	android:process
 		ADDED from AndroidManifest.xml:58:9
@@ -137,7 +137,7 @@ action#com.marktreble.f3ftimer.RaceTimerService
 ADDED from AndroidManifest.xml:60:11
 	android:name
 		ADDED from AndroidManifest.xml:60:19
-service#com.marktreble.f3ftimer.driver.USBArduinoService
+service#com.marktreble.f3ftimer.driver.USBOtherService
 ADDED from AndroidManifest.xml:64:9
 	android:process
 		ADDED from AndroidManifest.xml:67:13

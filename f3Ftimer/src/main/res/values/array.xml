@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string-array name="InputSources" translatable="false">
-        <item>@string/Demo</item>
-	    <item>@string/USBJE</item>
-        <item>@string/USBArduino</item>
+        <item>Demo Mode - On Screen Buzzers</item>
+	    <item>USB - IOIO</item>
+        <item>USB - Other</item>
 	</string-array>
 
-	<string-array name="countrycodes" translatable="false">
+    <string-array name="options_stopbits" translatable="false">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="options_databits" translatable="false">
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="options_parity" translatable="false">
+        <item>None</item>
+        <item>Odd</item>
+        <item>Even</item>
+        <item>Mark</item>
+        <item>Space</item>
+    </string-array>
+
+    <string-array name="countrycodes" translatable="false">
 	    <item></item>
         <item>AU</item>
         <item>CZ</item>

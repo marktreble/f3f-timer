@@ -1,55 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
-    <CheckBoxPreference
-        android:key="pref_buzzer"
-        android:title="Buzzer"
-        android:summary="Play buzzer sound on the android device"
-        android:defaultValue="false" />
-    
-    <CheckBoxPreference
-        android:key="pref_voice"
-        android:title="Voice Synthesis"
-        android:summary="Use voice synthesis for CD calls"
-        android:defaultValue="false" />
-        
-    <ListPreference 
-    	android:key="pref_voice_lang"
-    	android:title="Language for Voice Synthesis"
-    	android:dependency="pref_voice" />
-    
-    <CheckBoxPreference
-        android:key="pref_manual_entry"
-        android:title="Manual Entry"
-        android:summary="Allow times to be entered manually"
-        android:defaultValue="false" />
-    
-    <ListPreference 
-    	android:key="pref_input_src"
-    	android:title="Input Source"
-    	android:entries="@array/InputSources"
-    	android:entryValues="@array/InputSources"
-    	android:defaultValue="@string/Demo"/>
-    
-   <CheckBoxPreference
-        android:key="pref_results_server"
-        android:title="Run Results Server"
-        android:summary="Broadcast results over wifi (http://192.168.43.1:8080)"
-        android:defaultValue="false" />
+    <PreferenceCategory
+        android:key="button_connection_settings"
+        android:title="@string/connection_settings"
+        android:persistent="false">
+        <ListPreference
+            android:key="pref_input_src"
+            android:title="Input Source"
+            android:entries="@array/InputSources"
+            android:entryValues="@array/InputSources"
+            android:defaultValue="@string/Demo"/>
 
-    <CheckBoxPreference
-        android:key="pref_results_display"
-        android:title="Run External Results Display"
-        android:summary="Broadcast results over Bluetooth to a remote android Device"
-        android:defaultValue="false" />
+        <EditTextPreference
+            android:key="pref_usb_baudrate"
+            android:title="@string/usb_baudrate"
+            android:defaultValue="2400" />
+        <ListPreference
+            android:key="pref_usb_stopbits"
+            android:title="@string/usb_stopbits"
+            android:entries="@array/options_stopbits"
+            android:entryValues="@array/options_stopbits"
+            android:defaultValue="1"
+            />
+        <ListPreference
+            android:key="pref_usb_databits"
+            android:title="@string/usb_databits"
+            android:entries="@array/options_databits"
+            android:entryValues="@array/options_databits"
+            android:defaultValue="8"/>
+        <ListPreference
+            android:key="pref_usb_parity"
+            android:title="@string/usb_parity"
+            android:entries="@array/options_parity"
+            android:entryValues="@array/options_parity"
+            android:defaultValue="None"/>
 
-    <ListPreference
-        android:key="pref_external_display"
-        android:title="Paired Device to use as external display"
-        android:dependency="pref_results_display" />
+    </PreferenceCategory>
 
-    <CheckBoxPreference android:key="acra.enable"
-        android:title="@string/pref_enable_acra"
-        android:summaryOn="@string/pref_acra_enabled"
-        android:summaryOff="@string/pref_acra_disabled"
-        android:defaultValue="true"/>
+    <PreferenceCategory
+        android:key="button_audio"
+        android:title="@string/audio"
+        android:persistent="false">
+        <CheckBoxPreference
+            android:key="pref_buzzer"
+            android:title="Buzzer"
+            android:summary="Play buzzer sound on the android device"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="pref_voice"
+            android:title="Voice Synthesis"
+            android:summary="Use voice synthesis for CD calls"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="pref_voice_lang"
+            android:title="Language for Voice Synthesis"
+            android:dependency="pref_voice" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="button_other"
+        android:title="@string/other_settings"
+        android:persistent="false">
+
+        <CheckBoxPreference
+            android:key="pref_manual_entry"
+            android:title="Manual Entry"
+            android:summary="Allow times to be entered manually"
+            android:defaultValue="false" />
+
+       <CheckBoxPreference
+            android:key="pref_results_server"
+            android:title="Run Results Server"
+            android:summary="Broadcast results over wifi (http://192.168.43.1:8080)"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="pref_results_display"
+            android:title="Run External Results Display"
+            android:summary="Broadcast results over Bluetooth to a remote android Device"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="pref_external_display"
+            android:title="Paired Device to use as external display"
+            android:dependency="pref_results_display" />
+
+        <CheckBoxPreference android:key="acra.enable"
+            android:title="@string/pref_enable_acra"
+            android:summaryOn="@string/pref_acra_enabled"
+            android:summaryOff="@string/pref_acra_disabled"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
 </PreferenceScreen>
