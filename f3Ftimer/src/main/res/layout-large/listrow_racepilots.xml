@@ -30,20 +30,18 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-       <TextView
+        <TextView
             android:id="@+id/number"
-            android:layout_width="60dp"
-            android:layout_height="fill_parent"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
             android:layout_weight="0"
-            android:background="@color/transparent"
-            android:gravity="center_vertical"
+            android:background="@drawable/circle"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginRight="8dp"
             android:minHeight="88dp"
-            android:minWidth="@dimen/ten"
-            android:paddingLeft="20dp"
-            android:paddingEnd="0dp"
-            android:paddingRight="0dp"
-            android:textColor="@color/text3"
-            android:textSize="24sp"
+            android:textColor="@color/text2"
+            android:textSize="16sp"
             android:textStyle="bold" >
 
         </TextView>

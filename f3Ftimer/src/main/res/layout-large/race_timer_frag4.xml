@@ -8,16 +8,37 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp" >
 
-        <TextView 
-            android:id="@+id/current_pilot"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:text="@string/empty"
-		    android:layout_gravity="center_horizontal"
-		    android:textColor="@color/text3"
-		    android:textAppearance="?android:attr/textAppearanceLarge" >
-		</TextView>
-		
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal">
+            <TextView
+                android:id="@+id/number"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_weight="0"
+                android:background="@drawable/circle"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:layout_marginRight="8dp"
+                android:minHeight="68dp"
+                android:textColor="@color/text2"
+                android:textSize="16sp"
+                android:textStyle="bold" >
+
+            </TextView>
+            <TextView
+                android:id="@+id/current_pilot"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/empty"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/text3" >
+            </TextView>
+        </LinearLayout>
+
 		<TextView
 		    android:id="@+id/time"
 		    android:layout_width="wrap_content"
