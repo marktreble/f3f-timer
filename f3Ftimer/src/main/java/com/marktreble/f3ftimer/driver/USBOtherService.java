@@ -66,6 +66,10 @@ public class USBOtherService extends Service implements DriverInterface {
     private int mStopBits;
     private int mParity;
 
+    private boolean mUnsupportedMessageSent = false;
+    private int mVendorId = 0;
+    private int mProductId = 0;
+
 	/*
 	 * General life-cycle function overrides
 	 */
@@ -219,7 +223,8 @@ public class USBOtherService extends Service implements DriverInterface {
     public boolean connect(Intent intent){
         UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
-        final List<UsbSerialDriver> drivers = UsbSerialProber.getDefaultProber().findAllDrivers(usbManager);
+        UsbSerialProber prober = UsbSerialProber.getDefaultProber();
+        final List<UsbSerialDriver> drivers = prober.findAllDrivers(usbManager);
 
         List<UsbSerialPort> result = new ArrayList<>();
 
@@ -233,7 +238,26 @@ public class USBOtherService extends Service implements DriverInterface {
         }
 
         if (result.size() == 0){
-            Log.i(TAG, "No Devices found");
+            if (prober.mVendorId>0 && prober.mProductId>0) {
+                if (mVendorId != prober.mVendorId
+                        && mProductId != prober.mProductId){
+                    mUnsupportedMessageSent = false;
+                }
+                if (!mUnsupportedMessageSent) {
+                    Log.i(TAG, "Devices found");
+                    // Notify user of the vendor/productId
+                    Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+                    i.putExtra("com.marktreble.f3ftimer.service_callback", "unsupported");
+                    i.putExtra("vendorId", String.format("0x%04X", prober.mVendorId));
+                    i.putExtra("productId", String.format("0x%04X", prober.mProductId));
+                    sendBroadcast(i);
+                    mUnsupportedMessageSent = true;
+                }
+                mVendorId = prober.mVendorId;
+                mProductId = prober.mProductId;
+            } else {
+                Log.i(TAG, "No Devices found");
+            }
 
         } else {
             Log.i(TAG, "Getting first device");

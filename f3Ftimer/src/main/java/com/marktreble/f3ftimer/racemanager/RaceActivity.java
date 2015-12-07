@@ -1083,6 +1083,17 @@ public class RaceActivity extends ListActivity {
                     mStatus.setImageDrawable(getResources().getDrawable(R.drawable.off));
                 }
 
+                if (data.equals("unsupported")){
+                    String vid = extras.getString("vendorId");
+                    String pid = extras.getString("productId");
+                    Log.i("RACE ACT Service->UI", "Unsupported Hardware: VendorId="+vid+", ProductId="+pid);
+
+                    mDlg = new AlertDialog.Builder(mContext)
+                            .setTitle("Unsupported Hardware")
+                            .setMessage("VendorId="+vid+"\n ProductId="+pid)
+                            .show();
+                }
+
             }
 		}
         };
