@@ -19,8 +19,52 @@ import java.util.ArrayList;
  * Created by marktreble on 08/02/15.
  */
 public class SpreadsheetExport {
-    
-    public void writeFile(Context context, Race race){
+
+    public void writeExportFile(Context context, String output, String filename){
+        writeExportFile(context, output, filename, "");
+    }
+
+    public void writeExportFile(Context context, String output, String filename, String path){
+        File file;
+        if (path.equals("")) {
+            file = this.getDataStorageDir(filename);
+        } else {
+            file = new File(path+String.format("/%s", filename));
+        }
+        Log.d("EXPORT", "WRITING FILE TO: "+file.getPath());
+
+        if (file != null){
+            FileOutputStream stream = null;
+            try {
+                stream = new FileOutputStream(file);
+                try {
+                    stream.write(output.getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        stream.flush();
+                        stream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (stream != null){
+                try {
+                    stream.flush();
+                    stream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    }
+
+    public void writeResultsFile(Context context, Race race){
 
         // Update the race (.f3f) file
         if (this.isExternalStorageWritable()){
@@ -32,56 +76,56 @@ public class SpreadsheetExport {
             RacePilotData datasource2 = new RacePilotData(context);
             datasource2.open();
 
-            File file = this.getDataStorageDir(race.name);
-            if (file != null){
-                String data = "";
 
-                ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(race.id, 0, 0, 0);
+            String data = "";
 
-                if (allPilots != null){
-                    ArrayList<int[]> p_penalty = new ArrayList<>();
-                    ArrayList<Integer> groups = new ArrayList<>();
-                    // Get penalties first
-                    for (int rnd=0; rnd<race.round; rnd++){
-                        ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(race.id, rnd+1, 0, 0);
-                        int[] penalty = new int[allPilots.size()];
-                        for (int i=0; i<allPilots.size(); i++){
-                            penalty[i] = (pilots_in_round.get(i).penalty != null) ? pilots_in_round.get(i).penalty : 0;
-                        }
-                        p_penalty.add(penalty);
+            ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(race.id, 0, 0, 0);
 
-                        groups.add(datasource.getGroups(race.id, rnd+1));
+            if (allPilots != null){
+                ArrayList<int[]> p_penalty = new ArrayList<>();
+                ArrayList<Integer> groups = new ArrayList<>();
+                // Get penalties first
+                for (int rnd=0; rnd<race.round; rnd++){
+                    ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(race.id, rnd+1, 0, 0);
+                    int[] penalty = new int[allPilots.size()];
+                    for (int i=0; i<allPilots.size(); i++){
+                        penalty[i] = (pilots_in_round.get(i).penalty != null) ? pilots_in_round.get(i).penalty : 0;
                     }
+                    p_penalty.add(penalty);
 
-                    // Get all times for pilots in all rounds
-                    int num_pilots = allPilots.size();
-                    for (int i=0; i<num_pilots; i++){
-                        Pilot p = allPilots.get(i);
+                    groups.add(datasource.getGroups(race.id, rnd+1));
+                }
+
+                // Get all times for pilots in all rounds
+                int num_pilots = allPilots.size();
+                for (int i=0; i<num_pilots; i++) {
+                    Pilot p = allPilots.get(i);
+                    if (p.pilot_id > 0) { // Skipped bib no if pilot_id=0
                         int penalties_total = 0;
                         String penalties_rounds = "";
 
                         // Start new row (pilot name, frequency)
-                        data+= String.format("%s %s , %s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency);
+                        data += String.format("%s %s , %s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency);
                         // Rounds should always be 20
                         // Group scoring adds extra rounds and adds discards, so the extra discards must be deducted from the 20 rounds
-                        for (int rnd=0; rnd<20-extra_discards; rnd++){
+                        for (int rnd = 0; rnd < 20 - extra_discards; rnd++) {
                             // Set the correct pilot group from pilot position (i) and num groups (groups.get(rnd))
-                            int num_groups = (rnd<race.round)?groups.get(rnd):1;
-                            extra_discards += num_groups-1;
-                            int group_size = (int)Math.floor(num_pilots/num_groups);
+                            int num_groups = (rnd < race.round) ? groups.get(rnd) : 1;
+                            extra_discards += num_groups - 1;
+                            int group_size = (int) Math.floor(num_pilots / num_groups);
                             int remainder = num_pilots - (num_groups * group_size);
-                            int pilot_group = 0, eog=0;
-                            for (int j=1; j<=num_groups; j++) {
-                                eog+= (j*group_size) + ((remainder-->0)?1:0);
-                                if (i<eog){
+                            int pilot_group = 0, eog = 0;
+                            for (int j = 1; j <= num_groups; j++) {
+                                eog += (j * group_size) + ((remainder-- > 0) ? 1 : 0);
+                                if (i < eog) {
                                     j = num_groups;
                                 } else {
                                     pilot_group++;
                                 }
                             }
 
-                            for (int g=0; g<num_groups; g++) {
-                                if (g==pilot_group) {
+                            for (int g = 0; g < num_groups; g++) {
+                                if (g == pilot_group) {
                                     // Add pilot's time for round/group
                                     String time = "0";
                                     if (rnd < race.round) {
@@ -89,7 +133,7 @@ public class SpreadsheetExport {
                                         if (ftime > 0)
                                             time = String.format("%.2f", ftime);
                                     }
-                                    data += String.format(" , %s", time);
+                                    data += String.format(" , %s", time.replace(",", "."));
 
                                 } else {
                                     // Not in this group - add 0 (discard)
@@ -101,47 +145,23 @@ public class SpreadsheetExport {
                                     if (num_penalties > 0) {
                                         penalties_total += num_penalties * 100;
                                         for (int j = 0; j < num_penalties; j++) {
-                                            penalties_rounds += String.format("%02d", rnd);
+                                            penalties_rounds += String.format("%02d", rnd + 1);
                                         }
                                     }
                                 }
                             }
                         }
                         if (penalties_rounds.equals("")) penalties_rounds = "0";
-                        data+= String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds);
-                    }
-                }
-
-                String meta_data = String.format("%d , \"%s\", 0, 20, %d\r\n", race.round+1+extra_discards, race.name, extra_discards);
-                String output = meta_data + data;
-
-                FileOutputStream stream = null;
-                try {
-                    stream = new FileOutputStream(file);
-                    try {
-                        stream.write(output.getBytes());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    } finally {
-                        try {
-                            stream.flush();
-                            stream.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
-                if (stream != null){
-                    try {
-                        stream.flush();
-                        stream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        data += String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds);
                     }
                 }
             }
+
+            String meta_data = String.format("%d , \"%s\", 0, 20, %d\r\n", race.round+1+extra_discards, race.name, extra_discards);
+            String output = meta_data + data;
+
+            this.writeExportFile(context, output, race.name+".txt");
+
             datasource2.close();
             datasource.close();
         } else {
@@ -165,7 +185,7 @@ public class SpreadsheetExport {
         File base = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         base = new File(base, "F3F");
         base.mkdirs();
-        File file = new File(base.getAbsolutePath() + String.format("/%s.txt", name));
+        File file = new File(base.getAbsolutePath() + String.format("/%s", name));
 
         return file;
     }

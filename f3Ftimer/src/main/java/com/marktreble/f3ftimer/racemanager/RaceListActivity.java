@@ -29,11 +29,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.marktreble.f3ftimer.*;
-import com.marktreble.f3ftimer.bluetooth.BluetoothExport;
-import com.marktreble.f3ftimer.bluetooth.BluetoothImport;
+import com.marktreble.f3ftimer.exportimport.BluetoothExport;
+import com.marktreble.f3ftimer.exportimport.BluetoothImport;
 import com.marktreble.f3ftimer.data.race.*;
 import com.marktreble.f3ftimer.data.pilot.*;
 import com.marktreble.f3ftimer.dialog.*;
+import com.marktreble.f3ftimer.exportimport.FileExportRace;
+import com.marktreble.f3ftimer.exportimport.FileImportRace;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
 
@@ -58,7 +60,10 @@ public class RaceListActivity extends ListActivity {
     private AlertDialog.Builder mDlgb;
 
     static final int IMPORT_SRC_BT = 0;
+    static final int IMPORT_SRC_FILE = 1;
+
     static final int EXPORT_SRC_BT = 0;
+    static final int EXPORT_SRC_FILE = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +136,7 @@ public class RaceListActivity extends ListActivity {
                 
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
                 builder.setTitle("Import Race")
-                        .setMessage("Race has been imported")
+                        .setMessage("Your Race(s) have been imported")
                         .setNegativeButton("OK", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // User cancelled the dialog
@@ -139,6 +144,22 @@ public class RaceListActivity extends ListActivity {
                         });
                 builder.create().show();
                 
+            }
+
+            if (requestCode == RaceListActivity.DLG_IMPORT) {
+                getNamesArray();
+                mArrAdapter.notifyDataSetChanged();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("Import Race")
+                        .setMessage("Your Race(s) have been imported")
+                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        });
+                builder.create().show();
+
             }
 		}
     }
@@ -272,9 +293,14 @@ public class RaceListActivity extends ListActivity {
                 .setTitle(R.string.select_import_source)
                 .setItems(R.array.import_sources, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        Intent intent;
                         switch (which) {
                             case IMPORT_SRC_BT:
-                                Intent intent = new Intent(mContext, BluetoothImport.class);
+                                intent = new Intent(mContext, BluetoothImport.class);
+                                startActivityForResult(intent, DLG_IMPORT);
+                                break;
+                            case IMPORT_SRC_FILE:
+                                intent = new Intent(mContext, FileImportRace.class);
                                 startActivityForResult(intent, DLG_IMPORT);
                                 break;
                         }
@@ -287,11 +313,16 @@ public class RaceListActivity extends ListActivity {
     public void exportRace(){
         mDlgb = new AlertDialog.Builder(mContext)
                 .setTitle(R.string.select_export_source)
-                .setItems(R.array.import_sources, new DialogInterface.OnClickListener() {
+                .setItems(R.array.export_sources, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        Intent intent;
                         switch (which) {
                             case EXPORT_SRC_BT:
-                                Intent intent = new Intent(mContext, BluetoothExport.class);
+                                intent = new Intent(mContext, BluetoothExport.class);
+                                startActivity(intent);
+                                break;
+                            case EXPORT_SRC_FILE:
+                                intent = new Intent(mContext, FileExportRace.class);
                                 startActivity(intent);
                                 break;
                         }

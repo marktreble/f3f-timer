@@ -38,6 +38,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -56,7 +57,7 @@ import android.widget.TextView;
 public class RaceActivity extends ListActivity {
 	
 	public static boolean DEBUG = true;
-	public static int RESULT_ABORTED = 2;
+	public static int RESULT_ABORTED = 4; // Changed from 2 to 4 because of conflict with dialog dismissal
 	public static int ROUND_SCRUBBED = 3;
 	
 	// Dialogs
@@ -188,11 +189,18 @@ public class RaceActivity extends ListActivity {
 		}
 
         // Start Results Display Server
-        if (mPrefResultsDisplay && !mPrefExternalDisplay.equals("")){
-            Log.i("START SERVICE", "RESULTS Display");
-            RaceResultsDisplayService.stop(this);
+        if (mPrefResultsDisplay){
+            if (mPrefExternalDisplay == null || mPrefExternalDisplay.equals("")){
+                mDlg = new AlertDialog.Builder(mContext)
+                        .setTitle("External Display")
+                        .setMessage("Could not start external display service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off.")
+                        .setNegativeButton(getString(android.R.string.ok), null)
+                        .show();
+            } else {
+                RaceResultsDisplayService.stop(this);
 
-            RaceResultsDisplayService.startRDService(this,  mPrefExternalDisplay);
+                RaceResultsDisplayService.startRDService(this, mPrefExternalDisplay);
+            }
         }
 
         // Stop Any Timer Drivers
@@ -412,7 +420,7 @@ public class RaceActivity extends ListActivity {
                     datasource.close();
 
                     // Update the spread file
-                    new SpreadsheetExport().writeFile(mContext, mRace);
+                    new SpreadsheetExport().writeResultsFile(mContext, mRace);
                 }
 
 			}
@@ -634,6 +642,7 @@ public class RaceActivity extends ListActivity {
 	 */
 	
 	private void getNamesArray(){
+        Log.d("RACEACTIVITY", "GET NAMES ARRAY");
 
 		RacePilotData datasource = new RacePilotData(this);
 		datasource.open();
@@ -820,7 +829,7 @@ public class RaceActivity extends ListActivity {
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
                 p_name.setPaintFlags(p_name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                p_name.setTextColor(getResources().getColor(R.color.text3));
+                p_name.setTextColor(ContextCompat.getColor(mContext,R.color.text3));
 
                 View group_header = row.findViewById(R.id.group_header);
                 TextView group_header_label = (TextView) row.findViewById(R.id.group_header_label);
@@ -838,16 +847,16 @@ public class RaceActivity extends ListActivity {
         		    p_name.setCompoundDrawablePadding(padding);
         		}
         		
-           		row.setBackgroundColor(getResources().getColor(R.color.background));
+           		row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background));
            		
                 if (p.status==Pilot.STATUS_RETIRED){
                 	p_name.setPaintFlags(p_name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-                	p_name.setTextColor(getResources().getColor(R.color.red));
+                	p_name.setTextColor(ContextCompat.getColor(mContext, R.color.red));
                 }
 
             	if (p.status == Pilot.STATUS_REFLIGHT){
-            		p_name.setTextColor(getResources().getColor(R.color.green));
-            		row.setBackgroundColor(getResources().getColor(R.color.lt_grey));
+            		p_name.setTextColor(ContextCompat.getColor(mContext, R.color.green));
+            		row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.lt_grey));
    	   			}
 
                 TextView penalty = (TextView) row.findViewById(R.id.penalty);
@@ -861,11 +870,11 @@ public class RaceActivity extends ListActivity {
                 if (p.time==0 && !p.flown){
                 	time.setText(getResources().getString(R.string.notime));
                 	if (mNextPilot!=null && mNextPilot.pilot_id == p.pilot_id && mNextPilot.position == position)
-                   		row.setBackgroundColor(getResources().getColor(R.color.lt_grey));
+                   		row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.lt_grey));
                 		
                 } else {
                 	time.setText(String.format("%.2f", p.time));
-               		row.setBackgroundColor(getResources().getColor(R.color.dk_grey));
+               		row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.dk_grey));
                 }
 
                 TextView points = (TextView) row.findViewById(R.id.points);
@@ -935,12 +944,14 @@ public class RaceActivity extends ListActivity {
 					// Update the list
 					for (int i=0; i<_options.length; i++){
 						if (_selections[i]){
-							addPilot(mArrPilots.get(i));
+                            Log.d("RACEACTIVITY", "ADDING PILOT: "+ mArrPilots.get(i).toString());
+                            addPilot(mArrPilots.get(i));
 						}
 						
 					}
 					// Dismiss picker, so update the listview!
-                    updateListView();
+                    Log.d("RACEACTIVITY", "UPDATELISTVIEW");
+                            updateListView();
 
 		   	   		mDlg = null;
 					break;
@@ -950,12 +961,14 @@ public class RaceActivity extends ListActivity {
 
     Runnable updateListView = new Runnable(){
         public void run(){
+            Log.d("RACEACTIVITY", "EXECUTING: UPDATELISTVIEW");
             getNamesArray();
             mArrAdapter.notifyDataSetChanged();
         }
     };
 
     public void updateListView(){
+        Log.d("RACEACTIVITY", "INITIALISING: UPDATELISTVIEW");
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -1074,13 +1087,13 @@ public class RaceActivity extends ListActivity {
                 if (data.equals("driver_started")){
                     Log.i("RACE ACT Service->UI", "driver_started");
                     mConnectionStatus = true;
-                    mStatus.setImageDrawable(getResources().getDrawable(R.drawable.on));
+                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.on));
                 }
 
                 if (data.equals("driver_stopped")){
                     Log.i("RACE ACT Service->UI", "driver_stopped");
                     mConnectionStatus = false;
-                    mStatus.setImageDrawable(getResources().getDrawable(R.drawable.off));
+                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.off));
                 }
 
                 if (data.equals("unsupported")){
@@ -1091,6 +1104,7 @@ public class RaceActivity extends ListActivity {
                     mDlg = new AlertDialog.Builder(mContext)
                             .setTitle("Unsupported Hardware")
                             .setMessage("VendorId="+vid+"\n ProductId="+pid)
+                            .setNegativeButton(getString(android.R.string.ok), null)
                             .show();
                 }
 

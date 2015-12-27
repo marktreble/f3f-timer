@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class PilotData {
 
@@ -94,17 +95,21 @@ public class PilotData {
 	}
 
 	public ArrayList<Pilot> getAllPilotsExcept(ArrayList<Pilot> arrPilots) {
-		String notin = "";
-		for (Pilot p : arrPilots) {
-	        notin += ","+Integer.toString(p.pilot_id);
-	    }
-		
+
 		ArrayList<Pilot> allPilots = new ArrayList<>();
-		Cursor cursor = database.query("pilots", allColumns, "id not in (0"+notin+")", null, null, null, "lastname");
+		Cursor cursor = database.query("pilots", allColumns, null, null, null, null, "lastname,firstname");
 		cursor.moveToFirst();
+		boolean excepted;
 		while (!cursor.isAfterLast()) {
+			// Compare names as names may be imported and ids won't match
 			Pilot p = cursorToPilot(cursor);
-			allPilots.add(p);
+			excepted = false;
+			for (Pilot pe : arrPilots) { // pe excepted pilot
+				if ((pe.firstname.equals(p.firstname) && pe.lastname.equals(p.lastname))) {
+					excepted = true;
+				}
+			}
+			if (!excepted) allPilots.add(p);
 			cursor.moveToNext();
 		}
 		// Make sure to close the cursor

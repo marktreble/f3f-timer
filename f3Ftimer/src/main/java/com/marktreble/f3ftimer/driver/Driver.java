@@ -31,7 +31,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeechService;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 
@@ -475,7 +474,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 		Log.d("DRIVER", "TIME SPOKEN");
         
 		// Update the .txt file
-        new SpreadsheetExport().writeFile(mContext, mRace);
+        new SpreadsheetExport().writeResultsFile(mContext, mRace);
 		Log.d("DRIVER", "EXPORT FILE WRITTEN");
 		SystemClock.sleep(1000);
 

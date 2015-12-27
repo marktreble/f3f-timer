@@ -62,6 +62,12 @@
 
     <string-array name="import_sources" translatable="false">
         <item>Bluetooth</item>
-        <item>Another import method</item>
+        <item>From File</item>
     </string-array>
+
+    <string-array name="export_sources" translatable="false">
+        <item>Bluetooth</item>
+        <item>To File</item>
+    </string-array>
+
 </resources>

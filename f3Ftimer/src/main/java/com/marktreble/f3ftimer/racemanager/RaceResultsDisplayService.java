@@ -57,6 +57,8 @@ public class RaceResultsDisplayService extends Service{
     private Context mContext;
 
     public static void startRDService(Context context, String prefExternalDisplay){
+        if (prefExternalDisplay == null || prefExternalDisplay.equals("")) return;
+
         Intent serviceIntent = new Intent(context, RaceResultsDisplayService.class);
         serviceIntent.putExtra(BT_DEVICE, prefExternalDisplay);
         context.startService(serviceIntent);
@@ -112,6 +114,10 @@ public class RaceResultsDisplayService extends Service{
                     if (d.getAddress().equals(chosenDevice))
                         device = d;
                 }
+            }
+            if (device == null){
+                Log.d("RaceResultsDisplay", "No device... stopping");
+                return 0;
             }
             deviceName = device.getName();
             mMacAddress = device.getAddress();

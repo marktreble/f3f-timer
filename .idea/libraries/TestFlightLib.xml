@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="TestFlightLib">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/f3Ftimer/libs/TestFlightLib.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>

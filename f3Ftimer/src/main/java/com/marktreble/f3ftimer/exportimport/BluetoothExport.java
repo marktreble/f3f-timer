@@ -1,17 +1,12 @@
-package com.marktreble.f3ftimer.bluetooth;
+package com.marktreble.f3ftimer.exportimport;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -30,7 +25,7 @@ import java.util.UUID;
 /**
  * Created by marktreble on 27/12/14.
  */
-public class BluetoothExport extends Activity {
+public class BluetoothExport extends BaseExport {
 
     private Context mContext;
     private Activity mActivity;
@@ -51,12 +46,8 @@ public class BluetoothExport extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.bt_export);
-
-        mContext = this;
-        mActivity = this;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -252,22 +243,13 @@ public class BluetoothExport extends Activity {
     private void sendRaceData(String query){
         // Serialize all race data, pilots, times + groups
         int race_id = Integer.parseInt(query);
-        
+
         RaceData datasource = new RaceData(mContext);
         datasource.open();
         Race r = datasource.getRace(race_id);
-        String race = datasource.getSerialized(race_id);
-        String racegroups = datasource.getGroupsSerialized(race_id, r.round);
         datasource.close();
 
-        RacePilotData datasource2 = new RacePilotData(mContext);
-        datasource2.open();
-        String racepilots = datasource2.getPilotsSerialized(race_id);
-        String racetimes = datasource2.getTimesSerialized(race_id, r.round);
-        datasource2.close();
-        
-        String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
-
+        String data = super.getSerialisedRaceData(r.id, r.round);
         Log.d("BLUETOOTH::EXPORT", data);
 
         byte[] bytes = data.getBytes(Charset.forName("UTF-8"));

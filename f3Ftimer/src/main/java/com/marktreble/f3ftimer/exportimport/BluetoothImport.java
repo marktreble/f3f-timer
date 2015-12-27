@@ -1,4 +1,4 @@
-package com.marktreble.f3ftimer.bluetooth;
+package com.marktreble.f3ftimer.exportimport;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
@@ -29,18 +28,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * Created by marktreble on 27/12/14.
  */
-public class BluetoothImport extends Activity {
+public class BluetoothImport extends BaseImport {
 
-    private Context mContext;
-    private Activity mActivity;
 
     private AlertDialog mDlg;
     private AlertDialog.Builder mDlgb;
@@ -74,9 +69,6 @@ public class BluetoothImport extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        mContext = this;
-        mActivity = this;
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -423,74 +415,9 @@ public class BluetoothImport extends Activity {
         }
     };
     
-    private void importRace(String data){
-        // Parse json and add to database
-        Log.i("BT", data);
-        
-        try {
-            JSONObject racedata = new JSONObject(data);
-            JSONObject race = racedata.optJSONObject("race");
-            JSONArray racepilots = racedata.optJSONArray("racepilots");
-            JSONArray racetimes = racedata.optJSONArray("racetimes");
-            JSONArray racegroups = racedata.optJSONArray("racegroups");
+    protected void importRace(String data){
+        super.importRace(data);
 
-            RaceData datasource = new RaceData(mContext);
-            datasource.open();
-            // Import Race
-            Race r = new Race(race);
-            int race_id = (int)datasource.saveRace(r);
-            
-            // Import Groups
-            for (int i=0; i<racegroups.length(); i++){
-                datasource.setGroups(race_id, i + 1, racegroups.getInt(i));
-            }
-            datasource.close();
-
-            RacePilotData datasource2 = new RacePilotData(mContext);
-            datasource2.open();
-            // Import Pilots
-            ArrayList<Integer> pilot_new_ids = new ArrayList<>();
-            
-            for (int i=0; i<racepilots.length(); i++){
-                JSONObject p = racepilots.optJSONObject(i);
-                Pilot pilot = new Pilot(p);
-                int new_id = (int)datasource2.addPilot(pilot, race_id);
-                pilot_new_ids.add(new_id);
-                Log.i("BT", pilot.toString());
-            }
-            // Import Times
-            for (int i=0; i<racetimes.length(); i++){
-                JSONArray roundtimes = racetimes.optJSONArray(i);
-                for (int j=0;j<roundtimes.length(); j++) {
-                    int pilot_id = pilot_new_ids.get(j);
-
-                    JSONObject pilottime = roundtimes.optJSONObject(j);
-
-                    float time = Float.parseFloat(pilottime.optString("time"));
-                    int flown = pilottime.optInt("flown");
-                    int penalty = pilottime.optInt("penalty");
-
-                    Log.i("BT", String.format("FLOWN == %d", flown));
-                    if (flown == 1) {
-                        Log.i("BT", String.format("RACE %d, PILOT %d, ROUND %d, TIME %s", race_id, pilot_id, i+1, time));
-                        datasource2.setPilotTimeInRound(race_id, pilot_id, i+1, time);
-                        if (penalty>0)
-                            datasource2.setPenalty(race_id, pilot_id, i+1, penalty);
-
-
-                    }
-                        
-
-                }
-            }
-            
-            datasource2.close();
-
-        } catch (JSONException e){
-            e.printStackTrace();
-        }
-        
-        
         closeSocket();
         mActivity.setResult(RESULT_OK);
         mActivity.finish();

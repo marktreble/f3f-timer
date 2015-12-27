@@ -39,6 +39,7 @@ The following table lists known device compatibility:
 | Samsung Galaxy S4       |            |                       |✔        |
 | Leagoo Lead 3           |            | ✔                     |         |
 | HTC One M9              |            | ✔                     |         |
+| Cruiser BT67            |            | ✔                     |         |
 
 ###Features
 
