@@ -26,6 +26,7 @@ import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -50,7 +51,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (view!=null)
-            view.setBackgroundColor(getResources().getColor(R.color.background_dialog ));
+            view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_dialog));
 
         // Set values
         setLangSummary("pref_voice_lang");

@@ -282,9 +282,9 @@ public class RaceActivity extends ListActivity {
 
         mStatus = (ImageView)findViewById(R.id.connection_status);
         if (mConnectionStatus) {
-            mStatus.setImageDrawable(getResources().getDrawable(R.drawable.on));
+            mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.on));
         } else{
-            mStatus.setImageDrawable(getResources().getDrawable(R.drawable.off));
+            mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.off));
         }
         //
         sendCommand("get_connection_status");
