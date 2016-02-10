@@ -66,15 +66,14 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/resources" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/transforms" />
@@ -83,8 +82,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Android 4.4.2 Google APIs" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="_android_sdk_macosx_add_ons_addon_google_apis_google_19_1_libs_usb_jar-Google Inc.:Google APIs:19" level="project" />
-    <orderEntry type="library" exported="" name="_android_sdk_macosx_add_ons_addon_google_apis_google_19_1_libs_effects_jar-Google Inc.:Google APIs:19" level="project" />
-    <orderEntry type="library" exported="" name="_android_sdk_macosx_add_ons_addon_google_apis_google_19_1_libs_maps_jar-Google Inc.:Google APIs:19" level="project" />
+    <orderEntry type="library" exported="" name="effects-Google Inc.:Google APIs:19" level="project" />
+    <orderEntry type="library" exported="" name="usb-Google Inc.:Google APIs:19" level="project" />
+    <orderEntry type="library" exported="" name="maps-Google Inc.:Google APIs:19" level="project" />
   </component>
 </module>

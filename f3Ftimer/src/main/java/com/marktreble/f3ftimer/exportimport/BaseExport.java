@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.nononsenseapps.filepicker.FilePickerActivity;
@@ -117,5 +118,15 @@ public class BaseExport extends Activity {
         String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
 
         return data;
+    }
+
+    protected String getSerialisedPilotData(){
+        PilotData datasource = new PilotData(mContext);
+        datasource.open();
+        String pilots = datasource.getSerialized();
+        datasource.close();
+
+        return pilots;
+
     }
 }

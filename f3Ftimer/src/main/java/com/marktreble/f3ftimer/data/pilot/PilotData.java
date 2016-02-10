@@ -60,7 +60,7 @@ public class PilotData {
 		values.put("models", p.models);
 		values.put("nationality", p.nationality);
 		values.put("language", p.language);
-		database.update("pilots", values, "id="+Integer.toString(p.id), null);
+		database.update("pilots", values, "id=" + Integer.toString(p.id), null);
 	}
 
 	public void deletePilot(int id) {
@@ -116,6 +116,20 @@ public class PilotData {
 		cursor.close();
 
 		return allPilots;
+	}
+
+	public String getSerialized(){
+		String array = "[";
+		ArrayList<Pilot> pilots = getAllPilots();
+		for(int i=0;i<pilots.size(); i++){
+			if (i>0) array+=",";
+			Pilot p = pilots.get(i);
+			String str_pilot = String.format("{\"id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\"}", p.id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language);
+			array+= str_pilot;
+		}
+		array+= "]";
+
+		return array;
 	}
 	
 }

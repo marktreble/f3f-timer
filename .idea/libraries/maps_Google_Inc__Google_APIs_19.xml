@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="maps-Google Inc.:Google APIs:19">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Library/Android/sdk/add-ons/addon-google_apis-google-19/libs/maps.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

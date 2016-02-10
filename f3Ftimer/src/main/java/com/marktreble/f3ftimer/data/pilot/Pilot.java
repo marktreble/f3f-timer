@@ -36,7 +36,7 @@ public class Pilot {
     }
 
     public Pilot(JSONObject o){
-        id = Integer.parseInt(o.optString("pilot_id"));
+        if (o.has("pilot_id")) id = Integer.parseInt(o.optString("pilot_id"));
         status = Integer.parseInt(o.optString("status"));
         firstname = o.optString("firstname");
         lastname = o.optString("lastname");
