@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
@@ -96,6 +97,23 @@ public class BaseImport extends Activity {
 
             datasource2.close();
 
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void importPilots(String data){
+        try {
+            JSONArray pilots = new JSONArray(data);
+
+            PilotData datasource = new PilotData(mContext);
+            datasource.open();
+
+            for (int i = 0; i < pilots.length(); i++) {
+                JSONObject p = pilots.optJSONObject(i);
+                Pilot pilot = new Pilot(p);
+                datasource.savePilot(pilot);
+            }
         } catch (JSONException e){
             e.printStackTrace();
         }

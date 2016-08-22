@@ -1,6 +1,5 @@
 package com.marktreble.f3ftimer.exportimport;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,10 +14,6 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.race.Race;
-import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +29,7 @@ import java.util.UUID;
 /**
  * Created by marktreble on 27/12/14.
  */
-public class BluetoothImport extends BaseImport {
+public class BluetoothImportRace extends BaseImport {
 
 
     private AlertDialog mDlg;
@@ -88,7 +83,7 @@ public class BluetoothImport extends BaseImport {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == BluetoothImport.REQUEST_ENABLE_BT){
+        if (requestCode == BluetoothImportRace.REQUEST_ENABLE_BT){
             if(resultCode==RESULT_OK){
                 getBluetoothDevices();
             } else {

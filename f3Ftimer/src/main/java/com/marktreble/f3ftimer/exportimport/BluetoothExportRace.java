@@ -25,7 +25,7 @@ import java.util.UUID;
 /**
  * Created by marktreble on 27/12/14.
  */
-public class BluetoothExport extends BaseExport {
+public class BluetoothExportRace extends BaseExport {
 
     private Context mContext;
     private Activity mActivity;
@@ -80,7 +80,7 @@ public class BluetoothExport extends BaseExport {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == BluetoothExport.REQUEST_ENABLE_BT){
+        if (requestCode == BluetoothExportRace.REQUEST_ENABLE_BT){
             if(resultCode==RESULT_OK){
                 startListening();
             } else {

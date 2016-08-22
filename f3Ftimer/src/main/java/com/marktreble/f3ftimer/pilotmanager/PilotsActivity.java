@@ -35,6 +35,8 @@ import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.dialog.PilotsEditActivity;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.exportimport.FileExportPilots;
+import com.marktreble.f3ftimer.exportimport.FileImportPilots;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
@@ -44,6 +46,7 @@ public class PilotsActivity extends ListActivity {
     // Dialogs
     static int DLG_ADD_PILOT = 1;
     static int DLG_EDIT_PILOT = 2;
+	static int DLG_IMPORT = 2;
 
 	private ArrayAdapter<String> mArrAdapter;
 	private ArrayList<String> mArrNames;
@@ -203,6 +206,12 @@ public class PilotsActivity extends ListActivity {
 	    	case R.id.menu_add_pilot:
 	    		addPilot();
 	    		return true;
+			case R.id.menu_import_pilots:
+				importPilots();
+				return true;
+			case R.id.menu_export_pilots:
+				exportPilots();
+				return true;
             case R.id.menu_race_manager:
                 raceManager();
                 return true;
@@ -228,7 +237,17 @@ public class PilotsActivity extends ListActivity {
         startActivityForResult(intent, PilotsActivity.DLG_ADD_PILOT);
     }
 
-    public void raceManager(){
+	public void importPilots(){
+		Intent intent = new Intent(mContext, FileImportPilots.class);
+		startActivityForResult(intent, DLG_IMPORT);
+	}
+
+	public void exportPilots(){
+		Intent intent = new Intent(mContext, FileExportPilots.class);
+		startActivityForResult(intent, DLG_IMPORT);
+	}
+
+	public void raceManager(){
         Intent intent = new Intent(mContext,RaceListActivity.class);
         startActivity(intent);
     }

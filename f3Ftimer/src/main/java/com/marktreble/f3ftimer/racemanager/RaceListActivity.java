@@ -29,8 +29,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.marktreble.f3ftimer.*;
-import com.marktreble.f3ftimer.exportimport.BluetoothExport;
-import com.marktreble.f3ftimer.exportimport.BluetoothImport;
+import com.marktreble.f3ftimer.exportimport.BluetoothExportRace;
+import com.marktreble.f3ftimer.exportimport.BluetoothImportRace;
 import com.marktreble.f3ftimer.data.race.*;
 import com.marktreble.f3ftimer.data.pilot.*;
 import com.marktreble.f3ftimer.dialog.*;
@@ -296,7 +296,7 @@ public class RaceListActivity extends ListActivity {
                         Intent intent;
                         switch (which) {
                             case IMPORT_SRC_BT:
-                                intent = new Intent(mContext, BluetoothImport.class);
+                                intent = new Intent(mContext, BluetoothImportRace.class);
                                 startActivityForResult(intent, DLG_IMPORT);
                                 break;
                             case IMPORT_SRC_FILE:
@@ -318,7 +318,7 @@ public class RaceListActivity extends ListActivity {
                         Intent intent;
                         switch (which) {
                             case EXPORT_SRC_BT:
-                                intent = new Intent(mContext, BluetoothExport.class);
+                                intent = new Intent(mContext, BluetoothExportRace.class);
                                 startActivity(intent);
                                 break;
                             case EXPORT_SRC_FILE:
