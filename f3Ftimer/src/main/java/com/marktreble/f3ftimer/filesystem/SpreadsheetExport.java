@@ -20,6 +20,8 @@ import java.util.ArrayList;
  */
 public class SpreadsheetExport {
 
+    static int MAX_ROUNDS = 30;
+
     public void writeExportFile(Context context, String output, String filename){
         writeExportFile(context, output, filename, "");
     }
@@ -106,9 +108,9 @@ public class SpreadsheetExport {
 
                         // Start new row (pilot name, frequency)
                         data += String.format("%s %s , %s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency);
-                        // Rounds should always be 20
-                        // Group scoring adds extra rounds and adds discards, so the extra discards must be deducted from the 20 rounds
-                        for (int rnd = 0; rnd < 20 - extra_discards; rnd++) {
+                        // Rounds should always be MAX_ROUNDS
+                        // Group scoring adds extra rounds and adds discards, so the extra discards must be deducted from the 30 rounds
+                        for (int rnd = 0; rnd < MAX_ROUNDS - extra_discards; rnd++) {
                             // Set the correct pilot group from pilot position (i) and num groups (groups.get(rnd))
                             int num_groups = (rnd < race.round) ? groups.get(rnd) : 1;
                             extra_discards += num_groups - 1;
@@ -157,7 +159,7 @@ public class SpreadsheetExport {
                 }
             }
 
-            String meta_data = String.format("%d , \"%s\", 0, 20, %d\r\n", race.round+1+extra_discards, race.name, extra_discards);
+            String meta_data = String.format("%d , \"%s\", 0, %d, %d\r\n", race.round+1+extra_discards, race.name, MAX_ROUNDS, extra_discards);
             String output = meta_data + data;
 
             this.writeExportFile(context, output, race.name+".txt");
