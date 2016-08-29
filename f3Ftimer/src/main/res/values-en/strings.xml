@@ -57,6 +57,7 @@
     <string name="app_results">Results Manager</string>
     <string name="refly">Refly?</string>
     <string name="finish">Finish</string>
+    <string name="score_zero">Score zero</string>
     <string name="space"> </string>
     <string name="menu_new_race">New Race</string>
     <string name="menu_import_race">Import Race</string>

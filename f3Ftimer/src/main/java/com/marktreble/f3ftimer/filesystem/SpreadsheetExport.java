@@ -20,8 +20,6 @@ import java.util.ArrayList;
  */
 public class SpreadsheetExport {
 
-    static int MAX_ROUNDS = 30;
-
     public void writeExportFile(Context context, String output, String filename){
         writeExportFile(context, output, filename, "");
     }
@@ -67,6 +65,11 @@ public class SpreadsheetExport {
     }
 
     public void writeResultsFile(Context context, Race race){
+
+        int MAX_ROUNDS = 10;
+
+        if (race.round>10) MAX_ROUNDS = 20;
+        if (race.round>20) MAX_ROUNDS = 30;
 
         // Update the race (.f3f) file
         if (this.isExternalStorageWritable()){

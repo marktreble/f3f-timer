@@ -190,8 +190,8 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		TextView status = (TextView) mView.findViewById(R.id.status);
 		status.setText("Run Complete");
 
-		Button a = (Button) mView.findViewById(R.id.button_abort);
-		a.setVisibility(View.GONE);
+		Button abort = (Button) mView.findViewById(R.id.button_abort);
+		abort.setVisibility(View.GONE);
 
         Button baseA = (Button) mView.findViewById(R.id.base_A);
         Button baseB = (Button) mView.findViewById(R.id.base_B);
@@ -205,6 +205,11 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         r.setVisibility(View.VISIBLE);
 
 		mFinalTime = time;
+
+		// Start Round Timeout now
+		RaceTimerActivity a = (RaceTimerActivity) getActivity();
+		a.sendCommand("begin_timeout");
+
 	}
 		
 	public void next() {

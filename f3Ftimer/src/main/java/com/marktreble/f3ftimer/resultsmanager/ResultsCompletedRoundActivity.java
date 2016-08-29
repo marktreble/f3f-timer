@@ -206,13 +206,13 @@ public class ResultsCompletedRoundActivity extends ListActivity {
         float previousscore = 1000.0f;
 		for (Pilot p : mArrPilots){
 			mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
-			mArrNumbers.add(String.format("%d", p.position));
 
 			// Check for tied scores - use the same position qualifier
 			if (p.points < previousscore)
 				pos = c;
 			previousscore = p.points;
 			p.position = pos;
+			mArrNumbers.add(String.format("%d", p.position));
 			Log.d("MARRNAMES", p.firstname+":"+p.position);
 			c++;
 		}
@@ -224,7 +224,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 	private void setList(){
 	    this.getNamesArray(); 
 
-	    mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_racepilots , R.id.text1, mArrNames){
+	    mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots , R.id.text1, mArrNames){
    	   		@Override
    	   		public View getView(int position, View convertView, ViewGroup parent) {
                 View row;
@@ -232,15 +232,16 @@ public class ResultsCompletedRoundActivity extends ListActivity {
                 if (mArrNames.get(position) == null) return null;
                 
                 if (null == convertView) {
-                row = getLayoutInflater().inflate(R.layout.listrow_racepilots, parent, false);
+                row = getLayoutInflater().inflate(R.layout.listrow_resultspilots, parent, false);
                 } else {
                 row = convertView;
                 }
                 
-                Pilot p = (Pilot)mArrPilots.get(position);
+                Pilot p = mArrPilots.get(position);
 
                 TextView p_number = (TextView) row.findViewById(R.id.number);
-                p_number.setText(mArrNumbers.get(position));
+				p_number.setText(mArrNumbers.get(position));
+				//p_number.setText(p.position);
 
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));

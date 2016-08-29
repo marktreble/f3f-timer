@@ -89,7 +89,8 @@ public class RaceActivity extends ListActivity {
 
     private boolean mRoundComplete;
 	private boolean mRoundNotStarted;
-	private Pilot mNextPilot;
+    private Pilot mNextPilot;
+    private Pilot mNextReflightPilot;
 
 	private boolean mPilotDialogShown = false; // Used to determine the action when the start button is pressed
 	
@@ -379,9 +380,8 @@ public class RaceActivity extends ListActivity {
 			}
 			if (requestCode == RaceActivity.DLG_TIMER){
 				// Response from completed run
-                Log.d("ONACTIVITYRESULT", "RET FROM DLG TIMER");
+
 				if (mNextPilot != null){
-                    Log.d("ONACTIVITYRESULT", "SCROLL");
 					// Bring up next pilot's dialog
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -390,24 +390,22 @@ public class RaceActivity extends ListActivity {
                         }
                     }, 100);
 
-                    Log.d("ONACTIVITYRESULT", "NEXT PILOT");
                     if (!mFirstInGroup.get(mNextPilot.position)) {
-                        Log.d("ONACTIVITYRESULT", "PILOT: "+mNextPilot.position+" in 600ms");
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 showNextPilot();
-                                sendCommand("begin_timeout");
                             }
                         }, 600);
                     }
-				} else {
+
+                } else {
 					// Bring up the next round dialog
 					showNextRound();
 				}
 			}
 			if (requestCode == RaceActivity.DLG_TIME_SET){
-				// Response from setting the time manual
+				// Response from setting the time manually
 				String time = data.getStringExtra("time");
                 int pilot_id = data.getIntExtra("pilot", 0);
                 int round = data.getIntExtra("round", 0);
@@ -672,7 +670,9 @@ public class RaceActivity extends ListActivity {
 
 		mRoundComplete = true;
 		mRoundNotStarted = true;
-		mNextPilot = null;
+        mNextPilot = null;
+        mNextReflightPilot = null;
+
         // No. of bib numbers skipped
         // (used to close up the gaps in the list, and pop the unused ends off the arrays at the end)
         int skipped = 0;
@@ -751,18 +751,30 @@ public class RaceActivity extends ListActivity {
                     } else {
                         // Unset round not started flag
                         // Somebody has flown
-                        mRoundNotStarted = false;
+                        if ((p.status & Pilot.STATUS_RETIRED) > 0)
+                            mRoundNotStarted = false;
                     }
 
                     // Get the next pilot in the running order
                     if (p.time == 0 && !p.flown &&
-                            (((p.status & Pilot.STATUS_NORMAL) == Pilot.STATUS_NORMAL) || ((p.status & Pilot.STATUS_REFLIGHT) == Pilot.STATUS_REFLIGHT))
+                            (((p.status & Pilot.STATUS_NORMAL) == Pilot.STATUS_NORMAL) /*|| ((p.status & Pilot.STATUS_REFLIGHT) == Pilot.STATUS_REFLIGHT)*/)
                             && (mNextPilot == null || mNextPilot.position > position)) {
                         mNextPilot = p;
                         mNextPilot.position = position;
                         mNextPilot.number = mArrNumbers.get(position);
                         // Log the round number against the next pilot, so that the data is available to the external "start_pressed" message
                         mNextPilot.round = mRnd + r;
+                    }
+
+                    // Get the next reflight pilot in the running order
+                    if (p.time == 0 && !p.flown &&
+                            ((p.status & Pilot.STATUS_REFLIGHT) == Pilot.STATUS_REFLIGHT)
+                            && (mNextReflightPilot == null || mNextReflightPilot.position > position)) {
+                        mNextReflightPilot = p;
+                        mNextReflightPilot.position = position;
+                        mNextReflightPilot.number = mArrNumbers.get(position);
+                        // Log the round number against the next pilot, so that the data is available to the external "start_pressed" message
+                        mNextReflightPilot.round = mRnd + r;
                     }
 
                     ftg[g] = (p.time > 0) ? Math.min(ftg[g], p.time) : ftg[g];
@@ -796,8 +808,10 @@ public class RaceActivity extends ListActivity {
             mArrGroups.remove(index);
             mFirstInGroup.remove(index);
         }
-        
-		datasource.close();
+
+        if (mNextPilot == null) mNextPilot = mNextReflightPilot;
+
+        datasource.close();
 	}
 	
 	private void setList() {
@@ -856,7 +870,7 @@ public class RaceActivity extends ListActivity {
 
             	if (p.status == Pilot.STATUS_REFLIGHT){
             		p_name.setTextColor(ContextCompat.getColor(mContext, R.color.green));
-            		row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.lt_grey));
+            		row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.med_grey));
    	   			}
 
                 TextView penalty = (TextView) row.findViewById(R.id.penalty);

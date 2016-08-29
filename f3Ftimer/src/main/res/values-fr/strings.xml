@@ -88,4 +88,5 @@
     <string name="de">German</string>
     <string name="nl">Dutch</string>
     <string name="es">Spanish</string>
+    <string name="score_zero">Zéro</string>
 </resources>

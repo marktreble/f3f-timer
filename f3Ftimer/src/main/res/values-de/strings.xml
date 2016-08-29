@@ -57,6 +57,7 @@
     <string name="app_results">Ergebnisse</string>
     <string name="refly">Neuflug?</string>
     <string name="finish">Akzeptieren</string>
+    <string name="score_zero">Score null</string>
     <string name="space"> </string>
     <string name="menu_new_race">Neues Rennen</string>
     <string name="menu_import_race">Rennen Importieren</string>

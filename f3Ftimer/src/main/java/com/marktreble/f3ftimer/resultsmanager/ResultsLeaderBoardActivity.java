@@ -261,7 +261,8 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 	  			for (int i=0; i<sz; i++){
 	  				int pos = p_positions[i]-1;
 	  				mArrNames.set(pos, String.format("%s", p_names.get(i)));
-	  				mArrNumbers.set(pos, p_bib_numbers.get(i));
+					//mArrNumbers.set(pos, p_bib_numbers.get(i));
+					mArrNumbers.set(pos, Integer.toString(p_positions[i]));
 	  				Pilot p = new Pilot();
 	  				p.points = round2Fixed(p_totals[i].floatValue(), 2);
 	  				p.nationality = p_nationalities.get(i);
@@ -294,7 +295,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 	private void setList(){
 	    this.getNamesArray(); 
 
-	    mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_racepilots , R.id.text1, mArrNames){
+	    mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots , R.id.text1, mArrNames){
    	   		@Override
    	   		public View getView(int position, View convertView, ViewGroup parent) {
                 View row;
@@ -302,7 +303,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
                 if (mArrNames.get(position) == null) return null;
                 
                 if (null == convertView) {
-                row = getLayoutInflater().inflate(R.layout.listrow_racepilots, parent, false);
+                row = getLayoutInflater().inflate(R.layout.listrow_resultspilots, parent, false);
                 } else {
                 row = convertView;
                 }
