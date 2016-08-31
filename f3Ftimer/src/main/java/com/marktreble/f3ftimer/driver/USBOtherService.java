@@ -49,7 +49,7 @@ public class USBOtherService extends Service implements DriverInterface {
     static final String TT_RESEND_TIME = "T";
 
 
-    public final String encoding = "US_ASCII";
+    static final String ENCODING2 = "US_ASCII";
     
 	private Driver mDriver;
     private String mBuffer = "";
@@ -433,7 +433,7 @@ public class USBOtherService extends Service implements DriverInterface {
         byte[] bytes = null;
         int sz = 0;
         try {
-            bytes = cmd.getBytes(encoding);
+            bytes = cmd.getBytes(ENCODING2);
             sz = bytes.length;
         } catch (UnsupportedEncodingException e1) {
             e1.printStackTrace();

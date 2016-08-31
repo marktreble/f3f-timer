@@ -208,6 +208,7 @@ public class RaceActivity extends ListActivity {
         USBIOIOService.stop(this);
         USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
+        BluetoothHC05Service.stop(this);
         
         Intent serviceIntent = null;
         
@@ -223,7 +224,8 @@ public class RaceActivity extends ListActivity {
         USBIOIOService.startDriver(this, mInputSource, mRid, extras);
         USBOtherService.startDriver(this, mInputSource, mRid, extras);
         SoftBuzzerService.startDriver(this, mInputSource, mRid, extras);
-		
+        BluetoothHC05Service.startDriver(this, mInputSource, mRid, extras);
+
 	}
 	
 	public void stopServers(){
@@ -241,6 +243,7 @@ public class RaceActivity extends ListActivity {
         USBIOIOService.stop(this);
         USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
+        BluetoothHC05Service.stop(this);
 
     }
 	

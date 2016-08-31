@@ -211,9 +211,9 @@ public class BluetoothImportRace extends BaseImport {
                 Log.i("BT", "connected to "+mmDevice.getName());
             } catch (IOException e) {
                 Log.i("BT", "Failed to connect to device");
+                return;
             }
             mmSocket = tmp;
-            mBluetoothAdapter.cancelDiscovery();
 
             Thread connectThread = new Thread(new Runnable()
             {

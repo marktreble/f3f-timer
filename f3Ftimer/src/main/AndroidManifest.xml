@@ -72,6 +72,15 @@
             </intent-filter>
         </service>
 
+        <service android:name=".driver.BluetoothHC05Service"
+            android:label="F3F Race Timer Server"
+            android:exported="false"
+            android:process="com.marktreble.f3ftimer.driver">
+            <intent-filter>
+                <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+            </intent-filter>
+        </service>
+
         <service android:name=".driver.SoftBuzzerService"
             android:label="F3F Race Timer Server"
             android:exported="false"

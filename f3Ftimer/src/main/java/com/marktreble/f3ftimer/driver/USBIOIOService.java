@@ -54,7 +54,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 	static final String TT_RESEND_TIME = "T";
 
 	
-	public final String encoding = "US_ASCII";
+	static final String ENCODING = "US_ASCII";
 
 	private Uart uart;
 	private InputStream data_in;
@@ -354,7 +354,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 		byte[] bytes = null;
         int sz = 0;
 		try {
-			bytes = cmd.getBytes(encoding);
+			bytes = cmd.getBytes(ENCODING);
             sz = bytes.length;
         } catch (UnsupportedEncodingException e1) {
 			e1.printStackTrace();

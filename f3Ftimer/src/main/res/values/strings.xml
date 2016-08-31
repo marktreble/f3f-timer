@@ -81,6 +81,7 @@
     <string name="audio">Audio Options</string>
     <string name="USB_IOIO">USB - IOIO</string>
     <string name="USB_OTHER">USB - Other</string>
+    <string name="BLUETOOTH_HC_05">Bluetooth - HC-05</string>
     <string name="Demo">Demo Mode - On Screen Buzzers</string>
     <string name="connection_settings">Connection Settings</string>
     <string name="other_settings">Other Settings</string>
