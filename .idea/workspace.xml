@@ -49,7 +49,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0fdffe9f-1db8-4115-a888-13fa91fc6576" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
     <ignored path="f3f-timer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -5415,7 +5414,13 @@
       <option name="project" value="LOCAL" />
       <updated>1472756607028</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Updated latest release">
+      <created>1472762769246</created>
+      <option name="number" value="00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1472762769246</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TodoView">
@@ -5532,7 +5537,8 @@
     <MESSAGE value="Added Verbose output for unsupported usb vendor/product ids" />
     <MESSAGE value="Added File Export/Import for race data" />
     <MESSAGE value="Fixes for HC-05 driver" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixes for HC-05 driver" />
+    <MESSAGE value="Updated latest release" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated latest release" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
