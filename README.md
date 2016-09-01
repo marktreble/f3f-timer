@@ -58,6 +58,9 @@ The following table lists known device compatibility:
 The latest stable release can be downloaded here:
 <a href="http://www.marktreble.co.uk/clients/f3f/f3Ftimer1.9.16.apk">f3Ftimer1.9.16.apk</a>
 
+You can also use the external display which connects using bluetooth from another android device:
+<a href="http://www.marktreble.co.uk/clients/f3f/f3ftimerexternaldisplay.1.9.16.apk">f3ftimerexternaldisplay.1.9.16.apk</a>
+
 ###Getting Started
 
 You can't do anything without some pilots, so open the 'Pilot Manager' and use the menu to add some pilots.
