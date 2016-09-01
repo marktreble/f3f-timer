@@ -61,6 +61,15 @@ The latest stable release can be downloaded here:
 You can also use the external display which connects using bluetooth from another android device:
 <a href="http://www.marktreble.co.uk/clients/f3f/f3ftimerexternaldisplay.1.9.16.apk">f3ftimerexternaldisplay.1.9.16.apk</a>
 
+To connect your external display:
+* Pair the devices.
+* In f3Ftimer Race Manager App, open Settings and scroll down to the bottom of the settings dialog.
+* Check "Run External Results Server"
+* Set "Paired Device to use as external display" to your paired device
+
+![Android Settings]
+(https://github.com/marktreble/f3f-timer/images/expdisp-setup.png)
+
 ###Getting Started
 
 You can't do anything without some pilots, so open the 'Pilot Manager' and use the menu to add some pilots.
