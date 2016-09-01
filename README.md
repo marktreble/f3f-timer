@@ -68,7 +68,7 @@ To connect your external display:
 * Set "Paired Device to use as external display" to your paired device
 
 ![Android Settings]
-(https://github.com/marktreble/f3f-timer/images/expdisp-setup.png)
+(https://github.com/marktreble/f3f-timer/blob/master/images/extdisp-setup.png)
 
 ###Getting Started
 

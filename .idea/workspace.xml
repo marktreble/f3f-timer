@@ -48,7 +48,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0fdffe9f-1db8-4115-a888-13fa91fc6576" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/images/extdisp-setup.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
     </list>
@@ -5419,7 +5418,13 @@
       <option name="project" value="LOCAL" />
       <updated>1472763206743</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="Updated ReadMe">
+      <created>1472765993416</created>
+      <option name="number" value="00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1472765993416</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TodoView">
@@ -5538,7 +5543,8 @@
     <MESSAGE value="Fixes for HC-05 driver" />
     <MESSAGE value="Updated latest release" />
     <MESSAGE value="Added link to external display in readme" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added link to external display in readme" />
+    <MESSAGE value="Updated ReadMe" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated ReadMe" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
