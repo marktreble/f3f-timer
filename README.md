@@ -26,6 +26,11 @@ Support has been added for:
 ###IOIO
 We have used the IOIO successfully in the MK III Timer System developed by Jon Edison. Full constuction details can be found at http://www.nymrsc.org.uk/Jons%20Timer%20mk3.htm
 
+###Bluetooth
+We have now also added a driver for the HC-05 Bluetooth Module. This can be installed as a replacement for the IOIO and frees up the usb port for charging.
+
+For more information on the bluetooth hardware, see <a href="http://www.nymrsc.org.uk/Jons%20Timer%20mk3%20Construction3.htm">http://www.nymrsc.org.uk/Jons%20Timer%20mk3%20Construction3.htm</a>
+
 ###Compatibility
 
 Devices connect using Android's <a href="http://source.android.com/accessories/protocol.html">Open Accessory Protocol</a>. Older devices may not support this, but some can communicate through <a href="http://developer.android.com/tools/help/adb.html">ADB</a> also. If your device does not support Open Accessory, then you can try adb by going to Settings > Developers Options and enabling USB Debugging. Otherwise USB Debugging should be switched off.
@@ -67,7 +72,7 @@ To connect your external display:
 * Check "Run External Results Server"
 * Set "Paired Device to use as external display" to your paired device
 
-![Android Settings]
+![Android Settings Screen]
 (https://github.com/marktreble/f3f-timer/blob/master/images/extdisp-setup.png)
 
 ###Getting Started
