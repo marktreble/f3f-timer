@@ -23,6 +23,7 @@ import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -49,7 +50,7 @@ public class USBOtherService extends Service implements DriverInterface {
     static final String TT_RESEND_TIME = "T";
 
 
-    static final String ENCODING2 = "US_ASCII";
+    static final String ENCODING = "US_ASCII";
     
 	private Driver mDriver;
     private String mBuffer = "";
@@ -430,14 +431,8 @@ public class USBOtherService extends Service implements DriverInterface {
     
     // Output - Send commands to hardware
 	private void sendCmd(String cmd){
-        byte[] bytes = null;
-        int sz = 0;
-        try {
-            bytes = cmd.getBytes(ENCODING2);
-            sz = bytes.length;
-        } catch (UnsupportedEncodingException e1) {
-            e1.printStackTrace();
-        }
+        byte[] bytes = cmd.getBytes(Charset.forName(ENCODING));
+        int sz = bytes.length;
         if (sz>0){
             if (mSerialIoManager != null){
                 Log.i(TAG, "Sending Data: "+cmd);

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -351,14 +352,8 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
     
 	// Output - Send commands to hardware
 	private void sendCmd(String cmd){
-		byte[] bytes = null;
-        int sz = 0;
-		try {
-			bytes = cmd.getBytes(ENCODING);
-            sz = bytes.length;
-        } catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-		}
+		byte[] bytes = cmd.getBytes(Charset.forName(ENCODING));
+		int sz = bytes.length;
 		if (sz>0){
 			if (data_out != null){
 				// send through uart

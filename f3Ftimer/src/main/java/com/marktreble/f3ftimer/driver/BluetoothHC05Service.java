@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -57,7 +58,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 	static final String TT_RESEND_TIME = "T";
 
 
-	static final String ENCODING1 = "US_ASCII";
+	static final String ENCODING = "US_ASCII";
 
 	private BluetoothAdapter mBluetoothAdapter;
 	ArrayList<String> mDiscoveredDeviceNames;
@@ -99,9 +100,9 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 		mIsListening = false;
 		try {
-			mmInStream.close();
-			mmOutStream.close();
-			mmSocket.close();
+			if (mmInStream != null) mmInStream.close();
+			if (mmOutStream != null) mmOutStream.close();
+			if (mmSocket != null) mmSocket.close();
 
 		} catch (IOException e){
 			e.printStackTrace();
@@ -153,6 +154,10 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 						callbackToUI("driver_stopped");
 					}
 				}
+
+				if (data.equals("bluetooth_connected")) {
+					getBluetoothDevices();
+				}
 			}
 		}
 	};
@@ -172,11 +177,11 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 		if (!mBluetoothAdapter.isEnabled()) {
 
-			//Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			//startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-
-			// TODO
 			// Need to post Message to UI to show enable BT dialog
+			Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+			i.putExtra("com.marktreble.f3ftimer.service_callback", "no_bluetooth");
+			sendBroadcast(i);
+
 			Log.d("BT", "NOT ENABLED");
 		} else {
 			Log.d("BT", "ENABLED");
@@ -208,7 +213,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 		boolean sent = false;
 		if (mmOutStream != null) {
 			try {
-				msg = cmd.getBytes(ENCODING1);
+				msg = cmd.getBytes(Charset.forName(ENCODING));
 				mmOutStream.write(msg);
 				sent = true;
 			} catch (IOException e) {
@@ -405,6 +410,10 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 				if (bufferLength > 0) {
 					byte[] data = new byte[bufferLength];
 
+					StringBuilder builder = new StringBuilder();
+					System.arraycopy(buffer, 0, data, 0, bufferLength);
+					builder.append(new String(data, "UTF-8"));
+
 					char[] charArray = (new String(data, 0, data.length)).toCharArray();
 
 					StringBuilder sb = new StringBuilder(charArray.length);
@@ -420,7 +429,6 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 						}
 						hexString.append(hex);
 					}
-					Log.i("NEWDATA", hexString.toString());
 
 					String str_in = mBuffer + sb.toString().trim();
 					int len = str_in.length();

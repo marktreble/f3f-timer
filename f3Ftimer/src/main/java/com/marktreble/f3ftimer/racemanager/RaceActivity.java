@@ -23,6 +23,7 @@ import com.marktreble.f3ftimer.wifi.Wifi;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -58,8 +59,9 @@ public class RaceActivity extends ListActivity {
 	
 	public static boolean DEBUG = true;
 	public static int RESULT_ABORTED = 4; // Changed from 2 to 4 because of conflict with dialog dismissal
-	public static int ROUND_SCRUBBED = 3;
-	
+    public static int ROUND_SCRUBBED = 3;
+    public static int ENABLE_BLUETOOTH = 5;
+
 	// Dialogs
 	static int DLG_SETTINGS = 0;
 	static int DLG_TIMER = 1;
@@ -372,6 +374,11 @@ public class RaceActivity extends ListActivity {
             mPilotDialogShown = false;
 
 		if(resultCode==RaceActivity.RESULT_OK){
+            if (requestCode == RaceActivity.ENABLE_BLUETOOTH){
+                // Post back to service that BT has been enabled
+                sendCommand("bluetooth_enabled");
+            }
+
 			if (requestCode == RaceActivity.DLG_NEXT_ROUND){
 				// Positive response from next round dialog
                 new Handler().postDelayed(new Runnable() {
@@ -1123,6 +1130,11 @@ public class RaceActivity extends ListActivity {
                             .setMessage("VendorId="+vid+"\n ProductId="+pid)
                             .setNegativeButton(getString(android.R.string.ok), null)
                             .show();
+                }
+
+                if (data.equals("no_bluetooth")){
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, ENABLE_BLUETOOTH);
                 }
 
             }
