@@ -98,7 +98,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/instant-run-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/pre-dexed" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/reload-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/restart-dex" />
@@ -109,7 +108,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 23 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="recyclerview-v7-23.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.1" level="project" />
@@ -121,9 +120,8 @@
     <orderEntry type="module" module-name="iOIOLibAndroid" exported="" />
     <orderEntry type="module" module-name="usbSerialForAndroid" exported="" />
     <orderEntry type="module" module-name="iOIOLibAccessory" exported="" />
-    <orderEntry type="library" exported="" name="android-android-22" level="project" />
-    <orderEntry type="library" exported="" name="usb-android-22" level="project" />
-    <orderEntry type="library" exported="" name="effects-android-22" level="project" />
-    <orderEntry type="library" exported="" name="maps-android-22" level="project" />
+    <orderEntry type="library" exported="" name="usb-android-23" level="project" />
+    <orderEntry type="library" exported="" name="effects-android-23" level="project" />
+    <orderEntry type="library" exported="" name="maps-android-23" level="project" />
   </component>
 </module>

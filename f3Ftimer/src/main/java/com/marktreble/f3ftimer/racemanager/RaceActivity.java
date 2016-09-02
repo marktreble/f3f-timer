@@ -761,7 +761,7 @@ public class RaceActivity extends ListActivity {
                     } else {
                         // Unset round not started flag
                         // Somebody has flown
-                        if ((p.status & Pilot.STATUS_RETIRED) > 0)
+                        if ((p.status & Pilot.STATUS_RETIRED) != Pilot.STATUS_RETIRED)
                             mRoundNotStarted = false;
                     }
 
