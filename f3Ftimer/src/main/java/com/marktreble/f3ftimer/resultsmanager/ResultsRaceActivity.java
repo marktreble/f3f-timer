@@ -1,12 +1,22 @@
 package com.marktreble.f3ftimer.resultsmanager;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.pm.LabeledIntent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Environment;
+import android.text.Html;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,11 +25,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.marktreble.f3ftimer.data.race.*;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
@@ -122,9 +134,27 @@ public class ResultsRaceActivity extends ListActivity {
 	}
 
 	public void share(){
-		/*Intent intent = new Intent(mContext, SettingsActivity.class);
-    	startActivityForResult(intent, 1);
-    	*/
+		RaceData datasource = new RaceData(this);
+		datasource.open();
+		Race race = datasource.getRace(mRid);
+		datasource.close();
+
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("message/rfc822");
+		intent.putExtra(Intent.EXTRA_SUBJECT, race.name);
+		intent.putExtra(Intent.EXTRA_TEXT, "Results file attached");
+
+		File file = new SpreadsheetExport().getDataStorageDir(race.name+".txt");
+		if (!file.exists() || !file.canRead()) {
+			Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
+			finish();
+			return;
+		}
+		Uri uri = Uri.fromFile(file);
+		intent.putExtra(Intent.EXTRA_STREAM, uri);
+
+		Intent openInChooser = Intent.createChooser(intent, "Email Results File");
+		startActivity(openInChooser);
 	}
 
 	public void pilotManager(){

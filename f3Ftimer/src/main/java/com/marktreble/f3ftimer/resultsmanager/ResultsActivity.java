@@ -50,7 +50,7 @@ public class ResultsActivity extends ListActivity {
 		setContentView(R.layout.results_manager);
 	    
 	    this.getNamesArray();   	    
-   	   	mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow , mArrNames);
+   	   	mArrAdapter = new ArrayAdapter<>(this, R.layout.listrow , mArrNames);
         setListAdapter(mArrAdapter);        
 	}
 	
@@ -76,8 +76,8 @@ public class ResultsActivity extends ListActivity {
 		ArrayList<Race> allRaces = datasource.getAllRaces();
 		datasource.close();
 		
-		mArrNames = new ArrayList<String>();
-		mArrIds = new ArrayList<Integer>();
+		mArrNames = new ArrayList<>();
+		mArrIds = new ArrayList<>();
 		
 		for (Race r: allRaces){
 			mArrNames.add(String.format("%s", r.name));
@@ -97,9 +97,6 @@ public class ResultsActivity extends ListActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
-            case R.id.menu_share:
-                share();
-                return true;
             case R.id.menu_pilot_manager:
                 pilotManager();
                 return true;
@@ -117,10 +114,6 @@ public class ResultsActivity extends ListActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    public void share(){
-
     }
 
     public void pilotManager(){
