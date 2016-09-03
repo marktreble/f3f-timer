@@ -35,7 +35,9 @@ import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 
 public class Driver implements TextToSpeech.OnInitListener {
-	
+
+	private static final String TAG = "Driver";
+
 	private Context mContext;
 
 	
@@ -81,7 +83,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 	public void start(Intent intent){
 		
 		if (intent == null){
-			Log.i("DRIVER", "Null intent sent to driver");
+			Log.i(TAG, "Null intent sent to driver");
 			return;
 		}
 		// Get the race id
@@ -121,7 +123,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 
 	public void destroy(){
-        Log.i("DRIVER", "Destroyed");
+        Log.i(TAG, "Destroyed");
         Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
         i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
         mContext.sendBroadcast(i);
@@ -146,7 +148,8 @@ public class Driver implements TextToSpeech.OnInitListener {
 				String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
 				Log.d("UI->Service", data);
 
-				
+				if (data == null) return;
+
 				if (data.equals("start_pilot")){
 					startPilot(extras);
 					return;
@@ -278,7 +281,7 @@ public class Driver implements TextToSpeech.OnInitListener {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i("TTS", "SHOWING PROGRESS");
+                    Log.i(TAG, "SHOWING TTS PROGRESS");
                     Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
                     i.putExtra("com.marktreble.f3ftimer.service_callback", "show_progress");
                     mContext.sendBroadcast(i);
@@ -342,7 +345,6 @@ public class Driver implements TextToSpeech.OnInitListener {
 		
 		// Synthesized Call
 		if (mSpeechFXon){
-			Log.i("KPKP", "PILOT LANG="+mPilotLang);
 			Resources r = Languages.useLanguage(mContext, mPilotLang);
 			String lang = r.getString(R.string.model_launched);
 	    	Languages.useLanguage(mContext, mDefaultLang);
@@ -471,22 +473,23 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 		// Speak the time
 		if (mSpeechFXon) speak(str_time, TextToSpeech.QUEUE_ADD);
-		Log.d("DRIVER", "TIME SPOKEN");
+		Log.d(TAG, "TIME SPOKEN");
         
 		// Update the .txt file
         new SpreadsheetExport().writeResultsFile(mContext, mRace);
-		Log.d("DRIVER", "EXPORT FILE WRITTEN");
+		Log.d(TAG, "EXPORT FILE WRITTEN");
 		SystemClock.sleep(1000);
 
 		// Post back to the UI (RaceTimerActivity);
   		Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
 		intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
 		mContext.sendOrderedBroadcast(intent, null);
-		Log.d("DRIVER", "POST BACK TO UI");
+		Log.d(TAG, "POST BACK TO UI");
 
 		// Post to the Race Results Display Service
 
 		// Get this from ResultsRoundInProgressActivity::getNamesArray
+		// TODO
 		String str_round_results = "[{\"name\":\"Mark Treble\",\"time\":\"33.23\"}]";
 
 		Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
@@ -499,7 +502,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 
 		mContext.sendBroadcast(intent2);
-		Log.d("DRIVER", "POST BACK TO EXTERNAL RESULTS");
+		Log.d(TAG, "POST BACK TO EXTERNAL RESULTS");
 
 	}
 
@@ -534,7 +537,6 @@ public class Driver implements TextToSpeech.OnInitListener {
     }
 
     public void onInit(int status){
-        Log.i("DRIVER", "ONINIT CALLED " + ((status == TextToSpeech.SUCCESS) ? "GOOD":"BAD"));
         mTTSStatus = status;
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -546,7 +548,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 
     @TargetApi(15)
     private void initUtteranceListenerForMinICS(){
-        Log.i("DRIVER", "SETTING UP UTTERANCE PROGRESS FOR >=ICS");
+        Log.i(TAG, "SETTING UP UTTERANCE PROGRESS FOR >=ICS");
         mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
             public void onStart(String utteranceId) {
@@ -561,7 +563,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 
             @Override
             public void onError(String utteranceId) {
-                Log.i("DRIVER", "UTTERANCE_ERROR");
+                Log.i(TAG, "UTTERANCE_ERROR");
 
             }
         });
@@ -569,7 +571,7 @@ public class Driver implements TextToSpeech.OnInitListener {
     
     @TargetApi(11)
     private void initUtteranceListenerForOtherThanICS(){
-        Log.i("DRIVER", "SETTING UP UTTERANCE PROGRESS FOR <ICS");
+        Log.i(TAG, "SETTING UP UTTERANCE PROGRESS FOR <ICS");
         mTts.setOnUtteranceCompletedListener(new TextToSpeech.OnUtteranceCompletedListener() {
             @Override
             public void onUtteranceCompleted(String utteranceId) {
@@ -668,13 +670,13 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 	private String setSpeechFXLanguage(){
         if (mTts == null){
-            Log.i("TTS", "IS NULL!");
+            Log.i(TAG, "TTS IS NULL!");
         }
 		String lang = Languages.setSpeechLanguage(mPilotLang, mSpeechLang, mTts);
 		
 		if (!lang.equals("")){
 
-			Log.i("TTS", lang);
+			Log.i(TAG, "TTS LANG: "+lang);
             
 			mTts.setLanguage(Languages.stringToLocale(lang));
 

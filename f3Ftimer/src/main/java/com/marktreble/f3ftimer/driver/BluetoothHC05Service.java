@@ -1,13 +1,11 @@
 package com.marktreble.f3ftimer.driver;
 
-import android.app.AlertDialog;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
@@ -22,13 +20,10 @@ import com.marktreble.f3ftimer.racemanager.RaceActivity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
-
-import ioio.lib.api.Uart;
 
 public class BluetoothHC05Service extends Service implements DriverInterface {
 
@@ -146,6 +141,8 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 				String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
 				Log.i(TAG, data);
 
+				if (data == null) return;
+
 				if (data.equals("get_connection_status")) {
 					if (mBoardConnected){
 						callbackToUI("driver_started");
@@ -196,9 +193,6 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
-	
-	// Input - Listener Loop
-	// TODO
 
 	private void callbackToUI(String cmd){
 		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
@@ -300,8 +294,6 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 				mPairedAndDiscoveredDevices.addAll(mPairedDevices);
 				mPairedAndDiscoveredDevices.addAll(mDiscoveredDevices);
 
-				CharSequence[] devices = mPairedAndDiscoveredDeviceNames.toArray(new CharSequence[mPairedAndDiscoveredDeviceNames.size()]);
-
 				// See if any paired or discovered devices accept the UUID
 				if (!attemptDeviceConnection()){
 					mBluetoothAdapter.startDiscovery();
@@ -362,7 +354,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 					try {
 						mmSocket.close();
 					} catch (IOException closeException) {
-
+						closeException.printStackTrace();
 					}
 					return;
 				}

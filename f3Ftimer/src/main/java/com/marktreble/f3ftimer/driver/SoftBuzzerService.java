@@ -43,7 +43,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
 	@Override
 	public void onDestroy() {
-        Log.i("DRIVER (SOFT BUZZER)", "Destroyed");
+        Log.i(TAG, "Destroyed");
 		super.onDestroy();
         if (mDriver != null)
 		    mDriver.destroy();
@@ -152,21 +152,21 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 	}
     
     public void baseA(){
-        Log.i(TAG + "BASEA", Integer.toString(mTimerStatus % 2));
+        Log.i(TAG, "BASE A "+ Integer.toString(mTimerStatus % 2));
         if ((mTimerStatus == 0) || (mTimerStatus%2 == 1))
             base("A");
     }
     
     public void baseB(){
-        Log.i(TAG + "BASEB", Integer.toString(mTimerStatus % 2));
+        Log.i(TAG, "BASE B "+ Integer.toString(mTimerStatus % 2));
         if ((mTimerStatus>0) && (mTimerStatus%2 == 0))
             base("B");
     }
     
     public void finished(String time){
-        Log.d(TAG + "TIME", time.trim());
+        Log.d(TAG, "TIME "+ time.trim());
         mDriver.mPilot_Time = Float.parseFloat(time.trim().replace(",", "."));
-        Log.d(TAG + "TIME", Float.toString(mDriver.mPilot_Time) );
+        Log.d(TAG, "TIME "+ Float.toString(mDriver.mPilot_Time) );
         mDriver.runComplete();
         mTimerStatus = 0;
         mDriver.ready();
