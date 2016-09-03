@@ -94,7 +94,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 	@Override
 	public void onDestroy() {
-		Log.i("BT", "ONDESTROY!");
+		Log.i(TAG, "ONDESTROY!");
 		super.onDestroy();        
 		mDriver.destroy();
 
@@ -121,19 +121,19 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 			serviceIntent.putExtras(params);
 			serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
 			context.startService(serviceIntent);
-			Log.d("BT", "BT DRIVER STARTED");
+			Log.d(TAG, "BT DRIVER STARTED");
 		}
 	}
 
 	public static boolean stop(RaceActivity context){
-		Log.i("BT", "STOP");
+		Log.i(TAG, "STOP");
 		if (context.isServiceRunning("com.marktreble.f3ftimer.driver.BluetoothHC05Service")) {
-			Log.i("BT", "RUNNING");
+			Log.i(TAG, "RUNNING");
 			Intent serviceIntent = new Intent(context, BluetoothHC05Service.class);
 			context.stopService(serviceIntent);
 			return true;
 		}
-		Log.i("BT", "NOT RUNNING??");
+		Log.i(TAG, "NOT RUNNING??");
 		return false;
 	}
 
@@ -165,13 +165,13 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     public int onStartCommand(Intent intent, int flags, int startId){
     	super.onStartCommand(intent, flags, startId);
 
-		Log.d("BT", "onSTartCommand");
+		Log.d(TAG, "onSTartCommand");
 		mIntent = intent;
 
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 		if (mBluetoothAdapter == null) {
 			// Device does not support bluetooth
-			Log.d("BT", "NOT SUPPORTED");
+			Log.d(TAG, "NOT SUPPORTED");
 			return (START_STICKY);
 		}
 
@@ -182,9 +182,9 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 			i.putExtra("com.marktreble.f3ftimer.service_callback", "no_bluetooth");
 			sendBroadcast(i);
 
-			Log.d("BT", "NOT ENABLED");
+			Log.d(TAG, "NOT ENABLED");
 		} else {
-			Log.d("BT", "ENABLED");
+			Log.d(TAG, "ENABLED");
 			getBluetoothDevices();
 		}
 
@@ -208,7 +208,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 	// Output - Send commands
 	private void sendCmd(String cmd){
-		Log.i("BT", "SENDING: "+cmd);
+		Log.i(TAG, "SENDING: "+cmd);
 		byte[] msg;
 		boolean sent = false;
 		if (mmOutStream != null) {
@@ -217,7 +217,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 				mmOutStream.write(msg);
 				sent = true;
 			} catch (IOException e) {
-				Log.i("BT", "EX: "+e.getMessage());
+				Log.i(TAG, "EX: "+e.getMessage());
 				e.printStackTrace();
 			}
 
@@ -314,7 +314,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 		for (int i = 0; i < mPairedAndDiscoveredDevices.size(); i++) {
 			mmDevice = mPairedAndDiscoveredDevices.get(i);
-			Log.i("BT", "Attempting connection to device " + mmDevice.getName());
+			Log.i(TAG, "Attempting connection to device " + mmDevice.getName());
 
 			BluetoothSocket tmp = null;
 			// uuid is standard for the HC-05
@@ -323,18 +323,18 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 				ParcelUuid uuids[] = mmDevice.getUuids();
 
 				for (ParcelUuid test : uuids){
-					Log.i("BT", "Supported " +test.toString() + " ? " + uuid.toString());
+					Log.i(TAG, "Supported " +test.toString() + " ? " + uuid.toString());
 					if (test.equals(new ParcelUuid(uuid))){
 						tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
 					}
 				}
 			} catch (IOException e) {
-				Log.i("BT", "Failed to connect to device " + mmDevice.getName());
+				Log.i(TAG, "Failed to connect to device " + mmDevice.getName());
 			}
 
 			if (tmp != null){
 				mmSocket = tmp;
-				Log.i("BT", "connected to " + mmDevice.getName());
+				Log.i(TAG, "connected to " + mmDevice.getName());
 				startConnectThread();
 				return true;
 			}
@@ -349,7 +349,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 		{
 			@Override
 			public void run() {
-				Log.i("BT", "Starting Runnable");
+				Log.i(TAG, "Starting Runnable");
 				android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
 				try {
@@ -376,7 +376,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 	}
 
 	private void manageConnectedSocket() {
-		Log.i("BT", "GET IO STREAMS");
+		Log.i(TAG, "GET IO STREAMS");
 		try {
 			mmInStream = mmSocket.getInputStream();
 			mmOutStream = mmSocket.getOutputStream();
@@ -494,7 +494,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 				}
 			}
 		} catch (IOException e) {
-			Log.i("BT", "Not Listening (EXCEPTION)");
+			Log.i(TAG, "Not Listening (EXCEPTION)");
 
 			e.printStackTrace();
 			mIsListening = false;

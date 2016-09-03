@@ -485,11 +485,19 @@ public class Driver implements TextToSpeech.OnInitListener {
 		Log.d("DRIVER", "POST BACK TO UI");
 
 		// Post to the Race Results Display Service
+
+		// Get this from ResultsRoundInProgressActivity::getNamesArray
+		String str_round_results = "[{\"name\":\"Mark Treble\",\"time\":\"33.23\"}]";
+
 		Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
 		intent2.putExtra("com.marktreble.f3ftimer.external_results_callback", "run_finalised");
 		intent2.putExtra("com.marktreble.f3ftimer.pilot_nationality", str_nationality);
 		intent2.putExtra("com.marktreble.f3ftimer.pilot_name", str_name);
 		intent2.putExtra("com.marktreble.f3ftimer.pilot_time", String.format("%.2f", mPilot_Time));
+		intent2.putExtra("com.marktreble.f3ftimer.current_round", mRnd);
+		intent2.putExtra("com.marktreble.f3ftimer.current_round_results", str_round_results);
+
+
 		mContext.sendBroadcast(intent2);
 		Log.d("DRIVER", "POST BACK TO EXTERNAL RESULTS");
 
