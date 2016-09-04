@@ -201,12 +201,19 @@ public class ResultsRaceActivity extends ListActivity {
 		this.getNamesArray();
 
 		String results = "";
-		String email_list = "";
+		String[] email_list = new String[mArrNames.size()];
 
 		for (int i=0; i<mArrNames.size(); i++){
 			results+= String.format("%s %s %s\n", mArrNumbers.get(i), mArrNames.get(i), Float.toString(mArrScores.get(i)));
 
+			// Generate list of email addresses to send to
+			Pilot p = mArrPilots.get(i);
+			String email = p.email;
+			if (email.length()>0)
+				email_list[i] = email;
+
 		}
+
 		results+= "\n";
 		results+= "Fastest time: " + mFTD + " by " + mFTDName + " in round " + mFTDRound + "\n";
 		results+= "\n";
@@ -389,6 +396,7 @@ public class ResultsRaceActivity extends ListActivity {
 		datasource2.open();
 		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0, 0);
 		ArrayList<String> p_names = new ArrayList<>();
+		ArrayList<String> p_emails = new ArrayList<>();
 		ArrayList<String> p_bib_numbers = new ArrayList<>();
 		ArrayList<String> p_nationalities = new ArrayList<>();
 		ArrayList<float[]> p_times = new ArrayList<>();
@@ -406,6 +414,7 @@ public class ResultsRaceActivity extends ListActivity {
 			for (Pilot p : allPilots){
 				if (p.pilot_id>0) {
 					p_names.add(String.format("%s %s", p.firstname, p.lastname));
+					p_emails.add(p.email);
 					p_bib_numbers.add(Integer.toString(c + 1));
 					p_nationalities.add(p.nationality);
 					float[] sc = new float[race.round];
@@ -547,6 +556,7 @@ public class ResultsRaceActivity extends ListActivity {
 					Pilot p = new Pilot();
 					p.points = round2Fixed(p_totals[i].floatValue(), 2);
 					p.nationality = p_nationalities.get(i);
+					p.email = p_emails.get(i);
 					mArrPilots.set(pos, p);
 				}
 
