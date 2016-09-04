@@ -64,8 +64,9 @@
     <string name="menu_new_race">New Race</string>
     <string name="menu_import_race">Import Race</string>
     <string name="menu_export_race">Export Race</string>
-    <string name="select_import_source">Import Race via</string>
-    <string name="select_export_source">Export Race via</string>
+    <string name="select_import_source">Import Race</string>
+    <string name="select_export_destination">Export Race</string>
+    <string name="select_export_results_destination">Export Results</string>
     <string name="menu_add_pilots">Add Pilots</string>
     <string name="menu_import_pilots">Import Pilots</string>
     <string name="menu_export_pilots">Export Pilots</string>
@@ -77,6 +78,7 @@
     <string name="menu_help">Help</string>
     <string name="menu_about">About</string>
     <string name="menu_share">Share</string>
+    <string name="menu_export">Export</string>
     <string name="enter_time">Enter Time</string>
     <string name="audio">Audio Options</string>
     <string name="USB_IOIO">USB - IOIO</string>

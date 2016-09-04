@@ -4,8 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.LabeledIntent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -45,6 +47,14 @@ public class ResultsRaceActivity extends ListActivity {
 	static final boolean DEBUG = true;
 
 	private Context mContext;
+
+	private AlertDialog mDlg;
+	private AlertDialog.Builder mDlgb;
+
+	static final int EXPORT_EMAIL = 0;
+	static final int EXPORT_F3F_TIMER = 1;
+	static final int EXPORT_F3X_VAULT = 2;
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +121,12 @@ public class ResultsRaceActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
-	    	case R.id.menu_share:
-	    		share();
-	    		return true;
+			case R.id.menu_share:
+				share();
+				return true;
+			case R.id.menu_export:
+				export();
+				return true;
 			case R.id.menu_pilot_manager:
 				pilotManager();
 				return true;
@@ -133,7 +146,65 @@ public class ResultsRaceActivity extends ListActivity {
 	    }
 	}
 
-	public void share(){
+	private void share(){
+		mDlgb = new AlertDialog.Builder(mContext)
+				.setTitle("TO DO...")
+				.setMessage("This feature will be implemented soon")
+				.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						//
+					}
+				});
+
+
+		mDlg = mDlgb.create();
+		mDlg.show();
+	}
+
+	private void export(){
+		mDlgb = new AlertDialog.Builder(mContext)
+				.setTitle(R.string.select_export_results_destination)
+				.setItems(R.array.results_export_destinations, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						switch (which) {
+							case EXPORT_EMAIL:
+								export_email();
+								break;
+							case EXPORT_F3F_TIMER:
+								export_f3ftimer();
+								break;
+							case EXPORT_F3X_VAULT:
+								export_f3xvault();
+								break;
+						}
+					}
+				});
+		mDlg = mDlgb.create();
+		mDlg.show();
+	}
+
+	private void pilotManager(){
+		Intent intent = new Intent(mContext,PilotsActivity.class);
+		startActivity(intent);
+	}
+
+	private void raceManager(){
+		Intent intent = new Intent(mContext, RaceListActivity.class);
+		startActivity(intent);
+	}
+
+	private void help(){
+		Intent intent = new Intent(mContext, HelpActivity.class);
+		startActivity(intent);
+	}
+
+	private void about(){
+		Intent intent = new Intent(mContext, AboutActivity.class);
+		startActivity(intent);
+	}
+
+	private void export_email(){
 		RaceData datasource = new RaceData(this);
 		datasource.open();
 		Race race = datasource.getRace(mRid);
@@ -157,23 +228,37 @@ public class ResultsRaceActivity extends ListActivity {
 		startActivity(openInChooser);
 	}
 
-	public void pilotManager(){
-		Intent intent = new Intent(mContext,PilotsActivity.class);
-		startActivity(intent);
+	private void export_f3ftimer(){
+		mDlgb = new AlertDialog.Builder(mContext)
+				.setTitle("TO DO...")
+				.setMessage("This feature will be implemented soon")
+				.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						//
+					}
+				});
+
+
+		mDlg = mDlgb.create();
+		mDlg.show();
+
 	}
 
-	public void raceManager(){
-		Intent intent = new Intent(mContext, RaceListActivity.class);
-		startActivity(intent);
+	private void export_f3xvault(){
+		mDlgb = new AlertDialog.Builder(mContext)
+				.setTitle("TO DO...")
+				.setMessage("This feature will be implemented soon")
+				.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						//
+					}
+				});
+
+
+		mDlg = mDlgb.create();
+		mDlg.show();
 	}
 
-	public void help(){
-		Intent intent = new Intent(mContext, HelpActivity.class);
-		startActivity(intent);
-	}
-
-	public void about(){
-		Intent intent = new Intent(mContext, AboutActivity.class);
-		startActivity(intent);
-	}
 }

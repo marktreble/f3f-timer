@@ -64,11 +64,18 @@
     <string-array name="import_sources" translatable="false">
         <item>Bluetooth</item>
         <item>From File</item>
+        <item>From Web (f3ftimer api)</item>
     </string-array>
 
-    <string-array name="export_sources" translatable="false">
+    <string-array name="export_destinations" translatable="false">
         <item>Bluetooth</item>
         <item>To File</item>
+    </string-array>
+
+    <string-array name="results_export_destinations" translatable="false">
+        <item>Email CSV File</item>
+        <item>Upload to Web (f3ftimer api)</item>
+        <item>Upload to Web (F3X Vault)</item>
     </string-array>
 
 </resources>

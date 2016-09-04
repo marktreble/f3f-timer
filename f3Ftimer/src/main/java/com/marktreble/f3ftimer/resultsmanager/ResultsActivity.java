@@ -89,7 +89,7 @@ public class ResultsActivity extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.results, menu);
+        getMenuInflater().inflate(R.menu.results_list, menu);
         return true;
     }
 
