@@ -90,21 +90,31 @@
       <file leaf-file-name="ResultsRaceActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRaceActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="1.9547873">
-              <caret line="212" column="28" selection-start-line="212" selection-start-column="28" selection-end-line="212" selection-end-column="28" />
+            <state vertical-scroll-proportion="-0.55851066">
+              <caret line="338" column="95" selection-start-line="338" selection-start-column="95" selection-end-line="338" selection-end-column="95" />
               <folding>
                 <element signature="e#3212#3220#0" expanded="true" />
-                <element signature="e#4874#4915#0" expanded="true" />
-                <element signature="e#4967#5252#0" expanded="true" />
-                <element signature="e#5251#5252#0" expanded="true" />
-                <element signature="e#8252#8294#0" expanded="true" />
-                <element signature="e#8347#8701#0" expanded="true" />
-                <element signature="e#8700#8701#0" expanded="true" />
-                <element signature="e#10172#10310#0" expanded="true" />
-                <element signature="e#10309#10310#0" expanded="true" />
-                <element signature="e#10549#10687#0" expanded="true" />
-                <element signature="e#10686#10687#0" expanded="true" />
+                <element signature="e#4875#4916#0" expanded="true" />
+                <element signature="e#4968#5253#0" expanded="true" />
+                <element signature="e#5252#5253#0" expanded="true" />
+                <element signature="e#8253#8295#0" expanded="true" />
+                <element signature="e#8348#8702#0" expanded="true" />
+                <element signature="e#8701#8702#0" expanded="true" />
+                <element signature="e#10325#10463#0" expanded="true" />
+                <element signature="e#10462#10463#0" expanded="true" />
+                <element signature="e#10702#10840#0" expanded="true" />
+                <element signature="e#10839#10840#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Driver.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="-10.962963">
+              <caret line="479" column="0" selection-start-line="478" selection-start-column="0" selection-end-line="479" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -4956,8 +4966,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-56" />
-    <option name="y" value="83" />
+    <option name="x" value="14" />
+    <option name="y" value="23" />
     <option name="width" value="1328" />
     <option name="height" value="828" />
   </component>
@@ -5087,6 +5097,28 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="f3f-timer" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="f3Ftimer" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidSourceTypeNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="f3ftimer" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidPsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="driver" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="PackagesPane">
@@ -5147,7 +5179,7 @@
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_SERIALS" value="FA53FYJ03490" />
     <property name="ANDROID_EXTENDED_DEVICE_CHOOSER_AVD" value="Nexus_5_API_22_x86" />
     <property name="Groovy.Shell.LastModule" value="f3f-timer" />
-    <property name="device.picker.selection" value="FA53FYJ03490" />
+    <property name="device.picker.selection" value="0123456789ABCDEF" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -5632,7 +5664,13 @@
       <option name="project" value="LOCAL" />
       <updated>1472995551855</updated>
     </task>
-    <option name="localTasksCounter" value="33" />
+    <task id="LOCAL-00033" summary="Fixes to sharing">
+      <created>1472996662013</created>
+      <option name="number" value="00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1472996662013</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="TodoView">
@@ -5645,7 +5683,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-56" y="83" width="1328" height="828" extended-state="0" />
+    <frame x="14" y="23" width="1328" height="828" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32962447" sideWeight="0.4971797" order="7" side_tool="false" content_ui="tabs" />
@@ -5732,7 +5770,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added connection test ping for external display" />
     <MESSAGE value="Bug Fixed" />
     <MESSAGE value="Bug Fixed (non english float parsing in results manager)" />
     <MESSAGE value="Updated README" />
@@ -5757,7 +5794,8 @@
     <MESSAGE value="Tidied up some mess" />
     <MESSAGE value="Updated menus for export/share functions" />
     <MESSAGE value="Added Email and Social Media sharing of basic results" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Email and Social Media sharing of basic results" />
+    <MESSAGE value="Fixes to sharing" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixes to sharing" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -5885,23 +5923,6 @@
             <element signature="e#6398#6399#0" expanded="false" />
             <element signature="e#10567#10568#0" expanded="false" />
             <element signature="e#10584#10585#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="672" column="16" selection-start-line="672" selection-start-column="12" selection-end-line="672" selection-end-column="16" />
-          <folding>
-            <element signature="e#0#21500#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#2112#2113#0" expanded="false" />
-            <element signature="e#2137#2138#0" expanded="false" />
-            <element signature="e#15982#15983#0" expanded="false" />
-            <element signature="e#16000#16001#0" expanded="false" />
-            <element signature="e#16042#16043#0" expanded="false" />
-            <element signature="e#16097#16098#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -6196,22 +6217,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.962963">
+          <caret line="479" column="0" selection-start-line="478" selection-start-column="0" selection-end-line="479" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRaceActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.9547873">
-          <caret line="212" column="28" selection-start-line="212" selection-start-column="28" selection-end-line="212" selection-end-column="28" />
+        <state vertical-scroll-proportion="-0.55851066">
+          <caret line="338" column="95" selection-start-line="338" selection-start-column="95" selection-end-line="338" selection-end-column="95" />
           <folding>
             <element signature="e#3212#3220#0" expanded="true" />
-            <element signature="e#4874#4915#0" expanded="true" />
-            <element signature="e#4967#5252#0" expanded="true" />
-            <element signature="e#5251#5252#0" expanded="true" />
-            <element signature="e#8252#8294#0" expanded="true" />
-            <element signature="e#8347#8701#0" expanded="true" />
-            <element signature="e#8700#8701#0" expanded="true" />
-            <element signature="e#10172#10310#0" expanded="true" />
-            <element signature="e#10309#10310#0" expanded="true" />
-            <element signature="e#10549#10687#0" expanded="true" />
-            <element signature="e#10686#10687#0" expanded="true" />
+            <element signature="e#4875#4916#0" expanded="true" />
+            <element signature="e#4968#5253#0" expanded="true" />
+            <element signature="e#5252#5253#0" expanded="true" />
+            <element signature="e#8253#8295#0" expanded="true" />
+            <element signature="e#8348#8702#0" expanded="true" />
+            <element signature="e#8701#8702#0" expanded="true" />
+            <element signature="e#10325#10463#0" expanded="true" />
+            <element signature="e#10462#10463#0" expanded="true" />
+            <element signature="e#10702#10840#0" expanded="true" />
+            <element signature="e#10839#10840#0" expanded="true" />
           </folding>
         </state>
       </provider>

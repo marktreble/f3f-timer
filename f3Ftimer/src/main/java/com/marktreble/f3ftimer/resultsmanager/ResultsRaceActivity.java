@@ -174,6 +174,7 @@ public class ResultsRaceActivity extends ListActivity {
 	}
 
 	private void share() {
+
 		mDlgb = new AlertDialog.Builder(mContext)
 				.setTitle(R.string.select_share_results_destination)
 				.setItems(R.array.results_share_destinations, new DialogInterface.OnClickListener() {
@@ -334,6 +335,10 @@ public class ResultsRaceActivity extends ListActivity {
 		datasource.open();
 		Race race = datasource.getRace(mRid);
 		datasource.close();
+
+		// re-write the results file just in case this has just been imported into this device.
+		new SpreadsheetExport().writeResultsFile(mContext, race);
+
 
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("message/rfc822");
