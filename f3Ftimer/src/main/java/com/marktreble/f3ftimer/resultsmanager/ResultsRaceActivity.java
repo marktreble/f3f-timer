@@ -1,7 +1,10 @@
 package com.marktreble.f3ftimer.resultsmanager;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -11,6 +14,11 @@ import android.content.DialogInterface;
 import android.content.pm.LabeledIntent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.ListActivity;
@@ -29,8 +37,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.*;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
@@ -54,6 +64,23 @@ public class ResultsRaceActivity extends ListActivity {
 	static final int EXPORT_EMAIL = 0;
 	static final int EXPORT_F3F_TIMER = 1;
 	static final int EXPORT_F3X_VAULT = 2;
+
+
+	static final int SHARE_EMAIL = 0;
+	static final int SHARE_SOCIAL_MEDIA = 1;
+
+	/* TEMPORARY */
+	// Needs a class creating for calcs
+	private ArrayList<String> mArrNames;
+	private ArrayList<String> mArrNumbers;
+	private ArrayList<Pilot> mArrPilots;
+	private ArrayList<Float> mArrScores;
+
+	private float mFTD;
+	private String mFTDName;
+	private int mFTDRound;
+	private int mGroupScoring;
+	/* END */
 
 
 	@Override
@@ -146,20 +173,111 @@ public class ResultsRaceActivity extends ListActivity {
 	    }
 	}
 
-	private void share(){
+	private void share() {
 		mDlgb = new AlertDialog.Builder(mContext)
-				.setTitle("TO DO...")
-				.setMessage("This feature will be implemented soon")
-				.setNegativeButton("Ok", new DialogInterface.OnClickListener() {
-					@Override
+				.setTitle(R.string.select_share_results_destination)
+				.setItems(R.array.results_share_destinations, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						//
+						switch (which) {
+							case SHARE_EMAIL:
+								share_email();
+								break;
+							case SHARE_SOCIAL_MEDIA:
+								share_social_media();
+								break;
+						}
 					}
 				});
-
-
 		mDlg = mDlgb.create();
 		mDlg.show();
+	}
+
+	private void share_email(){
+		RaceData datasource = new RaceData(this);
+		datasource.open();
+		Race race = datasource.getRace(mRid);
+		datasource.close();
+
+		this.getNamesArray();
+
+		String results = "";
+		String email_list = "";
+
+		for (int i=0; i<mArrNames.size(); i++){
+			results+= String.format("%s %s %s\n", mArrNumbers.get(i), mArrNames.get(i), Float.toString(mArrScores.get(i)));
+
+		}
+		results+= "\n";
+		results+= "Fastest time: " + mFTD + " by " + mFTDName + " in round " + mFTDRound + "\n";
+		results+= "\n";
+		results+= "\n\n";
+		results+= "Result from f3ftimer (https://github.com/marktreble/f3f-timer)\n";
+
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("message/rfc822");
+		intent.putExtra(Intent.EXTRA_EMAIL, email_list);
+		intent.putExtra(Intent.EXTRA_SUBJECT, race.name);
+		intent.putExtra(Intent.EXTRA_TEXT, results);
+
+		Intent openInChooser = Intent.createChooser(intent, "Share Leaderboard");
+		startActivityForResult(openInChooser, 0);
+	}
+
+	private void share_social_media(){
+		RaceData datasource = new RaceData(this);
+		datasource.open();
+		Race race = datasource.getRace(mRid);
+		datasource.close();
+
+		this.getNamesArray();
+
+		// Generate results as an image
+		int w = 320, h = (mArrNames.size()+6) * 24;
+		Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+		Bitmap bitmap = Bitmap.createBitmap(w, h, conf);
+		Canvas canvas = new Canvas(bitmap);
+		Paint paint = new Paint();
+		paint.setColor(Color.WHITE);
+		canvas.drawRect(0,0,w,h, paint);
+		paint.setColor(Color.BLACK);
+		paint.setTextSize(18);
+		paint.setAntiAlias(true);
+		paint.setFilterBitmap(true);
+
+		int y = 30;
+		for (int i=0; i<mArrNames.size(); i++){
+			y += 24;
+			canvas.drawText(mArrNumbers.get(i), 16, y, paint);
+			canvas.drawText(mArrNames.get(i), 48, y, paint);
+			canvas.drawText(Float.toString(mArrScores.get(i)), 220, y, paint);
+
+		}
+		y += 48;
+
+		canvas.drawText("Fastest time: " + mFTD, 16, y, paint);
+		y+=20;
+		canvas.drawText("by " + mFTDName + " in round " + mFTDRound, 16, y, paint);
+
+		Intent intent = new Intent(Intent.ACTION_SEND);
+
+		try {
+			File file = new File(getExternalCacheDir(), race.name+".png");
+			FileOutputStream fOut = new FileOutputStream(file);
+			bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+			fOut.flush();
+			fOut.close();
+			file.setReadable(true, false);
+			intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+			intent.putExtra(Intent.EXTRA_TEXT, "Result from f3ftimer (https://github.com/marktreble/f3f-timer)");
+
+			intent.setType("image/png");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		Intent openInChooser = Intent.createChooser(intent, "Share Leaderboard");
+
+		startActivity(openInChooser);
 	}
 
 	private void export(){
@@ -259,6 +377,212 @@ public class ResultsRaceActivity extends ListActivity {
 
 		mDlg = mDlgb.create();
 		mDlg.show();
+	}
+
+	private void getNamesArray(){
+
+		RaceData datasource = new RaceData(ResultsRaceActivity.this);
+		datasource.open();
+		Race race = datasource.getRace(mRid);
+
+		RacePilotData datasource2 = new RacePilotData(ResultsRaceActivity.this);
+		datasource2.open();
+		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0, 0);
+		ArrayList<String> p_names = new ArrayList<>();
+		ArrayList<String> p_bib_numbers = new ArrayList<>();
+		ArrayList<String> p_nationalities = new ArrayList<>();
+		ArrayList<float[]> p_times = new ArrayList<>();
+		ArrayList<float[]> p_points = new ArrayList<>();
+		ArrayList<int[]> p_penalty = new ArrayList<>();
+		Float[] p_totals;
+		int[] p_positions;
+
+		mFTD = 9999;
+
+		if (allPilots != null){
+
+			// Get all times for pilots in all rounds
+			int c=0; // Counter for bib numbers
+			for (Pilot p : allPilots){
+				if (p.pilot_id>0) {
+					p_names.add(String.format("%s %s", p.firstname, p.lastname));
+					p_bib_numbers.add(Integer.toString(c + 1));
+					p_nationalities.add(p.nationality);
+					float[] sc = new float[race.round];
+					for (int rnd = 0; rnd < race.round; rnd++) {
+						sc[rnd] = datasource2.getPilotTimeInRound(mRid, p.id, rnd + 1);
+					}
+					p_times.add(sc);
+					Log.d("LEADERBOARD", String.format("%s %s %d", p.firstname, p.lastname, c+1));
+				}
+				c++;
+			}
+
+			p_totals = new Float[p_names.size()];
+			p_positions = new int[p_names.size()];
+
+			if (race.round>1){
+				// Loop through each round to find the winner, then populate the scores
+				for (int rnd=0; rnd<race.round-1; rnd++){
+					ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0, 0);
+
+					mGroupScoring = datasource.getGroups(mRid, rnd+1);
+
+					int g = 0; // Current group we are calculating
+
+					float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
+					for (int i=0; i<mGroupScoring+1; i++)
+						ftg[i]= 9999;
+
+					int group_size = (int)Math.floor(p_names.size()/mGroupScoring);
+					int remainder = p_names.size() - (mGroupScoring * group_size);
+
+					for (int i=0; i<p_names.size(); i++){
+						if (g<remainder){
+							if (i>= (group_size+1)*(g+1)) {
+								g++;
+							}
+						} else {
+							if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
+								g++;
+							}
+						}
+
+						String str_t = String.format("%.2f",p_times.get(i)[rnd]).trim().replace(",", ".");
+						float t = Float.parseFloat(str_t);
+						if (t>0)
+							ftg[g] = Math.min( t, ftg[g]);
+
+						// Update the FTD here too
+						mFTD = Math.min(mFTD,  ftg[g]);
+						if (mFTD == t){
+							mFTDRound = rnd+1;
+							mFTDName = p_names.get(i);
+						}
+
+					}
+
+					g = 0; // Current group we are calculating
+
+					float[] points = new float[p_names.size()];
+					int[] penalty = new int[p_names.size()];
+					for (int i=0; i<p_names.size(); i++){
+						if (g<remainder){
+							if (i>= (group_size+1)*(g+1)) {
+								g++;
+							}
+						} else {
+							if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
+								g++;
+							}
+						}
+
+						String str_t = String.format("%.2f",p_times.get(i)[rnd]).trim().replace(",", ".");
+						float time = Float.parseFloat(str_t);
+						float pnts = 0;
+						if (time>0)
+							pnts = round2Fixed((ftg[g]/time) * 1000, 2);
+
+
+						points[i] = pnts;
+						penalty[i] = pilots_in_round.get(i).penalty;
+					}
+					p_points.add(points);
+					p_penalty.add(penalty);
+				}
+
+				// Loop through each pilot to Find discards + calc totals
+				int numdiscards = (race.round>4) ? ((race.round>15) ? 2 : 1) : 0;
+				for (int i=0; i<p_names.size(); i++){
+					Float[] totals = new Float[race.round-1];
+
+					float penalties = 0;
+					for (int rnd=0; rnd<race.round-1; rnd++){
+						totals[rnd] = p_points.get(rnd)[i];
+						penalties+=p_penalty.get(rnd)[i] * 100;
+					}
+
+					// sort totals in order then lose the lowest according to numdiscards
+					Arrays.sort(totals);
+					float tot = 0;
+					for (int j=numdiscards; j<race.round-1; j++)
+						tot += totals[j];
+
+					// Now apply penalties
+					p_totals[i] = tot - penalties;
+				}
+
+				// Now sort the pilots
+				Float[] p_sorted_totals = p_totals.clone();
+				Arrays.sort(p_sorted_totals, Collections.reverseOrder());
+
+				// Set the positions according to the sorted order
+				for (int i=0; i<p_names.size(); i++){
+					for (int j=0; j<p_names.size(); j++){
+						if (p_totals[i] == p_sorted_totals[j])
+							p_positions[i] = j + 1;
+
+					}
+				}
+
+				int sz = p_names.size();
+				mArrNames = new ArrayList<>(sz);
+				mArrNumbers = new ArrayList<>(sz);
+				mArrPilots = new ArrayList<>(sz);
+				mArrScores = new ArrayList<>(sz);
+
+				// Initialise
+				for (int i = 0; i < sz; i++) {
+					mArrNames.add("");
+					mArrNumbers.add("");
+					mArrPilots.add(new Pilot());
+					mArrScores.add(1000f);
+				}
+
+				for (int i=0; i<sz; i++){
+					int pos = p_positions[i]-1;
+					mArrNames.set(pos, String.format("%s", p_names.get(i)));
+					//mArrNumbers.set(pos, p_bib_numbers.get(i));
+					mArrNumbers.set(pos, Integer.toString(p_positions[i]));
+					Pilot p = new Pilot();
+					p.points = round2Fixed(p_totals[i].floatValue(), 2);
+					p.nationality = p_nationalities.get(i);
+					mArrPilots.set(pos, p);
+				}
+
+				float top_score = mArrPilots.get(0).points;
+				float previousscore = 1000.0f;
+
+				int pos = 1, lastpos = 1; // Last pos is for ties
+				for (int i=1; i<sz; i++){
+					float pilot_points = mArrPilots.get(i).points;
+					float normalised = round2Fixed(pilot_points/top_score * 1000, 2);
+
+					previousscore = normalised;
+
+					mArrScores.set(i, Float.valueOf(normalised));
+				}
+			} else {
+				// No rounds complete yet
+				mArrNames = new ArrayList<String>(0);
+				mArrPilots = new ArrayList<Pilot>(0);
+				mArrScores = new ArrayList<Float>(0);
+			}
+			datasource2.close();
+		}
+		datasource.close();
+	}
+
+	private float round2Fixed(float value, double places){
+
+		double multiplier = Math.pow(10, places);
+		//Log.i("MULTIPLIER", Double.toString(multiplier));
+		double integer = Math.floor(value);
+		//Log.i("INTEGER", Double.toString(integer));
+		double precision = Math.floor((value-integer) * multiplier);
+		//Log.i("PRECISION", Double.toString(precision));
+
+		return (float)(integer + (precision/multiplier));
 	}
 
 }

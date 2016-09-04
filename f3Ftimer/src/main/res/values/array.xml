@@ -78,4 +78,8 @@
         <item>Upload to Web (F3X Vault)</item>
     </string-array>
 
+    <string-array name="results_share_destinations" translatable="false">
+        <item>Share by email</item>
+        <item>Share on Social Media</item>
+    </string-array>
 </resources>
