@@ -166,12 +166,8 @@ public class RaceTimerActivity extends FragmentActivity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)  {
-	    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-	    	// disable back button
-	        return false;
-	    }
-
-	    return super.onKeyDown(keyCode, event);
+	    return !(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0)
+				&& super.onKeyDown(keyCode, event);
 	}
 	
 	@Override
@@ -366,16 +362,16 @@ public class RaceTimerActivity extends FragmentActivity {
 				
 				if (data.equals("wind_illegal")){
 					mWindLegal = false;
-					((RaceTimerFrag)mCurrentFragment).setWindWarning(true);
+					(mCurrentFragment).setWindWarning(true);
 				}
 
 				if (data.equals("wind_legal")){
 					mWindLegal = true;
-					((RaceTimerFrag)mCurrentFragment).setWindWarning(false);
+					(mCurrentFragment).setWindWarning(false);
 				}
 
 				if (data.equals("start_pressed")){
-					((RaceTimerFrag)mCurrentFragment).startPressed();
+					(mCurrentFragment).startPressed();
 				}
 				
 				if (data.equals("cancel")){
