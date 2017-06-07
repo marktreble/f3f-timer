@@ -62,7 +62,7 @@
     <string name="menu_import_race">Import Race</string>
     <string name="menu_export_race">Export Race</string>
     <string name="select_import_source">Import Race via</string>
-    <string name="select_export_source">Export Race via</string>
+    <string name="select_export_destination">Export Race via</string>
     <string name="menu_add_pilots">Add Pilots</string>
     <string name="menu_next_round">FinishRound</string>
     <string name="menu_add_pilot">New Pilot</string>

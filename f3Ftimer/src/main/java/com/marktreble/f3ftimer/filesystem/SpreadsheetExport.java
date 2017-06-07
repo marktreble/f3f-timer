@@ -185,7 +185,7 @@ public class SpreadsheetExport {
         return false;
     }
 
-    private File getDataStorageDir(String name) {
+    public File getDataStorageDir(String name) {
         // Get the directory for the user's public pictures directory.
         File base = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         base = new File(base, "F3F");

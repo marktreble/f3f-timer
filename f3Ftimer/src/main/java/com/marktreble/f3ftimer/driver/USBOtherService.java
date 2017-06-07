@@ -321,15 +321,6 @@ public class USBOtherService extends Service implements DriverInterface {
 
                 @Override
                 public void onNewData(final byte[] data) {
-                    /*
-                    String sb = "";
-                    try {
-                        sb =  new String(data, "US-ASCII");
-                    } catch (UnsupportedEncodingException e){
-                        e.printStackTrace();
-                    }
-                    String str_in = mBuffer+sb.trim();
-                    */
 
                     char[] charArray = (new String(data, 0,data.length)).toCharArray();
 
@@ -346,12 +337,10 @@ public class USBOtherService extends Service implements DriverInterface {
                         }
                         hexString.append(hex);
                     }
-                    Log.i("NEWDATA", hexString.toString());
 
                     String str_in = mBuffer+sb.toString().trim();
                     int len = str_in.length();
                     if (len>0){
-                        Log.i("NEWDATA", str_in);
                         String lastchar = hexString.substring(hexString.length()-2, hexString.length());
                         if (lastchar.equals("0d") || lastchar.equals("0a")){
                             // Clear the buffer
@@ -397,7 +386,6 @@ public class USBOtherService extends Service implements DriverInterface {
 
                             if (code.equals(FT_RACE_COMPLETE)){
                                 // Make sure we get 9 bytes before proceeding
-                                Log.d("BYTES RECEIVED", str_in.length()+"::"+str_in);
                                 if (str_in.length()<9){
                                     mBuffer = str_in;
                                 } else {

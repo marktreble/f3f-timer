@@ -34,6 +34,7 @@ import com.marktreble.f3ftimer.exportimport.BluetoothImportRace;
 import com.marktreble.f3ftimer.data.race.*;
 import com.marktreble.f3ftimer.data.pilot.*;
 import com.marktreble.f3ftimer.dialog.*;
+import com.marktreble.f3ftimer.exportimport.F3ftimerApiImportRace;
 import com.marktreble.f3ftimer.exportimport.FileExportRace;
 import com.marktreble.f3ftimer.exportimport.FileImportRace;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
@@ -61,6 +62,7 @@ public class RaceListActivity extends ListActivity {
 
     static final int IMPORT_SRC_BT = 0;
     static final int IMPORT_SRC_FILE = 1;
+    static final int IMPORT_SRC_F3FTIMER_API = 2;
 
     static final int EXPORT_SRC_BT = 0;
     static final int EXPORT_SRC_FILE = 1;
@@ -303,6 +305,10 @@ public class RaceListActivity extends ListActivity {
                                 intent = new Intent(mContext, FileImportRace.class);
                                 startActivityForResult(intent, DLG_IMPORT);
                                 break;
+                            case IMPORT_SRC_F3FTIMER_API:
+                                intent = new Intent(mContext, F3ftimerApiImportRace.class);
+                                startActivityForResult(intent, DLG_IMPORT);
+                                break;
                         }
                     }
                 });
@@ -312,8 +318,8 @@ public class RaceListActivity extends ListActivity {
 
     public void exportRace(){
         mDlgb = new AlertDialog.Builder(mContext)
-                .setTitle(R.string.select_export_source)
-                .setItems(R.array.export_sources, new DialogInterface.OnClickListener() {
+                .setTitle(R.string.select_export_destination)
+                .setItems(R.array.export_destinations, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         Intent intent;
                         switch (which) {
