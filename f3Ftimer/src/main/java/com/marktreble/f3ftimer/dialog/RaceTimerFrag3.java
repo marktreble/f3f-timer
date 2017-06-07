@@ -108,18 +108,18 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
 			RaceTimerActivity a = (RaceTimerActivity)getActivity();
 			
 			
-			if (s==10) a.sendCommand("20");
-			if (s==15) a.sendCommand("15");
-			if (s==20) a.sendCommand("10");
-			if (s==21) a.sendCommand("9");
-			if (s==22) a.sendCommand("8");
-			if (s==23) a.sendCommand("7");
-			if (s==24) a.sendCommand("6");
-			if (s==25) a.sendCommand("5");
-			if (s==26) a.sendCommand("4");
-			if (s==27) a.sendCommand("3");
-			if (s==28) a.sendCommand("2");
-			if (s==29) a.sendCommand("1");
+			if (s==9) a.sendCommand("20");
+			if (s==14) a.sendCommand("15");
+			if (s==19) a.sendCommand("10");
+			if (s==20) a.sendCommand("9");
+			if (s==21) a.sendCommand("8");
+			if (s==22) a.sendCommand("7");
+			if (s==23) a.sendCommand("6");
+			if (s==24) a.sendCommand("5");
+			if (s==25) a.sendCommand("4");
+			if (s==26) a.sendCommand("3");
+			if (s==27) a.sendCommand("2");
+			if (s==28) a.sendCommand("1");
 			
         	if (s==30){
         		// Runout of climbout time

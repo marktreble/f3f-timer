@@ -51,7 +51,7 @@
     <string name="on_course">Entre pilones</string>
     <string name="working_time">Tiempo de trabajo</string>
     <string name="and_last">y última</string>
-    <string name="next_round">Siguiente Manga</string>
+    <string name="next_round">Finalizar</string>
     <string name="wind_warning">Wind Illegal</string>
     <string name="penalty">P</string>
     <string name="app_results">Results Manager</string>
@@ -64,7 +64,7 @@
     <string name="select_import_source">Importar competicion via</string>
     <string name="select_export_source">Exportar competicion via</string>
     <string name="menu_add_pilots">Añadir pilotos</string>
-    <string name="menu_next_round">Siguiente manga</string>
+    <string name="menu_next_round">Finalizar manga</string>
     <string name="menu_add_pilot">Nuevo Piloto</string>
     <string name="menu_group_score">Group Score</string>
     <string name="menu_change_flying_order">Cambiar orden de vuelo</string>
@@ -89,6 +89,7 @@
     <string name="nl">Dutch</string>
     <string name="es">Español</string>
     <string name="score_zero">Cero</string>
+    <string name="end_of_round">Fin de la Manga</string>
 
 
 </resources>

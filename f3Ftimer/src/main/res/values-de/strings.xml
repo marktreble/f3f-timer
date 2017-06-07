@@ -51,7 +51,7 @@
     <string name="on_course">Im Kurs</string>
     <string name="working_time">Start-Zeitfenster</string>
     <string name="and_last">und Finale</string>
-    <string name="next_round">Nächste Runde</string>
+    <string name="next_round">Finish Runde</string>
     <string name="wind_warning">Wind ungültig</string>
     <string name="penalty">P</string>
     <string name="app_results">Ergebnisse</string>
@@ -65,7 +65,7 @@
     <string name="select_import_source">Rennen Importieren via</string>
     <string name="select_export_source">Rennen Exportieren via</string>
     <string name="menu_add_pilots">Pilot hinzufügen</string>
-    <string name="menu_next_round">Neue Runde</string>
+    <string name="menu_next_round">Finish Runde</string>
     <string name="menu_add_pilot">Neuer Pilot</string>
     <string name="menu_group_score">Gruppenscore</string>
     <string name="menu_change_flying_order">Flugreihenfolge ändern</string>
@@ -89,4 +89,5 @@
     <string name="de">Deutsch</string>
     <string name="nl">Niederländisch</string>
     <string name="es">Spanish</string>
+    <string name="end_of_round">Ende de Runde</string>
 </resources>

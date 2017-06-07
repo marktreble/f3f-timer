@@ -17,16 +17,7 @@
             <option value="$PROJECT_DIR$/usbSerialForAndroid" />
           </set>
         </option>
-        <option name="myModules">
-          <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/f3Ftimer" />
-            <option value="$PROJECT_DIR$/iOIOLibAccessory" />
-            <option value="$PROJECT_DIR$/iOIOLibAndroid" />
-            <option value="$PROJECT_DIR$/iOIOLibBT" />
-            <option value="$PROJECT_DIR$/usbSerialForAndroid" />
-          </set>
-        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

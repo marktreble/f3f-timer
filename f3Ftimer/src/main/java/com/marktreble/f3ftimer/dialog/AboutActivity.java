@@ -20,16 +20,18 @@ public class AboutActivity extends Activity {
 	
 		PackageInfo pInfo;
 		String v = "";
+		String b = "";
 		try {
 			pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
 			v = pInfo.versionName;
+			b = String.format("%d", pInfo.versionCode);
 		} catch (NameNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		TextView version = (TextView) findViewById(R.id.version);
-		version.setText(String.format("%s %s", getString(R.string.version), v));
+		version.setText(String.format("%s %s (Build %s)", getString(R.string.version), v, b));
 	}
 	
 }

@@ -53,10 +53,10 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
 	    NextRoundActivity a = (NextRoundActivity)getActivity();
 	    
 		TextView current_round = (TextView) mView.findViewById(R.id.current_round);
-		current_round.setText(String.format("End of Round %d", a.round_id));
+		current_round.setText(String.format("%s %d", getString(R.string.end_of_round), a.round_id));
 
 		TextView next_round = (TextView) mView.findViewById(R.id.next_round);
-		next_round.setText("Next Round");
+		next_round.setText(getString(R.string.next_round));
 		
 		return mView;
 	}	
