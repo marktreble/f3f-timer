@@ -2,6 +2,7 @@ package com.marktreble.f3ftimer.data.pilot;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 
 import org.json.JSONObject;
 
@@ -59,7 +60,7 @@ public class Pilot {
 		String uri = "@drawable/" + nationality.toLowerCase();
 		int imageResource = context.getResources().getIdentifier(uri, null, context.getPackageName());
 		if (imageResource == 0)	return null;
-		return context.getResources().getDrawable(imageResource);
+		return ContextCompat.getDrawable(context, imageResource);
 	}
     
     public String toString(){

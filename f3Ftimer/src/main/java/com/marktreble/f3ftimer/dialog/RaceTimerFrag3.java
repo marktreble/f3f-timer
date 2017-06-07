@@ -48,9 +48,10 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.race_timer_frag3, container, false);
-        
+        mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
+
 		Button ab = (Button) mView.findViewById(R.id.button_abort);
+		ab.setVisibility(View.VISIBLE);
 	    ab.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
@@ -89,8 +90,16 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
             });
 
         }
+
+		TextView status = (TextView) mView.findViewById(R.id.status);
+		status.setText(getString(R.string.model_launched));
+
 		super.setPilotName();
-		
+
+		if (((RaceTimerActivity)getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED){
+			setMinimized();
+		}
+
 		return mView;
 	}	
 	
@@ -100,10 +109,13 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
         	float seconds = (float)elapsed/1000;
         	if (seconds>30) seconds = 30;
 
-			TextView cd = (TextView) mView.findViewById(R.id.countdown);
+			TextView cd = (TextView) mView.findViewById(R.id.time);
 			String str_time = String.format("%.2f", 30-seconds);
 			cd.setText(str_time);
-			
+
+			TextView min = (TextView) mView.findViewById(R.id.mintime);
+			min.setText(str_time);
+
 			int s = (int) Math.floor(seconds);
 			RaceTimerActivity a = (RaceTimerActivity)getActivity();
 			

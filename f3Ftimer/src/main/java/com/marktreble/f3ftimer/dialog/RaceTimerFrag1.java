@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.os.Bundle;
+import android.widget.TextView;
 
 public class RaceTimerFrag1 extends RaceTimerFrag {
 
@@ -31,9 +32,10 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.race_timer_frag1, container, false);
+        mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
         
 		Button swt = (Button) mView.findViewById(R.id.button_start_working_time);
+		swt.setVisibility(View.VISIBLE);
 	    swt.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {	        	
@@ -42,8 +44,9 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
 	            
 	        }
 	    });
-	    
+
 		Button ml = (Button) mView.findViewById(R.id.button_model_launched);
+		ml.setVisibility(View.VISIBLE);
 	    ml.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v){
@@ -53,7 +56,8 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
 	    });
 	    
         Button ab = (Button) mView.findViewById(R.id.button_abort);
-	    ab.setOnClickListener(new View.OnClickListener() {
+		ab.setVisibility(View.VISIBLE);
+		ab.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
 	        	RaceTimerActivity a = (RaceTimerActivity)getActivity();
@@ -63,7 +67,10 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
 	            
 	        }
 	    });
-	    
+
+		TextView status = (TextView) mView.findViewById(R.id.status);
+		status.setVisibility(View.GONE);
+
 		super.setPilotName();
 		
 		return mView;
@@ -90,4 +97,5 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
 	public void startPressed(){
 		next();
 	}
+
 }

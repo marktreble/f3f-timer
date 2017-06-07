@@ -53,9 +53,10 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.race_timer_frag4, container, false);
+        mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
         
         Button ab = (Button) mView.findViewById(R.id.button_abort);
+		ab.setVisibility(View.VISIBLE);
 	    ab.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
@@ -120,12 +121,19 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
         }
 
+		TextView status = (TextView) mView.findViewById(R.id.status);
+		status.setText(getString(R.string.on_course));
+
         setLeg(mLap, mEstimate);
 		if (mFinalTime>=0)
 			setFinal(mFinalTime);
 		
 		super.setPilotName();
-		
+
+		if (((RaceTimerActivity)getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
+			setMinimized();
+		}
+
 		return mView;
 	}	
 	
@@ -140,8 +148,11 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 				str_time += String.format(" T%d", mLap);
 			}
 			cd.setText(str_time);
-			
-       		mHandler.postDelayed(updateClock, 10);
+
+			TextView min = (TextView) mView.findViewById(R.id.mintime);
+			min.setText(str_time);
+
+			mHandler.postDelayed(updateClock, 10);
 
 		}
 	};
@@ -154,7 +165,10 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
             TextView cd = (TextView) mView.findViewById(R.id.time);
             cd.setText("");
 
-            RaceTimerActivity a = (RaceTimerActivity)getActivity();
+			TextView min = (TextView) mView.findViewById(R.id.mintime);
+			min.setText("");
+
+			RaceTimerActivity a = (RaceTimerActivity)getActivity();
             a.sendCommand(String.format("::%.2f", (float)elapsed/1000));
         }
 
@@ -180,6 +194,9 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		TextView cd = (TextView) mView.findViewById(R.id.time);
 		String str_time = String.format("%.2f", time);
 		cd.setText(str_time);
+
+		TextView min = (TextView) mView.findViewById(R.id.mintime);
+		min.setText(str_time);
 
 		TextView lap = (TextView) mView.findViewById(R.id.lap);
 		lap.setText("");

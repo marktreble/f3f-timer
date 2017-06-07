@@ -13,20 +13,32 @@ import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
+import android.animation.LayoutTransition;
+import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 
 public class RaceTimerActivity extends FragmentActivity {
@@ -42,9 +54,24 @@ public class RaceTimerActivity extends FragmentActivity {
 	private FragmentActivity mActivity;
 	private ProgressDialog mPDialog;
 	private AlertDialog mADialog;
+	private ImageView mResize;
+	public int mWindowState;
+
+	private int mNaturalHeight;
+
+	public static int WINDOW_STATE_FULL = 0;
+	public static int WINDOW_STATE_MINIMIZED = 1;
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		getWindow().setFlags(LayoutParams.FLAG_NOT_TOUCH_MODAL,
+				LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
+		// ...but notify us that it happened.
+		getWindow().setFlags(LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
+				LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.race_timer);
 
@@ -79,13 +106,14 @@ public class RaceTimerActivity extends FragmentActivity {
 		if (savedInstanceState != null) {
 
             mCurrentFragmentId = savedInstanceState.getInt("mCurrentFragmentId");
-			
+			mWindowState = savedInstanceState.getInt("mWindowState");
+
 			FragmentManager fm = getSupportFragmentManager();
 			String tag = "racetimerfrag"+Integer.toString(mCurrentFragmentId);
 
 		    mCurrentFragment = (RaceTimerFrag)fm.findFragmentByTag(tag);
 
-	    } else {
+		} else {
             // Pass the race/pilot details to the service
             Log.d("startPilot:", "Race ID = "+Integer.toString(mRace.id));
             Log.d("startPilot:", "Pilot ID = "+Integer.toString(mPilot.id));
@@ -110,11 +138,32 @@ public class RaceTimerActivity extends FragmentActivity {
 	    	ft.commit();
 	    	mCurrentFragment = f;
             mCurrentFragmentId = 1;
+			mWindowState = WINDOW_STATE_FULL;
+
         }
 
 		getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+		mResize = (ImageView)findViewById(R.id.window_resize);
+		mResize.setVisibility(View.VISIBLE);
+		mResize.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if (mWindowState == WINDOW_STATE_FULL){
+					mWindowState = WINDOW_STATE_MINIMIZED;
+					mResize.setImageDrawable(ContextCompat.getDrawable(mContext ,R.drawable.expand));
+					setMinimized(true);
+				} else {
+					mWindowState = WINDOW_STATE_FULL;
+					mResize.setImageDrawable(ContextCompat.getDrawable(mContext ,R.drawable.minimize));
+					setExpanded();
+
+				}
+			}
+		});
+
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event)  {
 	    if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
@@ -131,7 +180,8 @@ public class RaceTimerActivity extends FragmentActivity {
         outState.putInt("race_id", mRace.id);
         outState.putInt("pilot_id", mPilot.id);
         outState.putInt("round", mRound);
-        outState.putInt("mCurrentFragmentId", mCurrentFragmentId);
+		outState.putInt("mCurrentFragmentId", mCurrentFragmentId);
+		outState.putInt("mWindowState", mWindowState);
 
     }
 	
@@ -144,6 +194,7 @@ public class RaceTimerActivity extends FragmentActivity {
 
 		mRound = savedInstanceState.getInt("round");
 		mCurrentFragmentId = savedInstanceState.getInt("mCurrentFragmentId");
+		mWindowState = savedInstanceState.getInt("mWindowState");
 
 		RaceData datasource = new RaceData(this);
 		datasource.open();
@@ -154,12 +205,27 @@ public class RaceTimerActivity extends FragmentActivity {
 		datasource2.open();
 		mPilot = datasource2.getPilot(pid, mRace.id);
 		datasource2.close();
+
 	}
 	
 	public void onResume(){
 
         super.onResume();
      	registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
+
+		FrameLayout layout = (FrameLayout) findViewById(R.id.dialog1).getRootView();
+		layout.post(new Runnable() {
+			@Override
+			public void run() {
+				// Retain the mimimized state when rotated
+				if (mWindowState == WINDOW_STATE_MINIMIZED){
+					mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.expand));
+					setMinimized(false);
+				}
+			}
+		});
+
+
 	}
 	
 	public void onPause(){
@@ -351,4 +417,44 @@ public class RaceTimerActivity extends FragmentActivity {
             mPDialog = null;
         }
     }
+
+    private void setMinimized(boolean animated){
+		Resources r = getResources();
+		int px = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, r.getDisplayMetrics());
+
+		mCurrentFragment.setMinimized();
+
+		FrameLayout layout = (FrameLayout) findViewById(R.id.dialog1).getRootView();
+
+		if (animated) {
+			LayoutTransition transition = new LayoutTransition();
+			transition.enableTransitionType(LayoutTransition.CHANGING);
+			layout.setLayoutTransition(transition);
+		}
+		if (mNaturalHeight == 0) mNaturalHeight = layout.getLayoutParams().height;
+
+		layout.getLayoutParams().height = px;
+		getWindow().setGravity(Gravity.TOP);
+
+		if (animated) {
+			layout.setLayoutTransition(null);
+		}
+
+	}
+
+	private void setExpanded(){
+		FrameLayout layout = (FrameLayout) findViewById(R.id.dialog1).getRootView();
+		LayoutTransition transition = new LayoutTransition();
+		transition.enableTransitionType(LayoutTransition.CHANGING);
+		layout.setLayoutTransition(transition);
+		layout.getLayoutParams().height = mNaturalHeight;
+		getWindow().setGravity(Gravity.CENTER);
+
+		layout.setLayoutTransition(null);
+
+		mCurrentFragment.setExpanded();
+
+	}
+
+
 }

@@ -33,9 +33,10 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.race_timer_frag5, container, false);
+        mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
 
         Button next = (Button) mView.findViewById(R.id.button_next_pilot);
+        next.setVisibility(View.VISIBLE);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -51,9 +52,18 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
         String str_time = String.format("%.2f", mFinalTime);
         cd.setText(str_time);
 
+        TextView min = (TextView) mView.findViewById(R.id.mintime);
+        min.setText(str_time);
+
         TextView status = (TextView) mView.findViewById(R.id.status);
-        status.setText("Run Complete");
+        status.setText(getString(R.string.run_complete));
+
         super.setPilotName();
+
+        if (((RaceTimerActivity)getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
+            setMinimized();
+        }
+
 
         return mView;
     }

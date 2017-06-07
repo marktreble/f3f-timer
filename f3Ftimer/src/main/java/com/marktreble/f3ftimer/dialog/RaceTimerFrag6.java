@@ -24,9 +24,10 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.race_timer_frag6, container, false);
+        mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
 
         Button zero = (Button) mView.findViewById(R.id.button_zero);
+        zero.setVisibility(View.VISIBLE);
         zero.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -38,6 +39,7 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
         });
 
         Button refly = (Button) mView.findViewById(R.id.button_refly);
+        refly.setVisibility(View.VISIBLE);
         refly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,6 +51,10 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
         });
 
         super.setPilotName();
+
+        if (((RaceTimerActivity)getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
+            setMinimized();
+        }
 
         // Start Round Timeout now
         RaceTimerActivity a = (RaceTimerActivity) getActivity();

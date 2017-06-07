@@ -1,7 +1,17 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_corners"
     android:id="@+id/dialog1">
+
+    <ImageView
+        android:id="@+id/window_resize"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:src="@drawable/minimize"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:visibility="gone"
+        android:contentDescription="Resize"
+        />
 </RelativeLayout>

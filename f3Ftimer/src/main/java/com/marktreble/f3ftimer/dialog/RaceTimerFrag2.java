@@ -42,7 +42,7 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
         // Confusing? - yes. This stops the timeout being annoyingly invoked when working time has started
         // Unless of course the model is not launched before time is up!
     	a.sendCommand("timeout_resumed");
-    }
+	}
 	
 	@Override
 	public void onDestroy(){
@@ -55,8 +55,10 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
-        
+
+
 		Button ml = (Button) mView.findViewById(R.id.button_model_launched);
+		ml.setVisibility(View.VISIBLE);
 	    ml.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
@@ -67,7 +69,8 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 	    });
 	    
         Button ab = (Button) mView.findViewById(R.id.button_abort);
-	    ab.setOnClickListener(new View.OnClickListener() {
+		ab.setVisibility(View.VISIBLE);
+		ab.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
 	        	mHandler.removeCallbacks(updateClock);
@@ -78,9 +81,16 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 	            
 	        }
 	    });
-	    
+
+		TextView status = (TextView) mView.findViewById(R.id.status);
+		status.setText(getString(R.string.working_time));
+
 		super.setPilotName();
-		    	
+
+		if (((RaceTimerActivity)getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED){
+			setMinimized();
+		}
+
 		return mView;
 	}
 	
@@ -90,9 +100,13 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
         	float seconds = (float)elapsed/1000;
         	if (seconds>30) seconds = 30;
 
-			TextView cd = (TextView) mView.findViewById(R.id.countdown);
+			TextView cd = (TextView) mView.findViewById(R.id.time);
 			String str_time = String.format("%.2f", 30-seconds);
 			cd.setText(str_time);
+
+			TextView min = (TextView) mView.findViewById(R.id.mintime);
+			min.setText(str_time);
+
 
 			int s = (int) Math.floor(seconds);
 			RaceTimerActivity a = (RaceTimerActivity)getActivity();

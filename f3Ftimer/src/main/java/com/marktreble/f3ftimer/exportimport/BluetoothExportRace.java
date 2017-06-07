@@ -27,11 +27,9 @@ import java.util.UUID;
  */
 public class BluetoothExportRace extends BaseExport {
 
-    private Context mContext;
-    private Activity mActivity;
+    private static String TAG = "BlueToothExportRace";
 
     private AlertDialog mDlg;
-    private AlertDialog.Builder mDlgb;
 
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothServerSocket mmServerSocket;
@@ -244,13 +242,12 @@ public class BluetoothExportRace extends BaseExport {
         // Serialize all race data, pilots, times + groups
         int race_id = Integer.parseInt(query);
 
-        RaceData datasource = new RaceData(mContext);
+        RaceData datasource = new RaceData(this);
         datasource.open();
         Race r = datasource.getRace(race_id);
         datasource.close();
 
         String data = super.getSerialisedRaceData(r.id, r.round);
-        Log.d("BLUETOOTH::EXPORT", data);
 
         byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
 

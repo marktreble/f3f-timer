@@ -37,6 +37,12 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
+  <component name="ProjectPlainTextFileTypeManager">
+    <file url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag4.xml" />
+    <file url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag4.xml" />
+    <file url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag5.xml" />
+    <file url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag6.xml" />
+  </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_7" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>

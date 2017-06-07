@@ -108,5 +108,6 @@
     <string name="A" translatable="false">A</string>
     <string name="B" translatable="false">B</string>
     <string name="end_of_round">End of Round</string>
+    <string name="run_complete">Run Complete</string>
 
 </resources>

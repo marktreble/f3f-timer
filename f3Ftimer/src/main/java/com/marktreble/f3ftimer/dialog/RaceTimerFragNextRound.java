@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.os.Bundle;
 
@@ -31,7 +32,7 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_timer_frag_next_round, container, false);
-        
+
         Button ab = (Button) mView.findViewById(R.id.button_abort);
 	    ab.setOnClickListener(new View.OnClickListener() {
 	        @Override

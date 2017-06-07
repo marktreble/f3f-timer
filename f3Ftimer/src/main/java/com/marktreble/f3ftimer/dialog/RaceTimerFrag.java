@@ -15,19 +15,23 @@ public class RaceTimerFrag extends Fragment {
 	
 	public void setPilotName() {
 	    RaceTimerActivity a = (RaceTimerActivity)getActivity();
-		TextView pilot_name = (TextView) mView.findViewById(R.id.current_pilot);
 		String name = String.format("%s %s", a.mPilot.firstname, a.mPilot.lastname);
 
 		if (name.trim().equals(""))
 			name="noname! "+ a.mPilot.id;
 
+		TextView pilot_name = (TextView) mView.findViewById(R.id.current_pilot);
+		TextView min_name = (TextView) mView.findViewById(R.id.minpilot);
 		pilot_name.setText(name);
-	
+		min_name.setText(name);
+
 		Drawable flag = a.mPilot.getFlag(a);
 		if (flag != null){
-		    pilot_name.setCompoundDrawablesWithIntrinsicBounds(flag, null, null, null);
+			pilot_name.setCompoundDrawablesWithIntrinsicBounds(flag, null, null, null);
+			min_name.setCompoundDrawablesWithIntrinsicBounds(flag, null, null, null);
 		    int padding = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
-		    pilot_name.setCompoundDrawablePadding(padding);
+			pilot_name.setCompoundDrawablePadding(padding);
+			min_name.setCompoundDrawablePadding(padding);
 		}
 
 		TextView pilot_number = (TextView) mView.findViewById(R.id.number);
@@ -41,5 +45,19 @@ public class RaceTimerFrag extends Fragment {
 
 	public void startPressed(){
 		// Abstract
+	}
+
+	public void setMinimized(){
+		View min = mView.findViewById(R.id.minimised);
+		min.setVisibility(View.VISIBLE);
+		View full =  mView.findViewById(R.id.full);
+		full.setVisibility(View.GONE);
+	}
+
+	public void setExpanded(){
+		View min = mView.findViewById(R.id.minimised);
+		min.setVisibility(View.GONE);
+		View full =  mView.findViewById(R.id.full);
+		full.setVisibility(View.VISIBLE);
 	}
 }
