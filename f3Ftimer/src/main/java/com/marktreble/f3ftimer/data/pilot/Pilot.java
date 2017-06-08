@@ -31,6 +31,7 @@ public class Pilot {
 	public Integer position = 0;
 	public Integer round = 0;
 	public String number = "";
+	public String team = "";
 
     public Pilot(){
         // Default constructor
@@ -45,7 +46,8 @@ public class Pilot {
         frequency = o.optString("frequency");
         models = o.optString("models");
         nationality = o.optString("nationality");
-        language = o.optString("language");
+		language = o.optString("language");
+		team = o.optString("team");
     }
     
 	public String get(){
@@ -64,7 +66,7 @@ public class Pilot {
 	}
     
     public String toString(){
-        return String.format("{\"id\":\"%s\", \"race_id\":\"%s\", \"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\"}", id, race_id, pilot_id, status, firstname, lastname, nationality, language );
+        return String.format("{\"id\":\"%s\", \"race_id\":\"%s\", \"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", id, race_id, pilot_id, status, firstname, lastname, nationality, language, team );
         
     }
 }

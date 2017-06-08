@@ -33,7 +33,7 @@ public class RacePilotData {
 	}
 
 	public Pilot getPilot(int id, int race){
-		String sql = "select * from racepilots where id=? and race_id=?";
+		String sql = "select id,pilot_id, race_id, status, firstname, lastname, email, frequency, models, nationality, language, team from racepilots where id=? and race_id=?";
 		String[] data = {Integer.toString(id), Integer.toString(race)};
 		Cursor cursor = database.rawQuery(sql, data);
 		if (cursor.getCount() == 0){
@@ -89,11 +89,6 @@ public class RacePilotData {
 		String[] data = {Integer.toString(race_id), Integer.toString(pilot_id), Integer.toString(round)};
 		database.execSQL(sql, data);
 		
-        /*
-		sql = "update racepilots set status=? where race_id=? and id=?";
-		String[] data2 = {Integer.toString(Pilot.STATUS_REFLIGHT), Integer.toString(race_id), Integer.toString(pilot_id)};
-		database.execSQL(sql, data2);
-		*/
 	}
 	
 	public void setPenalty(int race_id, int pilot_id, int round, int penalty){
@@ -142,6 +137,7 @@ public class RacePilotData {
 		values.put("models", p.models);
 		values.put("nationality", p.nationality);
 		values.put("language", p.language);
+		if (p.team != null) values.put("team", p.team);
 		long insert_id = database.insert("racepilots", null, values);
 
 		return insert_id;
@@ -156,6 +152,7 @@ public class RacePilotData {
 		values.put("models", p.models);
 		values.put("nationality", p.nationality);
 		values.put("language", p.language);
+		if (p.team != null) values.put("team", p.team);
 		database.update("racepilots", values, "id="+Integer.toString(p.id), null);
 	}
 
@@ -182,7 +179,7 @@ public class RacePilotData {
 
     public ArrayList<Pilot> getAllPilotsForRace(int race_id, int round, int offset, int start_number) {
 		ArrayList<Pilot> allPilots = new ArrayList<>();
-		String sql = "select *," +
+		String sql = "select id, pilot_id, race_id, status, firstname, lastname, email, frequency, models, nationality, language," +
 					 "(select time from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as time, " +
 					 "(select count(id) from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as flown, " +
                      "(select penalty from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as penalty, " +
@@ -241,6 +238,8 @@ public class RacePilotData {
                 p.time = 0;
                 p.flown = false;
             }
+		} else {
+			p.team = cursor.getString(11);
 		}
 		return p;
 	}
@@ -251,7 +250,7 @@ public class RacePilotData {
         for(int i=0;i<pilots.size(); i++){
             if (i>0) array+=",";
             Pilot p = pilots.get(i);
-            String str_pilot = String.format("{\"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\"}", p.pilot_id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language);
+            String str_pilot = String.format("{\"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", p.pilot_id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language, p.team);
             array+= str_pilot;
         }
         array+= "]";

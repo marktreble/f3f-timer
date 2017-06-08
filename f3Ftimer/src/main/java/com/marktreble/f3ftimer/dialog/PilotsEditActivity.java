@@ -74,6 +74,8 @@ public class PilotsEditActivity extends Activity {
     	EditText models = (EditText) findViewById(R.id.editText5);
     	Spinner nationality = (Spinner) findViewById(R.id.spinner6);
         Spinner language = (Spinner) findViewById(R.id.spinner7);
+		TextView teamlabel = (TextView) findViewById(R.id.textView8);
+		EditText team = (EditText) findViewById(R.id.editText8);
         Button done_button = (Button) findViewById(R.id.button1);
 
         done_button.setOnClickListener(new View.OnClickListener() {
@@ -132,11 +134,8 @@ public class PilotsEditActivity extends Activity {
                 return row;
             }
    	   	};
-    	//mNationality_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
     	nationality.setAdapter(mNationality_adapter);
-    	
-    	//mLanguage_adapter = ArrayAdapter.createFromResource(this,      R.array.languages, android.R.layout.simple_spinner_item);
-    	
     	
         String[] languages = Languages.getAvailableLanguages(this);
 
@@ -179,6 +178,7 @@ public class PilotsEditActivity extends Activity {
 	        	RacePilotData datasource = new RacePilotData(mContext);
 	    		datasource.open();
 	    		p = datasource.getPilot(mPid, mRid);
+				Log.i("PPP", p.toString());
 	    		datasource.close();
 			}
         	
@@ -186,8 +186,9 @@ public class PilotsEditActivity extends Activity {
         	lastname.setText(p.lastname);
         	email.setText(p.email);
         	frequency.setText(p.frequency);
-        	models.setText(p.models);
-        	
+			models.setText(p.models);
+			team.setText(p.team);
+
         	int pos;
         	
         	String[] countrycodes = getResources().getStringArray(R.array.countrycodes);
@@ -237,6 +238,13 @@ public class PilotsEditActivity extends Activity {
 			}
 		});
 
+		if (mCaller.equals("racemanager")){
+			// Show team
+			teamlabel.setVisibility(View.VISIBLE);
+			team.setVisibility(View.VISIBLE);
+
+		}
+
 	}
 
     private boolean done(){
@@ -248,6 +256,7 @@ public class PilotsEditActivity extends Activity {
         EditText models = (EditText) findViewById(R.id.editText5);
         Spinner nationality = (Spinner) findViewById(R.id.spinner6);
         Spinner language = (Spinner) findViewById(R.id.spinner7);
+		EditText team = (EditText) findViewById(R.id.editText8);
 
         Pilot p = new Pilot();
         p.firstname = capitalise(firstname.getText().toString().trim());
@@ -281,7 +290,8 @@ public class PilotsEditActivity extends Activity {
             if (mCaller.equals("racemanager")){
                 RacePilotData datasource = new RacePilotData(mContext);
                 datasource.open();
-                p.id = mPid;
+				p.team = team.getText().toString().trim();
+				p.id = mPid;
                 datasource.updatePilot(p);
                 datasource.close();
             }

@@ -109,5 +109,6 @@
     <string name="B" translatable="false">B</string>
     <string name="end_of_round">End of Round</string>
     <string name="run_complete">Run Complete</string>
+    <string name="pilot_team">Team Name</string>
 
 </resources>
