@@ -23,15 +23,15 @@ Support has been added for:
 - Prolific
 - CH340
 
-###IOIO
+### IOIO
 We have used the IOIO successfully in the MK III Timer System developed by Jon Edison. Full constuction details can be found at http://www.nymrsc.org.uk/Jons%20Timer%20mk3.htm
 
-###Bluetooth
+### Bluetooth
 We have now also added a driver for the HC-05 Bluetooth Module. This can be installed as a replacement for the IOIO and frees up the usb port for charging.
 
 For more information on the bluetooth hardware, see <a href="http://www.nymrsc.org.uk/Jons%20Timer%20mk3%20Construction3.htm">http://www.nymrsc.org.uk/Jons%20Timer%20mk3%20Construction3.htm</a>
 
-###Compatibility
+### Compatibility
 
 Devices connect using Android's <a href="http://source.android.com/accessories/protocol.html">Open Accessory Protocol</a>. Older devices may not support this, but some can communicate through <a href="http://developer.android.com/tools/help/adb.html">ADB</a> also. If your device does not support Open Accessory, then you can try adb by going to Settings > Developers Options and enabling USB Debugging. Otherwise USB Debugging should be switched off.
 
@@ -46,7 +46,7 @@ The following table lists known device compatibility:
 | HTC One M9              |            | ✔                     |         |
 | Cruiser BT67            |            | ✔                     |         |
 
-###Features
+### Features
 
 - Permanent database of pilot names (Pilot Manager App)
 - Quick and easy race set up (Just type a name, and select pilots from the list)
@@ -58,7 +58,7 @@ The following table lists known device compatibility:
 - Multi-lingual voice synthesis
 - Transfer of race data between devices over bluetooth
 
-###Installation
+### Installation
 
 The latest stable release can be downloaded here:
 <a href="http://www.marktreble.co.uk/clients/f3f/f3Ftimer4.9.16.apk">f3Ftimer4.9.16.apk</a>
@@ -75,7 +75,7 @@ To connect your external display:
 ![Android Settings Screen]
 (https://github.com/marktreble/f3f-timer/blob/master/images/extdisp-setup.png)
 
-###Getting Started
+### Getting Started
 
 You can't do anything without some pilots, so open the 'Pilot Manager' and use the menu to add some pilots.
 
@@ -91,7 +91,7 @@ You are now ready to race!
 
 The next pilot to fly is highlighted, and a short press on their name will start their flight. Pilot names can also be long pressed for other functions such as reflights, retirements, zero-score or manual time entry. All other function can be found from the main menu.
 
-###Thanks
+### Thanks
 Thanks to Tilman Baumann (German Translations) and Alejandro Gil Garcia (Spanish Translations)
 
 
