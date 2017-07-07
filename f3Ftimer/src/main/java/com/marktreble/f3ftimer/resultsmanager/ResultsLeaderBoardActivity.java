@@ -57,8 +57,6 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 		
 	private Context mContext;
 
-    private int mGroupScoring;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);	

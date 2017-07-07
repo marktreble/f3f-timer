@@ -96,6 +96,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 		mArrNumbers = r.mArrNumbers;
 		mArrGroups = r.mArrGroups;
 		mFirstInGroup = r.mFirstInGroup;
+		mGroupScoring = r.mGroupScoring;
 
     }
 	

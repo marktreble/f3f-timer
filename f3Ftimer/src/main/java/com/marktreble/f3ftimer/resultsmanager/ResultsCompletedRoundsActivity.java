@@ -29,8 +29,6 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 
 	private Integer mRid;
 
-	static final boolean DEBUG = true;
-
 	private Context mContext;
 
 	@Override

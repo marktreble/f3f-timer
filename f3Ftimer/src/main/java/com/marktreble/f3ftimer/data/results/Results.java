@@ -22,17 +22,25 @@ import java.util.Comparator;
 public class Results {
 
     public ArrayList<String> mArrNames;
-    public ArrayList<String> mArrNumbers;
+    public ArrayList<String> mArrNumbers; // Position number in round or race
     public ArrayList<String> mArrBibNumbers;
     public ArrayList<Pilot> mArrPilots;
     public ArrayList<Integer> mArrGroups;
-    public ArrayList<Boolean> mFirstInGroup;
+    public ArrayList<Boolean> mFirstInGroup; // Tells the UI to add the group header
     public ArrayList<Float> mArrScores;
+    public ArrayList<ArrayList<Float>> mArrTimes;
 
     public float mFTD;
     public String mFTDName;
     public int mFTDRound;
 
+    public int mGroupScoring;
+
+    /* getRoundInProgress(context, race ID)
+     *
+     * Populates: mArrNames, mArrPilots, mArrNumbers, mArrGroups, mFirstInGroup & mGroupScoring
+     *
+     */
     public void getRoundInProgress(Context context, int mRid){
 
         RaceData datasource = new RaceData(context);
@@ -51,7 +59,7 @@ public class Results {
 
         int g = 0; // Current group we are calculating
 
-        int mGroupScoring = datasource.getGroups(mRid, race.round);
+        mGroupScoring = datasource.getGroups(mRid, race.round);
 
         float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
         for (int i=0; i<mGroupScoring+1; i++)
@@ -138,6 +146,11 @@ public class Results {
         datasource.close();
     }
 
+    /* getResultsForCompletedRound(context, race ID, round number)
+     *
+     * Populates: mArrNames, mArrPilots, mArrNumbers, mArrGroups, mFirstInGroup & mGroupScoring
+     *
+     */
     public void getResultsForCompletedRound(Context context, int mRid, int mRound){
 
         RaceData datasource = new RaceData(context);
@@ -155,7 +168,7 @@ public class Results {
 
         int g = 0; // Current group we are calculating
 
-        int mGroupScoring = datasource.getGroups(mRid, mRound);
+        mGroupScoring = datasource.getGroups(mRid, mRound);
 
         float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
         for (int i=0; i<mGroupScoring+1; i++)
@@ -264,6 +277,11 @@ public class Results {
         datasource.close();
     }
 
+    /* getLeaderBoard(context, race ID)
+     *
+     * Populates: mArrNames, mArrPilots, mArrScores, mFTD, mFTDName, mFTDRound
+     *
+     */
     public void getLeaderBoard(Context context, int mRid){
 
         RaceData datasource = new RaceData(context);
@@ -311,7 +329,7 @@ public class Results {
                 for (int rnd=0; rnd<race.round-1; rnd++){
                     ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0, 0);
 
-                    int mGroupScoring = datasource.getGroups(mRid, rnd+1);
+                    mGroupScoring = datasource.getGroups(mRid, rnd+1);
 
                     int g = 0; // Current group we are calculating
 
@@ -403,8 +421,10 @@ public class Results {
 
                 // Set the positions according to the sorted order
                 for (int i=0; i<p_names.size(); i++){
+                    float p_total = p_totals[i];
                     for (int j=0; j<p_names.size(); j++){
-                        if (p_totals[i].equals(p_sorted_totals[j]))
+                        float p_sorted_total = p_sorted_totals[j];
+                        if (p_total == p_sorted_total)
                             p_positions[i] = j + 1;
 
                     }

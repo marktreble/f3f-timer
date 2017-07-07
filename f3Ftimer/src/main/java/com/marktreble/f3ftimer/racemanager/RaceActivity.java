@@ -20,6 +20,7 @@ import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
 import com.marktreble.f3ftimer.wifi.Wifi;
 
+import android.app.ActionBar;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -96,6 +97,7 @@ public class RaceActivity extends ListActivity {
 
     private boolean mPilotDialogShown = false; // Used to determine the action when the start button is pressed
     private boolean mTimeoutDialogShown = false;
+    private boolean mMenuShown = false;
 
 	private Context mContext;
 	
@@ -160,7 +162,17 @@ public class RaceActivity extends ListActivity {
         }
         getNamesArray();
         setList();
-	}
+
+        getActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
+            @Override
+            public void onMenuVisibilityChanged(boolean isVisible) {
+                // TODO Auto-generated method stub
+                mMenuShown = isVisible;
+                Log.i("RACEACTIVITY", (mMenuShown)?"MENU SHOWN":"MENU HID");
+            }
+        });
+
+    }
 	
     @Override
     public void onDestroy(){
@@ -1011,6 +1023,7 @@ public class RaceActivity extends ListActivity {
     private boolean showPilotDialog(int round, int pilot_id, String bib_no){
         if (mPilotDialogShown) return true;
         if (mTimeoutDialogShown) return false;
+        if (mMenuShown) return false;
         Intent intent = new Intent(this, RaceTimerActivity.class);
         intent.putExtra("pilot_id", pilot_id);
         intent.putExtra("race_id", mRid);
@@ -1048,6 +1061,7 @@ public class RaceActivity extends ListActivity {
 	
 	private void showTimeout(long start){
         if (mPilotDialogShown) return;
+        if (mMenuShown) return;
 
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", start);
@@ -1058,6 +1072,8 @@ public class RaceActivity extends ListActivity {
 	
 	private void showTimeoutComplete(){
         if (mPilotDialogShown) return;
+        if (mMenuShown) return;
+
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", 0l);
         intent.putExtra("group_scored", (mGroupScoring > 1));
@@ -1152,16 +1168,19 @@ public class RaceActivity extends ListActivity {
             }
 		}
         };
-    
-	@Override
+
+
+    @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.race, menu);
+
 		return true;
 	}
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+
         getNamesArray(); // just to ensure that the bools below are up to date!
         
         // Round Complete (Only enable when the round is actually complete)
@@ -1180,10 +1199,11 @@ public class RaceActivity extends ListActivity {
 	    return super.onPrepareOptionsMenu(menu);
 
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle presses on the action bar items
+
+        // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	    	case R.id.menu_next_round:
 	    		nextRound();
@@ -1219,8 +1239,20 @@ public class RaceActivity extends ListActivity {
 	            return super.onOptionsItemSelected(item);
 	    }
 	}
-	
-	private void nextRound(){
+
+    @Override
+    public boolean onMenuOpened(int featureId, Menu menu) {
+        mMenuShown = true;
+        return super.onMenuOpened(featureId, menu);
+    }
+
+    @Override
+    public void onOptionsMenuClosed(Menu menu) {
+        mMenuShown = false;
+        super.onOptionsMenuClosed(menu);
+    }
+
+    private void nextRound(){
 		RaceData datasource = new RaceData(this);
 		datasource.open();
 		mRace = datasource.nextRound(mRid);

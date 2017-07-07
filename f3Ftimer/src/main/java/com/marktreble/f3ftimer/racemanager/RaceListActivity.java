@@ -147,22 +147,6 @@ public class RaceListActivity extends ListActivity {
                 builder.create().show();
                 
             }
-
-            if (requestCode == RaceListActivity.DLG_IMPORT) {
-                getNamesArray();
-                mArrAdapter.notifyDataSetChanged();
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-                builder.setTitle("Import Race")
-                        .setMessage("Your Race(s) have been imported")
-                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User cancelled the dialog
-                            }
-                        });
-                builder.create().show();
-
-            }
 		}
     }
 	

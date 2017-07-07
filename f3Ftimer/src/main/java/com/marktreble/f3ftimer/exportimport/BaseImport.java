@@ -50,6 +50,17 @@ public class BaseImport extends Activity {
             // Import Race
             Race r = new Race(race);
             // Check race name for conflicts
+            ArrayList<Race> allRaces = datasource.getAllRaces();
+            int count = 2;
+            String oname =r.name;
+            for (int i=0; i<allRaces.size(); i++){
+                Race rcheck = allRaces.get(i);
+                if (rcheck.name.equals(r.name)){
+                    r.name = String.format("%s (%d)", oname, count++);
+
+                    i = -1;
+                }
+            }
             int race_id = (int)datasource.saveRace(r);
 
             // Import Groups
