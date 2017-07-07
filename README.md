@@ -9,7 +9,7 @@ The app does not do the timing itself. This is done using external hardware whic
 
 The app currently supports 2 flavours of USB boards. You can either use an <a href="https://www.arduino.cc">Arduino</a>, or a <a href="https://www.sparkfun.com/products/10748">IOIO<a> to connect hardware to the app. These boards will work with most Android devices, however we have found that they tend to work with one or the other.
 
-###Arduino
+### Arduino
 We have an arduino based system which is still under development (29/6/15). Details will be added here soon.
 
 The Arduino does have limited compatibility with Android Devices. Extra compatibility can be achieved by <a href="https://en.wikipedia.org/wiki/Rooting_(Android_OS)">rooting</a> your device, but we have tried to make this work with off-the-shelf devices. See the <a href="https://github.com/marktreble/f3f-timer/blob/master/README.md#compatibility">compatibility</a> table below for details of which devices are known to work.
