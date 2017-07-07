@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
@@ -53,7 +54,6 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 
     private Context mContext;
 
-    private int mGroupScoring;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -94,131 +94,16 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 	/*
 	 * Get Pilots from database to populate the listview
 	 */
-	
+
 	private void getNamesArray(){
+		Results r = new Results();
+		r.getResultsForCompletedRound(this, mRid, mRound);
 
-        RaceData datasource = new RaceData(this);
-        datasource.open();
-
-  		RacePilotData datasource2 = new RacePilotData(this);
-		datasource2.open();
-		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, mRound, 0, 0);
-		
-		mArrNames = new ArrayList<>();
-		mArrPilots = new ArrayList<>();
-        mArrNumbers = new ArrayList<>();
-		mArrGroups = new ArrayList<>();
-		mFirstInGroup = new ArrayList<>();
-
-        int g = 0; // Current group we are calculating
-
-        mGroupScoring = datasource.getGroups(mRid, mRound);
-
-        float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
-        for (int i=0; i<mGroupScoring+1; i++)
-            ftg[i]= 9999;
-
-		// Find actual number of pilots
-		int num_pilots = 0;
-		for (int i=0;i<allPilots.size();i++){
-			Pilot p = allPilots.get(i);
-			if (p.pilot_id>0) {
-				num_pilots++;
-			}
-		}
-
-        int group_size = (int)Math.floor(num_pilots/mGroupScoring);
-        int remainder = allPilots.size() - (mGroupScoring * group_size);
-
-		boolean first = true;
-
-		// Find ftg
-		int c = 0, i = 0;
-		for (int j=0;j<allPilots.size();j++){
-			i = mArrPilots.size();
-            if (g<remainder){
-                if (i>= (group_size+1)*(g+1)) {
-                    g++;
-					first = true;
-                }
-            } else {
-                if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
-                    g++;
-					first = true;
-                }
-            }
-            Pilot p = allPilots.get(j);
-			if (p.pilot_id>0) {
-				mArrPilots.add(p);
-				p.position = c+1;
-				mArrGroups.add(g);
-				mFirstInGroup.add(first);
-				first = false;
-
-				String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
-				float time = Float.parseFloat(t_str);
-
-				ftg[g] = (time > 0) ? Math.min(ftg[g], time) : ftg[g];
-			}
-			c++;
-		}
-
-        g=0;
-
-		// Set points for each pilot
-        for (i=0;i<num_pilots;i++){
-            if (g<remainder){
-                if (i>= (group_size+1)*(g+1)) {
-                    g++;
-                }
-            } else {
-                if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
-                    g++;
-                }
-            }
-            Pilot p = mArrPilots.get(i);
-
-			String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
-			float time = Float.parseFloat(t_str);
-
-			if (time>0)
-				p.points = round2Fixed((ftg[g]/time) * 1000, 2);
-			
-			if (time==0 && p.flown) // Avoid division by 0
-				p.points = 0f;
-			
-			p.points-= p.penalty * 100;
-			
-			if (time==0 && p.status==Pilot.STATUS_RETIRED) // Avoid division by 0
-				p.points = 0f;
-
-		}
-		
-		Collections.sort(mArrPilots, new Comparator<Pilot>() {
-			@Override
-			public int compare(Pilot p1, Pilot p2) {
-				return (p1.points < p2.points)? 1 : ((p1.points > p2.points) ? -1 : 0);
-			}
-		});
-		
-		int pos=1;
-		c=1;
-        float previousscore = 1000.0f;
-		for (Pilot p : mArrPilots){
-			mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
-
-			// Check for tied scores - use the same position qualifier
-			if (p.points < previousscore)
-				pos = c;
-			previousscore = p.points;
-			p.position = pos;
-			mArrNumbers.add(String.format("%d", p.position));
-			Log.d("MARRNAMES", p.firstname+":"+p.position);
-			c++;
-		}
-
-		datasource2.close();
-        datasource.close();
+		mArrNames = r.mArrNames;
+		mArrPilots = r.mArrPilots;
+		mArrNumbers = r.mArrNumbers;
+		mArrGroups = r.mArrGroups;
+		mFirstInGroup = r.mFirstInGroup;
 	}
 	
 	private void setList(){
@@ -282,16 +167,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
    	   	
    	   	getListView().invalidateViews();
 	}
-	
-	private float round2Fixed(float value, double places){
 
-		double multiplier = Math.pow(10, places);  
-		double integer = Math.floor(value);
-		double precision = Math.floor((value-integer) * multiplier);
-
-		return (float)(integer + (precision/multiplier));
-	}
-    
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

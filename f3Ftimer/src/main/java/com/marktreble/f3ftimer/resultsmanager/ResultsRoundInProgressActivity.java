@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
@@ -87,108 +88,15 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 	 */
 	
 	private void getNamesArray(){
-		
-		RaceData datasource = new RaceData(this);
-  		datasource.open();
-  		Race race = datasource.getRace(mRid);
+		Results r = new Results();
+		r.getRoundInProgress(this, mRid);
 
-  		RacePilotData datasource2 = new RacePilotData(this);
-		datasource2.open();
-		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, race.round, 0, 0);
-		
-		mArrNames = new ArrayList<>();
-		mArrPilots = new ArrayList<>();
-        mArrNumbers = new ArrayList<>();
-        mArrGroups = new ArrayList<>();
-        mFirstInGroup = new ArrayList<>();
+		mArrNames = r.mArrNames;
+		mArrPilots = r.mArrPilots;
+		mArrNumbers = r.mArrNumbers;
+		mArrGroups = r.mArrGroups;
+		mFirstInGroup = r.mFirstInGroup;
 
-        int g = 0; // Current group we are calculating
-
-        mGroupScoring = datasource.getGroups(mRid, race.round);
-
-        float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
-        for (int i=0; i<mGroupScoring+1; i++)
-            ftg[i]= 9999;
-
-		// Find actual number of pilots
-		int num_pilots = 0;
-		for (int i=0;i<allPilots.size();i++){
-			Pilot p = allPilots.get(i);
-			if (p.pilot_id>0) {
-				num_pilots++;
-			}
-		}
-
-		int group_size = (int)Math.floor(num_pilots/mGroupScoring);
-        int remainder = allPilots.size() - (mGroupScoring * group_size);
-
-		boolean first = true;
-
-		// Find ftr
-		int c=0, i = 0;
-        for (int j=0;j<allPilots.size();j++){
-			i = mArrPilots.size();
-            if (g<remainder){
-                if (i>= (group_size+1)*(g+1)) {
-                    g++;
-                    first = true;
-                }
-            } else {
-                if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
-                    g++;
-                    first = true;
-                }
-            }
-            Pilot p = allPilots.get(j);
-			if (p.pilot_id>0) {
-				mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
-				mArrNumbers.add(String.format("%d", c + 1));
-				mArrGroups.add(g);
-				mFirstInGroup.add(first);
-				mArrPilots.add(p);
-				first = false;
-
-				String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
-				float time = Float.parseFloat(t_str);
-
-				ftg[g] = (time > 0) ? Math.min(ftg[g], time) : ftg[g];
-			}
-			c++;
-		}
-		
-		// Set points for each pilot
-        g=0;
-
-        // Set points for each pilot
-        for (i=0;i<allPilots.size();i++){
-            if (g<remainder){
-                if (i>= (group_size+1)*(g+1)) {
-                    g++;
-                }
-            } else {
-                if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
-                    g++;
-                }
-            }
-            Pilot p = allPilots.get(i);
-			String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
-			float time = Float.parseFloat(t_str);
-			
-			if (time>0)
-				p.points = round2Fixed((ftg[g]/time) * 1000, 2);
-			
-			if (time==0 && p.flown) // Avoid division by 0
-				p.points = 0f;
-			
-			p.points-= p.penalty * 100;
-			
-			if (time==0 && p.status==Pilot.STATUS_RETIRED) // Avoid division by 0
-				p.points = 0f;
-			
-		}
-		
-		datasource2.close();
-        datasource.close();
     }
 	
 	private void setList(){
@@ -251,15 +159,6 @@ public class ResultsRoundInProgressActivity extends ListActivity {
    	   	};
    	   	
    	   	getListView().invalidateViews();
-	}
-	
-	private float round2Fixed(float value, double places){
-
-		double multiplier = Math.pow(10, places);  
-		double integer = Math.floor(value);
-		double precision = Math.floor((value-integer) * multiplier);
-
-		return (float)(integer + (precision/multiplier));
 	}
     
 	@Override

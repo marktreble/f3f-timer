@@ -32,6 +32,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
@@ -99,199 +100,20 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 	 */
 	
 	private void getNamesArray(){
-		
-		RaceData datasource = new RaceData(ResultsLeaderBoardActivity.this);
-  		datasource.open();
-  		Race race = datasource.getRace(mRid);
 
-		RacePilotData datasource2 = new RacePilotData(ResultsLeaderBoardActivity.this);
-  		datasource2.open();
-  		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0, 0);
-		ArrayList<String> p_names = new ArrayList<>();
-		ArrayList<String> p_bib_numbers = new ArrayList<>();
-  		ArrayList<String> p_nationalities = new ArrayList<>();
-  		ArrayList<float[]> p_times = new ArrayList<>();
-  		ArrayList<float[]> p_points = new ArrayList<>();
-  		ArrayList<int[]> p_penalty = new ArrayList<>();
-  		Float[] p_totals;
-  		int[] p_positions;
-  		
-  		mFTD = 9999;
-  		
-  		if (allPilots != null){
-  			
-  			// Get all times for pilots in all rounds
-			int c=0; // Counter for bib numbers
-  			for (Pilot p : allPilots){
-				if (p.pilot_id>0) {
-					p_names.add(String.format("%s %s", p.firstname, p.lastname));
-					p_bib_numbers.add(Integer.toString(c + 1));
-					p_nationalities.add(p.nationality);
-					float[] sc = new float[race.round];
-					for (int rnd = 0; rnd < race.round; rnd++) {
-						sc[rnd] = datasource2.getPilotTimeInRound(mRid, p.id, rnd + 1);
-					}
-					p_times.add(sc);
-					Log.d("LEADERBOARD", String.format("%s %s %d", p.firstname, p.lastname, c+1));
-				}
-				c++;
-  			}
+		Results r = new Results();
+		r.getLeaderBoard(ResultsLeaderBoardActivity.this, mRid);
 
-			p_totals = new Float[p_names.size()];
-			p_positions = new int[p_names.size()];
+		mArrNames = r.mArrNames;
+		mArrPilots = r.mArrPilots;
+		mArrNumbers = r.mArrNumbers;
+		mArrScores = r.mArrScores;
 
-  			if (race.round>1){
-	  			// Loop through each round to find the winner, then populate the scores
-				for (int rnd=0; rnd<race.round-1; rnd++){
-					ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0, 0);
+		mFTD = r.mFTD;
+		mFTDName = r.mFTDName;
+		mFTDRound = r.mFTDRound;
+	}
 
-                    mGroupScoring = datasource.getGroups(mRid, rnd+1);
-
-                    int g = 0; // Current group we are calculating
-
-                    float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
-                    for (int i=0; i<mGroupScoring+1; i++)
-                        ftg[i]= 9999;
-
-                    int group_size = (int)Math.floor(p_names.size()/mGroupScoring);
-                    int remainder = p_names.size() - (mGroupScoring * group_size);
-
-			  		for (int i=0; i<p_names.size(); i++){
-                        if (g<remainder){
-                            if (i>= (group_size+1)*(g+1)) {
-                                g++;
-                            }
-                        } else {
-                            if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
-                                g++;
-                            }
-                        }
-
-                        String str_t = String.format("%.2f",p_times.get(i)[rnd]).trim().replace(",", ".");
-			 			float t = Float.parseFloat(str_t);
-						if (t>0)
-                            ftg[g] = Math.min( t, ftg[g]);
-		  			
-						// Update the FTD here too
-						mFTD = Math.min(mFTD,  ftg[g]);
-						if (mFTD == t){
-							mFTDRound = rnd+1;
-							mFTDName = p_names.get(i);
-						}
-			  		
-			  		}
-
-                    g = 0; // Current group we are calculating
-
-			  		float[] points = new float[p_names.size()];
-			  		int[] penalty = new int[p_names.size()];
-			  		for (int i=0; i<p_names.size(); i++){
-                        if (g<remainder){
-                            if (i>= (group_size+1)*(g+1)) {
-                                g++;
-                            }
-                        } else {
-                            if (i>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
-                                g++;
-                            }
-                        }
-
-			  			String str_t = String.format("%.2f",p_times.get(i)[rnd]).trim().replace(",", ".");
-			 			float time = Float.parseFloat(str_t);
-			  			float pnts = 0;
-			  			if (time>0)
-							pnts = round2Fixed((ftg[g]/time) * 1000, 2);
-	
-
-						points[i] = pnts;
-		  				penalty[i] = pilots_in_round.get(i).penalty;
-			  		}
-					p_points.add(points);
-					p_penalty.add(penalty);
-				}
-	
-	  			// Loop through each pilot to Find discards + calc totals
-	  			int numdiscards = (race.round>4) ? ((race.round>15) ? 2 : 1) : 0;
-				for (int i=0; i<p_names.size(); i++){
-					Float[] totals = new Float[race.round-1];
-						
-					float penalties = 0;
-					for (int rnd=0; rnd<race.round-1; rnd++){
-						totals[rnd] = p_points.get(rnd)[i];
-						penalties+=p_penalty.get(rnd)[i] * 100;
-					}
-					
-					// sort totals in order then lose the lowest according to numdiscards
-					Arrays.sort(totals);
-					float tot = 0;
-					for (int j=numdiscards; j<race.round-1; j++)
-						tot += totals[j];
-						
-					// Now apply penalties
-					p_totals[i] = tot - penalties;
-				}
-
-                // Now sort the pilots
-				Float[] p_sorted_totals = p_totals.clone();
-				Arrays.sort(p_sorted_totals, Collections.reverseOrder());
-
-                // Set the positions according to the sorted order
-				for (int i=0; i<p_names.size(); i++){
-					for (int j=0; j<p_names.size(); j++){
-						if (p_totals[i] == p_sorted_totals[j])
-							p_positions[i] = j + 1;
-								
-					}
-				}  			
-	  			
-				int sz = p_names.size();
-				mArrNames = new ArrayList<>(sz);
-				mArrNumbers = new ArrayList<>(sz);
-				mArrPilots = new ArrayList<>(sz);
-				mArrScores = new ArrayList<>(sz);
-				
-				// Initialise
-				for (int i = 0; i < sz; i++) {
-					mArrNames.add("");
-					mArrNumbers.add("");
-					mArrPilots.add(new Pilot());
-					mArrScores.add(1000f);
-				}
-
-	  			for (int i=0; i<sz; i++){
-	  				int pos = p_positions[i]-1;
-	  				mArrNames.set(pos, String.format("%s", p_names.get(i)));
-					//mArrNumbers.set(pos, p_bib_numbers.get(i));
-					mArrNumbers.set(pos, Integer.toString(p_positions[i]));
-	  				Pilot p = new Pilot();
-	  				p.points = round2Fixed(p_totals[i].floatValue(), 2);
-	  				p.nationality = p_nationalities.get(i);
-	  				mArrPilots.set(pos, p);
-	  			}
-
-	  			float top_score = mArrPilots.get(0).points;
-                float previousscore = 1000.0f;
-
-				int pos = 1, lastpos = 1; // Last pos is for ties
-	  			for (int i=1; i<sz; i++){
-	  				float pilot_points = mArrPilots.get(i).points;
-	  				float normalised = round2Fixed(pilot_points/top_score * 1000, 2);
-
-                    previousscore = normalised;
-
-	  				mArrScores.set(i, Float.valueOf(normalised));
-	  			}
-  			} else {
-  	  			// No rounds complete yet
-  				mArrNames = new ArrayList<String>(0);
-  				mArrPilots = new ArrayList<Pilot>(0);
-  				mArrScores = new ArrayList<Float>(0);
-   	  		}
-  			datasource2.close();
-  		}
-        datasource.close();
-    }
-	
 	private void setList(){
 	    this.getNamesArray(); 
 
@@ -361,18 +183,6 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 	   	getListView().addFooterView(ftdView);
 
    	   	getListView().invalidateViews();
-	}
-	
-	private float round2Fixed(float value, double places){
-
-		double multiplier = Math.pow(10, places);  
-		//Log.i("MULTIPLIER", Double.toString(multiplier));
-		double integer = Math.floor(value);
-		//Log.i("INTEGER", Double.toString(integer));
-		double precision = Math.floor((value-integer) * multiplier);
-		//Log.i("PRECISION", Double.toString(precision));
-
-		  return (float)(integer + (precision/multiplier));
 	}
     
 	@Override
