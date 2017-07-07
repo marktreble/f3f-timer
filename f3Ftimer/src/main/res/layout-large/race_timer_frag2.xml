@@ -12,6 +12,22 @@
 		android:orientation="horizontal"
 		android:visibility="gone">
 		<TextView
+			android:id="@+id/minnumber"
+			android:layout_width="32dp"
+			android:layout_height="32dp"
+			android:layout_weight="0"
+			android:background="@drawable/circle"
+			android:gravity="center"
+			android:layout_gravity="center"
+			android:layout_marginRight="8dp"
+			android:minHeight="68dp"
+			android:textColor="@color/text2"
+			android:textSize="16sp"
+			android:textStyle="bold" >
+
+		</TextView>
+
+		<TextView
 			android:id="@+id/minpilot"
 			android:layout_width="0dp"
 			android:layout_height="match_parent"

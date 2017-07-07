@@ -584,6 +584,7 @@ public class Driver implements TextToSpeech.OnInitListener {
     }
     
     public void beginRoundTimeout(){
+		Log.i(TAG, "Timeout Started");
 
         // Start round inactive timeout (3 minutes)
         long startRoundTimeout = System.currentTimeMillis();
@@ -604,7 +605,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 		long start = timeout.getLong("start", 0);
 		if (start>0){
 			long elapsed = System.currentTimeMillis() - start;
-		
+			Log.i(TAG, "Time Elapsed: "+elapsed);
 			// Check again in 3 minutes, or time remaining if <3 mins remaining
 			long t = (long) Math.min(SHOW_TIMEOUT_DELAY*60*1000, (60*1000 * ROUND_TIMEOUT)-elapsed);
 			mHandler.postDelayed(checkTimeout, t);

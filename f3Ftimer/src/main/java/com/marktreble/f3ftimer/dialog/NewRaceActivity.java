@@ -82,6 +82,7 @@ public class NewRaceActivity extends FragmentActivity {
   		for (int i=0; i<this.pilots.size(); i++){
   			Pilot p = pilotsdatasource.getPilot(this.pilots.get(i));
   			racepilotsdatasource.addPilot(p, race_id);
+			Log.i("NEWRACE", p.toString());
   		}
   		pilotsdatasource.close();
   		racepilotsdatasource.close();

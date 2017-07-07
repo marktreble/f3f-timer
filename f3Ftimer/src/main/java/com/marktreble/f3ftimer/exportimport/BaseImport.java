@@ -49,6 +49,7 @@ public class BaseImport extends Activity {
             datasource.open();
             // Import Race
             Race r = new Race(race);
+            // Check race name for conflicts
             int race_id = (int)datasource.saveRace(r);
 
             // Import Groups

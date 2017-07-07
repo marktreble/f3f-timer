@@ -94,8 +94,9 @@ public class RaceActivity extends ListActivity {
     private Pilot mNextPilot;
     private Pilot mNextReflightPilot;
 
-	private boolean mPilotDialogShown = false; // Used to determine the action when the start button is pressed
-	
+    private boolean mPilotDialogShown = false; // Used to determine the action when the start button is pressed
+    private boolean mTimeoutDialogShown = false;
+
 	private Context mContext;
 	
 	public AlertDialog mDlg;
@@ -373,6 +374,10 @@ public class RaceActivity extends ListActivity {
         if (requestCode == RaceActivity.DLG_TIMER)
             mPilotDialogShown = false;
 
+        if (requestCode == RaceActivity.DLG_TIMEOUT)
+            mTimeoutDialogShown = false;
+
+
 		if(resultCode==RaceActivity.RESULT_OK){
             if (requestCode == RaceActivity.ENABLE_BLUETOOTH){
                 // Post back to service that BT has been enabled
@@ -435,8 +440,8 @@ public class RaceActivity extends ListActivity {
 			if (requestCode == RaceActivity.DLG_TIMEOUT){
 				// Send command to Service to say that timeout has been resumed
 				sendCommand("timeout_resumed");
-				
-				// Resume timeout - start next pilot's dialog
+
+                // Resume timeout - start next pilot's dialog
 				if (mNextPilot != null){
                     new Handler().postDelayed(new Runnable() {
                         @Override
@@ -706,7 +711,7 @@ public class RaceActivity extends ListActivity {
 
             float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
             for (int i=0; i<mGroupScoring+1; i++)
-                ftg[i]= 9999;
+                ftg[i]= 9999;  // initialise ftg for all groups to a stupidly large number
 
             // First to fly
             // (only when r = 0!)
@@ -714,9 +719,10 @@ public class RaceActivity extends ListActivity {
             int group_size = (int)Math.floor(sz/mGroupScoring);
             int remainder = sz - (mGroupScoring * group_size);
 
-            skipped = 0;
+            skipped = 0; // Tally of missing bib numbers
 
             for (Pilot p : allPilots.get(r)) {
+                // Increment group number
                 if (g<remainder){
                     if (c>= (group_size+1)*(g+1)) {
                         g++;
@@ -975,7 +981,7 @@ public class RaceActivity extends ListActivity {
 					}
 					// Dismiss picker, so update the listview!
                     Log.d("RACEACTIVITY", "UPDATELISTVIEW");
-                            updateListView();
+                    updateListView();
 
 		   	   		mDlg = null;
 					break;
@@ -1004,6 +1010,7 @@ public class RaceActivity extends ListActivity {
 
     private boolean showPilotDialog(int round, int pilot_id, String bib_no){
         if (mPilotDialogShown) return true;
+        if (mTimeoutDialogShown) return false;
         Intent intent = new Intent(this, RaceTimerActivity.class);
         intent.putExtra("pilot_id", pilot_id);
         intent.putExtra("race_id", mRid);
@@ -1040,17 +1047,22 @@ public class RaceActivity extends ListActivity {
 	}
 	
 	private void showTimeout(long start){
-		Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
-    	intent.putExtra("start", start);
-        intent.putExtra("group_scored", (mGroupScoring>1));
+        if (mPilotDialogShown) return;
+
+        Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
+        intent.putExtra("start", start);
+        intent.putExtra("group_scored", (mGroupScoring > 1));
         startActivityForResult(intent, DLG_TIMEOUT);
+        mTimeoutDialogShown = true;
 	}
 	
 	private void showTimeoutComplete(){
-		Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
+        if (mPilotDialogShown) return;
+        Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", 0l);
-        intent.putExtra("group_scored", (mGroupScoring>1));
-       	startActivityForResult(intent, DLG_TIMEOUT);
+        intent.putExtra("group_scored", (mGroupScoring > 1));
+        startActivityForResult(intent, DLG_TIMEOUT);
+        mTimeoutDialogShown = true;
 	}
 	
 	public boolean isServiceRunning(String serviceClassName){
@@ -1155,8 +1167,8 @@ public class RaceActivity extends ListActivity {
         // Round Complete (Only enable when the round is actually complete)
 	    menu.getItem(0).setEnabled(mRoundComplete);
 
-        // Change Flying Order (Only enable before the round is started)
-        menu.getItem(1).setEnabled(mRoundNotStarted);
+        // Change Flying Order (Only enable before the RACE is started)
+        menu.getItem(1).setEnabled(mRoundNotStarted && mRnd == 1);
 
         // Change Start Number (Only enable before the round is started)
         menu.getItem(2).setEnabled(mRoundNotStarted);

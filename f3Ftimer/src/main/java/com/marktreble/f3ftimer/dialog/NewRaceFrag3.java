@@ -13,6 +13,7 @@ import java.util.Random;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
+import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import android.app.Activity;
@@ -47,6 +48,8 @@ public class NewRaceFrag3 extends ListFragment {
 	boolean[] _selections;	// bool array of which has been selected
 
 	private AlertDialog mDlg;
+
+	public int mRid;
 	
 	public NewRaceFrag3(){
 		
@@ -56,8 +59,9 @@ public class NewRaceFrag3 extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+		boolean isNewRace = getActivity().getClass().getName().equals(getActivity().getClass().getPackage().getName() + ".NewRaceActivity");
 
-        if (getActivity().getClass().getName().equals(getActivity().getClass().getPackage().getName() + ".NewRaceActivity")) {
+        if (isNewRace) {
             NewRaceActivity a = (NewRaceActivity) getActivity();
             mArrSelectedIds = a.pilots;
         } else {
@@ -96,14 +100,17 @@ public class NewRaceFrag3 extends ListFragment {
 	        @Override
 	        public void onClick(View v) {
 	        	// Save to database and quit the activity
+				boolean isNewRace = getActivity().getClass().getName().equals(getActivity().getClass().getPackage().getName() + ".NewRaceActivity");
 
-                if (getActivity().getClass().getName().equals(getActivity().getClass().getPackage().getName() + ".NewRaceActivity")) {
+                if (isNewRace) {
+					// New Race
                     NewRaceActivity a = (NewRaceActivity) getActivity();
                     a.pilots = mArrSelectedIds;
                     a.saveNewRace();
                     a.setResult(Activity.RESULT_OK, null);
                     a.finish();
                 } else {
+					// Editing in race
                     FlyingOrderEditActivity a = (FlyingOrderEditActivity) getActivity();
                     a.pilots = mArrSelectedIds;
                     a.updateFlyingOrder();
@@ -267,10 +274,23 @@ public class NewRaceFrag3 extends ListFragment {
 	}
 	
 	private void getUnselectedArray(){
-		PilotData datasource = new PilotData(getActivity());
-		datasource.open();
-		ArrayList<Pilot> allPilots = datasource.getAllPilots();
-		datasource.close();
+		ArrayList<Pilot> allPilots;
+		boolean isNewRace = getActivity().getClass().getName().equals(getActivity().getClass().getPackage().getName() + ".NewRaceActivity");
+		if (isNewRace) {
+			// New Race
+			PilotData datasource = new PilotData(getActivity());
+			datasource.open();
+			allPilots = datasource.getAllPilots();
+			datasource.close();
+		} else {
+			// Editing
+			RacePilotData datasource = new RacePilotData(getActivity());
+			datasource.open();
+			allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
+			datasource.close();
+
+
+		}
 		
 		ArrayList<String> arrUnselectedNames = new ArrayList<>();
 		ArrayList<Integer> arrUnselectedIds = new ArrayList<>();
@@ -295,11 +315,24 @@ public class NewRaceFrag3 extends ListFragment {
 	}
 	
 	private void getSelectedArray(){
-		PilotData datasource = new PilotData(getActivity());
-		datasource.open();
-		ArrayList<Pilot> allPilots = datasource.getAllPilots();
-		datasource.close();
-		
+		ArrayList<Pilot> allPilots;
+		boolean isNewRace = getActivity().getClass().getName().equals(getActivity().getClass().getPackage().getName() + ".NewRaceActivity");
+		if (isNewRace) {
+			// New Race
+			PilotData datasource = new PilotData(getActivity());
+			datasource.open();
+			allPilots = datasource.getAllPilots();
+			datasource.close();
+		} else {
+			// Editing
+			RacePilotData datasource = new RacePilotData(getActivity());
+			datasource.open();
+			allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
+			datasource.close();
+
+
+		}
+
 		if (mArrNames == null) {
 			mArrNames = new ArrayList<>();
 			mArrIds = new ArrayList<>();

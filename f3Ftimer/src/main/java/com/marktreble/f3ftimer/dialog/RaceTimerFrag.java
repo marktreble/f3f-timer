@@ -35,7 +35,9 @@ public class RaceTimerFrag extends Fragment {
 		}
 
 		TextView pilot_number = (TextView) mView.findViewById(R.id.number);
+		TextView min_number = (TextView) mView.findViewById(R.id.minnumber);
 		pilot_number.setText(a.mNumber);
+		min_number.setText(a.mNumber);
 	}
 
 	public void setWindWarning(boolean on){

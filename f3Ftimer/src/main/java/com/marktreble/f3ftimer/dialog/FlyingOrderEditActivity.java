@@ -43,21 +43,23 @@ public class FlyingOrderEditActivity extends FragmentActivity {
             datasource.open();
             ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
             datasource.close();
-            for (Pilot p : allPilots) pilots.add(p.pilot_id);
+            for (Pilot p : allPilots) pilots.add(p.id);
 
             f = new NewRaceFrag3();
+            f.mRid = mRid;
             f.setRetainInstance(true);
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.dialog1, f, "newracefrag3");
             ft.commit();
+
+            Log.i("HEYHEYHEY", pilots.toString());
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString("pigs", "pigs");
 
     }
 
@@ -67,17 +69,24 @@ public class FlyingOrderEditActivity extends FragmentActivity {
     }
 
     public void updateFlyingOrder(){
-        RacePilotData racepilotsdatasource = new RacePilotData(this);
-        racepilotsdatasource.open();
-        racepilotsdatasource.deleteAllPilots(mRid);
-        PilotData pilotsdatasource = new PilotData(this);
-        pilotsdatasource.open();
+        ArrayList<Pilot> allPilots;
+        RacePilotData datasource = new RacePilotData(this);
+        datasource.open();
+        allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
+
+        datasource.deleteAllPilots(mRid);
         for (int i=0; i<this.pilots.size(); i++){
-            Pilot p = pilotsdatasource.getPilot(this.pilots.get(i));
-            racepilotsdatasource.addPilot(p, mRid);
+            for (int j=0; j<allPilots.size(); j++) {
+                Pilot p = allPilots.get(j);
+                if (p.id == this.pilots.get(i)) {
+                    if (p.pilot_id == 0) p.id=0;
+                    datasource.addPilot(p, mRid);
+                    Log.i("EDITRACE", p.toString());
+
+                }
+            }
         }
-        pilotsdatasource.close();
-        racepilotsdatasource.close();
+        datasource.close();
     }
 
     public void moveUp(View v) {

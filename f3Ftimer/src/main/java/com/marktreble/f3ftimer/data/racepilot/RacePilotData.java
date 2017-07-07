@@ -169,12 +169,14 @@ public class RacePilotData {
 	}
 
     public void deleteGroup(int race_id, int round, int position, ArrayList<Integer> groups, ArrayList<Pilot> pilots){
-        int group = groups.get(position);
-        while (group == groups.get(position)) {
-            int pilot_id = pilots.get(position).id;
-            database.delete("racetimes", "race_id = '" + Integer.toString(race_id) + "' and round='" + Integer.toString(round) + "' and pilot_id='" + Integer.toString(pilot_id) + "'", null);
-            position--;
-        }
+		if (position>=0) { // Safety net to prevent crash
+			int group = groups.get(position);
+			while (group == groups.get(position)) {
+				int pilot_id = pilots.get(position).id;
+				database.delete("racetimes", "race_id = '" + Integer.toString(race_id) + "' and round='" + Integer.toString(round) + "' and pilot_id='" + Integer.toString(pilot_id) + "'", null);
+				position--;
+			}
+		}
     }
 
     public ArrayList<Pilot> getAllPilotsForRace(int race_id, int round, int offset, int start_number) {
