@@ -13,8 +13,8 @@
 		android:visibility="gone">
 		<TextView
 			android:id="@+id/minnumber"
-			android:layout_width="32dp"
-			android:layout_height="32dp"
+			android:layout_width="24dp"
+			android:layout_height="24dp"
 			android:layout_weight="0"
 			android:background="@drawable/circle"
 			android:gravity="center"
