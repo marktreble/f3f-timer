@@ -65,7 +65,22 @@ public class BaseImport extends Activity {
 
             // Import Groups
             for (int i=0; i<racegroups.length(); i++){
-                datasource.setGroups(race_id, i + 1, racegroups.getInt(i));
+                Object val = racegroups.get(i);
+                int num_groups = 1, start_pilot = 1;
+                // Backwards compat check for older version files
+                // (Groups were an array of integers without the start pilot recorded)
+                if(val instanceof Integer){
+                    num_groups = (Integer)val;
+                }
+
+                // Format #2
+                // Groups are a json object - keys: group (int), start_pilot (int)
+                if(val instanceof JSONObject) {
+                    JSONObject roundgroup = (JSONObject)val;
+                    num_groups = roundgroup.getInt("groups");
+                    start_pilot = roundgroup.getInt("start_pilot");
+                }
+                datasource.setGroups(race_id, i + 1, num_groups, start_pilot);
             }
             datasource.close();
 

@@ -79,7 +79,7 @@ public class ResultsRaceActivity extends ListActivity {
 	private float mFTD;
 	private String mFTDName;
 	private int mFTDRound;
-	private int mGroupScoring;
+	private RaceData.Group mGroupScoring;
 	/* END */
 
 
@@ -444,12 +444,12 @@ public class ResultsRaceActivity extends ListActivity {
 
 					int g = 0; // Current group we are calculating
 
-					float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
-					for (int i=0; i<mGroupScoring+1; i++)
+					float[] ftg = new float[mGroupScoring.num_groups+1]; // Fastest time in group (used for calculating normalised scores)
+					for (int i=0; i<mGroupScoring.num_groups+1; i++)
 						ftg[i]= 9999;
 
-					int group_size = (int)Math.floor(p_names.size()/mGroupScoring);
-					int remainder = p_names.size() - (mGroupScoring * group_size);
+					int group_size = (int)Math.floor(p_names.size()/mGroupScoring.num_groups);
+					int remainder = p_names.size() - (mGroupScoring.num_groups * group_size);
 
 					for (int i=0; i<p_names.size(); i++){
 						if (g<remainder){

@@ -76,6 +76,8 @@
     <string name="menu_group_score">Group Score</string>
     <string name="menu_change_flying_order">Change Flying Order</string>
     <string name="menu_change_start_number">Change Start Number</string>
+    <string name="menu_scrub_round">Scrub Round/Group</string>
+    <string name="menu_scrub_round_confirm">Are you sure you want to scrub the round/group?</string>
     <string name="menu_help">Help</string>
     <string name="menu_about">About</string>
     <string name="menu_share">Share</string>

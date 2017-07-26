@@ -18,7 +18,8 @@ public class RaceData {
 	private RaceDatabase db;
 
 	public RaceData(Context context) {
-		db = new RaceDatabase(context);
+		if (context!=null)
+			db = new RaceDatabase(context);
 	}
 
 	public void open() throws SQLException {
@@ -79,15 +80,23 @@ public class RaceData {
         database.delete("racegroups", "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round_id) + "'", null);
     }
 
-    public void setGroups(int race_id, int round_id, int num_groups){
-        deleteRound(race_id, round_id);
+    public Group setGroups(int race_id, int round_id, int num_groups, int start_pilot){
+        deleteRound(race_id, round_id); // Delete round from racegroups
         ContentValues values = new ContentValues();
         values.putNull("id");
         values.put("race_id", race_id);
         values.put("round", round_id);
-        values.put("groups", num_groups);
+		values.put("groups", num_groups);
+		values.put("start_pilot", start_pilot);
         database.insert("racegroups", null, values);
-    }
+
+		Group group = new Group();
+		group.num_groups = num_groups;
+		group.start_pilot = start_pilot;
+		Log.i("RACE DATA", num_groups+":"+start_pilot);
+		return group;
+
+	}
 
 	public void setStartNumber(int race_id, int start_number){
 		String sql = "update races set start_number=? where id=?";
@@ -95,23 +104,34 @@ public class RaceData {
 		database.execSQL(sql, data);
 	}
 
-    public int getGroups(int race_id, int round_id){
-        String[] cols = {"groups"};
+    public Group getGroups(int race_id, int round_id){
+        String[] cols = {"groups", "start_pilot"};
+		Group group = new Group();
         Cursor cursor = database.query("racegroups", cols, "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round_id) + "'", null, null, null, null);
+
         if (cursor.getCount() == 0){
             cursor.close();
-            return 1; // Return a single group if no entry (not group scored!)
+			// Return default
+			// Start pilot does not matter if not group scored
+			group.num_groups = 1;
+			group.start_pilot =1;
+            return group;
         }
         cursor.moveToFirst();
-        int num_groups = cursor.getInt(0);
-        if (num_groups<1) num_groups = 1; // Just in case some numpty puts in 0 or empty value
+		int num_groups = cursor.getInt(0);
+		if (num_groups<1) num_groups = 1; // Just in case some numpty puts in 0 or empty value
+		int start_pilot = cursor.getInt(1);
+		if (start_pilot<1) start_pilot = 1;
         cursor.close();
-        return num_groups;
+
+		group.num_groups = num_groups;
+		group.start_pilot = start_pilot;
+		return group;
     }
 
 
 	public ArrayList<Race> getAllRaces() {
-		ArrayList<Race> allPilots = new ArrayList<Race>();
+		ArrayList<Race> allPilots = new ArrayList<>();
 		Cursor cursor = database.query("races", null, null, null, null, null, "name");
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
@@ -146,11 +166,26 @@ public class RaceData {
         String array = "[";
         for (int i=0;i<round; i++){
             if (i>0) array+=",";
-            int groups = getGroups(id, i);
-            array+=Integer.toString(groups);
+			Group group = getGroups(id, i+1);
+            array+= String.format("{\"groups\":%d,\"start_pilot\":%d}", group.num_groups, group.start_pilot);
         }
         array+="]";
         return array;
     }
+
+	public class Group {
+		public int num_groups = 1;
+		public int start_pilot = 1;
+	}
+
+	public class Time {
+		public Integer round;
+		public Float time;
+		public Float raw_points; // Normalised points value
+		public Float points;	 // Actual points (after penalties)
+		public Integer penalty;
+		public Integer group;
+		public boolean isDiscarded = false;
+	}
 	
 }

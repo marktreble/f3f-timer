@@ -171,7 +171,7 @@ public class RacePilotData {
     public void deleteGroup(int race_id, int round, int position, ArrayList<Integer> groups, ArrayList<Pilot> pilots){
 		if (position>=0) { // Safety net to prevent crash
 			int group = groups.get(position);
-			while (group == groups.get(position)) {
+			while (position>=0 && group == groups.get(position)) {
 				int pilot_id = pilots.get(position).id;
 				database.delete("racetimes", "race_id = '" + Integer.toString(race_id) + "' and round='" + Integer.toString(round) + "' and pilot_id='" + Integer.toString(pilot_id) + "'", null);
 				position--;
@@ -186,13 +186,13 @@ public class RacePilotData {
 					 "(select count(id) from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as flown, " +
                      "(select penalty from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as penalty, " +
                      "(select reflight from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as reflight " +
-					 "from racepilots p  where p.race_id=?";
+					 "from racepilots p  where p.race_id=? order by id";
 		String[] data = {Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(race_id)};
 		Cursor cursor = database.rawQuery(sql, data);
 		cursor.moveToFirst();
 		while (!cursor.isAfterLast()) {
 			Pilot p = cursorToPilot(cursor, true);
-
+			Log.d("RACEPILOTDATA", "PILOT:"+p.toString());
 			allPilots.add(p);
 			cursor.moveToNext();
 		}
@@ -208,7 +208,8 @@ public class RacePilotData {
 		
 		// move all pilots before start number to end
 		Log.d("RACEPILOTDATA", "STARTING FROM PILOT: "+start);
-		for (int i=0; i<start; i++){
+		Log.d("RACEPILOTDATA", allPilots.toString());
+		for (int i=1; i<start; i++){
 			allPilots.add(allPilots.get(0));
 			allPilots.remove(0);
 		}
@@ -248,7 +249,7 @@ public class RacePilotData {
 
     public String getPilotsSerialized(int id){
         String array = "[";
-        ArrayList<Pilot> pilots = getAllPilotsForRace(id, 0, 0, 0);
+        ArrayList<Pilot> pilots = getAllPilotsForRace(id, 0, 0, 1);
         for(int i=0;i<pilots.size(); i++){
             if (i>0) array+=",";
             Pilot p = pilots.get(i);
@@ -262,7 +263,7 @@ public class RacePilotData {
 
     public String getTimesSerialized(int id, int round){
         String array = "[";
-        for (int i=0;i<round; i++){
+        for (int i=0;i<=round; i++){
             if (i>0) array+=",";
             array+="[";
             ArrayList<Pilot> pilots = getAllPilotsForRace(id, i+1, 0, 0);

@@ -100,7 +100,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 	private void getNamesArray(){
 
 		Results r = new Results();
-		r.getLeaderBoard(ResultsLeaderBoardActivity.this, mRid);
+		r.getResultsForRace(ResultsLeaderBoardActivity.this, mRid, true);
 
 		mArrNames = r.mArrNames;
 		mArrPilots = r.mArrPilots;
@@ -156,10 +156,10 @@ public class ResultsLeaderBoardActivity extends ListActivity {
            		row.setBackgroundColor(getResources().getColor(R.color.background));
            		
                 TextView time = (TextView) row.findViewById(R.id.time);
-           		time.setText(Float.toString(p.points));
+           		time.setText(String.format("%.2f", p.points));
 
                 TextView points = (TextView) row.findViewById(R.id.points);
-           		points.setText(Float.toString(mArrScores.get(position)));
+           		points.setText(String.format("%.2f", mArrScores.get(position)));
 
                 return row;
             }

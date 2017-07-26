@@ -27,11 +27,13 @@ public class Pilot {
 	public float time=-1;
 	public boolean flown;
 	public Integer penalty = 0;
+	public float raw_points = -1; // Points before penalty is applied (Used in discards calculation)
 	public float points = -1;
 	public Integer position = 0;
 	public Integer round = 0;
 	public String number = "";
 	public String team = "";
+	public Integer group = 0;
 
     public Pilot(){
         // Default constructor
@@ -69,4 +71,10 @@ public class Pilot {
         return String.format("{\"id\":\"%s\", \"race_id\":\"%s\", \"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", id, race_id, pilot_id, status, firstname, lastname, nationality, language, team );
         
     }
+
+	public String toExtendedString(){
+		return String.format("{\"id\":\"%s\", \"pilot_id\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"time\":\"%s\", \"points\":\"%s\", \"penalty\":\"%s\"}", id, pilot_id, firstname, lastname, time, points, penalty );
+
+	}
+
 }

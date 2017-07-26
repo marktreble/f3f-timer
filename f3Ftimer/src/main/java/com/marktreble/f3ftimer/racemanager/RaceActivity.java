@@ -91,7 +91,8 @@ public class RaceActivity extends ListActivity {
     private String mPrefExternalDisplay;
 
     private boolean mRoundComplete;
-	private boolean mRoundNotStarted;
+    private boolean mRoundNotStarted;
+    private boolean mGroupNotStarted;
     private Pilot mNextPilot;
     private Pilot mNextReflightPilot;
 
@@ -114,7 +115,7 @@ public class RaceActivity extends ListActivity {
     private ListView mListView;
     private static Parcelable mListViewScrollPos = null;
 
-    private int mGroupScoring = 1;
+    private RaceData.Group mGroupScoring;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +140,7 @@ public class RaceActivity extends ListActivity {
 		RaceData datasource = new RaceData(this);
   		datasource.open();
   		Race race = datasource.getRace(mRid);
+        mGroupScoring = datasource.getGroups(race.id, race.round);
   		datasource.close();
   		mRace = race;
   		
@@ -341,10 +343,10 @@ public class RaceActivity extends ListActivity {
 	private void setRound(){
   		mRnd = mRace.round;
 
-        RaceData datasource = new RaceData(RaceActivity.this);
-        datasource.open();
-        mGroupScoring = datasource.getGroups(mRid, mRnd);
-        datasource.close();
+        RaceData datasource2 = new RaceData(RaceActivity.this);
+        datasource2.open();
+        mGroupScoring = datasource2.getGroups(mRid, mRnd);
+        datasource2.close();
 
   		TextView tt = (TextView) findViewById(R.id.race_title);
   		tt.setText("Round "+Integer.toString(mRnd) + " - "+mRace.name);
@@ -444,8 +446,6 @@ public class RaceActivity extends ListActivity {
                     datasource.setPilotTimeInRound(mRid, pilot_id, round, new_time);
                     datasource.close();
 
-                    // Update the spread file
-                    new SpreadsheetExport().writeResultsFile(mContext, mRace);
                 }
 
 			}
@@ -490,11 +490,18 @@ public class RaceActivity extends ListActivity {
                 }
                 
                 Log.i("GROUP SCORING", "CHANGED NUMBER OF GROUPS TO "+num_groups);
-                RaceData datasource = new RaceData(RaceActivity.this);
+
+                RacePilotData datasource = new RacePilotData(RaceActivity.this);
                 datasource.open();
-                datasource.setGroups(mRid, mRnd, num);
+                ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, mRnd, mRace.offset, mRace.start_number);
                 datasource.close();
+
+                RaceData datasource2 = new RaceData(RaceActivity.this);
+                datasource2.open();
+                mGroupScoring = datasource2.setGroups(mRid, mRnd, num, getStartPilot(allPilots, mRace));
+                datasource2.close();
                 setRound();
+
             }
 
             if (requestCode== RaceActivity.DLG_START_NUMBER_EDIT){
@@ -502,9 +509,9 @@ public class RaceActivity extends ListActivity {
 
                 int num;
                 try {
-                    num = Math.max(0, Integer.parseInt(start_number) - 1);
+                    num = Math.max(1, Integer.parseInt(start_number));
                 } catch (NumberFormatException e){
-                    num = 0;
+                    num = 1;
                 }
 
                 Log.i("FLYING ORDER", "CHANGED START NUMBER TO " + start_number);
@@ -512,6 +519,7 @@ public class RaceActivity extends ListActivity {
                 datasource.open();
                 datasource.setStartNumber(mRid, num);
                 mRace = datasource.getRace(mRid); // Update the ram model
+                mGroupScoring = datasource.setGroups(mRid, mRnd, mGroupScoring.num_groups, num);
                 datasource.close();
                 setRound();
             }
@@ -522,32 +530,7 @@ public class RaceActivity extends ListActivity {
 		
 		if(resultCode==RaceActivity.ROUND_SCRUBBED){
 			if (requestCode == RaceActivity.DLG_TIMEOUT){
-				sendCommand("cancel_timeout");
-
-                if (mGroupScoring == 1) {
-                    // Not group scored
-                    // Delete all times from round
-                    RacePilotData datasource = new RacePilotData(RaceActivity.this);
-                    datasource.open();
-                    datasource.deleteRound(mRid, mRnd);
-                    datasource.close();
-
-                    // Delete the round
-                    RaceData datasource2 = new RaceData(RaceActivity.this);
-                    datasource2.open();
-                    datasource2.deleteRound(mRid, mRnd);
-                    datasource2.close();
-                } else {
-                    // Just delete the times for the current group
-                    RacePilotData datasource = new RacePilotData(RaceActivity.this);
-                    datasource.open();
-                    datasource.deleteGroup(mRid, mRnd, mNextPilot.position, mArrGroups, mArrPilots);
-                    datasource.close();
-                }
-
-
-                getNamesArray();
-                mArrAdapter.notifyDataSetChanged();
+                scrubRound();
 			}
 		}
         invalidateOptionsMenu(); // Refresh menu so that any changes in state are shown
@@ -661,13 +644,25 @@ public class RaceActivity extends ListActivity {
         mArrAdapter.notifyDataSetChanged();
         invalidateOptionsMenu();
 	}
-	
+
+    private int getStartPilot(ArrayList<Pilot> allPilots, Race race){
+
+        int start = 1;
+        int numPilots = allPilots.size();
+        if (race.start_number>0){
+            start =race.start_number;
+        } else {
+            if (numPilots > 0)
+                start = ((race.round - 1) * race.offset) % numPilots;
+        }
+        return start;
+    }
 	/*
 	 * Get Pilots from database to populate the listview
 	 */
 	
 	private void getNamesArray(){
-        Log.d("RACEACTIVITY", "GET NAMES ARRAY");
+        Log.d("RACEACTIVITY", "GET NAMES ARRAY "+mGroupScoring.num_groups+":"+mGroupScoring.start_pilot);
 
 		RacePilotData datasource = new RacePilotData(this);
 		datasource.open();
@@ -696,7 +691,8 @@ public class RaceActivity extends ListActivity {
         while(mFirstInGroup.size() < sz) mFirstInGroup.add(false);
 
 		mRoundComplete = true;
-		mRoundNotStarted = true;
+        mRoundNotStarted = true;
+        mGroupNotStarted = true;
         mNextPilot = null;
         mNextReflightPilot = null;
 
@@ -705,43 +701,51 @@ public class RaceActivity extends ListActivity {
         int skipped = 0;
 
         // Get the start number
-        int start = 0;
+        int start = mGroupScoring.start_pilot;
         int numPilots = allPilots.get(0).size();
-        if (mRace.start_number>0){
-            start = mRace.start_number;
-        } else {
-            if (numPilots > 0)
-                start = ((mRace.round - 1) * mRace.offset) % numPilots;
+
+        // Find actual number of pilots
+        int num_pilots = 0;
+        for (int i=0;i<allPilots.get(0).size();i++){
+            Pilot p = allPilots.get(0).get(i);
+            if (p.pilot_id>0) {
+                num_pilots++;
+            }
         }
+        num_pilots*=mRace.rounds_per_flight;
+
 
         // Loop through rounds per_flight
         // Calculations are done round by round when multiple rounds are flown per flight.
         for (int r=0;r<mRace.rounds_per_flight; r++) {
             int c = 0; // Flying order number
+            int apn = 0; // Actual Pilot number (Used for calculating groups);
 
             int g = 0; // Current group we are calculating
 
-            float[] ftg = new float[mGroupScoring+1]; // Fastest time in group (used for calculating normalised scores)
-            for (int i=0; i<mGroupScoring+1; i++)
+            float[] ftg = new float[mGroupScoring.num_groups+1]; // Fastest time in group (used for calculating normalised scores)
+            for (int i=0; i<mGroupScoring.num_groups+1; i++)
                 ftg[i]= 9999;  // initialise ftg for all groups to a stupidly large number
 
             // First to fly
             // (only when r = 0!)
             boolean first = (r==0);
-            int group_size = (int)Math.floor(sz/mGroupScoring);
-            int remainder = sz - (mGroupScoring * group_size);
+            int group_size = (int)Math.floor(num_pilots/mGroupScoring.num_groups);
+            int remainder = num_pilots - (mGroupScoring.num_groups * group_size);
 
             skipped = 0; // Tally of missing bib numbers
 
             for (Pilot p : allPilots.get(r)) {
                 // Increment group number
                 if (g<remainder){
-                    if (c>= (group_size+1)*(g+1)) {
+                    // The remainder is divided amongst the first groups giving 1 extra pilot until exhausted
+                    if (apn>= (group_size+1)*(g+1)) {
                         g++;
                         first = (r==0);
                     }
                 } else {
-                    if (c>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
+                    // Any remainder is now exhausted
+                    if (apn>= ((group_size+1)*remainder) + (group_size*((g+1)-remainder))) {
                         g++;
                         first = (r==0);
                     }
@@ -754,7 +758,7 @@ public class RaceActivity extends ListActivity {
                 mArrNames.set(position, String.format("%s %s", p.firstname, p.lastname));
 
                 // (c+start+1)%numPilots is the bib number
-                int bib_number = ((c + start) % numPilots)+1;
+                int bib_number = ((c + (start-1)) % numPilots)+1;
                 if (r == 0){
                     mArrNumbers.set(position, String.format("%d", bib_number));
                 } else {
@@ -766,12 +770,12 @@ public class RaceActivity extends ListActivity {
                 mArrGroups.set(position, g);
                 mFirstInGroup.set(position, first);
                 c++;
-                first = false;
 
                 if (p.pilot_id == 0){
                     // Skipped bib number
                     skipped += mRace.rounds_per_flight;
                 } else {
+
                     if (p.time == 0 && (((p.status & Pilot.STATUS_RETIRED) == 0) && (!p.flown))) {
                         // Unset round complete flag
                         // Somebody who isn't retired hasn't flown
@@ -779,8 +783,12 @@ public class RaceActivity extends ListActivity {
                     } else {
                         // Unset round not started flag
                         // Somebody has flown
-                        if ((p.status & Pilot.STATUS_RETIRED) != Pilot.STATUS_RETIRED)
+                        if ((p.status & Pilot.STATUS_RETIRED) != Pilot.STATUS_RETIRED) {
+
+
                             mRoundNotStarted = false;
+                            mGroupNotStarted = false;
+                        }
                     }
 
                     // Get the next pilot in the running order
@@ -806,6 +814,9 @@ public class RaceActivity extends ListActivity {
                     }
 
                     ftg[g] = (p.time > 0) ? Math.min(ftg[g], p.time) : ftg[g];
+                    apn++;
+                    first = false; // Only reset the first flag when we actually have a pilot
+
                 }
 
             }
@@ -840,6 +851,9 @@ public class RaceActivity extends ListActivity {
         if (mNextPilot == null) mNextPilot = mNextReflightPilot;
 
         datasource.close();
+        Log.i("NAMES", mArrNames.toString());
+        Log.i("GROUPS", mArrGroups.toString());
+
 	}
 	
 	private void setList() {
@@ -875,7 +889,7 @@ public class RaceActivity extends ListActivity {
 
                 View group_header = row.findViewById(R.id.group_header);
                 TextView group_header_label = (TextView) row.findViewById(R.id.group_header_label);
-                if (mGroupScoring>1 && mFirstInGroup.get(position)){
+                if (mGroupScoring.num_groups>1 && mFirstInGroup.get(position)){
                     group_header.setVisibility(View.VISIBLE);
                     group_header_label.setText("Group "+(mArrGroups.get(position)+1));
                 } else {
@@ -1065,7 +1079,7 @@ public class RaceActivity extends ListActivity {
 
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", start);
-        intent.putExtra("group_scored", (mGroupScoring > 1));
+        intent.putExtra("group_scored", (mGroupScoring.num_groups > 1));
         startActivityForResult(intent, DLG_TIMEOUT);
         mTimeoutDialogShown = true;
 	}
@@ -1076,7 +1090,7 @@ public class RaceActivity extends ListActivity {
 
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", 0l);
-        intent.putExtra("group_scored", (mGroupScoring > 1));
+        intent.putExtra("group_scored", (mGroupScoring.num_groups > 1));
         startActivityForResult(intent, DLG_TIMEOUT);
         mTimeoutDialogShown = true;
 	}
@@ -1192,10 +1206,12 @@ public class RaceActivity extends ListActivity {
         // Change Start Number (Only enable before the round is started)
         menu.getItem(2).setEnabled(mRoundNotStarted);
 
+        // Scrub Round
+        menu.getItem(3).setEnabled(!mGroupNotStarted);
 
         // Group scoring (disable when multiple flights are being used)
-        menu.getItem(3).setEnabled(mRace.rounds_per_flight < 2);
-        
+        menu.getItem(4).setEnabled(mRace.rounds_per_flight < 2);
+
 	    return super.onPrepareOptionsMenu(menu);
 
 	}
@@ -1213,6 +1229,20 @@ public class RaceActivity extends ListActivity {
 	    		return true;
             case R.id.menu_change_start_number:
                 changeStartNumber();
+                return true;
+            case R.id.menu_scrub_round:
+                mDlg = new AlertDialog.Builder(mContext)
+                        .setTitle(getString(R.string.menu_scrub_round))
+                        .setMessage(getString(R.string.menu_scrub_round_confirm))
+                        .setNegativeButton(getString(android.R.string.cancel), null)
+                        .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                scrubRound();
+                            }
+                        })
+                        .show();
+
                 return true;
             case R.id.menu_group_score:
 	    		groupScore();
@@ -1253,13 +1283,22 @@ public class RaceActivity extends ListActivity {
     }
 
     private void nextRound(){
-		RaceData datasource = new RaceData(this);
-		datasource.open();
-		mRace = datasource.nextRound(mRid);
+        RacePilotData datasource = new RacePilotData(RaceActivity.this);
+        datasource.open();
+        ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, mRnd, mRace.offset, mRace.start_number);
+        datasource.close();
+
+        RaceData datasource2 = new RaceData(this);
+		datasource2.open();
+        mRace = datasource2.nextRound(mRid);
 		mRnd = mRace.round;
+        mGroupScoring = datasource2.setGroups(mRid, mRnd, 1, getStartPilot(allPilots, mRace));
 		datasource.close();
 
-		setRound();
+        // Update the spreadsheet file
+        new SpreadsheetExport().writeResultsFile(mContext, mRace);
+
+        setRound();
         getNamesArray();
         mArrAdapter.notifyDataSetChanged();
         invalidateOptionsMenu(); // Refresh menu so that next round becomes active
@@ -1280,7 +1319,37 @@ public class RaceActivity extends ListActivity {
         }, 1000);
 		
 	}
-	
+
+	public void scrubRound(){
+        sendCommand("cancel_timeout");
+
+        if (mGroupScoring.num_groups == 1) {
+            // Not group scored
+            // Delete all times from round
+            RacePilotData datasource = new RacePilotData(RaceActivity.this);
+            datasource.open();
+            datasource.deleteRound(mRid, mRnd);
+            datasource.close();
+
+            // Delete the round
+            RaceData datasource2 = new RaceData(RaceActivity.this);
+            datasource2.open();
+            datasource2.deleteRound(mRid, mRnd);
+            datasource2.close();
+        } else {
+            // Just delete the times for the current group
+            RacePilotData datasource = new RacePilotData(RaceActivity.this);
+            datasource.open();
+            Log.i("RACEACTIVITY", "DELETE GROUP: "+mRid+":"+mRnd+":"+mNextPilot.position);
+            datasource.deleteGroup(mRid, mRnd, mNextPilot.position, mArrGroups, mArrPilots);
+            datasource.close();
+        }
+
+        getNamesArray();
+        mArrAdapter.notifyDataSetChanged();
+
+    }
+
 	public void changeFlyingOrder(){
 		Intent intent = new Intent(mContext, FlyingOrderEditActivity.class);
         intent.putExtra("race_id", mRid);

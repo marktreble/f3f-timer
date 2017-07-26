@@ -8,6 +8,8 @@ import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.data.results.Results;
+import com.marktreble.f3ftimer.resultsmanager.ResultsLeaderBoardActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -73,8 +75,66 @@ public class SpreadsheetExport {
 
         // Update the race (.f3f) file
         if (this.isExternalStorageWritable()){
+            Log.i("ROW", "WRITING SPREADSHEET FILE");
+            String data = "";
+
+            Results r = new Results();
+            r.getResultsForRace(context, race.id, false);
+
 
             int extra_discards = 0;
+            for (int i=0; i<r.mArrGroupings.size(); i++){
+                RaceData.Group g = r.mArrGroupings.get(i);
+                extra_discards+= g.num_groups-1;
+                Log.i("GROUPS: ", "N:"+g.num_groups+" S:"+g.start_pilot);
+            }
+
+            Log.i("ROW", "-----");
+
+            for (int i=0;i<r.mArrPilots.size(); i++){
+                Pilot p = r.mArrPilots.get(i);
+
+                int penalties_total = 0;
+                String penalties_rounds = "";
+
+                // Start new row (pilot name, frequency)
+                String row = String.format("%s %s , %s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency);
+
+                int rnd_in_spreadsheet = 1;
+                for (int rnd = 0; rnd < MAX_ROUNDS - extra_discards; rnd++) {
+                    int numgroups;
+                    if (rnd<r.mArrGroupings.size()) {
+                        RaceData.Group grouping = r.mArrGroupings.get(rnd);
+                        numgroups = grouping.num_groups;
+
+                        for (int g = 0; g < numgroups; g++) {
+                            ArrayList<RaceData.Time> times = r.mArrTimes.get(i);
+                            if (g == times.get(rnd).group) {
+                                String s_time = String.format("%.2f", times.get(rnd).time);
+                                row += String.format(" , %s", s_time.replace(",", "."));
+
+                                int pen = times.get(rnd).penalty;
+                                if (pen>0) {
+                                    penalties_total += pen *100;
+                                    penalties_rounds += String.format("%02d", rnd_in_spreadsheet);
+                                }
+                            } else {
+                                row += " , 0";
+                            }
+                        }
+                        rnd_in_spreadsheet+= numgroups;
+                    } else {
+                        row += " , 0";
+                    }
+                }
+
+                row += String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds);
+
+                Log.i("ROW", row);
+
+                data+=row;
+            }
+            /*
             RaceData datasource = new RaceData(context);
             datasource.open();
 
@@ -82,7 +142,6 @@ public class SpreadsheetExport {
             datasource2.open();
 
 
-            String data = "";
 
             ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(race.id, 0, 0, 0);
 
@@ -98,8 +157,11 @@ public class SpreadsheetExport {
                     }
                     p_penalty.add(penalty);
 
-                    groups.add(datasource.getGroups(race.id, rnd+1));
+                    RaceData.Group group = datasource.getGroups(race.id, rnd+1);
+                    groups.add(group.num_groups);
                 }
+
+                Log.i("ROW", "-----");
 
                 // Get all times for pilots in all rounds
                 int num_pilots = allPilots.size();
@@ -108,9 +170,10 @@ public class SpreadsheetExport {
                     if (p.pilot_id > 0) { // Skipped bib no if pilot_id=0
                         int penalties_total = 0;
                         String penalties_rounds = "";
+                        String row = "";
 
                         // Start new row (pilot name, frequency)
-                        data += String.format("%s %s , %s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency);
+                        row += String.format("%s %s , %s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency);
                         // Rounds should always be MAX_ROUNDS
                         // Group scoring adds extra rounds and adds discards, so the extra discards must be deducted from the 30 rounds
                         for (int rnd = 0; rnd < MAX_ROUNDS - extra_discards; rnd++) {
@@ -138,11 +201,11 @@ public class SpreadsheetExport {
                                         if (ftime > 0)
                                             time = String.format("%.2f", ftime);
                                     }
-                                    data += String.format(" , %s", time.replace(",", "."));
+                                    row += String.format(" , %s", time.replace(",", "."));
 
                                 } else {
                                     // Not in this group - add 0 (discard)
-                                    data += " , 0";
+                                    row += " , 0";
                                 }
                                 // Add up penalties, and record the rounds string
                                 if (rnd < race.round) {
@@ -157,18 +220,25 @@ public class SpreadsheetExport {
                             }
                         }
                         if (penalties_rounds.equals("")) penalties_rounds = "0";
-                        data += String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds);
+                        row += String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds);
+
+                        data+=row;
+                        Log.i("ROW", row);
                     }
                 }
             }
+            */
 
-            String meta_data = String.format("%d , \"%s\", 0, %d, %d\r\n", race.round+1+extra_discards, race.name, MAX_ROUNDS, extra_discards);
+            String meta_data = String.format("%d , \"%s\", 0, %d, %d\r\n", race.round+extra_discards, race.name, MAX_ROUNDS, extra_discards);
+
+            Log.i("ROW", meta_data);
+            Log.i("ROW", "-----");
             String output = meta_data + data;
 
             this.writeExportFile(context, output, race.name+".txt");
 
-            datasource2.close();
-            datasource.close();
+            //datasource2.close();
+            //datasource.close();
         } else {
             // External storage is not writable
             // Not sure how to handle this at the moment!

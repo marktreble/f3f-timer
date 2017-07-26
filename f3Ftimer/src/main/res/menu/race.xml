@@ -14,6 +14,10 @@
         android:title="@string/menu_change_start_number"/>
 
     <item
+        android:id="@+id/menu_scrub_round"
+        android:title="@string/menu_scrub_round"/>
+
+    <item
         android:id="@+id/menu_group_score"
         android:title="@string/menu_group_score"/>
     

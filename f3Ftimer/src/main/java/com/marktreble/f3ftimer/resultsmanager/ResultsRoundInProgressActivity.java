@@ -39,7 +39,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 	
 	private ArrayAdapter<String> mArrAdapter;
 	private ArrayList<String> mArrNames;
-    private ArrayList<String> mArrNumbers;
+    private ArrayList<String> mArrBibNumbers;
 	private ArrayList<Pilot> mArrPilots;
     private ArrayList<Integer> mArrGroups;
     private ArrayList<Boolean> mFirstInGroup;
@@ -49,7 +49,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
     private Context mContext;
 
-    private int mGroupScoring;
+    private RaceData.Group mGroupScoring;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -93,7 +93,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
 		mArrNames = r.mArrNames;
 		mArrPilots = r.mArrPilots;
-		mArrNumbers = r.mArrNumbers;
+		mArrBibNumbers = r.mArrBibNumbers;
 		mArrGroups = r.mArrGroups;
 		mFirstInGroup = r.mFirstInGroup;
 		mGroupScoring = r.mGroupScoring;
@@ -119,7 +119,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
                 Pilot p = mArrPilots.get(position);
 
                 TextView p_number = (TextView) row.findViewById(R.id.number);
-                p_number.setText(mArrNumbers.get(position));
+                p_number.setText(mArrBibNumbers.get(position));
 
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
@@ -134,7 +134,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
                 View group_header = row.findViewById(R.id.group_header);
                 TextView group_header_label = (TextView) row.findViewById(R.id.group_header_label);
-                if (mGroupScoring>1 && mFirstInGroup.get(position)){
+                if (mGroupScoring.num_groups>1 && mFirstInGroup.get(position)){
                     group_header.setVisibility(View.VISIBLE);
                     group_header_label.setText("Group "+(mArrGroups.get(position)+1));
                 } else {
@@ -155,6 +155,12 @@ public class ResultsRoundInProgressActivity extends ListActivity {
             		points.setText("");
                 }
 
+				TextView penalty = (TextView) row.findViewById(R.id.penalty);
+				if (p.penalty >0){
+					penalty.setText(getResources().getString(R.string.penalty) + p.penalty);
+				} else {
+					penalty.setText(getResources().getString(R.string.empty));
+				}
                 return row;
             }
    	   	};

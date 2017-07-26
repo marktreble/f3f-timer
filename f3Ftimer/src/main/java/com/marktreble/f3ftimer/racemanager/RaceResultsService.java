@@ -355,8 +355,8 @@ public class RaceResultsService extends Service {
             ArrayList<Integer> groups = new ArrayList<>();
 
 			for (int rnd=0; rnd<race.round; rnd++){
-                int numgroups = datasource.getGroups(mRid, rnd+1);
-                groups.add(numgroups);
+                RaceData.Group group = datasource.getGroups(mRid, rnd+1);
+                groups.add(group.num_groups);
 
 				ArrayList<String> round = new ArrayList<>();
 				for (Pilot p : allPilots){

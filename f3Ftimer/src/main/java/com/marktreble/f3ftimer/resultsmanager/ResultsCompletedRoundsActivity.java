@@ -67,9 +67,10 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 		if (race.round<=1){
 			TextView noneView = new TextView(this);
 	   	   	noneView.setText("No rounds completed yet");
-	   	   	noneView.setTextColor(r.getColor(R.color.text2));
+
+			noneView.setTextColor(r.getColor(R.color.text2));
 			int px1 = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-	   	   	noneView.setTextSize(px1);
+			noneView.setTextSize(TypedValue.COMPLEX_UNIT_SP,24);
 	   	   	noneView.setPadding(px1, px1, px1, px1);
 	   	   	
 	   	   	getListView().addFooterView(noneView);
