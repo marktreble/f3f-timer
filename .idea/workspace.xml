@@ -51,7 +51,6 @@
   <component name="ChangeListManager">
     <list default="true" id="0fdffe9f-1db8-4115-a888-13fa91fc6576" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
     </list>
     <ignored path="f3f-timer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -6170,7 +6169,14 @@
       <option name="project" value="LOCAL" />
       <updated>1501330287387</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Fixed bug where adding a pilot did not update the pilot's list without refresh">
+      <created>1501332175865</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1501332175865</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -6265,7 +6271,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added bib numbers and ability to skip number in pilot set up" />
     <MESSAGE value="Finished BiB numbers, added double press protection" />
     <MESSAGE value="Bug Fixes on screen rotation" />
     <MESSAGE value="Fixed Bluetooth Import data error" />
@@ -6290,7 +6295,8 @@
     <MESSAGE value="Added auto rename when importing races with the same name" />
     <MESSAGE value="Updated results logic" />
     <MESSAGE value="Added Import from F3f timer API" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Import from F3f timer API" />
+    <MESSAGE value="Fixed bug where adding a pilot did not update the pilot's list without refresh" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed bug where adding a pilot did not update the pilot's list without refresh" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
