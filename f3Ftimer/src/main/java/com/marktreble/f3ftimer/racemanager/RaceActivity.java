@@ -82,7 +82,10 @@ public class RaceActivity extends ListActivity {
     private ArrayList<Integer> mArrGroups;
     private ArrayList<Boolean> mFirstInGroup;
 
-	private Integer mRid;
+    private ArrayList<String> mArrRemainingNames;
+    private ArrayList<Pilot> mArrRemainingPilots;
+
+    private Integer mRid;
 	private Integer mRnd;
 	private Race mRace;
 	private String mInputSource;
@@ -958,20 +961,20 @@ public class RaceActivity extends ListActivity {
 		ArrayList<Pilot> allPilots = datasource.getAllPilotsExcept(mArrPilots);
 		datasource.close();
 		
-		mArrNames = new ArrayList<>();
-		mArrPilots = new ArrayList<>();
+		mArrRemainingNames = new ArrayList<>();
+		mArrRemainingPilots = new ArrayList<>();
 		
 		for (Pilot p : allPilots){
-			mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
-			mArrPilots.add(p);
+			mArrRemainingNames.add(String.format("%s %s", p.firstname, p.lastname));
+			mArrRemainingPilots.add(p);
 			
 		}
 	}
 	
 	private void showPilotsDialog(){
 		getRemainingNamesArray();
-	    _options = new String[mArrNames.size()];
-	    _options = mArrNames.toArray(_options);	  
+	    _options = new String[mArrRemainingNames.size()];
+	    _options = mArrRemainingNames.toArray(_options);
 	    _selections = new boolean[ _options.length ];
 
         mDlg = new AlertDialog.Builder( this )
@@ -1000,39 +1003,19 @@ public class RaceActivity extends ListActivity {
 					// Update the list
 					for (int i=0; i<_options.length; i++){
 						if (_selections[i]){
-                            Log.d("RACEACTIVITY", "ADDING PILOT: "+ mArrPilots.get(i).toString());
-                            addPilot(mArrPilots.get(i));
+                            addPilot(mArrRemainingPilots.get(i));
 						}
 						
 					}
 					// Dismiss picker, so update the listview!
-                    Log.d("RACEACTIVITY", "UPDATELISTVIEW");
-                    updateListView();
 
+                    getNamesArray();
+                    mArrAdapter.notifyDataSetChanged();
 		   	   		mDlg = null;
 					break;
 			}
 		}
 	}
-
-    Runnable updateListView = new Runnable(){
-        public void run(){
-            Log.d("RACEACTIVITY", "EXECUTING: UPDATELISTVIEW");
-            getNamesArray();
-            mArrAdapter.notifyDataSetChanged();
-        }
-    };
-
-    public void updateListView(){
-        Log.d("RACEACTIVITY", "INITIALISING: UPDATELISTVIEW");
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(updateListView);
-            }
-        }, 1000);
-
-    }
 
     private boolean showPilotDialog(int round, int pilot_id, String bib_no){
         if (mPilotDialogShown) return true;
@@ -1049,9 +1032,7 @@ public class RaceActivity extends ListActivity {
     }
 
 	private void showNextPilot(){
-        Log.d("SHOW NEXT PILOT", "DIALOG");
         if (mNextPilot.position != null) {
-            Log.d("SHOW NEXT PILOT", "POSITON: " + mNextPilot.position);
             int round = mArrRounds.get(mNextPilot.position);
             mPilotDialogShown = showPilotDialog(round, mNextPilot.id, mNextPilot.number);
         } else {
@@ -1124,7 +1105,6 @@ public class RaceActivity extends ListActivity {
 				if (data == null){
 					return;
 				}
-                Log.i("RACE ACTIVITY RECEIVER", data);
 
 				if (data.equals("start_pressed")){
 					if (!mPilotDialogShown){
@@ -1411,7 +1391,7 @@ public class RaceActivity extends ListActivity {
 	    @Override
 	    public void onReceive(Context ctxt, Intent intent) {
 	      int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-	      mPower.setText(String.valueOf(level) + "%");
+	      mPower.setText(String.format("%d%%", level));
 	    }
 	  };
 }

@@ -44,30 +44,14 @@
     </layouts>
   </component>
   <component name="AndroidLogFilters">
-    <option name="TOOL_WINDOW_CUSTOM_FILTER" value="ONACT" />
     <option name="TOOL_WINDOW_LOG_LEVEL" value="verbose" />
     <option name="TOOL_WINDOW_CONFIGURED_FILTER" value="Show only selected application" />
     <option name="TOOL_WINDOW_REGEXP_FILTER" value="false" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0fdffe9f-1db8-4115-a888-13fa91fc6576" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/api/API.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/F3fTimerAPILoginActivity.java" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/api.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/f3f_timer_api_login.xml" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/activity_main.xml" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/build.gradle" afterPath="$PROJECT_DIR$/f3Ftimer/build.gradle" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" afterPath="$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BaseImport.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BaseImport.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3ftimerApiImportRace.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3ftimerApiImportRace.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileImportRace.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileImportRace.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/array.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/array.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" afterPath="$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" afterPath="$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/usbSerialForAndroid/usbSerialForAndroid.iml" afterPath="$PROJECT_DIR$/usbSerialForAndroid/usbSerialForAndroid.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
     </list>
     <ignored path="f3f-timer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -99,6 +83,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="RaceActivity.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="426">
+              <caret line="1393" column="53" selection-start-line="1393" selection-start-column="53" selection-end-line="1393" selection-end-column="53" />
+              <folding>
+                <element signature="e#49052#49284#0" expanded="true" />
+                <element signature="e#49283#49284#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="F3ftimerApiImportRace.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3ftimerApiImportRace.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -209,7 +206,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="F3fTimerAPILoginActivity.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="F3fTimerAPILoginActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/F3fTimerAPILoginActivity.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="486">
@@ -5202,7 +5199,6 @@
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/results/Results.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/race.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/racepilot/RacePilotData.java" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values/array.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/preferences.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java" />
@@ -5216,6 +5212,7 @@
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BaseImport.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3ftimerApiImportRace.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/F3fTimerAPILoginActivity.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
       </list>
     </option>
   </component>
@@ -5227,7 +5224,6 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="74" />
     <option name="y" value="23" />
     <option name="width" value="1757" />
     <option name="height" value="1053" />
@@ -6167,11 +6163,18 @@
       <option name="project" value="LOCAL" />
       <updated>1501108719494</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Added Import from F3f timer API">
+      <created>1501330287387</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1501330287387</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="74" y="23" width="1757" height="1053" extended-state="0" />
+    <frame x="0" y="23" width="1757" height="1053" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -6262,7 +6265,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Added catch for null intent exception" />
     <MESSAGE value="Added bib numbers and ability to skip number in pilot set up" />
     <MESSAGE value="Finished BiB numbers, added double press protection" />
     <MESSAGE value="Bug Fixes on screen rotation" />
@@ -6287,7 +6289,8 @@
     <MESSAGE value="Moved results manager calculations into single class" />
     <MESSAGE value="Added auto rename when importing races with the same name" />
     <MESSAGE value="Updated results logic" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated results logic" />
+    <MESSAGE value="Added Import from F3f timer API" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added Import from F3f timer API" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -6605,14 +6608,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="568" column="0" selection-start-line="566" selection-start-column="0" selection-end-line="568" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
@@ -6753,14 +6748,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceListActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="123" column="19" selection-start-line="123" selection-start-column="19" selection-end-line="123" selection-end-column="19" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BaseImport.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1548">
@@ -6791,6 +6778,25 @@
           <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceListActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="115">
+          <caret line="123" column="19" selection-start-line="123" selection-start-column="19" selection-end-line="123" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="426">
+          <caret line="1393" column="53" selection-start-line="1393" selection-start-column="53" selection-end-line="1393" selection-end-column="53" />
+          <folding>
+            <element signature="e#49052#49284#0" expanded="true" />
+            <element signature="e#49283#49284#0" expanded="true" />
           </folding>
         </state>
       </provider>
