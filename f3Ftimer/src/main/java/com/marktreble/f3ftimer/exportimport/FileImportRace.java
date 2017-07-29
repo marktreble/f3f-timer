@@ -128,8 +128,8 @@ public class FileImportRace extends BaseImport {
                 boolean success = importFile(uri);
 
                 if (success) {
-                    setResult(RESULT_OK);
-                    finish();
+                    mActivity.setResult(RESULT_OK);
+                    mActivity.finish();
 
                 } else {
                     String filename = uri.toString();
@@ -141,7 +141,8 @@ public class FileImportRace extends BaseImport {
                             .setMessage("Sorry, f3f timer can only import files in 'json' format")
                             .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    finish();
+
+                                    mActivity.finish();
                                 }
                             })
                             .show();

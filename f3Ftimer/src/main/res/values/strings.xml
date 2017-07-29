@@ -113,4 +113,10 @@
     <string name="run_complete">Run Complete</string>
     <string name="pilot_team">Team Name</string>
 
+    <!-- API -->
+    <string name="source_url">Source (URL)</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="btn_login">Log In</string>
+
 </resources>

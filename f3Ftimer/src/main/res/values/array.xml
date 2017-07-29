@@ -82,4 +82,6 @@
         <item>Share by email</item>
         <item>Share on Social Media</item>
     </string-array>
+
+    <string-array name="empty_array" translatable="false" />
 </resources>

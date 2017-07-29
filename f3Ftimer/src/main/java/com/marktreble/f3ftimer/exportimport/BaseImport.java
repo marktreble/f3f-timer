@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class BaseImport extends Activity {
 
     Context mContext;
-    Activity mActivity;
+    public Activity mActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

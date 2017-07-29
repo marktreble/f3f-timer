@@ -1,0 +1,241 @@
+package com.marktreble.f3ftimer.data.api;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.util.Log;
+
+
+import com.marktreble.f3ftimer.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+
+/**
+ * Created by marktreble on 04/01/2016.
+ */
+public class API {
+
+    private static final String TAG = "APIDEBUG";
+
+    public static final String STATUS_KEY = "status";
+    public static final String STATUS_OK = "ok";
+
+    public static final String ENDPOINT_KEY = "endpoint";
+
+    public static final String API_IMPORT = "/import";
+    public static final String API_IMPORT_RACE = "/import_race";
+    public static final String API_UPLOAD = "/upload_race";
+
+    public class httpmethod {
+        public static final int GET = 1;
+        public static final int POST = 2;
+    }
+
+    public interface APICallbackInterface {
+
+        void onAPISuccess(String request, JSONObject result);
+        void onAPIError(String request, JSONObject result);
+    }
+
+    public APICallbackInterface mCallback;
+    public String request;
+
+    private apiCall api;
+
+    public void makeAPICall(Context context, String base, int method, Map<String, String> params){
+        api = new apiCall(context, base, method);
+        api.execute(params);
+    }
+
+    public void cancel(){
+        api.cancel(true);
+    }
+
+    public class apiCall extends AsyncTask<Map<String, String>, Void, String> {
+        Context mContext;
+        String mBase;
+        int mMethod;
+
+
+        public apiCall(Context context, String base, int method) {
+            super();
+            mContext = context;
+            mBase = base;
+            mMethod = method;
+        }
+
+        @Override
+        protected String doInBackground(Map<String, String>... params) {
+            Map<String, String> nvp = params[0];
+            String base = mBase;
+            String endpoint = nvp.get(ENDPOINT_KEY);
+            nvp.remove(ENDPOINT_KEY);
+
+            String str_response = "";
+
+            if (mMethod == API.httpmethod.GET) {
+                str_response = get(base + endpoint, nvp);
+            }
+            if (mMethod == API.httpmethod.POST) {
+                str_response = post(base + endpoint, nvp);
+            }
+            return str_response;
+        }
+
+        private String get(String url, Map<String, String> nvp){
+
+            if (nvp.size()>0){
+                url+= "?";
+                Iterator it = nvp.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it.next();
+                    String key = (String)pair.getKey();
+                    String val = (String)pair.getValue();
+                    url+= key+"="+val;
+
+                    it.remove(); // avoids a ConcurrentModificationException
+                    if (it.hasNext()) url+="&";
+
+                }
+            }
+
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
+
+            Log.d(TAG, url);
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
+
+            String response = null;
+
+            try {
+                Response r = client.newCall(request).execute();
+                response = r.body().string();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+            return response;
+        }
+
+        private String post(String url, Map<String, String> nvp){
+            RequestBody body;
+            MultipartBody.Builder builder = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM);
+
+            if (nvp.size()>0){
+                Iterator it = nvp.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it.next();
+                    String key = (String)pair.getKey();
+                    String val = (String)pair.getValue();
+                    builder.addFormDataPart(key, val);
+
+                    it.remove(); // avoids a ConcurrentModificationException
+
+                }
+            }
+            body = builder.build();
+
+            OkHttpClient client = new OkHttpClient.Builder()
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .readTimeout(30, TimeUnit.SECONDS)
+                    .build();
+
+            Log.d(TAG, url);
+            Request request = new Request.Builder()
+                    .post(body)
+                    .url(url)
+                    .build();
+
+            String response = null;
+
+            try {
+                Response r = client.newCall(request).execute();
+                response = r.body().string();
+            } catch (IOException e){
+                e.printStackTrace();
+            }
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            if (this.isCancelled()) return;
+
+            Log.i(TAG, "RESPONSE WAS: " + response);
+            JSONObject o = null;
+
+            try {
+                o = new JSONObject(response);
+            } catch (JSONException | NullPointerException e){
+                e.printStackTrace();
+            }
+
+            if (o != null && o.has(STATUS_KEY)) {
+                String status = "";
+                try {
+                    status = o.getString(STATUS_KEY);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                if (mCallback != null) {
+                    if (status.equals(STATUS_OK)) {
+                        mCallback.onAPISuccess(request, o);
+                    } else {
+                        mCallback.onAPIError(request, o);
+                    }
+                }
+                return;
+            }
+
+            if (response == null){
+                ((Activity)mContext).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(mContext)
+                                .setTitle("Network Unavailable")
+                                .setMessage("Please check that you are connected to either WiFi or a Mobile network")
+                                .setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface dialog) {
+                                        if (mCallback != null)
+                                            mCallback.onAPIError(request, null);
+
+                                    }
+                                })
+                                .create().show();
+                    }
+                });
+
+            } else {
+                if (mCallback != null)
+                    mCallback.onAPIError(request, null);
+            }
+        }
+    }
+
+
+}

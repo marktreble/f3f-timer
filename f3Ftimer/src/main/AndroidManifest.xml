@@ -227,6 +227,10 @@
         </activity>
 
         <activity
+            android:name=".dialog.F3fTimerAPILoginActivity" android:theme="@style/Theme.Overlay">
+        </activity>
+
+        <activity
             android:name=".exportimport.FileImportPilots" android:theme="@style/Theme.Overlay">
         </activity>
 
