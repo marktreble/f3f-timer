@@ -16,18 +16,20 @@ function render_roundinprogress(){
 
 	// Loop through pilots, create the html nodes and find the fastest time in the round
 	for (i=0; i<model.pilots.length; i++){
-		var li = createListItem(responsive_name(model.pilots[i]));
-		lis.push(li);
-		
-		var pilot_time = model.times[model.current_round-1][i];
-		
-		var pilot_penalty = model.penalties[model.current_round-1][i];
+	    if (model.pilots[i] !=""){}
+            var li = createListItem(responsive_name(model.pilots[i]));
+            lis.push(li);
 
-		// If this the round winner so far?
-		if (pilot_time != ""){
-			times.push({pilot:i,time:pilot_time,penalty:pilot_penalty})
-			pilot_time = parseFloat(pilot_time);
-			if (pilot_time>0 && pilot_time<fastest) fastest = pilot_time;
+            var pilot_time = model.times[model.current_round-1][i];
+
+            var pilot_penalty = model.penalties[model.current_round-1][i];
+
+            // If this the round winner so far?
+            if (pilot_time != ""){
+                times.push({pilot:i,time:pilot_time,penalty:pilot_penalty})
+                pilot_time = parseFloat(pilot_time);
+                if (pilot_time>0 && pilot_time<fastest) fastest = pilot_time;
+            }
 		}
 	}
 	
