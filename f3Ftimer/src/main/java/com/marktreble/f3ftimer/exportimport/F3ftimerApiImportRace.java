@@ -166,6 +166,18 @@ public class F3ftimerApiImportRace extends BaseImport
         mAPITask = null;
         hideProgress();
 
+        if (data == null){
+            new AlertDialog.Builder(mContext)
+                    .setTitle("Network Error")
+                    .setMessage("Sorry, no response from server.")
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mActivity.finish();
+                        }
+                    })
+                    .show();
+            return;
+        }
         String message = null;
         try {
             message = data.getString("data");

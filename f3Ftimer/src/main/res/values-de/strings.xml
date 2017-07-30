@@ -22,7 +22,6 @@
     <string name="race_race">Rennen</string>
     <string name="race_practice">Übung</string>
     <string name="button_save">Speichern</string>
-    <string name="button_add">+</string>
     <string name="button_next">Nextes</string>
     <string name="button_done">Fertig</string>
     <string name="button_scramble">S</string>
@@ -34,7 +33,6 @@
     <string name="retired">Ret</string>
     <string name="reflight">RF</string>
     <string name="notime">--.--</string>
-    <string name="thirty">30.00</string>
     <string name="start_working_time">Starte Startzeitfenster</string>
     <string name="working_time_started">Startzeitfenster gestartet</string>
     <string name="late_entry">Später Eintritt</string>
@@ -46,7 +44,6 @@
     <string name="scrub_round">Rounde streichen</string>
     <string name="scrub_group">Gruppe streichen</string>
     <string name="minutes_remaining">Minuten verbleiben</string>
-    <string name="zero">0.00</string>
     <string name="off_course">Aus Kurs</string>
     <string name="on_course">Im Kurs</string>
     <string name="working_time">Start-Zeitfenster</string>
@@ -74,8 +71,6 @@
     <string name="menu_about">Über</string>
     <string name="menu_share">Share</string>
     <string name="enter_time">Zeit eingeben</string>
-    <string name="USBJE">USB - John Edison Timer Box</string>
-    <string name="USBArduino">USB - Arduino Mark Redsell Timer Box</string>
     <string name="Demo">Demo Modus - On Screen Buzzers</string>
     <string name="wifi">Wifi Buzzers</string>
     <string name="pref_enable_acra">ACRA Crash Reports</string>

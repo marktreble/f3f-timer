@@ -6,6 +6,7 @@ package com.marktreble.f3ftimer.dialog;
 import com.marktreble.f3ftimer.R;
 
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.widget.TextView;
 import android.app.Activity;
 import android.content.pm.PackageInfo;
@@ -32,6 +33,7 @@ public class AboutActivity extends Activity {
 		
 		TextView version = (TextView) findViewById(R.id.version);
 		version.setText(String.format("%s %s (Build %s)", getString(R.string.version), v, b));
+
 	}
 	
 }

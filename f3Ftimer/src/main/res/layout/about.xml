@@ -25,7 +25,7 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="@string/version"
-		        android:textAppearance="?android:attr/textAppearanceLarge"
+		        android:textAppearance="?android:attr/textAppearanceSmall"
 		        android:textColor="@color/text2"
 		        android:textStyle="italic" />
 		    
@@ -34,9 +34,18 @@
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:text="@string/credits"
-		        android:textAppearance="?android:attr/textAppearanceLarge"
+		        android:textAppearance="?android:attr/textAppearanceMedium"
 		        android:textColor="@color/text2"
 		        android:textStyle="italic" />
-		    		    		
+
+			<TextView
+				android:id="@+id/repo"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/repositary"
+				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textColorLink="@color/text"
+				android:autoLink="web"
+				android:textStyle="italic" />
 		</LinearLayout>        
 </RelativeLayout>

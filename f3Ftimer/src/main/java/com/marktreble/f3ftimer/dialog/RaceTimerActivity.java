@@ -21,8 +21,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -138,7 +140,9 @@ public class RaceTimerActivity extends FragmentActivity {
 	    	ft.commit();
 	    	mCurrentFragment = f;
             mCurrentFragmentId = 1;
-			mWindowState = WINDOW_STATE_FULL;
+
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+			mWindowState = sharedPref.getInt("pref_window_minized_state", WINDOW_STATE_FULL);
 
         }
 
@@ -153,12 +157,19 @@ public class RaceTimerActivity extends FragmentActivity {
 					mWindowState = WINDOW_STATE_MINIMIZED;
 					mResize.setImageDrawable(ContextCompat.getDrawable(mContext ,R.drawable.expand));
 					setMinimized(true);
+
 				} else {
 					mWindowState = WINDOW_STATE_FULL;
 					mResize.setImageDrawable(ContextCompat.getDrawable(mContext ,R.drawable.minimize));
 					setExpanded();
 
 				}
+
+				SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+				SharedPreferences.Editor editor = sharedPref.edit();
+				editor.putInt("pref_window_minized_state", mWindowState);
+				editor.apply();
+
 			}
 		});
 
