@@ -134,8 +134,14 @@ public class Driver implements TextToSpeech.OnInitListener {
 			e.printStackTrace();
 		}
   		
-  		if (mTts != null)
-			mTts.shutdown();
+  		if (mTts != null) {
+			// Suppress error generated in TTS engine
+			try {
+				mTts.shutdown();
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		}
 	}
 
 	// Binding for UI->Service Communication
