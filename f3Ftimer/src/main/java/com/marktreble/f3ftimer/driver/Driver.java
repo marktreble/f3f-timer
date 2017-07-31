@@ -503,7 +503,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 		intent2.putExtra("com.marktreble.f3ftimer.pilot_nationality", str_nationality);
 		intent2.putExtra("com.marktreble.f3ftimer.pilot_name", str_name);
 		intent2.putExtra("com.marktreble.f3ftimer.pilot_time", String.format("%.2f", mPilot_Time));
-		intent2.putExtra("com.marktreble.f3ftimer.current_round", mRnd);
+		intent2.putExtra("com.marktreble.f3ftimer.current_round", String.format("%d", mRnd));
 		intent2.putExtra("com.marktreble.f3ftimer.current_round_results", str_round_results);
 
 

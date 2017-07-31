@@ -120,7 +120,7 @@ public class RaceResultsDisplayService extends Service {
             }
             if (device == null){
                 Log.d(TAG, "No device... stopping");
-                return 0;
+                return START_NOT_STICKY;
             }
             deviceName = device.getName();
             mMacAddress = device.getAddress();
@@ -130,7 +130,7 @@ public class RaceResultsDisplayService extends Service {
             } else {
                 Log.d(TAG, "No macAddress... stopping");
                 stopSelf();
-                return 0;
+                return START_NOT_STICKY;
             }
         }
 
