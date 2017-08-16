@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:layout_weight="0"
-                android:text="@string/button_next" />
+                android:text="@string/button_save" />
 		</LinearLayout>
         </ScrollView>
 </RelativeLayout>
