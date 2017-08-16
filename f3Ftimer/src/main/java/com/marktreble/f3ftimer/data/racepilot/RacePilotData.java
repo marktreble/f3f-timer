@@ -1,6 +1,9 @@
 package com.marktreble.f3ftimer.data.racepilot;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -218,6 +221,30 @@ public class RacePilotData {
 		// Make sure to close the cursor
 		cursor.close();
 		return allPilots;
+	}
+
+	public String[] getTeams(int race_id){
+		ArrayList<String> allTeams = new ArrayList<>();
+		String sql = "select team from racepilots p  where p.race_id=? order by id";
+		String[] data = {Integer.toString(race_id)};
+		Cursor cursor = database.rawQuery(sql, data);
+		cursor.moveToFirst();
+		while (!cursor.isAfterLast()) {
+			String team = cursor.getString(0);
+			if (!allTeams.contains(team))
+				allTeams.add(team);
+
+			cursor.moveToNext();
+		}
+
+		Collections.sort(allTeams, new Comparator<String>() {
+			@Override
+			public int compare(String a, String b) {
+				return a.compareTo(b);
+			}
+		});
+
+		return allTeams.toArray(new String[0]);
 	}
 
 	private Pilot cursorToPilot(Cursor cursor, boolean full) {

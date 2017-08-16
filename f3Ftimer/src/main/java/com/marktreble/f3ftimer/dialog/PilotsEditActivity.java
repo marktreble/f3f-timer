@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -75,7 +76,7 @@ public class PilotsEditActivity extends Activity {
     	Spinner nationality = (Spinner) findViewById(R.id.spinner6);
         Spinner language = (Spinner) findViewById(R.id.spinner7);
 		TextView teamlabel = (TextView) findViewById(R.id.textView8);
-		EditText team = (EditText) findViewById(R.id.editText8);
+		AutoCompleteTextView team = (AutoCompleteTextView) findViewById(R.id.editText8);
         Button done_button = (Button) findViewById(R.id.button1);
 
         done_button.setOnClickListener(new View.OnClickListener() {
@@ -243,6 +244,15 @@ public class PilotsEditActivity extends Activity {
 			teamlabel.setVisibility(View.VISIBLE);
 			team.setVisibility(View.VISIBLE);
 
+			RacePilotData datasource = new RacePilotData(mContext);
+			datasource.open();
+			final String[] TEAMS = datasource.getTeams(mRid);
+			datasource.close();
+
+			ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+					android.R.layout.simple_dropdown_item_1line, TEAMS);
+
+			team.setAdapter(adapter);
 		}
 
 	}
