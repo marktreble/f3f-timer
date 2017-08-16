@@ -185,7 +185,8 @@ public class RacePilotData {
 					 "(select time from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as time, " +
 					 "(select count(id) from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as flown, " +
                      "(select penalty from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as penalty, " +
-                     "(select reflight from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as reflight " +
+                     "(select reflight from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as reflight, " +
+					 "team " +
 					 "from racepilots p  where p.race_id=? order by id";
 		String[] data = {Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(race_id)};
 		Cursor cursor = database.rawQuery(sql, data);
@@ -241,6 +242,7 @@ public class RacePilotData {
                 p.time = 0;
                 p.flown = false;
             }
+			p.team = cursor.getString(15);
 		} else {
 			p.team = cursor.getString(11);
 		}

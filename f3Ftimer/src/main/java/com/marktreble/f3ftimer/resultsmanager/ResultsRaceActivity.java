@@ -114,7 +114,8 @@ public class ResultsRaceActivity extends ListActivity {
 		arrOptions.add(String.format("Round in Progress (R%d)", race.round));
 		arrOptions.add("Completed Rounds");
 		arrOptions.add("Leader Board");
-		
+		arrOptions.add("Team Results");
+
    	   	mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow , arrOptions);
         setListAdapter(mArrAdapter);        
 	}
@@ -130,7 +131,10 @@ public class ResultsRaceActivity extends ListActivity {
 				 intent = new Intent(this, ResultsCompletedRoundsActivity.class);				
 				break;
 			case 2:
-				 intent = new Intent(this, ResultsLeaderBoardActivity.class);				
+				 intent = new Intent(this, ResultsLeaderBoardActivity.class);
+				break;
+			case 3:
+				 intent = new Intent(this, ResultsTeamsActivity.class);
 				break;
 		}
         intent.putExtra("race_id", mRid);

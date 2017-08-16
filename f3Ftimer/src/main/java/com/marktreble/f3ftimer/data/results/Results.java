@@ -1,6 +1,7 @@
 package com.marktreble.f3ftimer.data.results;
 
 import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -14,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Created by marktreble on 11/06/2017.
@@ -315,6 +318,63 @@ public class Results {
             mArrScores.add(map_totals.get(p.id));
             mArrTimes.add(map_pilots.get(p.id));
 
+        }
+    }
+
+    /* getResultsForRace(context, race ID)
+     *
+     * Populates: mArrNames, mArrNumbers, mArrPilots, mArrScores, mArrTimes, mFTD, mFTDName, mFTDRound
+     *
+     */
+    public void getTeamResultsForRace(Context context, int mRid){
+        this.getResultsForRace(context, mRid, false);
+
+        mArrNames = new ArrayList<>();
+        mArrNumbers = new ArrayList<>();
+        HashMap<String, Float> totals = new HashMap<>();
+
+        for (int i=0; i<mArrPilots.size(); i++) {
+            Pilot p = mArrPilots.get(i);
+
+            if (!p.team.trim().equals("")) { // Ignore blank entries
+                Float score = mArrScores.get(i);
+
+                if (totals.containsKey(p.team)) {
+                    Float total = totals.get(p.team);
+                    total += score;
+                    totals.put(p.team, total);
+                } else {
+                    totals.put(p.team, score);
+
+                }
+            }
+        }
+
+        Float fTotals[] = new Float[totals.size()];
+        Iterator<String> itr = totals.keySet().iterator();
+        int i = 0;
+        while(itr.hasNext()) {
+            String name = itr.next();
+            fTotals[i++] = totals.get(name);
+        }
+
+        Arrays.sort(fTotals, Collections.reverseOrder());
+        mArrScores = new ArrayList<>();
+
+        // Set the positions according to the sorted order
+        for (int j=0; j<fTotals.length; j++){
+            float sorted_total = fTotals[j];
+            Iterator<String> itr2 = totals.keySet().iterator();
+            while(itr2.hasNext()) {
+                String name = itr2.next();
+                float total = totals.get(name);
+
+                if (total == sorted_total) {
+                    mArrNumbers.add(Integer.toString(j + 1));
+                    mArrScores.add(total);
+                    mArrNames.add(name);
+                }
+            }
         }
     }
 
