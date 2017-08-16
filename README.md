@@ -61,7 +61,7 @@ The following table lists known device compatibility:
 ### Installation
 
 The latest stable release can be downloaded here:
-<a href="https://www.marktreble.co.uk/clients/f3f/f3Ftimer.30.07.17.apk">f3Ftimer30.07.17.apk</a>
+<a href="https://www.marktreble.co.uk/clients/f3f/f3Ftimer16.8.17.apk">f3Ftimer16.8.17.apk</a>
 
 You can also use the external display which connects using bluetooth from another android device:
 <a href="https://www.marktreble.co.uk/clients/f3f/f3ftimerexternaldisplay.1.9.16.apk">f3ftimerexternaldisplay.1.9.16.apk</a>
