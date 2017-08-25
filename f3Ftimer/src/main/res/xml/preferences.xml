@@ -11,6 +11,10 @@
             android:entryValues="@array/InputSources"
             android:defaultValue="@string/Demo"/>
 
+        <ListPreference
+            android:key="pref_input_src_device"
+            android:title="@string/bluetooth_paired_device" />
+
         <EditTextPreference
             android:key="pref_usb_baudrate"
             android:title="@string/usb_baudrate"
@@ -33,7 +37,7 @@
             android:title="@string/usb_parity"
             android:entries="@array/options_parity"
             android:entryValues="@array/options_parity"
-            android:defaultValue="None"/>
+            android:defaultValue="@string/none"/>
 
     </PreferenceCategory>
 

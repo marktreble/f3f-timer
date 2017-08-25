@@ -54,6 +54,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_dialog));
 
         // Set values
+        setInputSourceActiveFields();
+        setBTDeviceSummary("pref_input_src_device");
         setLangSummary("pref_voice_lang");
         setLangSummary("pref_input_src");
         setStringSummary("pref_usb_baudrate");
@@ -61,13 +63,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         setListSummary("pref_usb_databits", R.array.options_databits);
         setListSummary("pref_usb_parity", R.array.options_parity);
         setBTDeviceSummary("pref_external_display");
-        
-    	Preference pref = findPreference("pref_results_server");
+
+    	Preference pref_results_server = findPreference("pref_results_server");
         if (!Wifi.canEnableWifiHotspot(getActivity())){
-        	pref.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
+        	pref_results_server.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
         } else {
-        	pref.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)");        	
+        	pref_results_server.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)");
         }
+
 		return view;
    
     }
@@ -75,12 +78,14 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     	Intent i;
 
+        setInputSourceActiveFields();
+
     	// Update value of any list preference
     	Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
             setLangSummary(key);
         }
-        
+
         // Callbacks to input driver
         
     	if (key.equals("pref_buzzer") 
@@ -117,7 +122,30 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
-    
+
+    private void setInputSourceActiveFields(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        if (sharedPref.getString("pref_input_src", "").equals(getString(R.string.BLUETOOTH_HC_05))){
+            // Hide baud rate etc.., and show device picker
+            findPreference("pref_usb_baudrate").setEnabled(false);
+            findPreference("pref_usb_stopbits").setEnabled(false);
+            findPreference("pref_usb_databits").setEnabled(false);
+            findPreference("pref_usb_parity").setEnabled(false);
+
+            findPreference("pref_input_src_device").setEnabled(true);
+
+        } else {
+            // Hide device picker, show baud rate etc..
+            findPreference("pref_usb_baudrate").setEnabled(true);
+            findPreference("pref_usb_stopbits").setEnabled(true);
+            findPreference("pref_usb_databits").setEnabled(true);
+            findPreference("pref_usb_parity").setEnabled(true);
+
+            findPreference("pref_input_src_device").setEnabled(false);
+
+        }
+    }
+
     private void setLangSummary(String key){
     	Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
@@ -180,6 +208,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
     @Override
 	public void onInit(int status) {
+        // Populate pref_input_src_device with paired devics
+        populateInputSourceDevices();
+
         // Populate pref_voice_lang with installed voices
         populateVoices();
 
@@ -221,7 +252,18 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         pref.setEntryValues(values);
 
     }
-    private void populateExternalDisplayDevices(){
+
+    private void populateInputSourceDevices() {
+        ListPreference pref = (ListPreference) findPreference("pref_input_src_device");
+        populatePairedDevices(pref);
+    }
+
+    private void populateExternalDisplayDevices() {
+        ListPreference pref = (ListPreference) findPreference("pref_external_display");
+        populatePairedDevices(pref);
+    }
+
+    private void populatePairedDevices(ListPreference pref){
         CharSequence[] labels = {"No Devices Paired"};
         CharSequence[] values = {""};
 
@@ -243,7 +285,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             }
         }
 
-        ListPreference pref = (ListPreference) findPreference("pref_external_display");
+
         pref.setEntries(labels);
         pref.setEntryValues(values);
 

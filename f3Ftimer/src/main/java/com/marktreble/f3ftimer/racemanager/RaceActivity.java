@@ -88,7 +88,8 @@ public class RaceActivity extends ListActivity {
     private Integer mRid;
 	private Integer mRnd;
 	private Race mRace;
-	private String mInputSource = "";
+    private String mInputSource = "";
+    private String mInputSourceDevice = "";
 	private boolean mPrefResults;
     private boolean mPrefResultsDisplay;
     private String mPrefExternalDisplay;
@@ -311,6 +312,7 @@ public class RaceActivity extends ListActivity {
         outState.putString("battery_level", mBatteryLevel);
 
         outState.putString("pref_input_source", mInputSource);
+        outState.putString("pref_input_source_device", mInputSourceDevice);
         outState.putBoolean("pref_results", mPrefResults);
         outState.putBoolean("pref_results_display", mPrefResultsDisplay);
 
@@ -333,6 +335,7 @@ public class RaceActivity extends ListActivity {
         mBatteryLevel = savedInstanceState.getString("battery_level");
 
         mInputSource = savedInstanceState.getString("pref_input_source");
+        mInputSourceDevice = savedInstanceState.getString("pref_input_source_device");
         mPrefResults = savedInstanceState.getBoolean("pref_results");
         mPrefResultsDisplay = savedInstanceState.getBoolean("pref_results_display");
 
@@ -347,13 +350,15 @@ public class RaceActivity extends ListActivity {
         super.onResume();
 
         String sInputSource = mInputSource;
+        String sInputSourceDevice = mInputSourceDevice;
         boolean sPrefResults = mPrefResults;
         boolean sPrefResultsDisplay = mPrefResultsDisplay;
      	getPreferences();
 
-     	if (!sInputSource.equals(mInputSource) 	            // Input src changed
-     		|| sPrefResults!=mPrefResults 		            // Results server toggled
-            || sPrefResultsDisplay!=mPrefResultsDisplay     // External Display server toggled
+     	if (!sInputSource.equals(mInputSource) 	                    // Input src changed
+     		|| sPrefResults!=mPrefResults 		                    // Results server toggled
+            || sPrefResultsDisplay!=mPrefResultsDisplay             // External Display server toggled
+                || !sInputSourceDevice.equals(mInputSourceDevice)   // Input Source device changed
      		){
      		stopServers();
      		startServers();
@@ -385,7 +390,8 @@ public class RaceActivity extends ListActivity {
 	private void getPreferences(){
 
      	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-		mInputSource = sharedPref.getString("pref_input_src", getString(R.string.Demo));
+        mInputSource = sharedPref.getString("pref_input_src", getString(R.string.Demo));
+        mInputSourceDevice = sharedPref.getString("pref_input_src_device", "");
         mPrefResults = sharedPref.getBoolean("pref_results_server", false);
         mPrefResultsDisplay = sharedPref.getBoolean("pref_results_display", false);
         mPrefExternalDisplay = sharedPref.getString("pref_external_display", "");
@@ -1075,6 +1081,10 @@ public class RaceActivity extends ListActivity {
     }
 
 	private void showNextPilot(){
+        if (mPilotDialogShown) return;
+        if (mTimeoutDialogShown) return;
+        if (mMenuShown) return;
+
         if (mNextPilot.position != null) {
             int round = mArrRounds.get(mNextPilot.position);
             mPilotDialogShown = showPilotDialog(round, mNextPilot.id, mNextPilot.number);
@@ -1084,6 +1094,10 @@ public class RaceActivity extends ListActivity {
 	}
 	
 	private void showNextRound(){
+        if (mPilotDialogShown) return;
+        if (mTimeoutDialogShown) return;
+        if (mMenuShown) return;
+
         invalidateOptionsMenu(); // Refresh menu so that next round becomes active
 		Intent intent = new Intent(this, NextRoundActivity.class);
 		intent.putExtra("round_id", mRnd);
@@ -1102,7 +1116,6 @@ public class RaceActivity extends ListActivity {
         if (mMenuShown) return;
         if (mTimeoutDialogShown) return;
 
-        Log.d("SHOWTIMEOUT", Log.getStackTraceString(new Exception()));
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", start);
         intent.putExtra("group_scored", (mGroupScoring.num_groups > 1));

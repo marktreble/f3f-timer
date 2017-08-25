@@ -91,12 +91,14 @@
     <string name="USB_OTHER">USB - Other</string>
     <string name="BLUETOOTH_HC_05" translatable="false">Bluetooth - HC-05</string>
     <string name="Demo">Demo Mode - On Screen Buzzers</string>
+    <string name="bluetooth_paired_device">HC-05 Paired Device</string>
     <string name="connection_settings">Connection Settings</string>
     <string name="other_settings">Other Settings</string>
     <string name="usb_baudrate">Baud Rate</string>
     <string name="usb_stopbits">Stop Bits</string>
     <string name="usb_databits">Data Bits</string>
     <string name="usb_parity">Parity</string>
+    <string name="none">None</string>
     <string name="enter_num_groups">Enter Number of Groups</string>
     <string name="enter_start_number">Enter Start Number</string>
     <string name="wifi">Wifi Buzzers</string>

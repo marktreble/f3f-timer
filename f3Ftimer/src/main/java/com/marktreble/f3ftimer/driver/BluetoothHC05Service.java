@@ -8,10 +8,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.ParcelUuid;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
@@ -69,6 +71,8 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 	ArrayList<String> mPairedAndDiscoveredDeviceNames;
 	ArrayList<BluetoothDevice> mPairedAndDiscoveredDevices;
 
+	private String mInputSourceDevice;
+
 	private BluetoothSocket mmSocket;
 	private BluetoothDevice mmDevice;
 	private InputStream mmInStream;
@@ -110,6 +114,12 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 		try {
 			this.unregisterReceiver(onBroadcast);
+		} catch (IllegalArgumentException e){
+			e.printStackTrace();
+		}
+
+		try {
+			this.unregisterReceiver(mReceiver);
 		} catch (IllegalArgumentException e){
 			e.printStackTrace();
 		}
@@ -171,6 +181,9 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 	@Override
     public int onStartCommand(Intent intent, int flags, int startId){
     	super.onStartCommand(intent, flags, startId);
+
+		Bundle extras = intent.getExtras();
+		mInputSourceDevice = extras.getString("pref_input_src_device");
 
 		Log.i("DRIVER", "SENDING UPDATE: "+ICN_DISCONN);
 		Intent icn = new Intent("com.marktreble.f3ftimer.onUpdate");
@@ -325,22 +338,27 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 		for (int i = 0; i < mPairedAndDiscoveredDevices.size(); i++) {
 			mmDevice = mPairedAndDiscoveredDevices.get(i);
-			Log.i(TAG, "Attempting connection to device " + mmDevice.getName());
+			Log.i(TAG, "CHECKING: "+mmDevice.getAddress()+":"+mmDevice.getName());
 
 			BluetoothSocket tmp = null;
 			// uuid is standard for the HC-05
 			UUID uuid = UUID.fromString(getString(R.string.HC05_uuid));
+
+
 			try {
 				ParcelUuid uuids[] = mmDevice.getUuids();
 
 				for (ParcelUuid test : uuids){
 					Log.i(TAG, "Supported " +test.toString() + " ? " + uuid.toString());
 					if (test.equals(new ParcelUuid(uuid))){
-						tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
+						if (mmDevice.getAddress().equals(mInputSourceDevice)) {
+							Log.i(TAG, "Attempting connection to device " + mmDevice.getName());
+							tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
+						}
 					}
 				}
 			} catch (IOException e) {
-				Log.i(TAG, "Failed to connect to device " + mmDevice.getName());
+				Log.i(TAG, "Failed to connect to device " + mInputSourceDevice);
 			}
 
 			if (tmp != null){
@@ -348,6 +366,8 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 				Log.i(TAG, "connected to " + mmDevice.getName());
 				startConnectThread();
 				return true;
+			} else {
+				Log.i(TAG, mInputSourceDevice + " is not available");
 			}
 		}
 
@@ -510,6 +530,8 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 			e.printStackTrace();
 			mIsListening = false;
+			driverDisconnected();
+			mHandler.removeCallbacks(listener);
 		}
 
 		if (mIsListening) mHandler.postDelayed(listener, 100);

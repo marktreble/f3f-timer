@@ -195,6 +195,7 @@ public class RaceResultsDisplayService extends Service {
     public synchronized void stop() {
         setState(STATE_NONE);
         mHandler2.removeCallbacks(reconnect);
+        displayDisconnected();
 
         if (mConnectThread != null) {
             mConnectThread.cancel();
