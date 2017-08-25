@@ -18,6 +18,10 @@
         android:title="@string/menu_scrub_round"/>
 
     <item
+        android:id="@+id/menu_show_time_remaining"
+        android:title="@string/menu_show_round_timeout"/>
+
+    <item
         android:id="@+id/menu_group_score"
         android:title="@string/menu_group_score"/>
     

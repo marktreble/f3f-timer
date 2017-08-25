@@ -149,6 +149,11 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 				if (data == null) return;
 
+                if (data.equals("show_round_timeout")){
+					Log.i("DRIVER", "SHOW_ROUND_TIMEOUT");
+                    show_round_timeout_explicitly();
+                    return;
+                }
 				if (data.equals("start_pilot")){
 					startPilot(extras);
 					return;
@@ -692,6 +697,44 @@ public class Driver implements TextToSpeech.OnInitListener {
 			}
 		}
 	};
+
+	private void show_round_timeout_explicitly(){
+        String key = "Timeout"+Integer.toString(mRid);
+        SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
+        final long start = timeout.getLong("start", 0);
+        if (start>0){
+            long elapsed = System.currentTimeMillis() - start;
+            float seconds = (float)elapsed/1000;
+
+            if (seconds>60 * ROUND_TIMEOUT){
+                // Hide the Pilot dialog if it's listening
+                cancelDialog();
+
+                // Invoke the scrub round dialog
+                mHandler.postDelayed(new Runnable(){
+                    public void run(){
+                        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+                        i.putExtra("com.marktreble.f3ftimer.service_callback", "show_timeout_complete");
+                        mContext.sendBroadcast(i);
+                    }
+                }, 500);
+
+            } else { // minutes
+                // Hide the Pilot dialog if it's listening
+                cancelDialog();
+
+                // Invoke the round timeout countdown dialog
+                mHandler.postDelayed(new Runnable(){
+                    public void run(){
+                        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+                        i.putExtra("com.marktreble.f3ftimer.service_callback", "show_timeout");
+                        i.putExtra("start", start);
+                        mContext.sendBroadcast(i);
+                    }
+                }, 500);
+            }
+        }
+    }
 
 	private String setSpeechFXLanguage(){
         if (mTts == null){

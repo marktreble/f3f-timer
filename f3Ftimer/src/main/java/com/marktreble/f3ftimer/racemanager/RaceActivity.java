@@ -1088,6 +1088,7 @@ public class RaceActivity extends ListActivity {
 	private void showTimeout(long start){
         if (mPilotDialogShown) return;
         if (mMenuShown) return;
+        if (mTimeoutDialogShown) return;
 
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", start);
@@ -1099,6 +1100,7 @@ public class RaceActivity extends ListActivity {
 	private void showTimeoutComplete(){
         if (mPilotDialogShown) return;
         if (mMenuShown) return;
+        if (mTimeoutDialogShown) return;
 
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", 0l);
@@ -1273,6 +1275,9 @@ public class RaceActivity extends ListActivity {
             case R.id.menu_group_score:
 	    		groupScore();
 	    		return true;
+            case R.id.menu_show_time_remaining:
+                sendCommand("show_round_timeout");
+                return true;
 	        case R.id.menu_add_pilots:
 	        	showPilotsDialog();
 	            return true;
