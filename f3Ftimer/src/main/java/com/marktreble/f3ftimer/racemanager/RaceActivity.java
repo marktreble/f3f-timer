@@ -315,6 +315,7 @@ public class RaceActivity extends ListActivity {
         outState.putString("pref_input_source_device", mInputSourceDevice);
         outState.putBoolean("pref_results", mPrefResults);
         outState.putBoolean("pref_results_display", mPrefResultsDisplay);
+        outState.putString("pref_external_display", mPrefExternalDisplay);
 
 
         mListViewScrollPos = mListView.onSaveInstanceState();
@@ -338,6 +339,7 @@ public class RaceActivity extends ListActivity {
         mInputSourceDevice = savedInstanceState.getString("pref_input_source_device");
         mPrefResults = savedInstanceState.getBoolean("pref_results");
         mPrefResultsDisplay = savedInstanceState.getBoolean("pref_results_display");
+        mPrefExternalDisplay = savedInstanceState.getString("pref_external_display");
 
         mListViewScrollPos = savedInstanceState.getParcelable("listviewscrollpos");
         if (mListView != null)
@@ -353,12 +355,14 @@ public class RaceActivity extends ListActivity {
         String sInputSourceDevice = mInputSourceDevice;
         boolean sPrefResults = mPrefResults;
         boolean sPrefResultsDisplay = mPrefResultsDisplay;
+        String sPrefExternalDisplay = mPrefExternalDisplay;
      	getPreferences();
 
      	if (!sInputSource.equals(mInputSource) 	                    // Input src changed
      		|| sPrefResults!=mPrefResults 		                    // Results server toggled
             || sPrefResultsDisplay!=mPrefResultsDisplay             // External Display server toggled
                 || !sInputSourceDevice.equals(mInputSourceDevice)   // Input Source device changed
+                || !sPrefExternalDisplay.equals(mPrefExternalDisplay) // Extrenal Display device changed
      		){
      		stopServers();
      		startServers();
