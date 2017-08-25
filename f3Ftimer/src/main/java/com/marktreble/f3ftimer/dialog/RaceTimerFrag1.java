@@ -62,7 +62,9 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
 	        public void onClick(View v) {
 	        	RaceTimerActivity a = (RaceTimerActivity)getActivity();
 	        	a.sendCommand("abort");
-	        	a.setResult(RaceActivity.RESULT_ABORTED, null);
+				a.sendCommand("begin_timeout");
+
+				a.setResult(RaceActivity.RESULT_ABORTED, null);
 	        	a.finish();
 	            
 	        }
@@ -80,7 +82,7 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
     	RaceTimerActivity a = (RaceTimerActivity)getActivity();
     	    	
     	a.sendCommand("working_time");
-    	
+
     	a.getFragment(new RaceTimerFrag2(),2);
 	}
 	

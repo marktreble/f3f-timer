@@ -66,7 +66,8 @@ public class RaceRoundTimeoutFrag extends Fragment {
 		public void run(){
 	        RaceRoundTimeoutActivity a = (RaceRoundTimeoutActivity)getActivity();
 
-        	long elapsed = System.currentTimeMillis() - a.mStart;
+        	long elapsed = Math.min(System.currentTimeMillis() - a.mStart, 30000);
+
         	float fseconds = (float)((60*30) - (elapsed/1000));
         	
         	int minutes = (int) Math.floor(fseconds/60);

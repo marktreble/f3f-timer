@@ -1108,7 +1108,15 @@ public class RaceActivity extends ListActivity {
         startActivityForResult(intent, DLG_TIMEOUT);
         mTimeoutDialogShown = true;
 	}
-	
+
+	private void showTimeoutNotStarted(){
+        mDlg = new AlertDialog.Builder(mContext)
+                .setTitle("Timeout Not Started")
+                .setMessage("Timeout is not active at the moment")
+                .setNegativeButton(getString(android.R.string.ok), null)
+                .show();
+    }
+
 	public boolean isServiceRunning(String serviceClassName){
         final ActivityManager activityManager = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         final List<android.app.ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
@@ -1162,6 +1170,10 @@ public class RaceActivity extends ListActivity {
 				if (data.equals("show_timeout_complete")){
 					showTimeoutComplete();
 				}
+
+                if (data.equals("show_timeout_not_started")){
+                    showTimeoutNotStarted();
+                }
 
                 if (data.equals("driver_started")){
                     mStatusIcon = extras.getString("icon");

@@ -76,7 +76,8 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 	        	mHandler.removeCallbacks(updateClock);
 	        	RaceTimerActivity a = (RaceTimerActivity)getActivity();
 	        	a.sendCommand("abort");
-	        	a.setResult(RaceActivity.RESULT_ABORTED, null);
+				a.sendCommand("begin_timeout");
+				a.setResult(RaceActivity.RESULT_ABORTED, null);
 	        	a.finish();
 	            
 	        }

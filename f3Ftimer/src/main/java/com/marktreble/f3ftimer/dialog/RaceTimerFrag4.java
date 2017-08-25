@@ -63,8 +63,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 	        	mHandler.removeCallbacks(updateClock);
 	        	RaceTimerActivity a = (RaceTimerActivity)getActivity();
 	        	a.sendCommand("abort");
-	        	//a.setResult(RaceActivity.RESULT_ABORTED, null);
-	        	//a.finish();
+				a.sendCommand("begin_timeout");
 				a.getFragment(new RaceTimerFrag6(), 6); // Abort submenu (reflight or score 0)
 			}
 	    });

@@ -733,7 +733,11 @@ public class Driver implements TextToSpeech.OnInitListener {
                     }
                 }, 500);
             }
-        }
+        } else {
+			Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+			i.putExtra("com.marktreble.f3ftimer.service_callback", "show_timeout_not_started");
+			mContext.sendBroadcast(i);
+		}
     }
 
 	private String setSpeechFXLanguage(){
