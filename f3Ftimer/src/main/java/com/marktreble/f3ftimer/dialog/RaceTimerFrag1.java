@@ -62,7 +62,6 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
 	        public void onClick(View v) {
 	        	RaceTimerActivity a = (RaceTimerActivity)getActivity();
 	        	a.sendCommand("abort");
-				a.sendCommand("begin_timeout");
 
 				a.setResult(RaceActivity.RESULT_ABORTED, null);
 	        	a.finish();

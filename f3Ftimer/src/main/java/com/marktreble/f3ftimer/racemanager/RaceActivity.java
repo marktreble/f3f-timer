@@ -178,6 +178,18 @@ public class RaceActivity extends ListActivity {
 	        // Start Results server
             getPreferences();
 	       	startServers();
+
+            final Handler handler = new Handler();
+            final int delay = 5000; //milliseconds
+
+            handler.postDelayed(new Runnable(){
+                public void run(){
+                    Log.i("UUUUU", "CHECKING CONN");
+                    sendCommand("get_connection_status");
+                    handler.postDelayed(this, delay);
+                }
+            }, delay);
+
         }
 
         // Render the list
@@ -191,17 +203,6 @@ public class RaceActivity extends ListActivity {
             }
         });
 
-        final Handler handler = new Handler();
-        final int delay = 5000; //milliseconds
-
-        handler.postDelayed(new Runnable(){
-            public void run(){
-                Log.i("UUUUU", "CHECKING CONN");
-                sendCommand("get_connection_status");
-                handler.postDelayed(this, delay);
-            }
-        }, delay);
-
     }
 	
     @Override
@@ -213,6 +214,7 @@ public class RaceActivity extends ListActivity {
         unregisterReceiver(mBatInfoReceiver);
 
         if (isFinishing()) {
+            Log.i("DRIVER", "STOP SERVERS");
             stopServers();
         }
     }
@@ -308,6 +310,11 @@ public class RaceActivity extends ListActivity {
         outState.putString("display_status_icon", mExternalDisplayStatusIcon);
         outState.putString("battery_level", mBatteryLevel);
 
+        outState.putString("pref_input_source", mInputSource);
+        outState.putBoolean("pref_results", mPrefResults);
+        outState.putBoolean("pref_results_display", mPrefResultsDisplay);
+
+
         mListViewScrollPos = mListView.onSaveInstanceState();
         outState.putParcelable("listviewscrollpos", mListViewScrollPos);
 
@@ -324,6 +331,11 @@ public class RaceActivity extends ListActivity {
         mDisplayStatus = savedInstanceState.getBoolean("display_status");
         mExternalDisplayStatusIcon = savedInstanceState.getString("display_status_icon");
         mBatteryLevel = savedInstanceState.getString("battery_level");
+
+        mInputSource = savedInstanceState.getString("pref_input_source");
+        mPrefResults = savedInstanceState.getBoolean("pref_results");
+        mPrefResultsDisplay = savedInstanceState.getBoolean("pref_results_display");
+
         mListViewScrollPos = savedInstanceState.getParcelable("listviewscrollpos");
         if (mListView != null)
             mListView.onRestoreInstanceState(mListViewScrollPos);
@@ -1090,6 +1102,7 @@ public class RaceActivity extends ListActivity {
         if (mMenuShown) return;
         if (mTimeoutDialogShown) return;
 
+        Log.d("SHOWTIMEOUT", Log.getStackTraceString(new Exception()));
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", start);
         intent.putExtra("group_scored", (mGroupScoring.num_groups > 1));

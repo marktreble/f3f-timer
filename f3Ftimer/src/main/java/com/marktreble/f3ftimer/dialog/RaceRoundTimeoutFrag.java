@@ -27,6 +27,7 @@ public class RaceRoundTimeoutFrag extends Fragment {
         super.onCreate(savedInstanceState);
 		
         if (savedInstanceState != null) {
+			mHandler.post(updateClock);
 	    } else {
 		    mHandler.postDelayed(updateClock, 10);
 	    }
@@ -66,7 +67,7 @@ public class RaceRoundTimeoutFrag extends Fragment {
 		public void run(){
 	        RaceRoundTimeoutActivity a = (RaceRoundTimeoutActivity)getActivity();
 
-        	long elapsed = Math.min(System.currentTimeMillis() - a.mStart, 30000);
+        	long elapsed = Math.min(System.currentTimeMillis() - a.mStart, 30*60*1000);
 
         	float fseconds = (float)((60*30) - (elapsed/1000));
         	

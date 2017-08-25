@@ -612,7 +612,9 @@ public class Driver implements TextToSpeech.OnInitListener {
         
     }
     
-    public void beginRoundTimeout(){
+    public void
+
+	beginRoundTimeout(){
 		Log.i(TAG, "Timeout Started");
 
         // Start round inactive timeout (3 minutes)
@@ -640,7 +642,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 			mHandler.postDelayed(checkTimeout, t);
 		}
 	}
-	
+
 	private void cancelTimeout(){
 		// Reset the round timeout
 		SharedPreferences timeout = mContext.getSharedPreferences("Timeout"+Integer.toString(mRid), Context.MODE_PRIVATE);
