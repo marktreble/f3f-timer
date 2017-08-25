@@ -88,7 +88,7 @@ public class RaceActivity extends ListActivity {
     private Integer mRid;
 	private Integer mRnd;
 	private Race mRace;
-	private String mInputSource;
+	private String mInputSource = "";
 	private boolean mPrefResults;
     private boolean mPrefResultsDisplay;
     private String mPrefExternalDisplay;
@@ -113,7 +113,14 @@ public class RaceActivity extends ListActivity {
 
     private TextView mPower;
     private ImageView mStatus;
+    private String mStatusIcon;
     private boolean mConnectionStatus;
+
+    private String mExternalDisplayStatusIcon;
+    private ImageView mExternalDisplayStatus;
+    private boolean mDisplayStatus;
+
+    private String mBatteryLevel;
 
     private ListView mListView;
     private static Parcelable mListViewScrollPos = null;
@@ -154,28 +161,46 @@ public class RaceActivity extends ListActivity {
         registerForContextMenu(mListView);
         
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
-        
-        // Get values from preferences
-        getPreferences();
-		
+
+        mExternalDisplayStatus = (ImageView)findViewById(R.id.external_display_connection_status);
+        mExternalDisplayStatusIcon = "off_display";
+
+        mPower = (TextView)findViewById(R.id.battery_level);
+
+        mStatus = (ImageView)findViewById(R.id.connection_status);
+        mStatusIcon = "off";
+
+        // Register for notifications
+        registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
+        registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
         if (savedInstanceState == null){
 	        // Start Results server
-
+            getPreferences();
 	       	startServers();
-			
-        	
         }
+
+        // Render the list
         getNamesArray();
         setList();
 
         getActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
             @Override
             public void onMenuVisibilityChanged(boolean isVisible) {
-                // TODO Auto-generated method stub
                 mMenuShown = isVisible;
-                Log.i("RACEACTIVITY", (mMenuShown)?"MENU SHOWN":"MENU HID");
             }
         });
+
+        final Handler handler = new Handler();
+        final int delay = 5000; //milliseconds
+
+        handler.postDelayed(new Runnable(){
+            public void run(){
+                Log.i("UUUUU", "CHECKING CONN");
+                sendCommand("get_connection_status");
+                handler.postDelayed(this, delay);
+            }
+        }, delay);
 
     }
 	
@@ -183,8 +208,13 @@ public class RaceActivity extends ListActivity {
     public void onDestroy(){
         Log.i("DRIVER (Race Activity)", "Destroyed");
         super.onDestroy();
-        if (isFinishing())
+
+        unregisterReceiver(onBroadcast);
+        unregisterReceiver(mBatInfoReceiver);
+
+        if (isFinishing()) {
             stopServers();
+        }
     }
 
 	
@@ -250,7 +280,6 @@ public class RaceActivity extends ListActivity {
 	
 	public void stopServers(){
 		// Stop all Servers
-		Log.i("STOP SERVICE", "RESULTS");
 
         if (RaceResultsService.stop(this)){
     		if (Wifi.canEnableWifiHotspot(this)){
@@ -274,68 +303,75 @@ public class RaceActivity extends ListActivity {
         outState.putInt("raceid", mRid);
         outState.putSerializable("mArrRounds", mArrRounds);
         outState.putBoolean("connection_status", mConnectionStatus);
+        outState.putString("connection_status_icon", mStatusIcon);
+        outState.putBoolean("display_status", mDisplayStatus);
+        outState.putString("display_status_icon", mExternalDisplayStatusIcon);
+        outState.putString("battery_level", mBatteryLevel);
+
         mListViewScrollPos = mListView.onSaveInstanceState();
         outState.putParcelable("listviewscrollpos", mListViewScrollPos);
-        Log.i("RACEACTIVITY", "SAVEINSTANCE");
 
     }
 
     @SuppressWarnings("unchecked")
 	@Override
 	public void onRestoreInstanceState(@NonNull Bundle savedInstanceState){
-        mRnd=savedInstanceState.getInt("round");
-        mRid=savedInstanceState.getInt("raceid");
+        mRnd = savedInstanceState.getInt("round");
+        mRid = savedInstanceState.getInt("raceid");
         mArrRounds = (ArrayList<Integer>)savedInstanceState.getSerializable("mArrRounds");
-        mConnectionStatus=savedInstanceState.getBoolean("connection_status");
+        mConnectionStatus = savedInstanceState.getBoolean("connection_status");
+        mStatusIcon = savedInstanceState.getString("connection_status_icon");
+        mDisplayStatus = savedInstanceState.getBoolean("display_status");
+        mExternalDisplayStatusIcon = savedInstanceState.getString("display_status_icon");
+        mBatteryLevel = savedInstanceState.getString("battery_level");
         mListViewScrollPos = savedInstanceState.getParcelable("listviewscrollpos");
         if (mListView != null)
             mListView.onRestoreInstanceState(mListViewScrollPos);
-        Log.i("RACEACTIVITY", "RESTOREINSTANCE");
 
     }
 	
 	public void onResume(){
-        Log.i("RACEACTIVITY", "RESUME");
 
         super.onResume();
-		
-     	registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));	
-     	
-		mPower = (TextView)findViewById(R.id.battery_level);
-        registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
-        mStatus = (ImageView)findViewById(R.id.connection_status);
-        if (mConnectionStatus) {
-            mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.on));
-        } else{
-            mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.off));
-        }
-        //
-        sendCommand("get_connection_status");
 
         String sInputSource = mInputSource;
-     	boolean sPrefResults = mPrefResults;
+        boolean sPrefResults = mPrefResults;
+        boolean sPrefResultsDisplay = mPrefResultsDisplay;
      	getPreferences();
-     	
-     	if (!sInputSource.equals(mInputSource) 	// Input src changed
-     		|| sPrefResults!=mPrefResults 		// Results server toggled
+
+     	if (!sInputSource.equals(mInputSource) 	            // Input src changed
+     		|| sPrefResults!=mPrefResults 		            // Results server toggled
+            || sPrefResultsDisplay!=mPrefResultsDisplay     // External Display server toggled
      		){
      		stopServers();
      		startServers();
      	}
-     	
-     	
-   	}
+
+        mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName() )));
+
+        if (mPrefResultsDisplay){
+            mExternalDisplayStatus.setVisibility(View.VISIBLE);
+        } else {
+            mExternalDisplayStatus.setVisibility(View.GONE);
+        }
+
+        if (sInputSource.equals(mInputSource))
+            mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName() )));
+
+        mPower.setText(mBatteryLevel);
+
+
+
+
+
+    }
 	
 	public void onPause(){
-        Log.i("RACEACTIVITY", "PAUSE");
-
         super.onPause();
-		unregisterReceiver(onBroadcast);
-		unregisterReceiver(mBatInfoReceiver);
 	}
 	
 	private void getPreferences(){
+
      	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		mInputSource = sharedPref.getString("pref_input_src", getString(R.string.Demo));
         mPrefResults = sharedPref.getBoolean("pref_results_server", false);
@@ -377,7 +413,6 @@ public class RaceActivity extends ListActivity {
 	 
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.i("RACEACTIVITY", "ACTIVITYRESULT");
 
         super.onActivityResult(requestCode, resultCode, data);
 		mPilotDialogShown = false;
@@ -579,7 +614,6 @@ public class RaceActivity extends ListActivity {
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-        Log.i("RACEACTIVITY", "CONTEXT ITEM SELECTED");
 
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
 		int menuItemIndex = item.getItemId();
@@ -665,7 +699,6 @@ public class RaceActivity extends ListActivity {
 	 */
 	
 	private void getNamesArray(){
-        Log.d("RACEACTIVITY", "GET NAMES ARRAY "+mGroupScoring.num_groups+":"+mGroupScoring.start_pilot);
 
 		RacePilotData datasource = new RacePilotData(this);
 		datasource.open();
@@ -854,8 +887,6 @@ public class RaceActivity extends ListActivity {
         if (mNextPilot == null) mNextPilot = mNextReflightPilot;
 
         datasource.close();
-        Log.i("NAMES", mArrNames.toString());
-        Log.i("GROUPS", mArrGroups.toString());
 
 	}
 	
@@ -1131,21 +1162,36 @@ public class RaceActivity extends ListActivity {
 				}
 
                 if (data.equals("driver_started")){
-                    Log.i("RACE ACT Service->UI", "driver_started");
+                    mStatusIcon = extras.getString("icon");
+
                     mConnectionStatus = true;
-                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.on));
+                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName() )));
                 }
 
                 if (data.equals("driver_stopped")){
-                    Log.i("RACE ACT Service->UI", "driver_stopped");
+                    mStatusIcon = extras.getString("icon");
+
                     mConnectionStatus = false;
-                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext,R.drawable.off));
+                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName() )));
+                }
+
+                if (data.equals("external_display_connected")){
+                    mExternalDisplayStatusIcon = extras.getString("icon");
+
+                    mDisplayStatus = true;
+                    mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName() )));
+                }
+
+                if (data.equals("external_display_disconnected")){
+                    mExternalDisplayStatusIcon = extras.getString("icon");
+
+                    mDisplayStatus = false;
+                    mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName() )));
                 }
 
                 if (data.equals("unsupported")){
                     String vid = extras.getString("vendorId");
                     String pid = extras.getString("productId");
-                    Log.i("RACE ACT Service->UI", "Unsupported Hardware: VendorId="+vid+", ProductId="+pid);
 
                     mDlg = new AlertDialog.Builder(mContext)
                             .setTitle("Unsupported Hardware")
@@ -1390,8 +1436,9 @@ public class RaceActivity extends ListActivity {
 	private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver(){
 	    @Override
 	    public void onReceive(Context ctxt, Intent intent) {
-	      int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-	      mPower.setText(String.format("%d%%", level));
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+            mBatteryLevel = String.format("%d%%", level);
+	        mPower.setText(mBatteryLevel);
 	    }
 	  };
 }

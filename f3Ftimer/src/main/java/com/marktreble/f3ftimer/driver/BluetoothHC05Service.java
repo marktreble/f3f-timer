@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,7 +54,10 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 	static final String TT_RESEND_TIME = "T";
 
 
-	static final String ENCODING = "US_ASCII";
+	static final String ENCODING = "US-ASCII";
+
+	static final String ICN_CONN = "on_bt";
+	static final String ICN_DISCONN = "off_bt";
 
 	private BluetoothAdapter mBluetoothAdapter;
 	ArrayList<String> mDiscoveredDeviceNames;
@@ -92,6 +96,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 		Log.i(TAG, "ONDESTROY!");
 		super.onDestroy();        
 		mDriver.destroy();
+		driverDisconnected();
 
 		mIsListening = false;
 		try {
@@ -112,6 +117,11 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 	public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
 		if (inputSource.equals(context.getString(R.string.BLUETOOTH_HC_05))){
+			Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+			i.putExtra("icon", ICN_DISCONN);
+			i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+			context.sendBroadcast(i);
+
 			Intent serviceIntent = new Intent(context, BluetoothHC05Service.class);
 			serviceIntent.putExtras(params);
 			serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
@@ -145,10 +155,10 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 				if (data.equals("get_connection_status")) {
 					if (mBoardConnected){
-						callbackToUI("driver_started");
+						driverConnected();
 
 					} else {
-						callbackToUI("driver_stopped");
+						driverDisconnected();
 					}
 				}
 
@@ -162,7 +172,13 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     public int onStartCommand(Intent intent, int flags, int startId){
     	super.onStartCommand(intent, flags, startId);
 
-		Log.d(TAG, "onSTartCommand");
+		Log.i("DRIVER", "SENDING UPDATE: "+ICN_DISCONN);
+		Intent icn = new Intent("com.marktreble.f3ftimer.onUpdate");
+		icn.putExtra("icon", ICN_DISCONN);
+		icn.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+		sendBroadcast(icn);
+
+		Log.d(TAG, "onStartCommand");
 		mIntent = intent;
 
 		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -194,11 +210,6 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 		return null;
 	}
 
-	private void callbackToUI(String cmd){
-		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-		i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
-		this.sendBroadcast(i);
-	}
 
 	// Output - Send commands
 	private void sendCmd(String cmd){
@@ -227,6 +238,14 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 	}
 
 	// Driver Interface implementations
+	public void driverConnected(){
+		mDriver.driverConnected(ICN_CONN);
+	}
+
+	public void driverDisconnected(){
+		mDriver.driverDisconnected(ICN_DISCONN);
+	}
+
 	public void sendLaunch(){
 		this.sendCmd(TT_LAUNCH);
 		mTimerStatus = 0;
@@ -310,7 +329,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 			BluetoothSocket tmp = null;
 			// uuid is standard for the HC-05
-			UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+			UUID uuid = UUID.fromString(getString(R.string.HC05_uuid));
 			try {
 				ParcelUuid uuids[] = mmDevice.getUuids();
 
@@ -378,6 +397,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 		mBoardConnected = true;
 		mDriver.start(mIntent);
+		driverConnected();
 
 		mHandler.postDelayed(listener, 100);
 	}

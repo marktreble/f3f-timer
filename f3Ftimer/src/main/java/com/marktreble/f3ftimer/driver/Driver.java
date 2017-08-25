@@ -115,18 +115,11 @@ public class Driver implements TextToSpeech.OnInitListener {
 		// Check timeout status of the round on start
 		mHandler.post(checkTimeout);
 
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_started");
-        mContext.sendBroadcast(i);
-
 	}
 
 
 	public void destroy(){
         Log.i(TAG, "Destroyed");
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
-        mContext.sendBroadcast(i);
 
         try {
   		 mContext.unregisterReceiver(onBroadcast);
@@ -259,11 +252,36 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 			}
 		}
-    };
-    
+	    };
+
+	private void callbackToUI(String cmd, HashMap<String, String> params){
+		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+		if (params != null) {
+			for (String key : params.keySet()){
+				i.putExtra(key, params.get(key));
+			}
+		}
+
+		i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
+		Log.d("CallBackToUI", cmd);
+		mContext.sendBroadcast(i);
+	}
+
     /*
      * Binding for Service->UI Communication
      */
+
+    public void driverConnected(String icon){
+		HashMap<String, String> params = new HashMap<>();
+		params.put("icon", icon);
+		callbackToUI("driver_started", params);
+	}
+
+	public void driverDisconnected(String icon){
+		HashMap<String, String> params = new HashMap<>();
+		params.put("icon", icon);
+		callbackToUI("driver_stopped", params);
+	}
 
 	public void startPilot(Bundle extras){
         
@@ -496,7 +514,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 		// Get this from ResultsRoundInProgressActivity::getNamesArray
 		// TODO
-		String str_round_results = "[{\"name\":\"Mark Treble\",\"time\":\"33.23\"}]";
+		String str_round_results = "Results after 2 rounds: 1st ";
 
 		Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
 		intent2.putExtra("com.marktreble.f3ftimer.external_results_callback", "run_finalised");

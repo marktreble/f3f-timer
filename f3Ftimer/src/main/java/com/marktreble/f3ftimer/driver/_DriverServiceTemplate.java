@@ -47,6 +47,10 @@ public class _DriverServiceTemplate extends Service implements DriverInterface {
 	}
 	
 	// Driver Interface implementations
+	public void driverConnected(){
+	}
+	public void driverDisconnected(){
+	}
 	public void sendLaunch(){
 	}
 

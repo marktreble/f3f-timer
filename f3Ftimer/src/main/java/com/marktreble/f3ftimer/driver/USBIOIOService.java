@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.HashMap;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -55,7 +56,10 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 	static final String TT_RESEND_TIME = "T";
 
 	
-	static final String ENCODING = "US_ASCII";
+	static final String ENCODING = "US-ASCII";
+
+	static final String ICN_CONN = "on_usb";
+	static final String ICN_DISCONN = "off_usb";
 
 	private Uart uart;
 	private InputStream data_in;
@@ -87,6 +91,12 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		// Call this natively in case driver has gone!
+		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+		i.putExtra("icon", ICN_DISCONN);
+		i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+		sendBroadcast(i);
+
 		if (mBoardConnected){
 			try {
 				data_in.close();
@@ -111,7 +121,12 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
         if (inputSource.equals(context.getString(R.string.USB_IOIO))){
-            Intent serviceIntent = new Intent(context, USBIOIOService.class);
+			Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+			i.putExtra("icon", ICN_DISCONN);
+			i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+			context.sendBroadcast(i);
+
+			Intent serviceIntent = new Intent(context, USBIOIOService.class);
             serviceIntent.putExtras(params);
             serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
             context.startService(serviceIntent);
@@ -138,10 +153,10 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 
                 if (data.equals("get_connection_status")) {
                     if (mBoardConnected){
-                        callbackToUI("driver_started");
+                        driverConnected();
                     
                     } else {
-                        callbackToUI("driver_stopped");
+                        driverDisconnected();
                     }
                 }
             }
@@ -216,7 +231,9 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 				
 				mBoardConnected = true;
                 mDriver.start(mIntent);
-			}
+                driverConnected();
+
+            }
 
             @Override
             public void disconnected(){
@@ -327,6 +344,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 					}
 				} catch (IOException e1) {
 					mBoardConnected = false;
+					driverDisconnected();
 					data_out = null;
                     mDriver.destroy();
 				}
@@ -335,6 +353,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 					Thread.sleep(10);
 				} catch (InterruptedException e) {
 					mBoardConnected = false;
+					driverDisconnected();
 					data_out = null;
                     mDriver.destroy();
 				}
@@ -343,12 +362,6 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 		};
 		return mLooper;
 	}
-	
-    private void callbackToUI(String cmd){
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
-        this.sendBroadcast(i);
-    }
     
 	// Output - Send commands to hardware
 	private void sendCmd(String cmd){
@@ -374,6 +387,14 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 	}
 
 	// Driver Interface implementations
+	public void driverConnected(){
+		mDriver.driverConnected(ICN_CONN);
+	}
+
+	public void driverDisconnected(){
+		mDriver.driverDisconnected(ICN_DISCONN);
+	}
+
 	public void sendLaunch(){
 		this.sendCmd(TT_LAUNCH);
 		mTimerStatus = 0;

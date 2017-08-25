@@ -12,6 +12,8 @@ import android.util.Log;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
+import java.util.HashMap;
+
 public class SoftBuzzerService extends Service implements DriverInterface, Thread.UncaughtExceptionHandler {
 
     private static final String TAG = "SoftBuzzerService";
@@ -21,7 +23,10 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     public int mTimerStatus = 0;
 
     public boolean mBoardConnected = false;
-	
+
+    static final String ICN_CONN = "on";
+    static final String ICN_DISCONN = "off";
+
 	/*
 	 * General life-cycle function overrides
 	 */
@@ -54,12 +59,17 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
             e.printStackTrace();
         }
         mBoardConnected = false;
-        callbackToUI("driver_stopped");
+        driverDisconnected();
 
     }
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
         if (inputSource.equals(context.getString(R.string.Demo))){
+            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+            i.putExtra("icon", ICN_DISCONN);
+            i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+            context.sendBroadcast(i);
+
             Intent serviceIntent = new Intent(context, SoftBuzzerService.class);
             serviceIntent.putExtras(params);
             serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
@@ -87,10 +97,9 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
                 if (data.equals("get_connection_status")) {
                     if (mBoardConnected){
-                        callbackToUI("driver_started");
-
+                        driverConnected();
                     } else {
-                        callbackToUI("driver_stopped");
+                        driverDisconnected();
                     }
                 }
             }
@@ -100,10 +109,12 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 	@Override
     public int onStartCommand(Intent intent, int flags, int startId){
     	super.onStartCommand(intent, flags, startId);
-    	
-    	mDriver.start(intent);
+        driverDisconnected();
+
         mBoardConnected = true;
-        
+        mDriver.start(intent);
+        driverConnected();
+
     	return (START_STICKY);    	
     }
        	
@@ -130,15 +141,16 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         
     }
 
-    private void callbackToUI(String cmd){
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
-        Log.d("CallBackToUI", cmd);
-        this.sendBroadcast(i);
-    }
-	
 	// Driver Interface implementations
-	public void sendLaunch(){
+    public void driverConnected(){
+        mDriver.driverConnected(ICN_CONN);
+    }
+
+    public void driverDisconnected(){
+        mDriver.driverDisconnected(ICN_DISCONN);
+    }
+
+    public void sendLaunch(){
         mTimerStatus = 0;
 	}
 

@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.hardware.usb.UsbManager;
 import android.os.SystemClock;
 import android.util.Log;
+import android.util.Xml;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -25,6 +26,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -50,9 +52,12 @@ public class USBOtherService extends Service implements DriverInterface {
     static final String TT_RESEND_TIME = "T";
 
 
-    static final String ENCODING = "US_ASCII";
-    
-	private Driver mDriver;
+    static final String ENCODING = "US-ASCII";
+
+    static final String ICN_CONN = "on_usb";
+    static final String ICN_DISCONN = "off_usb";
+
+    private Driver mDriver;
     private String mBuffer = "";
     public int mTimerStatus = 0;
     
@@ -107,6 +112,11 @@ public class USBOtherService extends Service implements DriverInterface {
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
         if (inputSource.equals(context.getString(R.string.USB_OTHER))){
+            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+            i.putExtra("icon", ICN_DISCONN);
+            i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+            context.sendBroadcast(i);
+
             Intent serviceIntent = new Intent(context, USBOtherService.class);
             serviceIntent.putExtras(params);
             serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
@@ -134,10 +144,10 @@ public class USBOtherService extends Service implements DriverInterface {
 
                 if (data.equals("get_connection_status")) {
                     if (mBoardConnected){
-                        callbackToUI("driver_started");
+                        driverConnected();
 
                     } else {
-                        callbackToUI("driver_stopped");
+                        driverDisconnected();
                     }
                 }
             }
@@ -147,6 +157,8 @@ public class USBOtherService extends Service implements DriverInterface {
 	@Override
     public int onStartCommand(final Intent intent, int flags, int startId){
     	super.onStartCommand(intent, flags, startId);
+
+
 
         Log.i(TAG, "onStartCommand");
 
@@ -218,7 +230,7 @@ public class USBOtherService extends Service implements DriverInterface {
 
         new Handler().postDelayed(make_connection, 100);
 
-    	return (START_STICKY);    	
+    	return (START_STICKY);
     }
     
     public boolean connect(Intent intent){
@@ -294,6 +306,7 @@ public class USBOtherService extends Service implements DriverInterface {
             //if (mSerialIoManager == null) return false;
             mBoardConnected = true;
             mDriver.start(intent);
+            driverConnected();
             return true;
         }
         return false;
@@ -308,114 +321,107 @@ public class USBOtherService extends Service implements DriverInterface {
 	}
 	
 	// Input - Listener Loop
-    private final SerialInputOutputManager.Listener mListener =
-            new SerialInputOutputManager.Listener() {
+    private final SerialInputOutputManager.Listener mListener = new SerialInputOutputManager.Listener() {
 
-                @Override
-                public void onRunError(Exception e) {
-                    Log.d(TAG, "Runner stopped.");
-                    // Disconnection ??
-                    mBoardConnected = false;
-                    mDriver.destroy();
+        @Override
+        public void onRunError(Exception e) {
+            Log.d(TAG, "Runner stopped.");
+            // Disconnection ??
+            mBoardConnected = false;
+            mDriver.destroy();
+        }
+
+        @Override
+        public void onNewData(final byte[] data) {
+
+            char[] charArray = (new String(data, 0,data.length)).toCharArray();
+
+            StringBuilder sb = new StringBuilder(charArray.length);
+            StringBuilder hexString = new StringBuilder();
+            for (char c : charArray) {
+                if (c < 0) throw new IllegalArgumentException();
+                sb.append(Character.toString(c));
+
+                String hex = Integer.toHexString(0xFF & c);
+                if (hex.length() == 1) {
+                    // could use a for loop, but we're only dealing with a single byte
+                    hexString.append('0');
                 }
+                hexString.append(hex);
+            }
 
-                @Override
-                public void onNewData(final byte[] data) {
+            String str_in = mBuffer+sb.toString().trim();
+            int len = str_in.length();
+            if (len>0){
+                String lastchar = hexString.substring(hexString.length()-2, hexString.length());
+                if (lastchar.equals("0d") || lastchar.equals("0a")){
+                    // Clear the buffer
+                    mBuffer = "";
 
-                    char[] charArray = (new String(data, 0,data.length)).toCharArray();
+                    // Get code (first char)
+                    String code = "";
+                    code=str_in.substring(0, 1);
 
-                    StringBuilder sb = new StringBuilder(charArray.length);
-                    StringBuilder hexString = new StringBuilder();
-                    for (char c : charArray) {
-                        if (c < 0) throw new IllegalArgumentException();
-                        sb.append(Character.toString(c));
+                    // We have data/command from the timer, pass this on to the server
+                    if (code.equals(FT_START_BUTTON)){
+                        mDriver.startPressed();
+                    } else
 
-                        String hex = Integer.toHexString(0xFF & c);
-                        if (hex.length() == 1) {
-                            // could use a for loop, but we're only dealing with a single byte
-                            hexString.append('0');
+                    if (code.equals(FT_WIND_LEGAL)){
+                        mDriver.windLegal();
+                    } else
+
+                    if (code.equals(FT_WIND_ILLEGAL)){
+                        mDriver.windIllegal();
+                    } else
+
+                    if (code.equals(FT_READY)){
+                        mTimerStatus = 0;
+                        mDriver.ready();
+                    } else
+
+                    if (code.equals(FT_LEG_COMPLETE)){
+                        switch (mTimerStatus){
+                            case 0:
+                                mDriver.offCourse();
+                                break;
+                            case 1:
+                                mDriver.onCourse();
+                                break;
+                            default:
+                                mDriver.legComplete();
+                                break;
+
                         }
-                        hexString.append(hex);
-                    }
+                        mTimerStatus++;
+                    } else
 
-                    String str_in = mBuffer+sb.toString().trim();
-                    int len = str_in.length();
-                    if (len>0){
-                        String lastchar = hexString.substring(hexString.length()-2, hexString.length());
-                        if (lastchar.equals("0d") || lastchar.equals("0a")){
-                            // Clear the buffer
-                            mBuffer = "";
-
-                            // Get code (first char)
-                            String code = "";
-                            code=str_in.substring(0, 1);
-
-                            // We have data/command from the timer, pass this on to the server
-                            if (code.equals(FT_START_BUTTON)){
-                                mDriver.startPressed();
-                            } else
-
-                            if (code.equals(FT_WIND_LEGAL)){
-                                mDriver.windLegal();
-                            } else
-
-                            if (code.equals(FT_WIND_ILLEGAL)){
-                                mDriver.windIllegal();
-                            } else
-
-                            if (code.equals(FT_READY)){
-                                mTimerStatus = 0;
-                                mDriver.ready();
-                            } else
-
-                            if (code.equals(FT_LEG_COMPLETE)){
-                                switch (mTimerStatus){
-                                    case 0:
-                                        mDriver.offCourse();
-                                        break;
-                                    case 1:
-                                        mDriver.onCourse();
-                                        break;
-                                    default:
-                                        mDriver.legComplete();
-                                        break;
-
-                                }
-                                mTimerStatus++;
-                            } else
-
-                            if (code.equals(FT_RACE_COMPLETE)){
-                                // Make sure we get 9 bytes before proceeding
-                                if (str_in.length()<9){
-                                    mBuffer = str_in;
-                                } else {
-                                    // Any more than 8 chars should be passed on to the next loop
-                                    mBuffer = str_in.substring(8);
-                                    // Don't take more than 8 or parseFloat will cause an exception + reflight!
-                                    str_in = str_in.substring(0, 8);
-                                    mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim());
-                                    mDriver.runComplete();
-                                    // Reset these here, as sometimes READY is not received!?
-                                    mTimerStatus = 0;
-                                    mDriver.ready();
-                                    mBuffer = "";
-                                }
-                            }
-
-                        } else {
-                            // Save the characters to the buffer for the next cycle
+                    if (code.equals(FT_RACE_COMPLETE)){
+                        // Make sure we get 9 bytes before proceeding
+                        if (str_in.length()<9){
                             mBuffer = str_in;
+                        } else {
+                            // Any more than 8 chars should be passed on to the next loop
+                            mBuffer = str_in.substring(8);
+                            // Don't take more than 8 or parseFloat will cause an exception + reflight!
+                            str_in = str_in.substring(0, 8);
+                            mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim());
+                            mDriver.runComplete();
+                            // Reset these here, as sometimes READY is not received!?
+                            mTimerStatus = 0;
+                            mDriver.ready();
+                            mBuffer = "";
                         }
                     }
+
+                } else {
+                    // Save the characters to the buffer for the next cycle
+                    mBuffer = str_in;
                 }
-            };
+            }
+        }
+    };
 
-
-    private void callbackToUI(String cmd){
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
-        this.sendBroadcast(i);
-    }
     
     // Output - Send commands to hardware
 	private void sendCmd(String cmd){
@@ -441,6 +447,14 @@ public class USBOtherService extends Service implements DriverInterface {
     }
 	
 	// Driver Interface implementations
+    public void driverConnected(){
+        mDriver.driverConnected(ICN_CONN);
+    }
+
+    public void driverDisconnected(){
+        mDriver.driverDisconnected(ICN_DISCONN);
+    }
+
     public void sendLaunch(){
         this.sendCmd(TT_LAUNCH);
         mTimerStatus = 0;

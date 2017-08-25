@@ -4,6 +4,7 @@
     <string name="app_name">F3Ftimer</string>
     <string name="app_uuid" translatable="false">9ab9ee24-331c-44d9-ae73-23e0befc9e57</string>
     <string name="external_display_uuid" translatable="false">cbedac48-833c-4f3e-b69a-834e9e61d0c9</string>
+    <string name="HC05_uuid" translatable="false">"00001101-0000-1000-8000-00805F9B34FB"</string>
     <string name="version">Version</string>
     <string name="credits">An open source project by Mark Treble</string>
     <string name="repositary" translatable="false" >https://www.github.com/marktreble/f3f-timer</string>
