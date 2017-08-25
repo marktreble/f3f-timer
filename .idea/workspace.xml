@@ -53,11 +53,6 @@
     <list default="true" id="0fdffe9f-1db8-4115-a888-13fa91fc6576" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsDisplayService.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsDisplayService.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/preferences.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/preferences.xml" />
     </list>
     <ignored path="f3f-timer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -111,7 +106,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BluetoothHC05Service.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="BluetoothHC05Service.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="251">
@@ -137,13 +132,14 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="SettingsFragment.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="SettingsFragment.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-522">
-              <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
+            <state relative-caret-position="90">
+              <caret line="138" column="43" selection-start-line="138" selection-start-column="43" selection-end-line="138" selection-end-column="43" />
               <folding>
-                <element signature="e#4745#4780#0" expanded="true" />
+                <element signature="e#4787#4822#0" expanded="true" />
+                <element signature="e#5267#5291#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -5184,9 +5180,9 @@
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsDisplayService.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/preferences.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java" />
       </list>
     </option>
   </component>
@@ -6072,13 +6068,6 @@
       <option name="presentableId" value="Default" />
       <updated>1440510397826</updated>
     </task>
-    <task id="LOCAL-00003" summary="Bug Fixed (non english float parsing in results manager)">
-      <created>1442521348689</created>
-      <option name="number" value="00003" />
-      <option name="presentableId" value="LOCAL-00003" />
-      <option name="project" value="LOCAL" />
-      <updated>1442521348689</updated>
-    </task>
     <task id="LOCAL-00004" summary="Updated README">
       <created>1442521617375</created>
       <option name="number" value="00004" />
@@ -6415,7 +6404,14 @@
       <option name="project" value="LOCAL" />
       <updated>1503668171221</updated>
     </task>
-    <option name="localTasksCounter" value="52" />
+    <task id="LOCAL-00052" summary="Added preference to choose device for hc-05 input source">
+      <created>1503674336585</created>
+      <option name="number" value="00052" />
+      <option name="presentableId" value="LOCAL-00052" />
+      <option name="project" value="LOCAL" />
+      <updated>1503674336585</updated>
+    </task>
+    <option name="localTasksCounter" value="53" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -6510,7 +6506,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Changed next round to finish round" />
     <MESSAGE value="Added auto gen files" />
     <MESSAGE value="Added minimise feature to race dialog window" />
     <MESSAGE value="Tidy up on some code and dependency versions" />
@@ -6535,7 +6530,8 @@
     <MESSAGE value="Added menu item to invoke the round timeout dialog on demand" />
     <MESSAGE value="Fixed issue where round timeout was not starting after an aborted flight" />
     <MESSAGE value="Fixed issue where driver was being stopped on screen rotation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixed issue where driver was being stopped on screen rotation" />
+    <MESSAGE value="Added preference to choose device for hc-05 input source" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added preference to choose device for hc-05 input source" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -6931,16 +6927,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-522">
-          <caret line="58" column="0" selection-start-line="58" selection-start-column="0" selection-end-line="58" selection-end-column="0" />
-          <folding>
-            <element signature="e#4745#4780#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/SoftBuzzerService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-254">
@@ -6986,6 +6972,17 @@
         <state relative-caret-position="251">
           <caret line="184" column="43" selection-start-line="184" selection-start-column="43" selection-end-line="184" selection-end-column="43" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="138" column="43" selection-start-line="138" selection-start-column="43" selection-end-line="138" selection-end-column="43" />
+          <folding>
+            <element signature="e#4787#4822#0" expanded="true" />
+            <element signature="e#5267#5291#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

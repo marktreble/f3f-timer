@@ -125,8 +125,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
     private void setInputSourceActiveFields(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        if (sharedPref.getString("pref_input_src", "").equals(getString(R.string.BLUETOOTH_HC_05))){
-            // Hide baud rate etc.., and show device picker
+        String inputSource = sharedPref.getString("pref_input_src", "");
+        if (inputSource.equals(getString(R.string.BLUETOOTH_HC_05))){
+            // BT - Hide baud rate etc.., and show device picker
             findPreference("pref_usb_baudrate").setEnabled(false);
             findPreference("pref_usb_stopbits").setEnabled(false);
             findPreference("pref_usb_databits").setEnabled(false);
@@ -134,8 +135,16 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
             findPreference("pref_input_src_device").setEnabled(true);
 
+        } else if (inputSource.equals(getString(R.string.Demo))) {
+            // Demo mode - hide all options
+            findPreference("pref_usb_baudrate").setEnabled(false);
+            findPreference("pref_usb_stopbits").setEnabled(false);
+            findPreference("pref_usb_databits").setEnabled(false);
+            findPreference("pref_usb_parity").setEnabled(false);
+
+            findPreference("pref_input_src_device").setEnabled(false);
         } else {
-            // Hide device picker, show baud rate etc..
+            // USB - Hide device picker, show baud rate etc..
             findPreference("pref_usb_baudrate").setEnabled(true);
             findPreference("pref_usb_stopbits").setEnabled(true);
             findPreference("pref_usb_databits").setEnabled(true);
