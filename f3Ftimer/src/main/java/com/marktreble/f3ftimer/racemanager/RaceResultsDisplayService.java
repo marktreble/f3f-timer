@@ -416,7 +416,7 @@ public class RaceResultsDisplayService extends Service {
                         connectionLost();
                     } else {
                         last_time = time;
-                        String ping = String.format("{\"type\":\"ping\",\"time\":%d}", time);
+                        String ping = String.format("{\"type\":\"ping\",\"time\":%d}\n", time);
                         Log.d(TAG, ping);
                         write(ping.getBytes(Charset.forName(ENCODING)));
                         ping_sent = true;
@@ -514,7 +514,7 @@ public class RaceResultsDisplayService extends Service {
                     } catch (JSONException | NullPointerException e) {
                         e.printStackTrace();
                     }
-                    String str_json = json.toString();
+                    String str_json = json.toString() + "\n";
                     Log.d(TAG, str_json);
                     byte[] bytes = str_json.getBytes(Charset.forName(ENCODING));
 
