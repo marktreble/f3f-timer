@@ -65,6 +65,7 @@
         <item>Bluetooth</item>
         <item>From File</item>
         <item>From Web (f3ftimer api)</item>
+        <item>From Web (f3xvault api)</item>
     </string-array>
 
     <string-array name="export_destinations" translatable="false">

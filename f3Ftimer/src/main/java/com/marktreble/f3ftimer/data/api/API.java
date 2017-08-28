@@ -42,6 +42,10 @@ public class API {
     public static final String API_IMPORT_RACE = "/import_race";
     public static final String API_UPLOAD = "/upload_race";
 
+    public static final String F3XV_IMPORT = "searchEvents";
+    public static final String F3XV_IMPORT_RACE = "getEventInfo";
+    public static final String F3XV_UPLOAD = "";
+
     public class httpmethod {
         public static final int GET = 1;
         public static final int POST = 2;
@@ -57,6 +61,8 @@ public class API {
     public String request;
 
     private apiCall api;
+    public boolean mAppendEndpoint = true;
+    public boolean mIsJSON = true;
 
     public void makeAPICall(Context context, String base, int method, Map<String, String> params){
         api = new apiCall(context, base, method);
@@ -89,11 +95,14 @@ public class API {
 
             String str_response = "";
 
+            String url = base;
+            if (mAppendEndpoint) url+= endpoint;
+
             if (mMethod == API.httpmethod.GET) {
-                str_response = get(base + endpoint, nvp);
+                str_response = get(url, nvp);
             }
             if (mMethod == API.httpmethod.POST) {
-                str_response = post(base + endpoint, nvp);
+                str_response = post(url, nvp);
             }
             return str_response;
         }
@@ -184,29 +193,47 @@ public class API {
             if (this.isCancelled()) return;
 
             Log.i(TAG, "RESPONSE WAS: " + response);
-            JSONObject o = null;
 
-            try {
-                o = new JSONObject(response);
-            } catch (JSONException | NullPointerException e){
-                e.printStackTrace();
-            }
+            if (mIsJSON) {
+                JSONObject o = null;
 
-            if (o != null && o.has(STATUS_KEY)) {
-                String status = "";
                 try {
-                    status = o.getString(STATUS_KEY);
-
-                } catch (JSONException e) {
+                    o = new JSONObject(response);
+                } catch (JSONException | NullPointerException e) {
                     e.printStackTrace();
                 }
 
-                if (mCallback != null) {
-                    if (status.equals(STATUS_OK)) {
-                        mCallback.onAPISuccess(request, o);
-                    } else {
-                        mCallback.onAPIError(request, o);
+                if (o != null && o.has(STATUS_KEY)) {
+                    String status = "";
+                    try {
+                        status = o.getString(STATUS_KEY);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
+
+                    if (mCallback != null) {
+                        if (status.equals(STATUS_OK)) {
+                            mCallback.onAPISuccess(request, o);
+                        } else {
+                            mCallback.onAPIError(request, o);
+                        }
+                    }
+                    return;
+                }
+            } else {
+                String success = response.substring(0,1);
+
+                JSONObject o = new JSONObject();
+                try {
+                    o.put("data", response.substring(1).trim());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if (success.equals("1")){
+                    mCallback.onAPISuccess(request, o);
+                } else {
+                    mCallback.onAPIError(request, o);
                 }
                 return;
             }

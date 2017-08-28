@@ -237,6 +237,14 @@
         </activity>
 
         <activity
+            android:name=".exportimport.F3xvaultApiImportRace" android:theme="@style/Theme.Overlay">
+        </activity>
+
+        <activity
+            android:name=".dialog.F3xvaultAPILoginActivity" android:theme="@style/Theme.Overlay">
+        </activity>
+
+        <activity
             android:name=".exportimport.FileImportPilots" android:theme="@style/Theme.Overlay">
         </activity>
 
