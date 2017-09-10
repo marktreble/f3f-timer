@@ -8,7 +8,7 @@ import android.util.Log;
 public class RaceDatabase extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "races.db";
-	private static final int DATABASE_VERSION = 8;
+	private static final int DATABASE_VERSION = 9;
 				
 	private static final String RACE_TABLE_CREATE = "create table races " +
 			 "(id integer primary key," +
@@ -18,7 +18,8 @@ public class RaceDatabase extends SQLiteOpenHelper {
 			 " status integer," +
 			 " round integer," +
              " rounds_per_flight integer," +
-	  		 " start_number integer);";
+	  		 " start_number integer," +
+			 " race_id integer);";
 	
 	private static final String RACEPILOTS_TABLE_CREATE = "create table racepilots " +
 			 "(id integer primary key," +
@@ -100,6 +101,11 @@ public class RaceDatabase extends SQLiteOpenHelper {
 
 		if (newVersion>7 && oldVersion<=7){
 			sql = "alter table racegroups add start_pilot integer";
+			db.execSQL(sql);
+		}
+
+		if (newVersion>8 && oldVersion<=8){
+			sql = "alter table races add race_id integer";
 			db.execSQL(sql);
 		}
 

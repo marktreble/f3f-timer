@@ -53,6 +53,7 @@ public class RaceData {
         values.put("round", r.round);
 		values.put("rounds_per_flight", r.rounds_per_flight);
 		values.put("start_number", r.start_number);
+		values.put("race_id", r.race_id);
 		return database.insert("races", null, values);
 	}
 
@@ -154,6 +155,7 @@ public class RaceData {
         r.round = cursor.getInt(5);
         r.rounds_per_flight = (cursor.getInt(6)>0)?cursor.getInt(6):1;
 		r.start_number = cursor.getInt(7);
+		r.race_id = cursor.getInt(8);
 		return r;
 	}
     

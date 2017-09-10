@@ -207,6 +207,7 @@ public class F3xvaultApiImportRace extends BaseImport
                                 race.put("round", "1");
                                 race.put("rounds_per_flight", "1");
                                 race.put("start_number", "1");
+                                race.put("race_id", fields[0]);
                                 break;
                             case 1:
                                 // Pilot headers - ignore
@@ -220,7 +221,7 @@ public class F3xvaultApiImportRace extends BaseImport
 
                                 }
                                 pilot = new JSONObject();
-                                pilot.put("pilot_id", "1");
+                                pilot.put("pilot_id", fields[0]);
                                 pilot.put("status", "1");
                                 pilot.put("firstname", fields[2]);
                                 pilot.put("lastname", fields[3]);
