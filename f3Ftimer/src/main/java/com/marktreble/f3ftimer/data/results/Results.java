@@ -363,6 +363,14 @@ public class Results {
                     return p1.position.compareTo(p2.position);
                 }
             });
+        } else {
+            // Otherwise by the original flying order
+            Collections.sort(mArrPilots, new Comparator<Pilot>() {
+                @Override
+                public int compare(Pilot p1, Pilot p2) {
+                    return p1.id<p2.id ? -1 : p1.id == p2.id ? 0 : 1;
+                }
+            });
         }
 
         mArrNames = new ArrayList<>();
