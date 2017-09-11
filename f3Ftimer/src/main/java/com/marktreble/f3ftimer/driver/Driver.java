@@ -14,6 +14,7 @@ import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.languages.Languages;
 
@@ -33,6 +34,8 @@ import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class Driver implements TextToSpeech.OnInitListener {
 
@@ -516,10 +519,22 @@ public class Driver implements TextToSpeech.OnInitListener {
 		Log.d(TAG, "POST BACK TO UI");
 
 		// Post to the Race Results Display Service
+		Results r = new Results();
+		r.getOrderedRoundInProgress(mContext, mRid);
 
-		// Get this from ResultsRoundInProgressActivity::getNamesArray
-		// TODO
-		String str_round_results = "Results after 2 rounds: 1st ";
+		String topthree = "";
+		String[] position = {"1st", "2nd", "3rd"};
+
+		for (int count=0; count<3; count++) {
+			if (r.mArrNames.size() > count) {
+				Pilot p = r.mArrPilots.get(count);
+				topthree+= String.format("%s %s %.2f   ", position[count], StringUtils.stripAccents(r.mArrNames.get(count)), p.time);
+			}
+		}
+
+		String str_round_results = String.format("Round %d positions: %s", mRnd, topthree);
+
+		//str_round_results = "Testing...";
 
 		Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
 		intent2.putExtra("com.marktreble.f3ftimer.external_results_callback", "run_finalised");
@@ -531,7 +546,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 
 		mContext.sendBroadcast(intent2);
-		Log.d(TAG, "POST BACK TO EXTERNAL RESULTS");
+		Log.d(TAG, "POST BACK TO EXTERNAL RESULTS: "+str_round_results);
 
 	}
 

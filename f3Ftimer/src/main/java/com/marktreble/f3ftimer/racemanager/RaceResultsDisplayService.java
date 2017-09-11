@@ -20,6 +20,7 @@ import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.dialog.RaceTimerActivity;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,6 +64,8 @@ public class RaceResultsDisplayService extends Service {
     private Context mContext;
 
     static final String ENCODING = "US-ASCII";
+
+    static final long PING_INTERVAL = 10000000000L;
 
     public static void startRDService(Context context, String prefExternalDisplay){
         if (prefExternalDisplay == null || prefExternalDisplay.equals("")) return;
@@ -320,12 +323,14 @@ public class RaceResultsDisplayService extends Service {
             try {
                 ParcelUuid uuids[] = this.mmDevice.getUuids();
 
-                for (ParcelUuid test : uuids){
-                    if (test.equals(new ParcelUuid(hc05_uuid))){
-                        tmp = mmDevice.createRfcommSocketToServiceRecord(hc05_uuid);
-                    }
-                    if (test.equals(new ParcelUuid(app_uuid))){
-                        tmp = mmDevice.createRfcommSocketToServiceRecord(app_uuid);
+                if (uuids.length>0) {
+                    for (ParcelUuid test : uuids) {
+                        if (test.equals(new ParcelUuid(hc05_uuid))) {
+                            tmp = mmDevice.createRfcommSocketToServiceRecord(hc05_uuid);
+                        }
+                        if (test.equals(new ParcelUuid(app_uuid))) {
+                            tmp = mmDevice.createRfcommSocketToServiceRecord(app_uuid);
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -410,7 +415,7 @@ public class RaceResultsDisplayService extends Service {
 
 
                 long time = System.nanoTime();
-                if (time-last_time > 10000000000L){
+                if (time-last_time > PING_INTERVAL){
                     if (ping_sent) {
                         Log.d(TAG, "PING NOT RETURNED");
                         connectionLost();
@@ -448,6 +453,8 @@ public class RaceResultsDisplayService extends Service {
         public void write(byte[] buffer) {
             try {
                 mmOutStream.write(buffer);
+                mmOutStream.flush();
+                Log.d(TAG, "Chars written to output: "+new String(buffer, ENCODING));
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
             }
@@ -461,6 +468,11 @@ public class RaceResultsDisplayService extends Service {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        public void resetPing(){
+            last_time = System.nanoTime();
+            ping_sent = false;
         }
 
     }
@@ -506,7 +518,7 @@ public class RaceResultsDisplayService extends Service {
                     JSONObject json = new JSONObject();
                     try {
                         json.put("type", "data");
-                        json.put("name", name);
+                        json.put("name", StringUtils.stripAccents(name));
                         json.put("nationality", nationality);
                         json.put("time", time);
                         json.put("round", round);
@@ -517,6 +529,9 @@ public class RaceResultsDisplayService extends Service {
                     String str_json = json.toString() + "\n";
                     Log.d(TAG, str_json);
                     byte[] bytes = str_json.getBytes(Charset.forName(ENCODING));
+
+                    // Reset ping timer to prevent ping being sent
+                    //mConnectedThread.resetPing();
 
                     mConnectedThread.write(bytes);
 

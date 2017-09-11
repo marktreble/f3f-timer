@@ -60,13 +60,13 @@ public class RaceResultsService extends Service {
     }
     
     public int onStartCommand(Intent intent, int flags, int startId){
-		if (intent == null) return 0;
+		if (intent == null) return START_REDELIVER_INTENT;
     	if (intent.hasExtra("com.marktreble.f3ftimer.race_id")){
 
 			Bundle extras = intent.getExtras();
 			mRid = extras.getInt("com.marktreble.f3ftimer.race_id");
     	} else {
-    		return 0;
+    		return START_REDELIVER_INTENT;
     	}
     	
     	mServerSocket = null;
@@ -77,7 +77,7 @@ public class RaceResultsService extends Service {
     	catch (IOException e) {
 
     	    System.out.println("Could not listen on port: 8080 " + e.getMessage() + "::" + e.getCause());
-    	    return 0;
+    	    return START_REDELIVER_INTENT;
     	}
     	
     	if (mServerSocket!=null){

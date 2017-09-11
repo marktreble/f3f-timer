@@ -77,6 +77,73 @@ public class Results {
         calcScores(race, allPilots);
     }
 
+    /* getOrderedRoundInProgress(context, race ID)
+     *
+     * Populates: mArrNames, mArrPilots, mArrNumbers, mArrBibNumbers, mArrGroups, mFirstInGroup & mGroupScoring
+     *
+     */
+    public void getOrderedRoundInProgress(Context context, int mRid){
+
+        // Get Race Information
+        RaceData datasource = new RaceData(context);
+        datasource.open();
+        Race race = datasource.getRace(mRid);
+
+        // Number of Groups
+        mGroupScoring = datasource.getGroups(mRid, race.round);
+
+        datasource.close();
+
+        RacePilotData datasource2 = new RacePilotData(context);
+        datasource2.open();
+        ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, race.round, race.offset, race.start_number);
+
+
+        datasource2.close();
+
+        // Initialise the output arrays
+        mArrNames = new ArrayList<>();
+        mArrPilots = new ArrayList<>();
+        mArrNumbers = new ArrayList<>();
+        mArrBibNumbers = new ArrayList<>();
+        mArrGroups = new ArrayList<>();
+        mFirstInGroup = new ArrayList<>();
+
+        // Just calculate the scores. Results are shown in flying order
+        calcScores(race, allPilots);
+
+        // Now sort in order of points
+        Collections.sort(mArrPilots, new Comparator<Pilot>() {
+            @Override
+            public int compare(Pilot p1, Pilot p2) {
+                return (p1.points < p2.points)? 1 : ((p1.points > p2.points) ? -1 : 0);
+            }
+        });
+
+        // Reinitialise
+        mArrNames = new ArrayList<>();
+        mArrNumbers = new ArrayList<>();
+
+        int pos=1;
+        int c=1;
+        float previousscore = 1000.0f;
+        for (Pilot p : mArrPilots){
+            if (p.points>0) {
+                mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
+
+                // Check for tied scores - use the same position qualifier
+                if (p.points < previousscore)
+                    pos = c;
+                previousscore = p.points;
+                p.position = pos;
+                mArrNumbers.add(String.format("%d", p.position));
+                c++;
+            }
+        }
+
+    }
+
+
     /* getResultsForCompletedRound(context, race ID, round number)
      *
      * Populates: mArrNames, mArrPilots, mArrNumbers
