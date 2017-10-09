@@ -117,6 +117,8 @@ public class RaceResultsDisplayService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Onstart Command");
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (intent == null) return START_NOT_STICKY;
+
         String chosenDevice = intent.getStringExtra(BT_DEVICE);
         if (mBluetoothAdapter != null && !chosenDevice.equals("")) {
             Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -451,12 +453,13 @@ public class RaceResultsDisplayService extends Service {
 
 
         public void write(byte[] buffer) {
+
             try {
                 mmOutStream.write(buffer);
                 mmOutStream.flush();
                 Log.d(TAG, "Chars written to output: "+new String(buffer, ENCODING));
             } catch (IOException e) {
-                Log.e(TAG, "Exception during write", e);
+                Log.d(TAG, "Exception during write", e);
             }
         }
 
