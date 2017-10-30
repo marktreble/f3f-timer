@@ -48,7 +48,10 @@ public class ResultsActivity extends ListActivity {
         mContext = this;
 
 		setContentView(R.layout.results_manager);
-	    
+
+        mArrNames = new ArrayList<>();
+        mArrIds = new ArrayList<>();
+
 	    this.getNamesArray();   	    
    	   	mArrAdapter = new ArrayAdapter<>(this, R.layout.listrow , mArrNames);
         setListAdapter(mArrAdapter);        
@@ -60,6 +63,14 @@ public class ResultsActivity extends ListActivity {
 	    homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);  
 	    startActivity(homeIntent); 
 	}
+
+	@Override
+	public void onResume(){
+        super.onResume();
+
+        this.getNamesArray();
+        mArrAdapter.notifyDataSetChanged();
+    }
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
@@ -76,8 +87,9 @@ public class ResultsActivity extends ListActivity {
 		ArrayList<Race> allRaces = datasource.getAllRaces();
 		datasource.close();
 		
-		mArrNames = new ArrayList<>();
-		mArrIds = new ArrayList<>();
+        mArrNames.removeAll(mArrNames);
+        mArrIds.removeAll(mArrIds);
+
 		
 		for (Race r: allRaces){
 			mArrNames.add(String.format("%s", r.name));

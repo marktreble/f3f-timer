@@ -260,9 +260,13 @@ public class SpreadsheetExport {
         File base = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         base = new File(base, "F3F");
         base.mkdirs();
-        File file = new File(base.getAbsolutePath() + String.format("/%s", name));
+        File file = new File(base.getAbsolutePath() + String.format("/%s", this.sanitise(name)));
 
         return file;
+    }
+
+    private String sanitise(String name){
+        return name.replaceAll("[^a-zA-Z0-9]", "-");
     }
 
 }
