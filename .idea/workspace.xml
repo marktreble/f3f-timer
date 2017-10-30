@@ -50,14 +50,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="0fdffe9f-1db8-4115-a888-13fa91fc6576" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" afterPath="$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/SpreadsheetExport.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/SpreadsheetExport.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" afterPath="$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" afterPath="$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/iOIOLibBT/iOIOLibBT.iml" afterPath="$PROJECT_DIR$/iOIOLibBT/iOIOLibBT.iml" />
     </list>
     <ignored path="f3f-timer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -126,30 +122,12 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="RaceActivity.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="RaceActivity.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4032">
+            <state relative-caret-position="385">
               <caret line="279" column="0" selection-start-line="279" selection-start-column="0" selection-end-line="279" selection-end-column="0" />
               <folding>
-                <element signature="e#0#53474#0" expanded="false" />
-                <element signature="imports" expanded="false" />
-                <element signature="e#6606#6607#0" expanded="false" />
-                <element signature="e#6660#6661#0" expanded="false" />
-                <element signature="e#13694#13695#0" expanded="false" />
-                <element signature="e#13722#13723#0" expanded="false" />
-                <element signature="e#16222#16223#0" expanded="false" />
-                <element signature="e#16281#16282#0" expanded="false" />
-                <element signature="e#16979#16980#0" expanded="false" />
-                <element signature="e#17058#17059#0" expanded="false" />
-                <element signature="e#18535#18536#0" expanded="false" />
-                <element signature="e#18606#18607#0" expanded="false" />
-                <element signature="e#47804#47805#0" expanded="false" />
-                <element signature="e#47880#47881#0" expanded="false" />
-                <element signature="e#50043#50044#0" expanded="false" />
-                <element signature="e#50125#50126#0" expanded="false" />
-                <element signature="e#50288#50289#0" expanded="false" />
-                <element signature="e#50335#50336#0" expanded="false" />
                 <marker date="1507589586000" expanded="true" signature="53457:53466" ph="{...}" />
               </folding>
             </state>
@@ -159,20 +137,40 @@
       <file leaf-file-name="SpreadsheetExport.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/SpreadsheetExport.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="440">
-              <caret line="268" column="49" selection-start-line="268" selection-start-column="49" selection-end-line="268" selection-end-column="49" />
+            <state relative-caret-position="250">
+              <caret line="270" column="0" selection-start-line="270" selection-start-column="0" selection-end-line="270" selection-end-column="0" />
               <folding>
                 <element signature="e#10917#10918#0" expanded="true" />
-                <element signature="e#10976#10977#0" expanded="true" />
+                <element signature="e#10979#10980#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ResultsActivity.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="build.gradle" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/build.gradle">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="558">
+              <caret line="31" column="36" selection-start-line="31" selection-start-column="36" selection-end-line="31" selection-end-column="36" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ResultsActivity.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
+            <state relative-caret-position="468">
               <caret line="90" column="35" selection-start-line="90" selection-start-column="35" selection-end-line="90" selection-end-column="35" />
               <folding />
             </state>
@@ -5174,10 +5172,10 @@
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/results/Results.java" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsDisplayService.java" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/SpreadsheetExport.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/SpreadsheetExport.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" />
       </list>
     </option>
   </component>
@@ -5189,8 +5187,8 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="233" />
-    <option name="y" value="23" />
+    <option name="x" value="276" />
+    <option name="y" value="75" />
     <option name="width" value="1526" />
     <option name="height" value="1042" />
   </component>
@@ -5288,6 +5286,20 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="resultsmanager" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="f3f-timer" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="f3Ftimer" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="manifests" />
+              <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidManifestsGroupNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -5755,13 +5767,6 @@
       <option name="presentableId" value="Default" />
       <updated>1440510397826</updated>
     </task>
-    <task id="LOCAL-00012" summary="Updated APK">
-      <created>1449133911197</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1449133911197</updated>
-    </task>
     <task id="LOCAL-00013" summary="Updated APK">
       <created>1449133925502</created>
       <option name="number" value="00013" />
@@ -6098,11 +6103,18 @@
       <option name="project" value="LOCAL" />
       <updated>1505141659696</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="Rewrite non alphanumeric chars in filename">
+      <created>1509359842193</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1509359842194</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="233" y="23" width="1526" height="1042" extended-state="0" />
+    <frame x="276" y="75" width="1526" height="1042" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -6110,7 +6122,7 @@
       <window_info id="Build Variants" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3336933" sideWeight="0.54514825" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.47084233" sideWeight="0.51280326" order="0" side_tool="true" content_ui="tabs" />
       <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4438445" sideWeight="0.60579515" order="16" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32711306" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25146198" sideWeight="0.49217004" order="3" side_tool="false" content_ui="tabs" />
@@ -6119,6 +6131,7 @@
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21495956" sideWeight="0.50526315" order="0" side_tool="true" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.47084233" sideWeight="0.48719677" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32996434" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22911051" sideWeight="0.4985294" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Android Model" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="true" content_ui="tabs" />
@@ -6140,7 +6153,6 @@
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29008746" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Android" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24759872" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Memory Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.47084233" sideWeight="0.4899329" order="13" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="14" side_tool="false" content_ui="tabs" />
@@ -6193,7 +6205,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Updated results logic" />
     <MESSAGE value="Added Import from F3f timer API" />
     <MESSAGE value="Fixed bug where adding a pilot did not update the pilot's list without refresh" />
     <MESSAGE value="Added try/catch to suppress errors in TTS shutdown" />
@@ -6218,7 +6229,8 @@
     <MESSAGE value="Bug Fixes" />
     <MESSAGE value="Fixed ordering of pilots in the csv output for spreadsheet" />
     <MESSAGE value="Updated readme with latest release" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated readme with latest release" />
+    <MESSAGE value="Rewrite non alphanumeric chars in filename" />
+    <option name="LAST_COMMIT_MESSAGE" value="Rewrite non alphanumeric chars in filename" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -6451,20 +6463,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/build.gradle">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="558">
-          <caret line="31" column="36" selection-start-line="31" selection-start-column="36" selection-end-line="31" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/api/API.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="396">
@@ -6528,17 +6526,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml">
-      <provider editor-type-id="android-manifest">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="54">
-          <caret line="3" column="27" selection-start-line="3" selection-start-column="27" selection-end-line="3" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsDisplayService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="835">
@@ -6555,34 +6542,6 @@
             <element signature="imports" expanded="false" />
             <element signature="e#749#750#0" expanded="false" />
             <element signature="e#767#768#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4032">
-          <caret line="279" column="0" selection-start-line="279" selection-start-column="0" selection-end-line="279" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#53474#0" expanded="false" />
-            <element signature="imports" expanded="false" />
-            <element signature="e#6606#6607#0" expanded="false" />
-            <element signature="e#6660#6661#0" expanded="false" />
-            <element signature="e#13694#13695#0" expanded="false" />
-            <element signature="e#13722#13723#0" expanded="false" />
-            <element signature="e#16222#16223#0" expanded="false" />
-            <element signature="e#16281#16282#0" expanded="false" />
-            <element signature="e#16979#16980#0" expanded="false" />
-            <element signature="e#17058#17059#0" expanded="false" />
-            <element signature="e#18535#18536#0" expanded="false" />
-            <element signature="e#18606#18607#0" expanded="false" />
-            <element signature="e#47804#47805#0" expanded="false" />
-            <element signature="e#47880#47881#0" expanded="false" />
-            <element signature="e#50043#50044#0" expanded="false" />
-            <element signature="e#50125#50126#0" expanded="false" />
-            <element signature="e#50288#50289#0" expanded="false" />
-            <element signature="e#50335#50336#0" expanded="false" />
-            <marker date="1507589586000" expanded="true" signature="53457:53466" ph="{...}" />
           </folding>
         </state>
       </provider>
@@ -6610,22 +6569,59 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="468">
+          <caret line="90" column="35" selection-start-line="90" selection-start-column="35" selection-end-line="90" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/SpreadsheetExport.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="440">
-          <caret line="268" column="49" selection-start-line="268" selection-start-column="49" selection-end-line="268" selection-end-column="49" />
+        <state relative-caret-position="250">
+          <caret line="270" column="0" selection-start-line="270" selection-start-column="0" selection-end-line="270" selection-end-column="0" />
           <folding>
             <element signature="e#10917#10918#0" expanded="true" />
-            <element signature="e#10976#10977#0" expanded="true" />
+            <element signature="e#10979#10980#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java">
+    <entry file="file://$PROJECT_DIR$/build.gradle">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="90" column="35" selection-start-line="90" selection-start-column="35" selection-end-line="90" selection-end-column="35" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/build.gradle">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="558">
+          <caret line="31" column="36" selection-start-line="31" selection-start-column="36" selection-end-line="31" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml">
+      <provider editor-type-id="android-manifest">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="3" column="27" selection-start-line="3" selection-start-column="27" selection-end-line="3" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="385">
+          <caret line="279" column="0" selection-start-line="279" selection-start-column="0" selection-end-line="279" selection-end-column="0" />
+          <folding>
+            <marker date="1507589586000" expanded="true" signature="53457:53466" ph="{...}" />
+          </folding>
         </state>
       </provider>
     </entry>

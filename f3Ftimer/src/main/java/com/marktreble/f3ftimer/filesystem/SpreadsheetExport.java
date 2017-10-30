@@ -266,7 +266,7 @@ public class SpreadsheetExport {
     }
 
     private String sanitise(String name){
-        return name.replaceAll("[^a-zA-Z0-9]", "-");
+        return name.replaceAll("[^a-zA-Z0-9\\.]", "-");
     }
 
 }
