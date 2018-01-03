@@ -4,16 +4,15 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.os.Bundle;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class RaceTimerFragNextRound extends RaceTimerFrag {
 	
@@ -41,9 +40,17 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
 	            
 	        }
 	    });
+
+		Button fin = (Button) mView.findViewById(R.id.button_finish_race);
+		fin.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 	    
-        Button fin = (Button) mView.findViewById(R.id.button_next_round);
-	    fin.setOnClickListener(new View.OnClickListener() {
+        Button nr = (Button) mView.findViewById(R.id.button_next_round);
+	    nr.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
 	        	next();
@@ -67,6 +74,12 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
 		NextRoundActivity a = (NextRoundActivity)getActivity();
     	a.setResult(RaceActivity.RESULT_ABORTED, null);
     	a.finish();
+	}
+
+	public void finish(){
+		NextRoundActivity a = (NextRoundActivity)getActivity();
+		a.setResult(RaceActivity.RACE_FINISHED, null);
+		a.finish();
 	}
 	
 	public void next(){

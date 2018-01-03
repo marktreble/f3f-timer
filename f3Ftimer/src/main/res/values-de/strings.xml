@@ -33,9 +33,9 @@
     <string name="retired">Ret</string>
     <string name="reflight">RF</string>
     <string name="notime">--.--</string>
-    <string name="start_working_time">Starte Startzeitfenster</string>
-    <string name="working_time_started">Startzeitfenster gestartet</string>
-    <string name="late_entry">Später Eintritt</string>
+    <string name="start_working_time">Starte Vorbereitungszeit</string>
+    <string name="working_time_started">Vorbereitungszeit gestartet</string>
+    <string name="late_entry">Später Einflug</string>
     <string name="model_launched">Modell gestartet</string>
     <string name="model_launch">Modell Start</string>
     <string name="abort">Abbrechen</string>
@@ -47,8 +47,8 @@
     <string name="off_course">Aus Kurs</string>
     <string name="on_course">Im Kurs</string>
     <string name="working_time">Start-Zeitfenster</string>
-    <string name="and_last">und Finale</string>
-    <string name="next_round">Finish Runde</string>
+    <string name="and_last">und Letzte</string>
+    <string name="next_round">Runde abschliessen</string>
     <string name="wind_warning">Wind ungültig</string>
     <string name="penalty">P</string>
     <string name="app_results">Ergebnisse</string>
@@ -62,16 +62,15 @@
     <string name="select_import_source">Rennen Importieren via</string>
     <string name="select_export_destination">Rennen Exportieren via</string>
     <string name="menu_add_pilots">Pilot hinzufügen</string>
-    <string name="menu_next_round">Finish Runde</string>
+    <string name="menu_next_round">Runde abschliessen</string>
     <string name="menu_add_pilot">Neuer Pilot</string>
-    <string name="menu_group_score">Gruppenscore</string>
+    <string name="menu_group_score">Gruppenanzahl ändern</string>
     <string name="menu_change_flying_order">Flugreihenfolge ändern</string>
-    <string name="menu_change_start_number">Ändern Start Nummer</string>
+    <string name="menu_change_start_number">Startnummer ändern</string>
     <string name="menu_help">Hilfe</string>
     <string name="menu_about">Über</string>
     <string name="menu_share">Share</string>
     <string name="enter_time">Zeit eingeben</string>
-    <string name="Demo">Demo Modus - On Screen Buzzers</string>
     <string name="wifi">Wifi Buzzers</string>
     <string name="pref_enable_acra">ACRA Crash Reports</string>
     <string name="pref_acra_enabled">Aktiviert</string>
@@ -84,5 +83,13 @@
     <string name="de">Deutsch</string>
     <string name="nl">Niederländisch</string>
     <string name="es">Spanish</string>
-    <string name="end_of_round">Ende de Runde</string>
+    <string name="end_of_round">Ende der Runde</string>
+
+    <string name="next_pilot">Nächster Pilot</string>
+    <string name="finish_race">Rennen Abschließen</string>
+    <string name="wind_angle_offset">Hangausrichtung in Grad</string>
+    <string name="enter_rotate_offset">Anzahl der verschobenen Positionen</string>
+    <string name="interrupt">Unterbrechen</string>
+    <string name="wind_measurement">Wind Messung</string>
+
 </resources>

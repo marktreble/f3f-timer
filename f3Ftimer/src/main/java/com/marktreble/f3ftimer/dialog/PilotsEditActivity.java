@@ -11,21 +11,13 @@
 package com.marktreble.f3ftimer.dialog;
 
 
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -33,7 +25,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -45,10 +36,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-import com.marktreble.f3ftimer.data.pilot.*;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.languages.Languages;
-import com.marktreble.f3ftimer.R;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PilotsEditActivity extends Activity {
 
@@ -89,7 +85,7 @@ public class PilotsEditActivity extends Activity {
 		String[] str_countries = new String[countries.length];
 		int i=0;
 		for (CharSequence country : countries){
-			str_countries[i++] = (String) country.toString();
+			str_countries[i++] = country.toString();
 		}
 		mNationality_adapter = new ArrayAdapter<String>(this, R.layout.iconspinner , R.id.ics_label, str_countries){
    	   		@Override
@@ -172,6 +168,8 @@ public class PilotsEditActivity extends Activity {
 	    		datasource.open();
 	    		p = datasource.getPilot(mPid);
 	    		datasource.close();
+
+				team.setVisibility(View.GONE);
 			}
 			
 			if (mCaller.equals("racemanager")){
@@ -181,6 +179,9 @@ public class PilotsEditActivity extends Activity {
 	    		p = datasource.getPilot(mPid, mRid);
 				Log.i("PPP", p.toString());
 	    		datasource.close();
+
+				team.setVisibility(View.VISIBLE);
+				team.setText(p.team);
 			}
         	
         	firstname.setText(p.firstname);
@@ -188,7 +189,6 @@ public class PilotsEditActivity extends Activity {
         	email.setText(p.email);
         	frequency.setText(p.frequency);
 			models.setText(p.models);
-			team.setText(p.team);
 
         	int pos;
         	
@@ -274,10 +274,10 @@ public class PilotsEditActivity extends Activity {
         p.email = email.getText().toString().trim().toLowerCase();
         p.frequency = frequency.getText().toString().trim();
         p.models = capitalise(models.getText().toString().trim());
-        p.nationality = (String) getResources().getStringArray(R.array.countrycodes)[nationality.getSelectedItemPosition()];
+        p.nationality = getResources().getStringArray(R.array.countrycodes)[nationality.getSelectedItemPosition()];
         String[] languages = Languages.getAvailableLanguages(mContext);
         if (language.getSelectedItemPosition()>=0)
-            p.language = (String) languages[language.getSelectedItemPosition()];
+            p.language = languages[language.getSelectedItemPosition()];
 
         String regEx = "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}\\b";
 

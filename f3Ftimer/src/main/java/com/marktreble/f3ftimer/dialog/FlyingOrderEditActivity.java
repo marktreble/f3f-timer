@@ -2,16 +2,14 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
 import java.util.ArrayList;
@@ -22,6 +20,7 @@ import java.util.ArrayList;
 public class FlyingOrderEditActivity extends FragmentActivity {
 
     private Integer mRid;
+    private Integer mRnd;
     public ArrayList<Integer> pilots;
 
     @Override
@@ -30,18 +29,17 @@ public class FlyingOrderEditActivity extends FragmentActivity {
         setContentView(R.layout.race_new);
 
         Intent i = getIntent();
-        Integer race_id;
         mRid = i.getIntExtra("race_id", 0);
+        mRnd = i.getIntExtra("round", 0);
 
         NewRaceFrag3 f;
         if (savedInstanceState != null) {
             Log.i("ONCREATE (FOEACTIVITY)", "RESTORING FROM SAVEDINSTANCESTATE");
         } else {
-
             pilots = new ArrayList<>();
             RacePilotData datasource = new RacePilotData(this);
             datasource.open();
-            ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
+            ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, mRnd);
             datasource.close();
             for (Pilot p : allPilots) pilots.add(p.id);
 
@@ -53,7 +51,7 @@ public class FlyingOrderEditActivity extends FragmentActivity {
             ft.add(R.id.dialog1, f, "newracefrag3");
             ft.commit();
 
-            Log.i("HEYHEYHEY", pilots.toString());
+            Log.d("HEYHEYHEY", pilots.toString());
         }
     }
 
@@ -70,21 +68,11 @@ public class FlyingOrderEditActivity extends FragmentActivity {
 
     public void updateFlyingOrder(){
         ArrayList<Pilot> allPilots;
+
         RacePilotData datasource = new RacePilotData(this);
         datasource.open();
-        allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
-
-        datasource.deleteAllPilots(mRid);
         for (int i=0; i<this.pilots.size(); i++){
-            for (int j=0; j<allPilots.size(); j++) {
-                Pilot p = allPilots.get(j);
-                if (p.id == this.pilots.get(i)) {
-                    if (p.pilot_id == 0) p.id=0;
-                    datasource.addPilot(p, mRid);
-                    Log.i("EDITRACE", p.toString());
-
-                }
-            }
+            datasource.updateStartPos(this.pilots.get(i), mRid, mRnd, i + 1);
         }
         datasource.close();
     }

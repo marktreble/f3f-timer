@@ -2,9 +2,11 @@ package com.marktreble.f3ftimer.exportimport;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -15,12 +17,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
  * Created by marktreble on 09/12/2015.
  */
 public class BaseImport extends Activity {
+
+    // Defines mapping between ISO 3166-1 alpha-3 and Olympic IOC country codes
+    // Only mismatches are defined
+    // Taken from here:
+    // http://en.wikipedia.org/wiki/Comparison_of_IOC,_FIFA,_and_ISO_3166_country_codes
+    // https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste
+    // https://en.wikipedia.org/wiki/ISO_3166-1
+    // https://datahub.io/core/country-codes/datapackage.json
+    protected static JSONArray countryCodes;
 
     Context mContext;
     public Activity mActivity;
@@ -32,6 +44,36 @@ public class BaseImport extends Activity {
 
         mContext = this;
         mActivity = this;
+
+        initCountryData();
+    }
+
+    protected void initCountryData() {
+        try {
+            Resources res = getResources();
+            InputStream in = res.openRawResource(R.raw.countrycodes);
+            byte[] ba = new byte[512000];
+            in.read(ba);
+            in.close();
+            String data = new String(ba);
+            countryCodes = new JSONArray(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public String findIsoCountryCode(String iocCountryCode) {
+        try {
+            for (int i=0; i< countryCodes.length(); i++) {
+                JSONObject country = countryCodes.optJSONObject(i);
+                if (country.getString("IOC").equals(iocCountryCode)) {
+                    return country.getString("ISO3166-1-Alpha-2");
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     protected void importRace(String data){
@@ -80,7 +122,7 @@ public class BaseImport extends Activity {
                     num_groups = roundgroup.getInt("groups");
                     start_pilot = roundgroup.getInt("start_pilot");
                 }
-                datasource.setGroups(race_id, i + 1, num_groups, start_pilot);
+                datasource.setGroups(race_id, i + 1, num_groups);
             }
             datasource.close();
 
@@ -146,4 +188,166 @@ public class BaseImport extends Activity {
         }
     }
 
+    protected void importRaceJson(String data){
+        // Parse json and add to database
+        Log.i("IMPORT", "JSON RACE DATA: "+ data);
+
+        try {
+            JSONObject racedata = new JSONObject(data);
+            JSONObject race_json = racedata.optJSONObject("race");
+            JSONArray racepilots_json = racedata.optJSONArray("racepilots");
+            JSONArray racetimes_json = racedata.optJSONArray("racetimes");
+            JSONArray racegroups_json = racedata.optJSONArray("racegroups");
+
+            RaceData datasource1 = new RaceData(mContext);
+            datasource1.open();
+            // Import Race
+            Race race = new Race(race_json);
+            int race_id = (int)datasource1.saveRace(race);
+
+            // Import Groups
+            for (int i=0; i<racegroups_json.length(); i++){
+                Object val = racegroups_json.get(i);
+                int num_groups = 1;
+                // Backwards compat check for older version files
+                // (Groups were an array of integers without the start pilot recorded)
+                if(val instanceof Integer){
+                    num_groups = (Integer)val;
+                }
+                // Format #2
+                // Groups are a json object - keys: group (int), start_pilot (int)
+                if(val instanceof JSONObject) {
+                    JSONObject roundgroup = (JSONObject)val;
+                    num_groups = roundgroup.getInt("groups");
+                }
+                datasource1.setGroups(race_id, i + 1, num_groups);
+            }
+            datasource1.close();
+
+            RacePilotData datasource2 = new RacePilotData(mContext);
+            datasource2.open();
+
+            // Import Pilots
+            for (int i=0; i<racepilots_json.length(); i++){
+                JSONObject p = racepilots_json.optJSONObject(i);
+                Pilot pilot = new Pilot(p);
+                int new_id = (int)datasource2.addPilot(pilot, race_id);
+            }
+
+            // Import Race Pilot times
+            for (int i=0; i<racetimes_json.length(); i++){
+                JSONArray rounds_json = racetimes_json.optJSONArray(i);
+                for (int j=0; rounds_json != null && j<rounds_json.length(); j++) {
+                    JSONArray pilots_json = rounds_json.optJSONArray(j);
+                    for (int k=0; k<pilots_json.length(); k++) {
+                        JSONObject pilot_json = pilots_json.optJSONObject(k);
+                        int p_id = pilot_json.optInt("id");
+                        Pilot p = datasource2.getPilot(p_id, race_id);
+                        p.race_id = race_id;
+                        p.round = i+1;
+                        p.group = pilot_json.optInt("group");
+                        p.start_pos = pilot_json.optInt("start_pos");
+                        p.status = pilot_json.optInt("status");
+                        p.time = (float)pilot_json.optDouble("time");
+                        p.penalty = pilot_json.optInt("penalty");
+                        p.points = (float)pilot_json.optDouble("points");
+                        datasource2.addRaceTime(p);
+                    }
+                }
+            }
+            datasource2.close();
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void importPilotsJson(String data){
+        Log.i("IMPORT", "JSON PILOTS DATA: "+ data);
+        importPilots(data);
+    }
+
+    protected void importRaceCsv(String data) {
+        Log.i("IMPORT", "CSV RACE DATA: "+ data);
+        try {
+            String[] lines = data.split("\r\n|\n");
+            RaceData datasource1 = new RaceData(mContext);
+            datasource1.open();
+
+            int colMode = lines[0].split(";")[0].equals("results") ? 5 : 2;
+
+            String racename = lines[0].split(";")[1];
+            Race race = datasource1.getRace(racename);
+            if (race == null) {
+                race = new Race();
+                race.name = racename;
+                datasource1.saveRace(race);
+                race = datasource1.getRace(racename);
+            }
+            int race_id = race.id;
+
+            RacePilotData datasource2 = new RacePilotData(mContext);
+            datasource2.open();
+
+            PilotData datasource3 = new PilotData(mContext);
+            datasource3.open();
+
+            int group_count = 0;
+
+            for (int i = 2; i < lines.length; i++) {
+                String[] values = lines[i].split(";");
+                int pilot_id = Integer.parseInt(values[0]);
+                Pilot p = datasource3.getPilot(pilot_id);
+                int round = 1;
+                for (int j = 1; j < values.length; j+=colMode) {
+                    int group = Integer.parseInt(values[j]);
+                    int start_pos = Integer.parseInt(values[j + 1].trim());
+                    p.status = Pilot.STATUS_NORMAL;
+                    p.group = group;
+                    if (p.group > group_count) group_count = p.group;
+                    p.start_pos = start_pos;
+                    p.round = round++;
+                    if (colMode > 2) {
+                        p.time = Float.parseFloat(values[j + 2].trim());
+                        p.penalty = Integer.parseInt(values[j + 3].trim());
+                        p.points = Float.parseFloat(values[j + 4].trim());
+                    }
+                    datasource2.importPilot(p, race_id);
+                }
+                datasource1.setGroups(race_id, i - 1, group_count);
+            }
+            datasource1.close();
+            datasource2.close();
+            datasource3.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    protected void importPilotsCsv(String data){
+        Log.i("IMPORT", "CSV PILOTS DATA: "+ data);
+        try {
+            PilotData datasource = new PilotData(mContext);
+            datasource.open();
+
+            String[] lines = data.split("\r\n|\n");
+            for (int i = 1; i < lines.length; i++) {
+                String[] values = lines[i].split(";");
+                Pilot pilot = new Pilot();
+                if (values.length>0) pilot.id = Integer.parseInt(values[0]);
+                if (values.length>1) pilot.firstname = values[1];
+                if (values.length>2) pilot.lastname = values[2];
+                if (values.length>3) {
+                    pilot.nationality = findIsoCountryCode(values[3]);
+                }
+                if (values.length>4) pilot.language = values[4];
+                if (values.length>5) pilot.team = values[5];
+                if (values.length>6) pilot.frequency = values[6];
+                if (values.length>7) pilot.models = values[7];
+                if (values.length>8) pilot.email = values[8];
+                datasource.savePilot(pilot);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 }

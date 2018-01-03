@@ -1,5 +1,6 @@
 package com.marktreble.f3ftimer.dialog;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -67,13 +68,19 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
         RaceTimerActivity a = (RaceTimerActivity)getActivity();
         a.reflight();
 
+        Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+        i.putExtra("com.marktreble.f3ftimer.value.state", 0);
+        a.sendBroadcast(i);
     }
 
     public void score_zero(){
         RaceTimerActivity a = (RaceTimerActivity)getActivity();
-        a.scorePilotZero(a.mPilot);
+        a.scorePilotZero(a.mPilot.id);
         a.setResult(RaceActivity.RESULT_ABORTED, null);
         a.finish();
 
+        Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+        i.putExtra("com.marktreble.f3ftimer.value.state", 0);
+        a.sendBroadcast(i);
     }
 }

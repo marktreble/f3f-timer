@@ -4,22 +4,12 @@
  */
 package com.marktreble.f3ftimer.resultsmanager;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-
-import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.race.Race;
-import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,12 +18,18 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.race.Race;
+import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
+
+import java.util.ArrayList;
 
 public class ResultsCompletedRoundActivity extends ListActivity {
 	
@@ -126,6 +122,9 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 				p_number.setText(mArrNumbers.get(position));
 				//p_number.setText(p.position);
 
+                TextView p_group = (TextView) row.findViewById(R.id.group);
+                p_group.setText(Integer.toString(p.group));
+
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
                 p_name.setTextColor(getResources().getColor(R.color.text3 ));
@@ -139,7 +138,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 
 
                 TextView time = (TextView) row.findViewById(R.id.time);
-                if (p.time==0 && !p.flown){
+				if ((p.time==0 || Float.isNaN(p.time)) && !p.flown){
                 	time.setText(getResources().getString(R.string.notime));
                 } else {
                 	time.setText(String.format("%.2f", p.time));
@@ -147,14 +146,14 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 
                 TextView points = (TextView) row.findViewById(R.id.points);
                 if (p.flown || p.status==Pilot.STATUS_RETIRED){
-            		points.setText(Float.toString(p.points));
+            		points.setText(String.format("%.2f", p.points));
                 } else {
             		points.setText("");
                 }
 
                 TextView penalty = (TextView) row.findViewById(R.id.penalty);
                 if (p.penalty >0){
-                    penalty.setText(getResources().getString(R.string.penalty) + p.penalty);
+                    penalty.setText(String.format("%s%d", getResources().getString(R.string.penalty), p.penalty));
                 } else {
                     penalty.setText(getResources().getString(R.string.empty));
                 }

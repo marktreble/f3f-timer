@@ -6,19 +6,12 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Random;
-
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.pilot.PilotData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,9 +20,16 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.pilot.PilotData;
+import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Random;
 
 public class NewRaceFrag3 extends ListFragment {
 
@@ -145,6 +145,16 @@ public class NewRaceFrag3 extends ListFragment {
 	        }
 	    });
 	    
+		// Listener for scramble button
+		Button rotate = (Button) v.findViewById(R.id.button_rotate);
+		rotate.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(getContext(), RotateEditActivity.class);
+				startActivityForResult(intent, 1);
+			}
+		});
+
 	    // Listener for manual re-order button
 	    Button manual = (Button) v.findViewById(R.id.button_manual);
 	    manual.setOnClickListener(new View.OnClickListener() {
@@ -163,6 +173,20 @@ public class NewRaceFrag3 extends ListFragment {
 		return v;
 	}
 	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RaceActivity.RESULT_OK) {
+			if (mArrSelectedIds.size()>1){
+				int rotate_offset = Integer.parseInt(data.getStringExtra("rotate_offset"));
+				rotateSelectedArray(rotate_offset);
+				getSelectedArray();
+				mArrAdapter.notifyDataSetChanged();
+			}
+		}
+	}
+
 	
 	private void setList(){
     	   	mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_reorder, R.id.text1 , mArrNames){
@@ -286,23 +310,18 @@ public class NewRaceFrag3 extends ListFragment {
 			// Editing
 			RacePilotData datasource = new RacePilotData(getActivity());
 			datasource.open();
-			allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
+			allPilots = datasource.getAllPilotsForRace(mRid, 0);
 			datasource.close();
-
-
 		}
 		
 		ArrayList<String> arrUnselectedNames = new ArrayList<>();
 		ArrayList<Integer> arrUnselectedIds = new ArrayList<>();
-		
-		
 		
 		for (Pilot p : allPilots){
 			if (!mArrSelectedIds.contains(p.id)){
 				arrUnselectedNames.add(String.format("%s %s", p.firstname, p.lastname));
 				arrUnselectedIds.add(p.id);
 			}
-			
 		}
 		
 	    _names = new String[arrUnselectedNames.size()];
@@ -311,7 +330,6 @@ public class NewRaceFrag3 extends ListFragment {
 	    _ids = arrUnselectedIds.toArray(_ids);
 	    
 	    _selections = new boolean[ _names.length ];
-
 	}
 	
 	private void getSelectedArray(){
@@ -327,10 +345,8 @@ public class NewRaceFrag3 extends ListFragment {
 			// Editing
 			RacePilotData datasource = new RacePilotData(getActivity());
 			datasource.open();
-			allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
+			allPilots = datasource.getAllPilotsForRace(mRid, 0);
 			datasource.close();
-
-
 		}
 
 		if (mArrNames == null) {
@@ -342,7 +358,6 @@ public class NewRaceFrag3 extends ListFragment {
 		while(mArrNames.size() < mArrSelectedIds.size()) mArrNames.add("");
 		while(mArrIds.size() < mArrSelectedIds.size()) mArrIds.add(0);
 		while(mArrNumbers.size() < mArrSelectedIds.size()) mArrNumbers.add(0);
-
 
 		for (Pilot p : allPilots){
 			if (mArrSelectedIds.contains(p.id)){
@@ -391,6 +406,20 @@ public class NewRaceFrag3 extends ListFragment {
 		}
 	}
 	
+	private void rotateSelectedArray(int rotate_offset){
+		int sz = mArrSelectedIds.size();
+		Integer[] dst = new Integer[sz];
+		Integer[] src = new Integer[sz];
+		mArrSelectedIds.toArray(src);
+		rotate_offset = rotate_offset % sz;
+		if (rotate_offset<0) rotate_offset = rotate_offset + sz;
+		System.arraycopy(src, 0, dst, rotate_offset, sz - rotate_offset);
+		System.arraycopy(src, sz - rotate_offset, dst, 0, rotate_offset);
+		for (int i=0; i<sz; i++) {
+			mArrSelectedIds.set(i, dst[i]);
+		}
+	}
+
 	public class DialogSelectionClickHandler implements DialogInterface.OnMultiChoiceClickListener
 	{
 		public void onClick( DialogInterface dialog, int clicked, boolean selected )

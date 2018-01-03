@@ -6,16 +6,13 @@
  */
 package com.marktreble.f3ftimer.pilotmanager;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-
+import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -26,20 +23,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
-
 import android.widget.ImageView;
 import android.widget.ListView;
-import com.marktreble.f3ftimer.data.pilot.*;
+import android.widget.TextView;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.dialog.PilotsEditActivity;
-import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.exportimport.FileExportPilots;
 import com.marktreble.f3ftimer.exportimport.FileImportPilots;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
+
+import java.util.ArrayList;
 
 public class PilotsActivity extends ListActivity {
 
@@ -87,7 +86,7 @@ public class PilotsActivity extends ListActivity {
                 row = convertView;
                 }
                 
-                Pilot p = (Pilot)mArrPilots.get(position);
+                Pilot p = mArrPilots.get(position);
                 
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));

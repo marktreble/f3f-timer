@@ -5,7 +5,13 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import java.util.ArrayList;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
+import android.view.View;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
@@ -14,14 +20,7 @@ import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
-import android.os.Bundle;
-
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.view.View;
+import java.util.ArrayList;
 
 public class NewRaceActivity extends FragmentActivity {
 	
@@ -73,6 +72,7 @@ public class NewRaceActivity extends FragmentActivity {
   		RaceData datasource = new RaceData(NewRaceActivity.this);
   		datasource.open();
   		int race_id = (int)datasource.saveRace(r);
+  		datasource.setGroups(race_id, 1, 1);
   		datasource.close();
 
   		RacePilotData racepilotsdatasource = new RacePilotData(NewRaceActivity.this);

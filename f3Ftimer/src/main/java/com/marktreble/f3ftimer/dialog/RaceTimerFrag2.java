@@ -4,24 +4,24 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import java.lang.System;
-
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.os.Bundle;
-import android.os.Handler;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 
 public class RaceTimerFrag2 extends RaceTimerFrag {
 
 	private Handler mHandler = new Handler();
 	public long mStart;
+	private long mLastSecond;
 	
 	public RaceTimerFrag2(){
 		
@@ -35,9 +35,10 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
         if (savedInstanceState != null) {
 	    } else {
 	    	mStart = System.currentTimeMillis();
+			mLastSecond = 0;
 		    mHandler.postDelayed(updateClock, 10);
 	    }
-        
+
         // Begin the timeout dialog timeout
         // Confusing? - yes. This stops the timeout being annoyingly invoked when working time has started
         // Unless of course the model is not launched before time is up!
@@ -80,6 +81,9 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 				a.setResult(RaceActivity.RESULT_ABORTED, null);
 	        	a.finish();
 	            
+				Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+				i.putExtra("com.marktreble.f3ftimer.value.state", 0);
+				a.sendBroadcast(i);
 	        }
 	    });
 
@@ -108,35 +112,42 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 			TextView min = (TextView) mView.findViewById(R.id.mintime);
 			min.setText(str_time);
 
+			/* give .5 leadtime for speaking the numbers */
+			int s = (int) Math.floor(seconds + 0.5);
 
-			int s = (int) Math.floor(seconds);
 			RaceTimerActivity a = (RaceTimerActivity)getActivity();
 
+			/* only send when the second changes, and not 100 times per second */
+			if (s != mLastSecond) {
+				/* send to ResultsServer Live Listener */
+				Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+				i.putExtra("com.marktreble.f3ftimer.value.workingTime", 30.0f - (float)Math.ceil(seconds));
+				a.sendBroadcast(i);
+			}
 
-			if (s==9) a.sendCommand("20");
-			if (s==14) a.sendCommand("15");
-			if (s==19) a.sendCommand("10");
-			if (s==20) a.sendCommand("9");
-			if (s==21) a.sendCommand("8");
-			if (s==22) a.sendCommand("7");
-			if (s==23) a.sendCommand("6");
-			if (s==24) a.sendCommand("5");
-			if (s==25) a.sendCommand("4");
-			if (s==26) a.sendCommand("3");
-			if (s==27) a.sendCommand("2");
-			if (s==28) a.sendCommand("1");
-
-        	if (seconds==30){
+			if (s==10 && s != mLastSecond) a.sendCommand("20");
+			if (s==15 && s != mLastSecond) a.sendCommand("15");
+			if (s==20 && s != mLastSecond) a.sendCommand("10");
+			if (s==21 && s != mLastSecond) a.sendCommand("9");
+			if (s==22 && s != mLastSecond) a.sendCommand("8");
+			if (s==23 && s != mLastSecond) a.sendCommand("7");
+			if (s==24 && s != mLastSecond) a.sendCommand("6");
+			if (s==25 && s != mLastSecond) a.sendCommand("5");
+			if (s==26 && s != mLastSecond) a.sendCommand("4");
+			if (s==27 && s != mLastSecond) a.sendCommand("3");
+			if (s==28 && s != mLastSecond) a.sendCommand("2");
+			if (s==29 && s != mLastSecond) a.sendCommand("1");
+			if (s==30 && s != mLastSecond){
         		// Runout of working time
         		// -- pilot scores zero!
         		
-        		a.scorePilotZero(a.mPilot);
+        		a.scorePilotZero(a.mPilot.id);
 	        	a.setResult(RaceActivity.RESULT_OK, null);
 	        	a.finish();
         	} else {
         		mHandler.postDelayed(updateClock, 10);
         	}
-
+			mLastSecond = s;
 		}
 	};
 	
@@ -149,6 +160,15 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 		// Send model launched to server
  		a.sendCommand("launch");
 		
+		/* send to TcpIoService for UI tracking */
+		Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+		i.putExtra("com.marktreble.f3ftimer.ui_callback", "model_launched");
+		a.sendBroadcast(i);
+
+		/* send to ResultsServer Live Listener */
+		i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+		i.putExtra("com.marktreble.f3ftimer.value.state", 3);
+		a.sendBroadcast(i);
 		
     	// Move on to 30 climbout timer
     	a.getFragment(new RaceTimerFrag3(), 3);

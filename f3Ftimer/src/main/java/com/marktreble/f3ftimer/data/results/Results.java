@@ -1,7 +1,6 @@
 package com.marktreble.f3ftimer.data.results;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -16,7 +15,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by marktreble on 11/06/2017.
@@ -60,7 +58,7 @@ public class Results {
 
         RacePilotData datasource2 = new RacePilotData(context);
         datasource2.open();
-        ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, race.round, race.offset, race.start_number);
+        ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, race.round);
 
 
         datasource2.close();
@@ -96,7 +94,7 @@ public class Results {
 
         RacePilotData datasource2 = new RacePilotData(context);
         datasource2.open();
-        ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, race.round, race.offset, race.start_number);
+        ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, race.round);
 
 
         datasource2.close();
@@ -161,12 +159,12 @@ public class Results {
 
         RacePilotData datasource2 = new RacePilotData(context);
         datasource2.open();
-        ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, mRound, race.offset, mGroupScoring.start_pilot);
+        ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, mRound);
 
         datasource2.close();
 
         Log.i("ROUND", "R="+mRound);
-        Log.i("GROUP SCORING", mGroupScoring.num_groups+":"+mGroupScoring.start_pilot);
+        Log.i("GROUP SCORING", mGroupScoring.num_groups+"");
 
         // Initialise the output arrays
         mArrNames = new ArrayList<>();
@@ -248,12 +246,12 @@ public class Results {
             for (int rnd = 1; rnd < race.round; rnd++) {
                 mGroupScoring = datasource.getGroups(mRid, rnd);
                 Log.i("ROUND", "R="+rnd);
-                Log.i("GROUP SCORING", mGroupScoring.num_groups+":"+mGroupScoring.start_pilot);
+                Log.i("GROUP SCORING", mGroupScoring.num_groups+"");
 
                 // Add the group params to the array
                 mArrGroupings.add(mGroupScoring);
 
-                ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, rnd, race.offset, mGroupScoring.start_pilot);
+                ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, rnd);
 
                 // Reinitialise the output arrays
                 mArrNames = new ArrayList<>();
@@ -323,13 +321,13 @@ public class Results {
 
             // Tot up the points from each round ignoring the first {numdiscards} rounds
             Float tot = 0f;
-            for (int j=numdiscards; j<completed_rounds; j++) {
+            for (int j=0; j<completed_rounds-numdiscards; j++) {
                 tot += arr_times.get(j).raw_points;
                 Log.i("TOT", key+":"+tot+":"+arr_times.get(j).raw_points);
             }
 
             // Deduct penalties from all rounds from total
-            for (int j=0; j<completed_rounds; j++)
+            for (int j=0; j<completed_rounds-numdiscards; j++)
                 tot -= arr_times.get(j).penalty * 100;
 
             map_totals.put(key, round2FixedRounded(tot, 2));
@@ -453,7 +451,7 @@ public class Results {
         }
     }
 
-    private float round2Fixed(float value, double places){
+    public static float round2Fixed(float value, double places){
 
         double multiplier = Math.pow(10, places);
         double integer = Math.floor(value);
@@ -473,20 +471,6 @@ public class Results {
         if (remainder>0.5) rounded+=Math.pow(10, -places);
 
         return (float)rounded;
-    }
-
-    private int getStartPilot(ArrayList<Pilot> allPilots, Race race){
-
-        // Deprecated - see (RaceData.Group)mGroupScoring.start_pilot
-        int start = 0;
-        int numPilots = allPilots.size();
-        if (race.start_number>0){
-            start =race.start_number;
-        } else {
-            if (numPilots > 0)
-                start = ((race.round - 1) * race.offset) % numPilots;
-        }
-        return start;
     }
 
     private float[] initFTG(){
@@ -512,7 +496,12 @@ public class Results {
         int g = 0; // Current group we are calculating
 
         // The start pilot number
-        int start = mGroupScoring.start_pilot;
+        int start;
+        if (race.start_number > 0) {
+            start = race.start_number - 1;
+        } else {
+            start = ((race.round - 1) * race.offset) % allPilots.size();
+        }
 
         // Init array for Fastest time in group
         float[] ftg = initFTG();
@@ -541,8 +530,7 @@ public class Results {
                 }
             }
             Pilot p = allPilots.get(j);
-            p.group = g;
-            int bib_number = ((c + (start-1)) % allPilots.size())+1;
+            int bib_number = ((c + start) % allPilots.size())+1;
             if (p.pilot_id>0) {
                 // Pilot is Actual (not skipped)
 
@@ -585,14 +573,14 @@ public class Results {
             if (time>0)
                 p.points = round2Fixed((ftg[g]/time) * 1000, 2);
 
-            if (time==0 && p.flown) // Avoid division by 0
+            if ((p.time==0 || Float.isNaN(p.time)) && p.flown) // Avoid division by 0
                 p.points = 0f;
 
             p.raw_points = Math.max(0, p.points);
 
             p.points-= p.penalty * 100;
 
-            if (time==0 && p.status==Pilot.STATUS_RETIRED) // Avoid division by 0
+            if ((p.time==0 || Float.isNaN(p.time)) && p.status==Pilot.STATUS_RETIRED) // Avoid division by 0
                 p.points = 0f;
 
             if (p.pilot_id> 0) {

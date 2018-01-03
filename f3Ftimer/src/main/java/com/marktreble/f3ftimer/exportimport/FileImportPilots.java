@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
-import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -34,20 +33,20 @@ public class FileImportPilots extends BaseImport {
 
         super.onCreate(savedInstanceState);
 
-        Intent i = new Intent(mContext, FilePickerActivity.class);
+        Intent i = new Intent(mContext, FilteredFilePickerActivity.class);
         // This works if you defined the intent filter
         // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
 
         // Set these depending on your use case. These are the defaults.
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
-        i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_MODE, FilteredFilePickerActivity.MODE_FILE);
 
         // Configure initial directory by specifying a String.
         // You could specify a String like "/storage/emulated/0/", but that can
         // dangerous. Always use Android's API calls to get paths to the SD-card or
         // internal memory.
-        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+        i.putExtra(FilteredFilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
 
         startActivityForResult(i, ACTION_PICK_FILE);
 
@@ -57,7 +56,7 @@ public class FileImportPilots extends BaseImport {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ACTION_PICK_FILE && resultCode == Activity.RESULT_OK) {
-            if (data.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
+            if (data.getBooleanExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
                 // Multiple files import
                 String failures = "";
                 int successes = 0;
@@ -83,7 +82,7 @@ public class FileImportPilots extends BaseImport {
                     // For Ice Cream Sandwich
                 } else {
                     ArrayList<String> paths = data.getStringArrayListExtra
-                            (FilePickerActivity.EXTRA_PATHS);
+                            (FilteredFilePickerActivity.EXTRA_PATHS);
 
                     if (paths != null) {
                         for (String path: paths) {
@@ -137,7 +136,7 @@ public class FileImportPilots extends BaseImport {
 
                     new AlertDialog.Builder(mContext, R.style.AppTheme )
                             .setTitle("Wrong file type (." + extension + ")")
-                            .setMessage("Sorry, f3f timer can only import files in 'json' format")
+                            .setMessage("Sorry, f3f timer can only import files in 'json' or 'csv' format")
                             .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     finish();
@@ -160,12 +159,17 @@ public class FileImportPilots extends BaseImport {
         if (extension.equals("json")) {
             String data = readFile(uri);
             if (!data.equals("")){
-                super.importPilots(data);
+                super.importPilotsJson(data);
+                return true;
+            }
+        } else if (extension.equals("csv")) {
+            String data = readFile(uri);
+            if (!data.equals("")){
+                super.importPilotsCsv(data);
                 return true;
             }
         }
         return false;
-
     }
 
     private String readFile(Uri uri) {

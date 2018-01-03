@@ -1,6 +1,5 @@
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +11,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.WindowManager.LayoutParams;
+
+import com.marktreble.f3ftimer.R;
 
 public class RaceRoundTimeoutActivity extends FragmentActivity {
 	
@@ -126,8 +127,7 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
 				}
 
 				if (data.equals("start_pressed")){
-					//((RaceTimerFrag)mCurrentFragment).startPressed();
-					// TODO
+					((RaceRoundTimeoutCompleteFrag)mCurrentFragment).startPressed();
 				}
 			}
 		}

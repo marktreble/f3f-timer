@@ -6,15 +6,7 @@
 
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.race.Race;
-import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
 import android.animation.LayoutTransition;
-import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -27,20 +19,24 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager.LayoutParams;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.race.Race;
+import com.marktreble.f3ftimer.data.race.RaceData;
+import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 
 public class RaceTimerActivity extends FragmentActivity {
@@ -49,8 +45,9 @@ public class RaceTimerActivity extends FragmentActivity {
 	public Race mRace;
     public int mRound;
 	public String mNumber;
-	public boolean mWindLegal;
-	private RaceTimerFrag mCurrentFragment;
+	public boolean mWindLegal = true;
+	public boolean mWindIlegalDuringFlight = false;
+	public RaceTimerFrag mCurrentFragment;
 	private int mCurrentFragmentId;
 	private Context mContext;
 	private FragmentActivity mActivity;
@@ -64,7 +61,7 @@ public class RaceTimerActivity extends FragmentActivity {
 	public static int WINDOW_STATE_FULL = 0;
 	public static int WINDOW_STATE_MINIMIZED = 1;
 
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		getWindow().setFlags(LayoutParams.FLAG_NOT_TOUCH_MODAL,
@@ -99,7 +96,7 @@ public class RaceTimerActivity extends FragmentActivity {
 	  		
 			RacePilotData datasource2 = new RacePilotData(this);
 	  		datasource2.open();
-	  		mPilot = datasource2.getPilot(pid, rid);
+	  		mPilot = datasource2.getPilot(pid, mRace.id);
 	  		datasource2.close();
 	  		
 	  		
@@ -128,8 +125,13 @@ public class RaceTimerActivity extends FragmentActivity {
             i.putExtra("com.marktreble.f3ftimer.round", mRound);
             sendBroadcast(i);
             
+			resetLiveStats();
+
 	    	// Send an abort to reset the timer as a safety guard
-			sendCommand("abort");
+			// Don't send this here asynchronously, because it could stop an active time measurement,
+			// when transmitted too late via TcpIoService (TcpIoService might have been triggered by external hardware buttons before
+			// receiving this message).
+			//sendCommand("abort");
 
             RaceTimerFrag1 f;
             f = new RaceTimerFrag1();
@@ -173,6 +175,22 @@ public class RaceTimerActivity extends FragmentActivity {
 			}
 		});
 
+	}
+
+	public void resetLiveStats() {
+		Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+		i.putExtra("com.marktreble.f3ftimer.value.state", 1);
+		i.putExtra("com.marktreble.f3ftimer.value.currentPilotId", mPilot.id);
+		i.putExtra("com.marktreble.f3ftimer.value.workingTime", 0.0f);
+		i.putExtra("com.marktreble.f3ftimer.value.climbOutTime", 0.0f);
+		i.putExtra("com.marktreble.f3ftimer.value.flightTime", 0.0f);
+		i.putExtra("com.marktreble.f3ftimer.value.estimatedFlightTime", 0.0f);
+		i.putExtra("com.marktreble.f3ftimer.value.turnNumber", 0);
+		i.putExtra("com.marktreble.f3ftimer.value.splitTime", 0.0f);
+		i.putExtra("com.marktreble.f3ftimer.value.fastestTime", 0.0f);
+		i.putExtra("com.marktreble.f3ftimer.value.fastestTimePilot", "");
+		i.putExtra("com.marktreble.f3ftimer.value.deltaTime", 0.0f);
+		sendBroadcast(i);
 	}
 
 	@Override
@@ -271,11 +289,19 @@ public class RaceTimerActivity extends FragmentActivity {
     	stopService(serviceIntent);
 	}
 	
+    public void incPenalty(int pilot_id, int penalty){
+        RacePilotData datasource = new RacePilotData(this);
+        datasource.open();
+        for (int i = 0; i < penalty; i++) {
+            datasource.incPenalty(mRace.id, pilot_id, mRound);
+        }
+        datasource.close();
+    }
 	
-	public void scorePilotZero(Pilot p){
+	public void scorePilotZero(Integer pilot_id){
 		RacePilotData datasource = new RacePilotData(this);
   		datasource.open();
-		datasource.setPilotTimeInRound(mRace.id, p.id, mRound, 0);
+		datasource.scoreZero(mRace.id, mRound, pilot_id);
 		datasource.close();
 	}
 	
@@ -299,10 +325,11 @@ public class RaceTimerActivity extends FragmentActivity {
 	}
 
 	// Binding for UI->Service Communication
-	public void sendOrderedCommand(String cmd){
+	public void sendOrderedCommand(String cmd, Integer delayed){
 		Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
 		i.putExtra("com.marktreble.f3ftimer.ui_callback", cmd);
 		i.putExtra("com.marktreble.f3ftimer.round", mRound);
+		i.putExtra("com.marktreble.f3ftimer.delayed", delayed);
 		sendOrderedBroadcast(i, null);
 	}
 
@@ -334,29 +361,48 @@ public class RaceTimerActivity extends FragmentActivity {
 					if (mCurrentFragment.getClass().equals(RaceTimerFrag3.class)){
 						((RaceTimerFrag3)mCurrentFragment).setOffCourse();
 					} 
+					if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
+						((RaceTimerFrag4)mCurrentFragment).setOffCourse();
+					}
 				}
 			
 				if (data.equals("on_course")){
 					// Check for the current fragment
 					// Only call next if the current fragment is RaceTimerFrag3
-					// if it has already moved on to RaceTimeFrag4, then this is a late buzz
 					if (mCurrentFragment.getClass().equals(RaceTimerFrag3.class)){
 						((RaceTimerFrag3)mCurrentFragment).next();
 					}
+                    // if it has already moved on to RaceTimeFrag4, then this is a late buzz
+                    if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)){
+                        ((RaceTimerFrag4)mCurrentFragment).setOnCourse();
+                    }
 				}
 
 				if (data.equals("leg_complete")){
-					long time = extras.getLong("com.marktreble.f3ftimer.time");
-					int number = extras.getInt("com.marktreble.f3ftimer.number");
+					int legNumber = extras.getInt("com.marktreble.f3ftimer.number");
+					long estimatedFlightTime = extras.getLong("com.marktreble.f3ftimer.estimate");
+					long legTime = extras.getLong("com.marktreble.f3ftimer.legTime");
+					long fastestLegTime = extras.getLong("com.marktreble.f3ftimer.fastestLegTime");
+					String fastestFlightPilot = extras.getString("com.marktreble.f3ftimer.fastestFlightPilot");
+					long deltaTime = extras.getLong("com.marktreble.f3ftimer.delta");
                     if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
-                        ((RaceTimerFrag4) mCurrentFragment).setLeg(number, time);
+                        ((RaceTimerFrag4) mCurrentFragment).setLeg(legNumber, estimatedFlightTime, fastestLegTime, legTime, deltaTime, fastestFlightPilot);
                     }
 				}
 
 				if (data.equals("run_complete")){
 					Float time = extras.getFloat("com.marktreble.f3ftimer.time");
+					Float fastestFlightTime = extras.getFloat("com.marktreble.f3ftimer.fastestFlightTime");
+					String fastestFlightPilot = extras.getString("com.marktreble.f3ftimer.fastestFlightPilot");
+					if (mWindIlegalDuringFlight) {
+						// show wind warning if it was illegal during flight
+						(mCurrentFragment).setWindWarning(true);
+					}
                     if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
-                        ((RaceTimerFrag4) mCurrentFragment).setFinal(time);
+                        ((RaceTimerFrag4) mCurrentFragment).setFinal(time, fastestFlightTime, fastestFlightPilot);
+                    }
+					if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
+						((RaceTimerFrag4) mCurrentFragment).next(1);
                     }
 				}
 
@@ -373,6 +419,7 @@ public class RaceTimerActivity extends FragmentActivity {
 				
 				if (data.equals("wind_illegal")){
 					mWindLegal = false;
+					mWindIlegalDuringFlight = true;
 					(mCurrentFragment).setWindWarning(true);
 				}
 
@@ -382,10 +429,21 @@ public class RaceTimerActivity extends FragmentActivity {
 				}
 
 				if (data.equals("start_pressed")){
+					if (mCurrentFragment.getClass().equals(RaceTimerFrag2.class)) {
+						// reset illegal wind state before model is launched
+						mWindIlegalDuringFlight = !mWindLegal;
+					}
 					(mCurrentFragment).startPressed();
 				}
 				
 				if (data.equals("cancel")){
+					finish();
+				}
+				
+				if (data.equals("score_zero_and_cancel")){
+					Integer pilot_id = extras.getInt("com.marktreble.f3ftimer.pilot_id");
+					scorePilotZero(pilot_id);
+                    mActivity.setResult(RaceActivity.RESULT_OK);
 					finish();
 				}
 				
@@ -405,10 +463,41 @@ public class RaceTimerActivity extends FragmentActivity {
 
                 }
 
-
+                if (data.equals("incPenalty")){
+                    Integer pilot_id = extras.getInt("com.marktreble.f3ftimer.pilot_id");
+                    Integer penalty = extras.getInt("com.marktreble.f3ftimer.penalty");
+                    incPenalty(pilot_id, penalty);
+                }
+            } else if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
+				float windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
+				float windAngleRelative = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_relative");
+				float windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
+				boolean windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
+				int windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
+				String title = "";
+				if (windLegal && windSpeedCounter == 20) {
+					title = getString(R.string.app_race)
+							+ String.format("  abs: %.2f °", windAngleAbsolute)
+							+ String.format(" rel: %.2f °", windAngleRelative)
+							+ String.format(" %.2f m/s", windSpeed)
+							+ "   legal";
+				} else if (windLegal) {
+					title = getString(R.string.app_race)
+							+ String.format("  abs: %.2f °", windAngleAbsolute)
+							+ String.format(" rel: %.2f °", windAngleRelative)
+							+ String.format(" %.2f m/s", windSpeed)
+							+ String.format("   legal (%d s)", windSpeedCounter);
+				} else {
+					title = getString(R.string.app_race)
+							+ String.format("  abs: %.2f °", windAngleAbsolute)
+							+ String.format(" rel: %.2f °", windAngleRelative)
+							+ String.format(" %.2f m/s", windSpeed)
+							+ " illegal";
+				}
+				RaceActivity.updateRaceTitle(title);
             }
 		}
-        };
+	};
     
     private void showProgress(){
         mPDialog = new ProgressDialog(mContext);

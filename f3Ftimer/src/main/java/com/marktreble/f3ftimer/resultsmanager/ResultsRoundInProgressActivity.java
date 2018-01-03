@@ -4,13 +4,6 @@
  */
 package com.marktreble.f3ftimer.resultsmanager;
 
-import java.util.ArrayList;
-
-import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.race.Race;
-import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
@@ -25,12 +18,18 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.race.Race;
+import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
+
+import java.util.ArrayList;
 
 public class ResultsRoundInProgressActivity extends ListActivity {
 	
@@ -142,7 +141,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
                 }
 
                 TextView time = (TextView) row.findViewById(R.id.time);
-                if (p.time==0 && !p.flown){
+				if ((p.time==0 || Float.isNaN(p.time)) && !p.flown){
                 	time.setText(getResources().getString(R.string.notime));
                 } else {
                 	time.setText(String.format("%.2f", p.time));
@@ -150,14 +149,14 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
                 TextView points = (TextView) row.findViewById(R.id.points);
                 if (p.flown || p.status==Pilot.STATUS_RETIRED){
-            		points.setText(Float.toString(p.points));
+            		points.setText(String.format("%.2f", p.points));
                 } else {
             		points.setText("");
                 }
 
 				TextView penalty = (TextView) row.findViewById(R.id.penalty);
 				if (p.penalty >0){
-					penalty.setText(getResources().getString(R.string.penalty) + p.penalty);
+					penalty.setText(String.format("%s%d", getResources().getString(R.string.penalty), p.penalty));
 				} else {
 					penalty.setText(getResources().getString(R.string.empty));
 				}

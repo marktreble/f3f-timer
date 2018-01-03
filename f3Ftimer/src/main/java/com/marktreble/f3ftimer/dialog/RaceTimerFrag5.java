@@ -4,16 +4,16 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.os.Bundle;
 import android.widget.TextView;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class RaceTimerFrag5 extends RaceTimerFrag {
 
@@ -73,6 +73,11 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
         a.sendCommand("abort");
         a.setResult(RaceActivity.RESULT_OK);
         a.finish();
+
+		/* send to ResultsServer Live Listener */
+        Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+        i.putExtra("com.marktreble.f3ftimer.value.state", 0);
+        a.sendBroadcast(i);
     }
 
     public void startPressed(){

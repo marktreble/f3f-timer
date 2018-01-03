@@ -9,7 +9,6 @@ import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.data.results.Results;
-import com.marktreble.f3ftimer.resultsmanager.ResultsLeaderBoardActivity;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -86,7 +85,7 @@ public class SpreadsheetExport {
             for (int i=0; i<r.mArrGroupings.size(); i++){
                 RaceData.Group g = r.mArrGroupings.get(i);
                 extra_discards+= g.num_groups-1;
-                Log.i("GROUPS: ", "N:"+g.num_groups+" S:"+g.start_pilot);
+                Log.i("GROUPS: ", "N:"+g.num_groups+"");
             }
 
             Log.i("ROW", "-----");
@@ -134,34 +133,58 @@ public class SpreadsheetExport {
 
                 data+=row;
             }
-            /*
+
+            String meta_data = String.format("%d , \"%s\", 0, %d, %d\r\n", race.round+extra_discards, race.name, MAX_ROUNDS, extra_discards);
+
+            Log.i("ROW", meta_data);
+            Log.i("ROW", "-----");
+            String output = meta_data + data;
+
+            this.writeExportFile(context, output, race.name+".txt");
+
+            //datasource2.close();
+            //datasource.close();
+        } else {
+            // External storage is not writable
+            // Not sure how to handle this at the moment!
+        }
+    }
+
+    public void writeResultsFileSh(Context context, Race race){
+
+        int MAX_ROUNDS = 10;
+
+        if (race.round>10) MAX_ROUNDS = 20;
+        if (race.round>20) MAX_ROUNDS = 30;
+
+        // Update the race (.f3f) file
+        if (this.isExternalStorageWritable()){
+
+            int extra_discards = 0;
             RaceData datasource = new RaceData(context);
             datasource.open();
 
             RacePilotData datasource2 = new RacePilotData(context);
             datasource2.open();
 
+            String data = "";
 
-
-            ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(race.id, 0, 0, 0);
+            ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(race.id, 0);
 
             if (allPilots != null){
                 ArrayList<int[]> p_penalty = new ArrayList<>();
                 ArrayList<Integer> groups = new ArrayList<>();
                 // Get penalties first
                 for (int rnd=0; rnd<race.round; rnd++){
-                    ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(race.id, rnd+1, 0, 0);
+                    ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(race.id, rnd+1);
                     int[] penalty = new int[allPilots.size()];
                     for (int i=0; i<allPilots.size(); i++){
                         penalty[i] = (pilots_in_round.get(i).penalty != null) ? pilots_in_round.get(i).penalty : 0;
                     }
                     p_penalty.add(penalty);
 
-                    RaceData.Group group = datasource.getGroups(race.id, rnd+1);
-                    groups.add(group.num_groups);
+                    groups.add(datasource.getGroups(race.id, rnd+1).num_groups);
                 }
-
-                Log.i("ROW", "-----");
 
                 // Get all times for pilots in all rounds
                 int num_pilots = allPilots.size();
@@ -180,7 +203,7 @@ public class SpreadsheetExport {
                             // Set the correct pilot group from pilot position (i) and num groups (groups.get(rnd))
                             int num_groups = (rnd < race.round) ? groups.get(rnd) : 1;
                             extra_discards += num_groups - 1;
-                            int group_size = (int) Math.floor(num_pilots / num_groups);
+                            int group_size = (int) Math.floor(num_pilots / (float)num_groups);
                             int remainder = num_pilots - (num_groups * group_size);
                             int pilot_group = 0, eog = 0;
                             for (int j = 1; j <= num_groups; j++) {
@@ -223,28 +246,25 @@ public class SpreadsheetExport {
                         row += String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds);
 
                         data+=row;
-                        Log.i("ROW", row);
+                        Log.d("ROW", row);
                     }
                 }
             }
-            */
 
             String meta_data = String.format("%d , \"%s\", 0, %d, %d\r\n", race.round+extra_discards, race.name, MAX_ROUNDS, extra_discards);
 
-            Log.i("ROW", meta_data);
-            Log.i("ROW", "-----");
+            Log.d("ROW", meta_data);
+            Log.d("ROW", "-----");
             String output = meta_data + data;
 
             this.writeExportFile(context, output, race.name+".txt");
 
-            //datasource2.close();
-            //datasource.close();
+            datasource2.close();
+            datasource.close();
         } else {
             // External storage is not writable
             // Not sure how to handle this at the moment!
-
         }
-
     }
 
     private boolean isExternalStorageWritable() {

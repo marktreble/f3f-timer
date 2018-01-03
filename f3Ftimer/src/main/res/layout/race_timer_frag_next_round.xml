@@ -43,6 +43,14 @@
 				    android:layout_height="80dp"
 				    android:text="@string/abort"
 				    style="?android:attr/buttonBarButtonStyle"></Button>
+
+			<Button
+				android:id="@+id/button_finish_race"
+				style="?android:attr/buttonBarButtonStyle"
+				android:layout_width="0dp"
+				android:layout_height="80dp"
+				android:layout_weight="0.33"
+				android:text="@string/finish_race"/>
 				
 				<Button android:id="@+id/button_next_round"
 				    android:layout_width="fill_parent"

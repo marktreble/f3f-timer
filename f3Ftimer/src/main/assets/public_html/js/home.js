@@ -5,26 +5,36 @@ function homeScreen(){
 }
 
 function render_home(){
-	$('#race-name h2').html(model.race_name + " &ndash; Round "+model.current_round);
+	$('#race-name h2').html(model.race_name);
 	
 	var list = $('div.home');
 	
 	clearList(list);
 	
 	var lis = [];
-	
-	var li =createListItem("Round in Progress (R"+model.current_round+")", function(){
+
+	li = createListItemLink("Startlist", function(){
+		pushView(startlist(), this);
+	});
+	lis.push(li);
+
+	var li = createListItemLink("Current Flight Live Status", function(){
+		pushView(liveInfo(), this);
+	});
+	lis.push(li);
+
+	li = createListItemLink("Round in Progress (R"+model.current_round+")", function(){
 		pushView(roundInProgress(), this);
 	});
 	lis.push(li);
 
-	li = createListItem("Completed Rounds", function(){
+	li = createListItemLink("Completed Rounds", function(){
 		pushView(completedRounds(), this);
 	});
 	lis.push(li);
 
-	li = createListItem("Leader Board", function(){
-		pushView(leaderBoard(), this);
+	li = createListItemLink("Overall Standings", function(){
+		pushView(scores(), this);
 	});
 	lis.push(li);
 

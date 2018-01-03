@@ -4,9 +4,7 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,10 +15,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.R;
+
 public class RaceTimerFrag3 extends RaceTimerFrag {
 
 	private Handler mHandler = new Handler();
 	private long mStart;
+	private long mLastSecond;
 
 	public RaceTimerFrag3(){
 		
@@ -33,9 +34,9 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
         if (savedInstanceState != null) {
 	    } else {
 	    	mStart = System.currentTimeMillis();
+			mLastSecond = 0;
 		    mHandler.postDelayed(updateClock, 10);
-	    }
-
+		}
     }
 
 	@Override
@@ -58,6 +59,11 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
 	        	mHandler.removeCallbacks(updateClock);
 	        	RaceTimerActivity a = (RaceTimerActivity)getActivity();
 	        	a.sendCommand("abort");
+
+				Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+				i.putExtra("com.marktreble.f3ftimer.value.state", 7);
+				a.sendBroadcast(i);
+
 				a.sendCommand("begin_timeout");
 				a.getFragment(new RaceTimerFrag6(), 6); // Abort submenu (reflight or score 0)
 	        }
@@ -115,24 +121,30 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
 			TextView min = (TextView) mView.findViewById(R.id.mintime);
 			min.setText(str_time);
 
-			int s = (int) Math.floor(seconds);
+			/* give .5 leadtime for speaking the numbers */
+			int s = (int) Math.floor(seconds + 0.5);
 			RaceTimerActivity a = (RaceTimerActivity)getActivity();
 			
+			/* only send when the second changes, and not 100 times per second */
+			if (s != mLastSecond) {
+				Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+				i.putExtra("com.marktreble.f3ftimer.value.climbOutTime", 30.0f - (float)Math.ceil(seconds));
+				a.sendBroadcast(i);
+			}
 			
-			if (s==9) a.sendCommand("20");
-			if (s==14) a.sendCommand("15");
-			if (s==19) a.sendCommand("10");
-			if (s==20) a.sendCommand("9");
-			if (s==21) a.sendCommand("8");
-			if (s==22) a.sendCommand("7");
-			if (s==23) a.sendCommand("6");
-			if (s==24) a.sendCommand("5");
-			if (s==25) a.sendCommand("4");
-			if (s==26) a.sendCommand("3");
-			if (s==27) a.sendCommand("2");
-			if (s==28) a.sendCommand("1");
-			
-        	if (s==30){
+			if (s==10 && s != mLastSecond) a.sendCommand("20");
+			if (s==15 && s != mLastSecond) a.sendCommand("15");
+			if (s==20 && s != mLastSecond) a.sendCommand("10");
+			if (s==21 && s != mLastSecond) a.sendCommand("9");
+			if (s==22 && s != mLastSecond) a.sendCommand("8");
+			if (s==23 && s != mLastSecond) a.sendCommand("7");
+			if (s==24 && s != mLastSecond) a.sendCommand("6");
+			if (s==25 && s != mLastSecond) a.sendCommand("5");
+			if (s==26 && s != mLastSecond) a.sendCommand("4");
+			if (s==27 && s != mLastSecond) a.sendCommand("3");
+			if (s==28 && s != mLastSecond) a.sendCommand("2");
+			if (s==29 && s != mLastSecond) a.sendCommand("1");
+        	if (s==30 && s != mLastSecond){
         		// Runout of climbout time
         		// Force the server to start the clock
 				a.sendCommand("0"); // Informs the driver that this was a late entry
@@ -141,19 +153,30 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
         	} else {
         		mHandler.postDelayed(updateClock, 10);
         	}
-
+			mLastSecond = s;
 		}
 	};
 	
 	public void setOffCourse(){
 		TextView status = (TextView) mView.findViewById(R.id.status);
-		status.setText("Off The Course");
+		status.setText(R.string.off_course);
+
+		/* send to ResultsServer Live Listener */
+        RaceTimerActivity a = (RaceTimerActivity)getActivity();
+        Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+        i.putExtra("com.marktreble.f3ftimer.value.state", 4);
+        a.sendBroadcast(i);
 	}
 
 	public void next(){
 		mHandler.removeCallbacks(updateClock);
     	RaceTimerActivity a = (RaceTimerActivity)getActivity();
    		a.getFragment(new RaceTimerFrag4(), 4);
+
+		/* send to ResultsServer Live Listener */
+        Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+        i.putExtra("com.marktreble.f3ftimer.value.state", 5);
+        a.sendBroadcast(i);
 	}
 
 	public void startPressed(){

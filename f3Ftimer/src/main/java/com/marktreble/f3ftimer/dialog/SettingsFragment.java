@@ -1,22 +1,10 @@
 package com.marktreble.f3ftimer.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.languages.Languages;
-import com.marktreble.f3ftimer.wifi.Wifi;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -24,28 +12,68 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener, OnInitListener {
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.languages.Languages;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
+import com.marktreble.f3ftimer.wifi.Wifi;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener, TextToSpeech.OnInitListener {
 	
 	private TextToSpeech mTts;
+	private String mCaller;
+
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
-        
-        mTts = new TextToSpeech(getActivity(), this);
-	}
-	
+
+        Intent intent = getActivity().getIntent(); // gets the previously created intent
+        Bundle extras = intent.getExtras();
+        mCaller = extras.getString("caller");
+        if (mCaller.equals("racelistactivity")) {
+            findPreference("pref_voice_lang").setEnabled(true);
+            mTts = new TextToSpeech(getActivity(), this);
+        } else {
+            // disable changing voice
+            findPreference("pref_voice_lang").setEnabled(false);
+        }
+
+        // Populate pref_input_src_device with paired devics
+        populateInputSourceDevices();
+
+        // Populate pref_external_display with paired devics
+        populateExternalDisplayDevices();
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if (mCaller.equals("racelistactivity")) {
+            mTts.stop();
+            mTts.shutdown();
+        }
+    }
+
+    @Override
+    public void onInit(int status) {
+        // Populate pref_voice_lang with installed voices
+        populateVoices();
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         
@@ -57,7 +85,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         setInputSourceActiveFields();
         setBTDeviceSummary("pref_input_src_device");
         setLangSummary("pref_voice_lang");
-        setLangSummary("pref_input_src");
+        setListSummary("pref_input_src", R.array.InputSources);
+        setStringSummary("pref_wind_angle_offset");
+        setStringSummary("pref_wind_measurement");
         setStringSummary("pref_usb_baudrate");
         setListSummary("pref_usb_stopbits", R.array.options_stopbits);
         setListSummary("pref_usb_databits", R.array.options_databits);
@@ -65,10 +95,15 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         setBTDeviceSummary("pref_external_display");
 
     	Preference pref_results_server = findPreference("pref_results_server");
-        if (!Wifi.canEnableWifiHotspot(getActivity())){
-        	pref_results_server.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
+
+        Preference pref_wifi_hotspot = findPreference("pref_wifi_hotspot");
+        String ip = RaceActivity.getIPAddress(true);
+    	if (pref_wifi_hotspot.isEnabled()) {
+            if (!Wifi.canEnableWifiHotspot(getActivity())) {
+                pref_results_server.setSummary("Broadcast results over wifi (http://" + ip + ":8080)\"\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
+            }
         } else {
-        	pref_results_server.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)");
+        	pref_results_server.setSummary("Broadcast results over wifi (http://" + ip + ":8080)");
         }
 
 		return view;
@@ -90,7 +125,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         
     	if (key.equals("pref_buzzer") 
      	 || key.equals("pref_voice") 
-    	 || key.equals("pref_results_server")){
+    	 || key.equals("pref_results_server")
+         || key.equals("pref_wind_measurement")){
     		// Send to Service
     		i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
     		i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
@@ -99,14 +135,42 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     	}
     		    	
     	if (key.equals("pref_voice_lang")){
-    		// Send to Service
-    		i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
-    		i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
-    		i.putExtra("com.marktreble.f3ftimer.value", sharedPreferences.getString(key, ""));
-    		getActivity().sendBroadcast(i);
+            setLangSummary(key);
+            String lang = sharedPreferences.getString(key, "");
+            String[] l = lang.split("_");
+            if (l.length == 2) {
+                Locale lo = new Locale(l[0], l[1]);
+                // set default text language
+                getResources().getConfiguration().locale = lo;
+                // Send to Service to set default speech language
+                i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+                i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
+                i.putExtra("com.marktreble.f3ftimer.value", sharedPreferences.getString(key, ""));
+                getActivity().sendBroadcast(i);
+                Log.i("SETTINGS", "Changed speech language to " + lo.getDisplayName());
+            }
     	}
 
-
+        if (key.equals("pref_wind_angle_offset")){
+            float angle = Float.parseFloat(sharedPreferences.getString(key, "0.0"));
+            if (angle < 0) {
+                angle = -angle;
+            }
+            if (angle > 360) {
+                angle = angle % 360;
+            }
+            String anglestr = String.format("%.1f", angle).replace(",", ".");
+            if (pref instanceof EditTextPreference) {
+                EditTextPreference textPref = (EditTextPreference) pref;
+                textPref.setText(anglestr);
+            }
+            setStringSummary("pref_wind_angle_offset");
+            // Send to Service
+            i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+            i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
+            i.putExtra("com.marktreble.f3ftimer.value", anglestr);
+            getActivity().sendBroadcast(i);
+        }
     }
     
     @Override
@@ -143,6 +207,13 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             findPreference("pref_usb_parity").setEnabled(false);
 
             findPreference("pref_input_src_device").setEnabled(false);
+        } else if (inputSource.equals(getString(R.string.TCP_IO))) {
+            findPreference("pref_usb_baudrate").setEnabled(false);
+            findPreference("pref_usb_stopbits").setEnabled(false);
+            findPreference("pref_usb_databits").setEnabled(false);
+            findPreference("pref_usb_parity").setEnabled(false);
+
+            findPreference("pref_input_src_device").setEnabled(false);
         } else {
             // USB - Hide device picker, show baud rate etc..
             findPreference("pref_usb_baudrate").setEnabled(true);
@@ -151,7 +222,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             findPreference("pref_usb_parity").setEnabled(true);
 
             findPreference("pref_input_src_device").setEnabled(false);
-
         }
     }
 
@@ -215,43 +285,16 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         }
     }
 
-    @Override
-	public void onInit(int status) {
-        // Populate pref_input_src_device with paired devics
-        populateInputSourceDevices();
-
-        // Populate pref_voice_lang with installed voices
-        populateVoices();
-
-        // Populate pref_external_display with paired devics
-        populateExternalDisplayDevices();
-    }
-
     private void populateVoices() {
-        String[] languages = Languages.getAvailableLanguages(getActivity());
+        ArrayList<Locale> availableLocales = new ArrayList<Locale>();
+        Languages.getAvailableTtsVoiceLanguages(getActivity(), mTts, availableLocales);
 
-        // Now check the available languages against the installed TTS Voices
-        Locale[] locales = Locale.getAvailableLocales();
         List<String> list_values = new ArrayList<>();
         List<String> list_labels = new ArrayList<>();
-        for (Locale locale : locales) {
-
-            int ttsres = TextToSpeech.LANG_NOT_SUPPORTED;
-            try {
-                ttsres = mTts.isLanguageAvailable(locale);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-
-            boolean hasLang = false;
-            for (String lang : languages) {
-                if (lang.equals(locale.getLanguage())) hasLang = true;
-            }
-            if ((ttsres == TextToSpeech.LANG_COUNTRY_AVAILABLE) && hasLang) {
-                list_labels.add(locale.getDisplayName());
-                list_values.add(locale.getLanguage() + "_" + locale.getCountry());
-                Log.i("AVAILABLE LANGUAGES", locale.getDisplayName() + ":" + locale.getLanguage() + "_" + locale.getCountry());
-            }
+        for (Locale locale : availableLocales) {
+            list_labels.add(locale.getDisplayName());
+            list_values.add(locale.getLanguage() + "_" + locale.getCountry());
+            Log.i("AVAILABLE LANGUAGES", locale.getDisplayName() + ":" + locale.getLanguage() + "_" + locale.getCountry());
         }
 
         ListPreference pref = (ListPreference) findPreference("pref_voice_lang");
@@ -259,7 +302,6 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         CharSequence[] values = list_values.toArray(new CharSequence[list_values.size()]);
         pref.setEntries(labels);
         pref.setEntryValues(values);
-
     }
 
     private void populateInputSourceDevices() {
@@ -297,12 +339,5 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
         pref.setEntries(labels);
         pref.setEntryValues(values);
-
-    }
-	
-    @Override
-    public void onDestroy(){
-    	super.onDestroy();
-    	mTts.shutdown();
     }
 }

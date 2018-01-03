@@ -11,6 +11,7 @@
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 	<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 	 
     <application
         android:allowBackup="true"
@@ -85,6 +86,15 @@
             android:label="F3F Race Timer Server"
             android:exported="false"
             android:process="com.marktreble.f3ftimer.driver">
+            <intent-filter>
+                <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".driver.TcpIoService"
+                 android:label="Tcp Socket Server connecting to host raspberrypi on port 1234"
+                 android:exported="false"
+                 android:process="com.marktreble.f3ftimer.driver">
             <intent-filter>
                 <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
             </intent-filter>
@@ -221,6 +231,10 @@
         </activity>
 
         <activity
+            android:name="com.marktreble.f3ftimer.dialog.RotateEditActivity" android:theme="@style/Theme.Transparent">
+        </activity>
+
+        <activity
             android:name=".exportimport.BluetoothImportRace" android:theme="@style/Theme.Overlay">
         </activity>
 
@@ -261,7 +275,7 @@
         </activity>
 
         <activity
-            android:name="com.nononsenseapps.filepicker.FilePickerActivity"
+            android:name="com.marktreble.f3ftimer.exportimport.FilteredFilePickerActivity"
             android:label="@string/app_name"
             android:theme="@style/FilePickerTheme">
             <intent-filter>

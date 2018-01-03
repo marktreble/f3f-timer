@@ -17,7 +17,6 @@ import android.util.Log;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-import com.nononsenseapps.filepicker.FilePickerActivity;
 
 /**
  * Created by marktreble on 09/12/2015.
@@ -51,20 +50,20 @@ public class BaseExport extends Activity {
                 .setNeutralButton("Change Path", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(mContext, FilePickerActivity.class);
+                        Intent i = new Intent(mContext, FilteredFilePickerActivity.class);
                         // This works if you defined the intent filter
                         // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
 
                         // Set these depending on your use case. These are the defaults.
-                        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-                        i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
-                        i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_DIR);
+                        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+                        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+                        i.putExtra(FilteredFilePickerActivity.EXTRA_MODE, FilteredFilePickerActivity.MODE_DIR);
 
                         // Configure initial directory by specifying a String.
                         // You could specify a String like "/storage/emulated/0/", but that can
                         // dangerous. Always use Android's API calls to get paths to the SD-card or
                         // internal memory.
-                        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+                        i.putExtra(FilteredFilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
 
                         startActivityForResult(i, ACTION_PICK_FOLDER);
                         dialog.dismiss();
@@ -113,6 +112,24 @@ public class BaseExport extends Activity {
         datasource2.open();
         String racepilots = datasource2.getPilotsSerialized(race_id);
         String racetimes = datasource2.getTimesSerialized(race_id, round);
+        datasource2.close();
+
+        String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
+
+        return data;
+    }
+
+    protected String getSerialisedRaceDataFile(int race_id, int round){
+        RaceData datasource = new RaceData(mContext);
+        datasource.open();
+        String race = datasource.getSerialized(race_id);
+        String racegroups = datasource.getGroupsSerialized(race_id, round);
+        datasource.close();
+
+        RacePilotData datasource2 = new RacePilotData(mContext);
+        datasource2.open();
+        String racepilots = datasource2.getPilotsSerialized(race_id);
+        String racetimes = datasource2.getTimesSerializedExt(race_id, round);
         datasource2.close();
 
         String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);

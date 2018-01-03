@@ -1,17 +1,17 @@
 /*
  * Copyright 2011 Ytai Ben-Tsvi. All rights reserved.
- *  
- * 
+ *
+ *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
- * 
+ *
  *    1. Redistributions of source code must retain the above copyright notice, this list of
  *       conditions and the following disclaimer.
- * 
+ *
  *    2. Redistributions in binary form must reproduce the above copyright notice, this list
  *       of conditions and the following disclaimer in the documentation and/or other materials
  *       provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
  * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ARSHAN POURSOHI OR
@@ -21,7 +21,7 @@
  * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  * The views and conclusions contained in the software and documentation are those of the
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied.
@@ -29,12 +29,16 @@
 
 package ioio.lib.android.accessory;
 
-import ioio.lib.api.IOIOConnection;
-import ioio.lib.api.exception.ConnectionLostException;
-import ioio.lib.spi.IOIOConnectionBootstrap;
-import ioio.lib.spi.IOIOConnectionFactory;
-import ioio.lib.spi.NoRuntimeSupportException;
-import ioio.lib.util.android.ContextWrapperDependent;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.hardware.usb.UsbAccessory;
+import android.hardware.usb.UsbManager;
+import android.os.ParcelFileDescriptor;
+import android.util.Log;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -44,17 +48,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Collection;
 
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.ContextWrapper;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.ParcelFileDescriptor;
-import android.util.Log;
-
-import com.android.future.usb.UsbAccessory;
-import com.android.future.usb.UsbManager;
+import ioio.lib.api.IOIOConnection;
+import ioio.lib.api.exception.ConnectionLostException;
+import ioio.lib.spi.IOIOConnectionBootstrap;
+import ioio.lib.spi.IOIOConnectionFactory;
+import ioio.lib.spi.NoRuntimeSupportException;
+import ioio.lib.util.android.ContextWrapperDependent;
 
 public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 		ContextWrapperDependent, IOIOConnectionBootstrap, IOIOConnectionFactory {
@@ -90,7 +89,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 	@Override
 	public void onCreate(ContextWrapper wrapper) {
 		activity_ = wrapper;
-		usbManager_ = UsbManager.getInstance(wrapper);
+		usbManager_ = (UsbManager) wrapper.getSystemService(Context.USB_SERVICE);
 		registerReceiver();
 	}
 
@@ -119,7 +118,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 			Log.d(TAG, "No accessory found.");
 		}
 	}
-	
+
 	@Override
 	public void reopen() {
 		open();

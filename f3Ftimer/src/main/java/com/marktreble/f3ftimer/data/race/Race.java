@@ -38,7 +38,7 @@ public class Race {
 	}
     
     public String toString(){
-        return String.format("{\"name\":\"%s\",\"type\":\"%d\",\"offset\":\"%d\",\"status\":\"%d\",\"round\":\"%d\",\"rounds_per_flight\":\"%d\",\"start_number\":\"%d\",\"race_id\":\"%d\"}", name, type, offset, status, round, rounds_per_flight, start_number, race_id);
+        return String.format("{\"name\":\"%s\",\"type\":\"%d\",\"offset\":\"%d\",\"status\":\"%d\",\"round\":\"%d\",\"rounds_per_flight\":\"%d\",\"start_number\":\"%d\",\"race_id\":\"%d\"}", name, type, offset, status, round, rounds_per_flight, start_number, id);
     }
     
     public Race(){

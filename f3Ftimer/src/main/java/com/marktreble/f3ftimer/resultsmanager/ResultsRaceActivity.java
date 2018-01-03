@@ -1,31 +1,17 @@
 package com.marktreble.f3ftimer.resultsmanager;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import android.app.AlertDialog;
-import android.content.ComponentName;
+import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.LabeledIntent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
+import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.ListActivity;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.os.Environment;
-import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -37,15 +23,23 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.race.*;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.race.Race;
+import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 
 public class ResultsRaceActivity extends ListActivity {
@@ -403,7 +397,7 @@ public class ResultsRaceActivity extends ListActivity {
 
 		RacePilotData datasource2 = new RacePilotData(ResultsRaceActivity.this);
 		datasource2.open();
-		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0, 0);
+		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 1);
 		ArrayList<String> p_names = new ArrayList<>();
 		ArrayList<String> p_emails = new ArrayList<>();
 		ArrayList<String> p_bib_numbers = new ArrayList<>();
@@ -442,7 +436,7 @@ public class ResultsRaceActivity extends ListActivity {
 			if (race.round>1){
 				// Loop through each round to find the winner, then populate the scores
 				for (int rnd=0; rnd<race.round-1; rnd++){
-					ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0, 0);
+					ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1);
 
 					mGroupScoring = datasource.getGroups(mRid, rnd+1);
 
@@ -499,7 +493,7 @@ public class ResultsRaceActivity extends ListActivity {
 						float time = Float.parseFloat(str_t);
 						float pnts = 0;
 						if (time>0)
-							pnts = round2Fixed((ftg[g]/time) * 1000, 2);
+							pnts = Results.round2Fixed((ftg[g]/time) * 1000, 2);
 
 
 						points[i] = pnts;
@@ -563,7 +557,7 @@ public class ResultsRaceActivity extends ListActivity {
 					//mArrNumbers.set(pos, p_bib_numbers.get(i));
 					mArrNumbers.set(pos, Integer.toString(p_positions[i]));
 					Pilot p = new Pilot();
-					p.points = round2Fixed(p_totals[i].floatValue(), 2);
+					p.points = Results.round2Fixed(p_totals[i].floatValue(), 2);
 					p.nationality = p_nationalities.get(i);
 					p.email = p_emails.get(i);
 					mArrPilots.set(pos, p);
@@ -575,7 +569,7 @@ public class ResultsRaceActivity extends ListActivity {
 				int pos = 1, lastpos = 1; // Last pos is for ties
 				for (int i=1; i<sz; i++){
 					float pilot_points = mArrPilots.get(i).points;
-					float normalised = round2Fixed(pilot_points/top_score * 1000, 2);
+					float normalised = Results.round2Fixed(pilot_points/top_score * 1000, 2);
 
 					previousscore = normalised;
 
@@ -591,17 +585,4 @@ public class ResultsRaceActivity extends ListActivity {
 		}
 		datasource.close();
 	}
-
-	private float round2Fixed(float value, double places){
-
-		double multiplier = Math.pow(10, places);
-		//Log.i("MULTIPLIER", Double.toString(multiplier));
-		double integer = Math.floor(value);
-		//Log.i("INTEGER", Double.toString(integer));
-		double precision = Math.floor((value-integer) * multiplier);
-		//Log.i("PRECISION", Double.toString(precision));
-
-		return (float)(integer + (precision/multiplier));
-	}
-
 }

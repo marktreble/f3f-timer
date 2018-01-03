@@ -12,13 +12,11 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.ParcelUuid;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.dialog.RaceTimerActivity;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;

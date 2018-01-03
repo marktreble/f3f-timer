@@ -69,15 +69,42 @@
         android:persistent="false">
 
         <CheckBoxPreference
+            android:id="@+id/wind_measurement"
+            android:defaultValue="true"
+            android:key="pref_wind_measurement"
+            android:summary="Enable/Disable wind measurement"
+            android:title="@string/wind_measurement"/>
+
+        <EditTextPreference
+            android:id="@+id/wind_angle_offset"
+            android:defaultValue="0"
+            android:key="pref_wind_angle_offset"
+            android:numeric="decimal"
+            android:singleLine="true"
+            android:title="@string/wind_angle_offset"/>
+
+        <CheckBoxPreference
             android:key="pref_manual_entry"
             android:title="Manual Entry"
             android:summary="Allow times to be entered manually"
             android:defaultValue="false" />
 
-       <CheckBoxPreference
+        <CheckBoxPreference
             android:key="pref_results_server"
             android:title="Run Results Server"
-            android:summary="Broadcast results over wifi (http://192.168.43.1:8080)"
+            android:summary="Serve results per HTTP"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="pref_wifi_hotspot"
+            android:title="Start Wifi Hotspot"
+            android:summary="Activate Wifi Hotspot to broadcast results"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="pref_usb_tether"
+            android:title="USB-Tethering"
+            android:summary="Show Tethering menu when connecting via TcpIoService"
             android:defaultValue="false" />
 
         <CheckBoxPreference

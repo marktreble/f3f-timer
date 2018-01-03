@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-	 	android:background="@drawable/rounded_corners">
+				xmlns:tools="http://schemas.android.com/tools"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:background="@drawable/rounded_corners">
         <ScrollView android:layout_width="match_parent"
             android:layout_height="match_parent">
     	<LinearLayout
@@ -127,8 +128,8 @@
 				android:text="@string/pilot_team"
 				android:textAppearance="?android:attr/textAppearanceLarge"
 				android:textColor="@color/text3"
-				android:visibility="gone"
-				/>
+				android:visibility="visible"
+				tools:text="Team" />
 
 			<AutoCompleteTextView
 				android:id="@+id/editText8"
@@ -136,8 +137,7 @@
 				android:layout_height="match_parent"
 				android:ems="10"
 				android:inputType="textCapSentences"
-				android:visibility="gone"
-				/>
+				android:visibility="visible" />
             <Button
                 android:id="@+id/button1"
                 android:layout_width="wrap_content"

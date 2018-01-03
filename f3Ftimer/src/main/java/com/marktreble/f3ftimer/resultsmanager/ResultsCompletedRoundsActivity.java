@@ -1,12 +1,10 @@
 package com.marktreble.f3ftimer.resultsmanager;
 
-import java.util.ArrayList;
-
-import android.content.Context;
-import android.os.Bundle;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,12 +14,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.marktreble.f3ftimer.data.race.*;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.race.Race;
+import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
+
+import java.util.ArrayList;
 
 public class ResultsCompletedRoundsActivity extends ListActivity {
 
@@ -62,6 +63,8 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 		for (int i=1; i<race.round; i++){
 			arrOptions.add(String.format("Round %d", i));			
 		}
+		if (race.status == Race.STATUS_COMPLETE)
+			arrOptions.add(String.format("Round %d", race.round));
 		
 		mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow , arrOptions);
 		if (race.round<=1){

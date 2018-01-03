@@ -1,8 +1,8 @@
 [{
 	"time":1,
+	"live":"0",
 	"race_name":"North Yorkshire Open 2014",
 	"race_status":"1",
-	"current_round":"5",
 	"ftd":{
 		"pilot":1,
 		"time":"32.57"

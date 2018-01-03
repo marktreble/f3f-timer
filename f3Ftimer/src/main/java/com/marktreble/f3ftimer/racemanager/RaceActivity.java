@@ -5,21 +5,7 @@
  */
 package com.marktreble.f3ftimer.racemanager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import com.marktreble.f3ftimer.*;
-import com.marktreble.f3ftimer.data.pilot.*;
-import com.marktreble.f3ftimer.data.race.*;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-import com.marktreble.f3ftimer.dialog.*;
-import com.marktreble.f3ftimer.driver.*;
-import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
-import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
-import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
-import com.marktreble.f3ftimer.wifi.Wifi;
-
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -44,11 +30,11 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -56,12 +42,50 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.pilot.PilotData;
+import com.marktreble.f3ftimer.data.race.Race;
+import com.marktreble.f3ftimer.data.race.RaceData;
+import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.data.results.Results;
+import com.marktreble.f3ftimer.dialog.AboutActivity;
+import com.marktreble.f3ftimer.dialog.FlyingOrderEditActivity;
+import com.marktreble.f3ftimer.dialog.GroupScoreEditActivity;
+import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.dialog.NextRoundActivity;
+import com.marktreble.f3ftimer.dialog.PilotsEditActivity;
+import com.marktreble.f3ftimer.dialog.RaceRoundTimeoutActivity;
+import com.marktreble.f3ftimer.dialog.RaceTimerActivity;
+import com.marktreble.f3ftimer.dialog.SettingsActivity;
+import com.marktreble.f3ftimer.dialog.StartNumberEditActivity;
+import com.marktreble.f3ftimer.dialog.TimeEntryActivity;
+import com.marktreble.f3ftimer.driver.BluetoothHC05Service;
+import com.marktreble.f3ftimer.driver.SoftBuzzerService;
+import com.marktreble.f3ftimer.driver.TcpIoService;
+import com.marktreble.f3ftimer.driver.USBIOIOService;
+import com.marktreble.f3ftimer.driver.USBOtherService;
+import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
+import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
+import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
+import com.marktreble.f3ftimer.wifi.Wifi;
+
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+
 public class RaceActivity extends ListActivity {
 	
 	public static boolean DEBUG = true;
 	public static int RESULT_ABORTED = 4; // Changed from 2 to 4 because of conflict with dialog dismissal
     public static int ROUND_SCRUBBED = 3;
     public static int ENABLE_BLUETOOTH = 5;
+    public static int RACE_FINISHED = 6;
 
 	// Dialogs
 	static int DLG_SETTINGS = 0;
@@ -128,6 +152,9 @@ public class RaceActivity extends ListActivity {
 
     private RaceData.Group mGroupScoring;
 
+    private static RaceActivity mInstance = null;
+
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Log.i("RACEACTIVITY", "ONCREATE");
@@ -139,6 +166,7 @@ public class RaceActivity extends ListActivity {
 		view.setPadding(0, 0, px, 0);
 		
 		mContext = this;
+        mInstance = this;
 		
 		setContentView(R.layout.race);
 			
@@ -154,9 +182,10 @@ public class RaceActivity extends ListActivity {
         mGroupScoring = datasource.getGroups(race.id, race.round);
   		datasource.close();
   		mRace = race;
-  		
+        mRnd = mRace.round;
   		setRound();
 
+        getPreferences();
 
         mListView = getListView();
         registerForContextMenu(mListView);
@@ -177,7 +206,6 @@ public class RaceActivity extends ListActivity {
 
         if (savedInstanceState == null){
 	        // Start Results server
-            getPreferences();
 	       	startServers();
 
             final Handler handler = new Handler();
@@ -185,12 +213,19 @@ public class RaceActivity extends ListActivity {
 
             handler.postDelayed(new Runnable(){
                 public void run(){
-                    Log.i("UUUUU", "CHECKING CONN");
+                    Log.d("UUUUU", "CHECKING CONN");
                     sendCommand("get_connection_status");
                     handler.postDelayed(this, delay);
                 }
             }, delay);
 
+        }
+
+        TextView tt = (TextView) findViewById(R.id.race_title);
+        if (mPrefResults) {
+            tt.setText("Round "+Integer.toString(mRnd) + " - " + mRace.name + " (" + getIPAddress(true) + ":8080)");
+        } else {
+            tt.setText("Round "+Integer.toString(mRnd) + " - " + mRace.name);
         }
 
         // Render the list
@@ -222,19 +257,99 @@ public class RaceActivity extends ListActivity {
 
 	
 	public void onBackPressed (){
-		// destroy the servers when back is pressed
-		stopServers();
+		/* Don't destroy the servers when back is pressed.
+		   Stop them when a race is selected, so that results can still be viewed in the meantime, minimizing downtime. */
+		//stopServers();
 		super.onBackPressed();
 	}
-	
+
+    /**
+     * Get IP address of the first network interface found (IPv4 prior to IPv6).
+     */
+    public static String getIPAddress(boolean useIPv4) {
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface intf : interfaces) {
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress();
+                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
+                        boolean isIPv4 = sAddr.indexOf(':')<0;
+
+                        if (useIPv4) {
+                            if (isIPv4)
+                                return sAddr;
+                        } else {
+                            if (!isIPv4) {
+                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
+                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        } // for now eat exceptions
+        return "";
+    }
+
+    public void setupUsbTethering() {
+        IntentFilter extraFilterToGetBatteryInfo = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent extraIntentToGetBatteryInfo = getApplicationContext().registerReceiver(null, extraFilterToGetBatteryInfo);
+        int chargePlug = extraIntentToGetBatteryInfo.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+        boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
+        if (usbCharge) {
+            try {
+                boolean found = false;
+                Enumeration<NetworkInterface> ifs = NetworkInterface.getNetworkInterfaces();
+                if (ifs != null) {
+                    while (ifs.hasMoreElements()) {
+                        NetworkInterface iface = ifs.nextElement();
+                        System.out.println(iface.getName());
+                        if (!iface.getName().contains("usb") && !iface.getName().contains("rndis")) {
+                            continue;
+                        }
+                        found = true;
+                        Enumeration<InetAddress> en = iface.getInetAddresses();
+                        while (en.hasMoreElements()) {
+                            InetAddress addr = en.nextElement();
+                            String s = addr.getHostAddress();
+                            int end = s.lastIndexOf("%");
+                            if (end > 0)
+                                System.out.println("\t" + s.substring(0, end));
+                            else
+                                System.out.println("\t" + s);
+                        }
+                        break;
+                    }
+                }
+                if (!found) {
+                    // Enable tethering
+                    Intent tetherSettings = new Intent();
+                    tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+                    tetherSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(tetherSettings);
+                }
+            } catch (SocketException ex) {
+                // error handling appropriate for your application
+            }
+        }
+    }
+
 	public void startServers(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
     	// Start Results server
 		if (mPrefResults){
 			Log.i("START SERVICE","RESULTS");
-			if (Wifi.canEnableWifiHotspot(this)){
+
+            boolean pref_wifi_hotspot = sharedPref.getBoolean("pref_wifi_hotspot", false);
+            if (pref_wifi_hotspot && Wifi.canEnableWifiHotspot(this) && !mInputSource.equals(getString(R.string.TCP_IO))){
     			mWifiSavedState = Wifi.enableWifiHotspot(this);
                 Log.i("WIFI", "Enabled - saved state " + ((mWifiSavedState) ? "On" : "Off"));
 			}
+
             RaceResultsService.stop(this);
             
 			Intent serviceIntent = new Intent(this, RaceResultsService.class);			    	
@@ -262,12 +377,12 @@ public class RaceActivity extends ListActivity {
         USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
+        TcpIoService.stop(this);
         
         Intent serviceIntent = null;
         
         // Start Timer Driver
         Bundle extras = getIntent().getExtras();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         Map<String,?> keys = sharedPref.getAll();
 
         for(Map.Entry<String,?> entry : keys.entrySet()){
@@ -279,13 +394,19 @@ public class RaceActivity extends ListActivity {
         SoftBuzzerService.startDriver(this, mInputSource, mRid, extras);
         BluetoothHC05Service.startDriver(this, mInputSource, mRid, extras);
 
+        boolean pref_usb_tethering = sharedPref.getBoolean("pref_usb_tethering", false);
+        if (pref_usb_tethering) {
+            setupUsbTethering();
+        }
+        TcpIoService.startDriver(this, mInputSource, mRid, extras);
 	}
 	
 	public void stopServers(){
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		// Stop all Servers
-
         if (RaceResultsService.stop(this)){
-    		if (Wifi.canEnableWifiHotspot(this)){
+            boolean pref_wifi_hotspot = sharedPref.getBoolean("pref_wifi_hotspot", false);
+            if (pref_wifi_hotspot && Wifi.canEnableWifiHotspot(this) && !mInputSource.equals(getString(R.string.TCP_IO))){
 				Wifi.disableWifiHotspot(this, mWifiSavedState);
 			}
        	}
@@ -296,7 +417,7 @@ public class RaceActivity extends ListActivity {
         USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
-
+        TcpIoService.stop(this);
     }
 	
 	@Override
@@ -376,15 +497,10 @@ public class RaceActivity extends ListActivity {
             mExternalDisplayStatus.setVisibility(View.GONE);
         }
 
-        if (sInputSource.equals(mInputSource))
+        if (sInputSource.equals(mInputSource) && mStatusIcon != null)
             mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName() )));
 
         mPower.setText(mBatteryLevel);
-
-
-
-
-
     }
 	
 	public void onPause(){
@@ -411,9 +527,8 @@ public class RaceActivity extends ListActivity {
 
   		TextView tt = (TextView) findViewById(R.id.race_title);
   		tt.setText("Round "+Integer.toString(mRnd) + " - "+mRace.name);
-
-
 	}
+
 	/*
 	 * Start a pilot on his run
 	 */
@@ -423,7 +538,7 @@ public class RaceActivity extends ListActivity {
 
         Pilot p = mArrPilots.get(position);
         int round = mArrRounds.get(position);
-        if (p.time==0 && !p.flown && p.status!=Pilot.STATUS_RETIRED){
+        if ((p.time==0 || Float.isNaN(p.time)) && !p.flown && p.status!=Pilot.STATUS_RETIRED){
             String bib_no = mArrNumbers.get(position);
         	 mPilotDialogShown = showPilotDialog(round, p.id, bib_no);
         }
@@ -467,6 +582,7 @@ public class RaceActivity extends ListActivity {
                     }
                 }, 600);
 			}
+
 			if (requestCode == RaceActivity.DLG_TIMER){
 				// Response from completed run
 
@@ -544,24 +660,18 @@ public class RaceActivity extends ListActivity {
                 
                 int num;
                 try {
-                    num = Integer.parseInt(num_groups);
+                    num = Math.max(1, Integer.parseInt(num_groups));
                 } catch (NumberFormatException e){
-                    num = 0;
+                    num = 1;
                 }
                 
                 Log.i("GROUP SCORING", "CHANGED NUMBER OF GROUPS TO "+num_groups);
 
-                RacePilotData datasource = new RacePilotData(RaceActivity.this);
-                datasource.open();
-                ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, mRnd, mRace.offset, mRace.start_number);
-                datasource.close();
-
                 RaceData datasource2 = new RaceData(RaceActivity.this);
                 datasource2.open();
-                mGroupScoring = datasource2.setGroups(mRid, mRnd, num, getStartPilot(allPilots, mRace));
+                mGroupScoring = datasource2.setGroups(mRid, mRnd, num);
                 datasource2.close();
                 setRound();
-
             }
 
             if (requestCode== RaceActivity.DLG_START_NUMBER_EDIT){
@@ -569,9 +679,11 @@ public class RaceActivity extends ListActivity {
 
                 int num;
                 try {
-                    num = Math.max(1, Integer.parseInt(start_number));
+                    /* accept zero, to disable start_number usage */
+                    num = Math.max(0, Integer.parseInt(start_number));
+                    num = Math.min(mArrPilots.size(), num);
                 } catch (NumberFormatException e){
-                    num = 1;
+                    num = 0;
                 }
 
                 Log.i("FLYING ORDER", "CHANGED START NUMBER TO " + start_number);
@@ -579,15 +691,26 @@ public class RaceActivity extends ListActivity {
                 datasource.open();
                 datasource.setStartNumber(mRid, num);
                 mRace = datasource.getRace(mRid); // Update the ram model
-                mGroupScoring = datasource.setGroups(mRid, mRnd, mGroupScoring.num_groups, num);
                 datasource.close();
+
+                RacePilotData datasource1 = new RacePilotData(RaceActivity.this);
+                datasource1.open();
+                datasource1.setStartPos(mRid, mRnd, mRace.offset, mRace.start_number, true);
+                datasource1.close();
+
                 setRound();
             }
 
             getNamesArray();
             mArrAdapter.notifyDataSetChanged();
 		}
-		
+
+        if(resultCode==RaceActivity.RACE_FINISHED){
+            if (requestCode == RaceActivity.DLG_NEXT_ROUND) {
+                finishRace();
+            }
+        }
+
 		if(resultCode==RaceActivity.ROUND_SCRUBBED){
 			if (requestCode == RaceActivity.DLG_TIMEOUT){
                 scrubRound();
@@ -668,12 +791,12 @@ public class RaceActivity extends ListActivity {
 
 		if (menuItemIndex == 4){
 			// Retired
-	  		datasource.setRetired(true, mRid, p.id);
+	  		datasource.setRetired(true, mRid, mRnd, p.id);
 		}
 
 		if (menuItemIndex == 5){
 			// Retired
-	  		datasource.setRetired(false, mRid, p.id);
+	  		datasource.setRetired(false, mRid, mRnd, p.id);
 		}
 
 		if (menuItemIndex == 6){
@@ -696,7 +819,7 @@ public class RaceActivity extends ListActivity {
 	public void scorePilotZero(Pilot p){
 		RacePilotData datasource = new RacePilotData(RaceActivity.this);
   		datasource.open();
-		datasource.setPilotTimeInRound(mRid, p.id, mRnd, 0);
+  		datasource.scoreZero(mRid, mRnd, p.id);
 		datasource.close();
 
         getNamesArray();
@@ -704,29 +827,16 @@ public class RaceActivity extends ListActivity {
         invalidateOptionsMenu();
 	}
 
-    private int getStartPilot(ArrayList<Pilot> allPilots, Race race){
-
-        int start = 1;
-        int numPilots = allPilots.size();
-        if (race.start_number>0){
-            start =race.start_number;
-        } else {
-            if (numPilots > 0)
-                start = ((race.round - 1) * race.offset) % numPilots;
-        }
-        return start;
-    }
 	/*
 	 * Get Pilots from database to populate the listview
 	 */
-	
 	private void getNamesArray(){
 
 		RacePilotData datasource = new RacePilotData(this);
 		datasource.open();
 		ArrayList<ArrayList<Pilot>> allPilots = new ArrayList<>();
         for (int r=mRnd;r<mRnd+mRace.rounds_per_flight; r++)
-           allPilots.add(datasource.getAllPilotsForRace(mRid, r, mRace.offset, mRace.start_number));
+            allPilots.add(datasource.getAllPilotsForRace(mRid, r));
 
         // Initialise Arrays if needed
         if (mArrNames == null) {
@@ -758,9 +868,14 @@ public class RaceActivity extends ListActivity {
         // (used to close up the gaps in the list, and pop the unused ends off the arrays at the end)
         int skipped = 0;
 
-        // Get the start number
-        int start = mGroupScoring.start_pilot;
         int numPilots = allPilots.get(0).size();
+        // Get the start number offset into the pilots list (when sorted by id)
+        int start;
+        if (mRace.start_number > 0) {
+            start = mRace.start_number - 1;
+        } else {
+            start = ((mRace.round - 1) * mRace.offset) % numPilots;
+        }
 
         // Find actual number of pilots
         int num_pilots = 0;
@@ -808,6 +923,7 @@ public class RaceActivity extends ListActivity {
                         first = (r==0);
                     }
                 }
+                p.group = g + 1;
 
                 // Calculate the position in the array
                 int position = (c * mRace.rounds_per_flight) + r - skipped;
@@ -816,7 +932,7 @@ public class RaceActivity extends ListActivity {
                 mArrNames.set(position, String.format("%s %s", p.firstname, p.lastname));
 
                 // (c+start+1)%numPilots is the bib number
-                int bib_number = ((c + (start-1)) % numPilots)+1;
+                int bib_number = ((c + start) % numPilots) + 1;
                 if (r == 0){
                     mArrNumbers.set(position, String.format("%d", bib_number));
                 } else {
@@ -834,14 +950,14 @@ public class RaceActivity extends ListActivity {
                     skipped += mRace.rounds_per_flight;
                 } else {
 
-                    if (p.time == 0 && (((p.status & Pilot.STATUS_RETIRED) == 0) && (!p.flown))) {
+                    if ((p.time==0 || Float.isNaN(p.time)) && (((p.status & Pilot.STATUS_RETIRED) == 0) && (!p.flown))) {
                         // Unset round complete flag
                         // Somebody who isn't retired hasn't flown
                         mRoundComplete = false;
                     } else {
                         // Unset round not started flag
                         // Somebody has flown
-                        if ((p.status & Pilot.STATUS_RETIRED) != Pilot.STATUS_RETIRED) {
+                        if ((p.status & Pilot.STATUS_RETIRED) == 0) {
 
 
                             mRoundNotStarted = false;
@@ -850,7 +966,7 @@ public class RaceActivity extends ListActivity {
                     }
 
                     // Get the next pilot in the running order
-                    if (p.time == 0 && !p.flown &&
+                    if ((p.time==0 || Float.isNaN(p.time)) && !p.flown &&
                             (((p.status & Pilot.STATUS_NORMAL) == Pilot.STATUS_NORMAL) /*|| ((p.status & Pilot.STATUS_REFLIGHT) == Pilot.STATUS_REFLIGHT)*/)
                             && (mNextPilot == null || mNextPilot.position > position)) {
                         mNextPilot = p;
@@ -861,7 +977,7 @@ public class RaceActivity extends ListActivity {
                     }
 
                     // Get the next reflight pilot in the running order
-                    if (p.time == 0 && !p.flown &&
+                    if ((p.time==0 || Float.isNaN(p.time)) && !p.flown &&
                             ((p.status & Pilot.STATUS_REFLIGHT) == Pilot.STATUS_REFLIGHT)
                             && (mNextReflightPilot == null || mNextReflightPilot.position > position)) {
                         mNextReflightPilot = p;
@@ -883,15 +999,18 @@ public class RaceActivity extends ListActivity {
             for (int i=0; i<mArrPilots.size(); i+=mRace.rounds_per_flight){
                 Pilot p = mArrPilots.get(i+r);
                 if (p.time > 0)
-                    p.points = (int) ((ftg[mArrGroups.get(i+r)] / p.time) * 1000);
+                    p.points = Results.round2Fixed(((ftg[mArrGroups.get(i+r)] / p.time) * 1000), 2);
 
-                if (p.time == 0 && p.flown) // Avoid division by 0
+                if ((p.time==0 || Float.isNaN(p.time)) && p.flown) // Avoid division by 0
                     p.points = 0;
 
                 p.points -= p.penalty * 100;
 
-                if (p.time == 0 && p.status == Pilot.STATUS_RETIRED) // Avoid division by 0
+                if ((p.time==0 || Float.isNaN(p.time)) && p.status == Pilot.STATUS_RETIRED) // Avoid division by 0
                     p.points = 0;
+
+                datasource.updatePoints(p.id, mRid, mRnd + r, p.points);
+                datasource.updateGroup(p.id, mRid, mRnd + r, p.group);
             }
         }
 
@@ -919,7 +1038,7 @@ public class RaceActivity extends ListActivity {
    	   		public View getView(int position, View convertView, ViewGroup parent) {
                 View row;
                 
-                if (mArrNames.get(position) == null) return null;
+                if (0 > position || position >= mArrNames.size() || mArrNames.get(position) == null) return convertView;
                 
                 if (null == convertView) {
                 row = getLayoutInflater().inflate(R.layout.listrow_racepilots, parent, false);
@@ -979,19 +1098,19 @@ public class RaceActivity extends ListActivity {
                 }
                 
                 TextView time = (TextView) row.findViewById(R.id.time);
-                if (p.time==0 && !p.flown){
+                if ((p.time==0 || Float.isNaN(p.time)) && !p.flown){
                 	time.setText(getResources().getString(R.string.notime));
                 	if (mNextPilot!=null && mNextPilot.pilot_id == p.pilot_id && mNextPilot.position == position)
                    		row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.lt_grey));
                 		
                 } else {
-                	time.setText(String.format("%.2f", p.time));
+                	time.setText(String.format("%.2f", p.time).replace(",", "."));
                		row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.dk_grey));
                 }
 
                 TextView points = (TextView) row.findViewById(R.id.points);
                 if (p.flown || p.status==Pilot.STATUS_RETIRED){
-            		points.setText(Float.toString(p.points));
+            		points.setText(String.format("%.2f", p.points));
                 } else {
             		points.setText("");
                 }
@@ -1149,11 +1268,14 @@ public class RaceActivity extends ListActivity {
 
 	public boolean isServiceRunning(String serviceClassName){
         final ActivityManager activityManager = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        final List<android.app.ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
+        final List<ActivityManager.RunningServiceInfo> services;
+        if (activityManager != null) {
+            services = activityManager.getRunningServices(Integer.MAX_VALUE);
 
-        for (android.app.ActivityManager.RunningServiceInfo runningServiceInfo : services) {
-            if (runningServiceInfo.service.getClassName().equals(serviceClassName)){
-                return true;
+            for (android.app.ActivityManager.RunningServiceInfo runningServiceInfo : services) {
+                if (runningServiceInfo.service.getClassName().equals(serviceClassName)){
+                    return true;
+                }
             }
         }
         return false;
@@ -1172,8 +1294,13 @@ public class RaceActivity extends ListActivity {
 		public void onReceive(Context context, Intent intent) {
 			if (intent.hasExtra("com.marktreble.f3ftimer.service_callback")){
 				Bundle extras = intent.getExtras();
-				String data = extras.getString("com.marktreble.f3ftimer.service_callback");
-				if (data == null){
+                String data = null;
+                if (extras != null) {
+                    data = extras.getString("com.marktreble.f3ftimer.service_callback");
+                } else {
+                    return;
+                }
+                if (data == null){
 					return;
 				}
 
@@ -1207,16 +1334,18 @@ public class RaceActivity extends ListActivity {
 
                 if (data.equals("driver_started")){
                     mStatusIcon = extras.getString("icon");
-
-                    mConnectionStatus = true;
-                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName() )));
+                    if (mStatusIcon != null) {
+                        mConnectionStatus = true;
+                        mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName())));
+                    }
                 }
 
                 if (data.equals("driver_stopped")){
                     mStatusIcon = extras.getString("icon");
-
-                    mConnectionStatus = false;
-                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName() )));
+                    if (mStatusIcon != null) {
+                        mConnectionStatus = false;
+                        mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName())));
+                    }
                 }
 
                 if (data.equals("external_display_connected")){
@@ -1249,10 +1378,51 @@ public class RaceActivity extends ListActivity {
                     startActivityForResult(enableBtIntent, ENABLE_BLUETOOTH);
                 }
 
+                if (data.equals("finishRace")){
+                    finishRace();
+                }
+
+                if (data.equals("wind_legal")) {
+                }
+
+                if (data.equals("wind_illegal")) {
+                }
+            } else if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
+                float windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
+                float windAngleRelative = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_relative");
+                float windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
+                boolean windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
+                int windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
+                String title = "";
+                if (windLegal && windSpeedCounter == 20) {
+                    title = getString(R.string.app_race)
+                            + String.format("  abs: %.2f °", windAngleAbsolute)
+                            + String.format(" rel: %.2f °", windAngleRelative)
+                            + String.format(" %.2f m/s", windSpeed)
+                            + "   legal";
+                } else if (windLegal) {
+                    title = getString(R.string.app_race)
+                            + String.format("  abs: %.2f °", windAngleAbsolute)
+                            + String.format(" rel: %.2f °", windAngleRelative)
+                            + String.format(" %.2f m/s", windSpeed)
+                            + String.format("   legal (%d s)", windSpeedCounter);
+                } else {
+                    title = getString(R.string.app_race)
+                            + String.format("  abs: %.2f °", windAngleAbsolute)
+                            + String.format(" rel: %.2f °", windAngleRelative)
+                            + String.format(" %.2f m/s", windSpeed)
+                            + " illegal";
+                }
+                updateRaceTitle(title);
             }
 		}
-        };
+    };
 
+    public static void updateRaceTitle(String title) {
+        if (mInstance != null) {
+            mInstance.setTitle(title);
+        }
+    }
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -1268,7 +1438,7 @@ public class RaceActivity extends ListActivity {
         getNamesArray(); // just to ensure that the bools below are up to date!
         
         // Round Complete (Only enable when the round is actually complete)
-	    menu.getItem(0).setEnabled(mRoundComplete);
+	    menu.getItem(0).setEnabled(mRoundComplete && mRace.status != Race.STATUS_COMPLETE);
 
         // Change Flying Order (Only enable before the RACE is started)
         menu.getItem(1).setEnabled(mRoundNotStarted && mRnd == 1);
@@ -1277,12 +1447,18 @@ public class RaceActivity extends ListActivity {
         menu.getItem(2).setEnabled(mRoundNotStarted);
 
         // Scrub Round
-        menu.getItem(3).setEnabled(!mGroupNotStarted);
+        menu.getItem(3).setEnabled(!mGroupNotStarted && mRace.status != Race.STATUS_COMPLETE);
+
+        // Round Timer (Only enable when the race is not complete)
+        menu.getItem(4).setEnabled(mRace.status != Race.STATUS_COMPLETE);
 
         // Group scoring (disable when multiple flights are being used)
-        menu.getItem(4).setEnabled(mRace.rounds_per_flight < 2);
+        menu.getItem(5).setEnabled(mRace.rounds_per_flight < 2 && mRace.status != Race.STATUS_COMPLETE);
 
-	    return super.onPrepareOptionsMenu(menu);
+        // Add Pilot (Only enable when the race is not complete)
+        menu.getItem(6).setEnabled(mRace.status != Race.STATUS_COMPLETE);
+
+        return super.onPrepareOptionsMenu(menu);
 
 	}
 
@@ -1355,18 +1531,26 @@ public class RaceActivity extends ListActivity {
         super.onOptionsMenuClosed(menu);
     }
 
-    private void nextRound(){
-        RacePilotData datasource = new RacePilotData(RaceActivity.this);
+    private void finishRace() {
+        RaceData datasource = new RaceData(this);
         datasource.open();
-        ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, mRnd, mRace.offset, mRace.start_number);
+        mRace = datasource.finishRound(mRid);
         datasource.close();
+    }
 
+    @SuppressLint("SetTextI18n")
+    private void nextRound(){
         RaceData datasource2 = new RaceData(this);
 		datasource2.open();
         mRace = datasource2.nextRound(mRid);
 		mRnd = mRace.round;
-        mGroupScoring = datasource2.setGroups(mRid, mRnd, 1, getStartPilot(allPilots, mRace));
-		datasource.close();
+        mGroupScoring = datasource2.getGroups(mRid, mRnd); // read groups for predefined round
+        datasource2.close();
+
+        RacePilotData datasource = new RacePilotData(RaceActivity.this);
+        datasource.open();
+        datasource.setStartPos(mRid, mRnd, mRace.offset, mRace.start_number, false);
+        datasource.close();
 
         // Update the spreadsheet file
         new SpreadsheetExport().writeResultsFile(mContext, mRace);
@@ -1375,6 +1559,13 @@ public class RaceActivity extends ListActivity {
         getNamesArray();
         mArrAdapter.notifyDataSetChanged();
         invalidateOptionsMenu(); // Refresh menu so that next round becomes active
+
+        TextView tt = (TextView) findViewById(R.id.race_title);
+        if (mPrefResults) {
+            tt.setText("Round "+Integer.toString(mRnd) + " - " + mRace.name + " (Resultserver running on " + getIPAddress(true) + ":8080)");
+        } else {
+            tt.setText("Round "+Integer.toString(mRnd) + " - " + mRace.name);
+        }
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -1409,6 +1600,8 @@ public class RaceActivity extends ListActivity {
             datasource2.open();
             datasource2.deleteRound(mRid, mRnd);
             datasource2.close();
+
+            mRnd = Math.min(0, mRnd - 1);
         } else {
             // Just delete the times for the current group
             RacePilotData datasource = new RacePilotData(RaceActivity.this);
@@ -1426,6 +1619,7 @@ public class RaceActivity extends ListActivity {
 	public void changeFlyingOrder(){
 		Intent intent = new Intent(mContext, FlyingOrderEditActivity.class);
         intent.putExtra("race_id", mRid);
+        intent.putExtra("round", mRnd);
     	startActivityForResult(intent, DLG_FLYING_ORDER_EDIT);
 	}
 
@@ -1443,6 +1637,7 @@ public class RaceActivity extends ListActivity {
 	private void addPilot(Pilot p){
 		RacePilotData datasource = new RacePilotData(this);
 		datasource.open();
+        p.status = Pilot.STATUS_NORMAL;
 		datasource.addPilot(p, mRid);
 		datasource.close();
 	}
@@ -1457,6 +1652,7 @@ public class RaceActivity extends ListActivity {
 	
 	public void settings(){
 		Intent intent = new Intent(mContext, SettingsActivity.class);
+		intent.putExtra("caller", "raceactivity");
     	startActivityForResult(intent, DLG_SETTINGS);
 	}
 

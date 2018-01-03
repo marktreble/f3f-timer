@@ -70,7 +70,6 @@
     <string name="menu_about">About</string>
     <string name="menu_share">Part</string>
     <string name="enter_time">Entrer l\'heure</string>
-    <string name="Demo">Demo Mode - On Screen Buzzers</string>
     <string name="pref_enable_acra">Enable ACRA Crash Reports</string>
     <string name="pref_acra_enabled">Enabled</string>
     <string name="pref_acra_disabled">Disabled</string>

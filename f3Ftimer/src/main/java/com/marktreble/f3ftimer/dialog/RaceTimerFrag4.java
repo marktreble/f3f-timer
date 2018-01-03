@@ -4,18 +4,18 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.os.Bundle;
-import android.os.Handler;
+
+import com.marktreble.f3ftimer.R;
 
 public class RaceTimerFrag4 extends RaceTimerFrag {
 
@@ -24,9 +24,11 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 	private int mLap = 0;
 	private long mEstimate = 0;
 	private Float mFinalTime = -1.0f;
+	private long mLastSecond = 0;
 	
     private boolean mClickedOnce = false;
     private boolean mStartPressed = false;
+	private int status = 0;
 
 	public RaceTimerFrag4(){
 		
@@ -56,6 +58,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
         
         Button ab = (Button) mView.findViewById(R.id.button_abort);
+		ab.setText(getResources().getText(R.string.abort));
 		ab.setVisibility(View.VISIBLE);
 	    ab.setOnClickListener(new View.OnClickListener() {
 	        @Override
@@ -87,7 +90,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
                 if (mClickedOnce) return;
                 mClickedOnce = true;
 				mStartPressed = true;
-	        	next();
+	        	next(0);
 	            
 	        }
 	    });
@@ -120,12 +123,16 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
         }
 
-		TextView status = (TextView) mView.findViewById(R.id.status);
-		status.setText(getString(R.string.on_course));
+		TextView statusText = (TextView) mView.findViewById(R.id.status);
+		if (status == 0) {
+			statusText.setText(R.string.on_course);
+		} else {
+			statusText.setText(R.string.off_course);
+		}
 
-        setLeg(mLap, mEstimate);
+        setLeg(mLap, mEstimate, 0, 0, 0, "");
 		if (mFinalTime>=0)
-			setFinal(mFinalTime);
+			setFinal(mFinalTime, 0, "");
 		
 		super.setPilotName();
 
@@ -135,7 +142,25 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
 		return mView;
 	}	
-	
+
+	public void setOnCourse(){
+		if (mView == null) {
+			status = 0;
+		} else {
+			TextView status = (TextView) mView.findViewById(R.id.status);
+			status.setText(R.string.on_course);
+		}
+	}
+
+	public void setOffCourse(){
+		if (mView == null) {
+			status = 1;
+		} else {
+			TextView status = (TextView) mView.findViewById(R.id.status);
+			status.setText(R.string.off_course);
+		}
+	}
+
 	private Runnable updateClock = new Runnable(){
 		public void run(){
         	long elapsed = System.currentTimeMillis() - mStart;
@@ -148,6 +173,15 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 			}
 			cd.setText(str_time);
 
+			int s = (int) Math.floor(seconds);
+			if (s != mLastSecond) {
+				Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+				i.putExtra("com.marktreble.f3ftimer.value.flightTime", 0.0f + s);
+				RaceTimerActivity a = (RaceTimerActivity) getActivity();
+				a.sendBroadcast(i);
+			}
+			mLastSecond = s;
+
 			TextView min = (TextView) mView.findViewById(R.id.mintime);
 			min.setText(str_time);
 
@@ -156,7 +190,9 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		}
 	};
 
-	public void setLeg(int number, long estimated){
+	public void setLeg(int number, long estimated, long fastestLegTime, long legTime, long deltaTime, String fastestFlightPilot){
+		RaceTimerActivity a = (RaceTimerActivity)getActivity();
+
 		// Stop the clock here
 		if (number == 10 && mFinalTime<0){
             long elapsed = System.currentTimeMillis() - mStart;
@@ -167,7 +203,9 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 			TextView min = (TextView) mView.findViewById(R.id.mintime);
 			min.setText("");
 
-			RaceTimerActivity a = (RaceTimerActivity)getActivity();
+            Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+            i.putExtra("com.marktreble.f3ftimer.value.flightTime", elapsed/1000.0f);
+			a.sendBroadcast(i);
             a.sendCommand(String.format("::%.2f", (float)elapsed/1000));
         }
 
@@ -175,6 +213,15 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		mEstimate = estimated;
 		
 		if (number>0){
+			Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+			i.putExtra("com.marktreble.f3ftimer.value.turnNumber", number);
+            i.putExtra("com.marktreble.f3ftimer.value.legTime", legTime / 1000.0f);
+			i.putExtra("com.marktreble.f3ftimer.value.fastestLegTime", fastestLegTime / 1000.0f);
+			i.putExtra("com.marktreble.f3ftimer.value.fastestLegPilot", fastestFlightPilot);
+			i.putExtra("com.marktreble.f3ftimer.value.deltaTime", deltaTime / 1000.0f);
+			i.putExtra("com.marktreble.f3ftimer.value.estimatedTime", estimated / 1000.0f);
+			a.sendBroadcast(i);
+
 			TextView lap = (TextView) mView.findViewById(R.id.lap);
 			String str_lap = String.format("Turn: %d", number);
 			lap.setText(str_lap);
@@ -188,7 +235,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		
 	}
 	
-	public void setFinal(Float time){
+	public void setFinal(Float time, float fastestFlightTime, String fastestFlightPilot){
 		mHandler.removeCallbacks(updateClock);
 		TextView cd = (TextView) mView.findViewById(R.id.time);
 		String str_time = String.format("%.2f", time);
@@ -207,6 +254,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		status.setText("Run Complete");
 
 		Button abort = (Button) mView.findViewById(R.id.button_abort);
+		abort.setText(getResources().getText(R.string.interrupt));
 		abort.setVisibility(View.GONE);
 
         Button baseA = (Button) mView.findViewById(R.id.base_A);
@@ -226,18 +274,29 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		RaceTimerActivity a = (RaceTimerActivity) getActivity();
 		a.sendCommand("begin_timeout");
 
+		/* send to ResultsServer Live Listener */
+		Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+        i.putExtra("com.marktreble.f3ftimer.value.fastestFlightTime", fastestFlightTime);
+		i.putExtra("com.marktreble.f3ftimer.value.fastestFlightPilot", fastestFlightPilot);
+		i.putExtra("com.marktreble.f3ftimer.value.state", 6);
+		a.sendBroadcast(i);
 	}
 		
-	public void next() {
+	public void next(int delayed) {
 		RaceTimerActivity a = (RaceTimerActivity) getActivity();
 		// Tell Driver to finalise the score
 		// Driver will post back run_finalised when finished
-		a.sendOrderedCommand("finalise");
-
+		a.sendOrderedCommand("finalise", delayed);
 	}
 
 	public void cont(){
 		RaceTimerActivity a = (RaceTimerActivity) getActivity();
+
+		/* send to ResultsServer Live Listener */
+		Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+		i.putExtra("com.marktreble.f3ftimer.value.state", 0);
+		a.sendBroadcast(i);
+
 		RaceTimerFrag5 f = new RaceTimerFrag5();
 		f.mFinalTime = mFinalTime;
 		a.getFragment(f, 5);
@@ -247,13 +306,18 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         RaceTimerActivity a = (RaceTimerActivity)getActivity();
         a.reflight();
         
+		/* send to ResultsServer Live Listener */
+		Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+		i.putExtra("com.marktreble.f3ftimer.value.state", 0);
+		a.sendBroadcast(i);
     }
+
 	public void startPressed(){
 		if (mFinalTime<0) return; // Ignore if the race is still in progress
 		mClickedOnce = true;
 		if (!mStartPressed) {
 			mStartPressed = true;
-			next();
+			next(1);
 		}
 	}
  }

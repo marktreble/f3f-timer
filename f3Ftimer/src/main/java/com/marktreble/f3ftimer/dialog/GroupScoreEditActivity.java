@@ -15,7 +15,6 @@ import com.marktreble.f3ftimer.racemanager.RaceActivity;
  * Created by marktreble on 22/12/14.
  */
 public class GroupScoreEditActivity extends Activity {
-    Integer mPid = 0;
     private Intent mIntent;
 
     @Override

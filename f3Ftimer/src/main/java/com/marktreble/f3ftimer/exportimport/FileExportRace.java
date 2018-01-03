@@ -1,37 +1,15 @@
 package com.marktreble.f3ftimer.exportimport;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.View;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
-import com.nononsenseapps.filepicker.FilePickerActivity;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * Created by marktreble on 27/12/14.
@@ -114,7 +92,7 @@ public class FileExportRace extends BaseExport {
 
     private void exportRaceData(Race r){
         // Serialize all race data, pilots, times + groups
-        String data = super.getSerialisedRaceData(r.id, r.round);
+        String data = super.getSerialisedRaceDataFile(r.id, r.round);
         Log.d("EXPORT DATA", data);
 
         new SpreadsheetExport().writeExportFile(mContext, data, r.name+".json", mSaveFolder);

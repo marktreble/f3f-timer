@@ -66,6 +66,9 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
 				a.setResult(RaceActivity.RESULT_ABORTED, null);
 	        	a.finish();
 	            
+				Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+				i.putExtra("com.marktreble.f3ftimer.value.state", 0);
+				a.sendBroadcast(i);
 	        }
 	    });
 
@@ -82,6 +85,15 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
     	    	
     	a.sendCommand("working_time");
 
+		Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+		i.putExtra("com.marktreble.f3ftimer.ui_callback", "working_time_started");
+		a.sendBroadcast(i);
+
+		i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+		i.putExtra("com.marktreble.f3ftimer.value.state", 2);
+		i.putExtra("com.marktreble.f3ftimer.value.workingTime", 0.0f);
+		a.sendBroadcast(i);
+
     	a.getFragment(new RaceTimerFrag2(),2);
 	}
 	
@@ -91,6 +103,16 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
     	// Send model launched to server
     	 a.sendCommand("launch");
     	 		
+		/* send to TcpIoService for UI tracking */
+		Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+		i.putExtra("com.marktreble.f3ftimer.ui_callback", "model_launched");
+		a.sendBroadcast(i);
+
+		/* send to ResultsServer Live Listener */
+		i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+		i.putExtra("com.marktreble.f3ftimer.value.state", 3);
+		a.sendBroadcast(i);
+
     	a.getFragment(new RaceTimerFrag3(),3);
 
 	}
@@ -98,5 +120,4 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
 	public void startPressed(){
 		next();
 	}
-
 }

@@ -12,8 +12,6 @@ import android.util.Log;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
-import java.util.HashMap;
-
 public class SoftBuzzerService extends Service implements DriverInterface, Thread.UncaughtExceptionHandler {
 
     private static final String TAG = "SoftBuzzerService";
@@ -94,7 +92,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
             if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
                 Bundle extras = intent.getExtras();
                 String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
-                Log.i(TAG, data);
+                Log.d(TAG, data);
 
                 if (data.equals("get_connection_status")) {
                     if (mBoardConnected){

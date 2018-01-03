@@ -5,22 +5,21 @@
 
 package com.marktreble.f3ftimer.languages;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.StringTokenizer;
-
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
-import android.net.Uri;
 import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.StringTokenizer;
 
 
 
@@ -35,6 +34,7 @@ public class Languages {
     	Resources r = a.getResources();
         Configuration c = r.getConfiguration();
         String[] tmp_languages = r.getAssets().getLocales();
+		Locale origLocale = c.locale;
         for (String _language : tmp_languages){
         	if (_language.split("_").length == 1){ // Language only locales (no country code)
 	        	c.locale = new Locale(_language);
@@ -63,6 +63,8 @@ public class Languages {
                 }
             }
         }
+		c.locale = origLocale;
+		new Resources(a.getAssets(), metrics, c);
 
         for (String language : al_languages){
             Log.i("LANG", language);
@@ -77,8 +79,11 @@ public class Languages {
 		 */
 		Resources res = a.getResources();
 		Configuration config = res.getConfiguration();
-        config.locale = Languages.stringToLocale(lang);
-        res.updateConfiguration(config, null);
+		Locale l = Languages.stringToLocale(lang);
+		if (l != null) {
+			config.locale = l;
+            res.updateConfiguration(config, null);
+		}
         return res;
 	}
 	
@@ -90,22 +95,28 @@ public class Languages {
 		 * empty string - if no change is required
 		 */
 		Locale lang = Languages.stringToLocale(to_lang);
-		Locale currLang = engine.getLanguage();
+		Locale currLang = null;
+		if (engine != null) {
+			currLang = engine.getLanguage();
+		}
 		String ret = "";
+		boolean setNewLang = false;
 		
-		if ((currLang == null)
-			|| !currLang.getLanguage().equals(lang.getISO3Language()) 
-			|| !currLang.getCountry().equals(lang.getISO3Country())){
-			
+		if (lang != null && currLang != null) {
+			if (!currLang.getLanguage().equals(lang.getISO3Language()) || !currLang.getCountry().equals(lang.getISO3Country())) {
+				setNewLang = true;
+			}
+		}
+		if (setNewLang) {
 			int available = engine.isLanguageAvailable(lang);
-			ret = to_lang;
-			if (available != TextToSpeech.LANG_COUNTRY_AVAILABLE){
-				if (available != TextToSpeech.LANG_AVAILABLE){
+			if (available < TextToSpeech.LANG_AVAILABLE) {
 					// Switch to default
 					ret = fallback;
-				}
+				Log.i("Languages", "Switching Speech Language to default " + ret);
+			} else {
+				ret = to_lang;
+				Log.i("Languages", "Switching Speech Language to " + ret);
 			}
-			Log.i("Switching Speech Language to ", ret);			
 		} else {
 			Log.i("Languages", "NO Language Change");
 		}
@@ -113,6 +124,7 @@ public class Languages {
 	}
 
 	public static Locale stringToLocale(String s){
+		if (s == null) return null;
 		/*
 		 * Convert String to Locale
 		 */
@@ -124,5 +136,40 @@ public class Languages {
 	    if(tempStringTokenizer.hasMoreTokens())
 	    	c = (String) tempStringTokenizer.nextElement();
 	    return new Locale(l,c);
+	}
+
+	public static void getAvailableTtsVoiceLanguages(Context context, TextToSpeech mTts, ArrayList<Locale> availableLocales) {
+		// Populate pref_voice_lang with installed voices
+		String[] languages = Languages.getAvailableLanguages(context);
+
+		// Now check the available languages against the installed TTS Voices
+		String localeNames[] = android.content.res.Resources.getSystem().getAssets().getLocales();
+		for (String localeStr : localeNames) {
+			localeStr = localeStr.replace("-", "_");
+			Locale locale;
+			if (localeStr.contains("_")) {
+				String[] lsa = localeStr.split("_");
+				locale = new Locale(lsa[0], lsa[1]);
+				try {
+					if (!locale.getISO3Country().equals("")) {
+						int ttsres = mTts.isLanguageAvailable(locale);
+						if (ttsres == TextToSpeech.LANG_COUNTRY_AVAILABLE) {
+							boolean hasLang = false;
+							for (String lang : languages) {
+								if (lang.equals(locale.getLanguage())) {
+									hasLang = true;
+									break;
+								}
+							}
+							if (hasLang) {
+								availableLocales.add(locale);
+							}
+						}
+					}
+				} catch (IllegalArgumentException | MissingResourceException e) {
+					//e.printStackTrace();
+				}
+			}
+		}
 	}
 }

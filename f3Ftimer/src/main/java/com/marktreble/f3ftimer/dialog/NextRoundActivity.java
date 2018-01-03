@@ -7,8 +7,6 @@
 package com.marktreble.f3ftimer.dialog;
 
 
-import com.marktreble.f3ftimer.R;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,10 +14,12 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.WindowManager.LayoutParams;
+
+import com.marktreble.f3ftimer.R;
 
 
 public class NextRoundActivity extends FragmentActivity {
@@ -90,7 +90,9 @@ public class NextRoundActivity extends FragmentActivity {
 					((RaceTimerFrag)mCurrentFragment).startPressed();
 				}
 				
-
+				if (data.equals("cancel")){
+					finish();
+				}
 			}
 		}
     };

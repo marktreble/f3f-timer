@@ -6,40 +6,45 @@
  */
 package com.marktreble.f3ftimer.racemanager;
 
-import java.util.ArrayList;
-
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.marktreble.f3ftimer.*;
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.pilot.PilotData;
+import com.marktreble.f3ftimer.data.race.Race;
+import com.marktreble.f3ftimer.data.race.RaceData;
+import com.marktreble.f3ftimer.dialog.AboutActivity;
+import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.dialog.NewRaceActivity;
+import com.marktreble.f3ftimer.dialog.SettingsActivity;
 import com.marktreble.f3ftimer.exportimport.BluetoothExportRace;
 import com.marktreble.f3ftimer.exportimport.BluetoothImportRace;
-import com.marktreble.f3ftimer.data.race.*;
-import com.marktreble.f3ftimer.data.pilot.*;
-import com.marktreble.f3ftimer.dialog.*;
 import com.marktreble.f3ftimer.exportimport.F3ftimerApiImportRace;
 import com.marktreble.f3ftimer.exportimport.F3xvaultApiImportRace;
 import com.marktreble.f3ftimer.exportimport.FileExportRace;
 import com.marktreble.f3ftimer.exportimport.FileImportRace;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
+
+import java.util.ArrayList;
 
 public class RaceListActivity extends ListActivity {
 
@@ -69,7 +74,7 @@ public class RaceListActivity extends ListActivity {
     static final int EXPORT_SRC_BT = 0;
     static final int EXPORT_SRC_FILE = 1;
 
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
         Log.i("ONACTIVITYRESULT", "ONCREATE");
 		super.onCreate(savedInstanceState);
@@ -85,7 +90,7 @@ public class RaceListActivity extends ListActivity {
 
 		mContext = this;
         mActivity = this;
-		
+
 		setContentView(R.layout.race_manager);
 			    
 	    getNamesArray();
@@ -330,6 +335,7 @@ public class RaceListActivity extends ListActivity {
 
     public void settings(){
 		Intent intent = new Intent(mContext, SettingsActivity.class);
+        intent.putExtra("caller", "racelistactivity");
     	startActivityForResult(intent, 1);
 	}
 

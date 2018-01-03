@@ -1,13 +1,12 @@
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-
-import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
-
+import android.graphics.drawable.Drawable;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
+
+import com.marktreble.f3ftimer.R;
 
 public class RaceTimerFrag extends Fragment {
 
@@ -41,8 +40,10 @@ public class RaceTimerFrag extends Fragment {
 	}
 
 	public void setWindWarning(boolean on){
-		TextView warning = (TextView) mView.findViewById(R.id.wind_warning);
-		warning.setVisibility( (on == true) ? View.VISIBLE : View.INVISIBLE);
+		if (mView != null) {
+			TextView warning = (TextView) mView.findViewById(R.id.wind_warning);
+			warning.setVisibility( (on == true) ? View.VISIBLE : View.INVISIBLE);
+		}
 	}
 
 	public void startPressed(){

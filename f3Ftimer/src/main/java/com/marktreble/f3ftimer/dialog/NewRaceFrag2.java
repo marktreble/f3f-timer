@@ -6,13 +6,7 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import java.util.ArrayList;
-
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.pilot.PilotData;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
+import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +15,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.content.Intent;
-import android.os.Bundle;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.pilot.PilotData;
+
+import java.util.ArrayList;
 
 public class NewRaceFrag2 extends ListFragment {
 
@@ -112,7 +110,7 @@ public class NewRaceFrag2 extends ListFragment {
                 Integer pid = mArrIds.get(position);
                 if (mArrSelectedIds.contains(pid)){
                 	int index = mArrSelectedIds.lastIndexOf(pid) + 1;
-					nm.setText(Integer.toString(index));
+					nm.setText(String.format("%d", index));
 					nm.setVisibility(View.VISIBLE);
                 	row.setBackgroundColor(getResources().getColor(R.color.lt_grey));
                 } else {

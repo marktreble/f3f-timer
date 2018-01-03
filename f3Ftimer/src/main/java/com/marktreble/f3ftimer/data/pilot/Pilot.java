@@ -6,7 +6,7 @@ import android.support.v4.content.ContextCompat;
 
 import org.json.JSONObject;
 
-public class Pilot {
+public class Pilot implements Comparable<Pilot> {
 	
 	public static Integer STATUS_NORMAL = 1;
 	public static Integer STATUS_REFLIGHT = 2;
@@ -34,13 +34,15 @@ public class Pilot {
 	public String number = "";
 	public String team = "";
 	public Integer group = 0;
+	public Integer start_pos = 0;
 
     public Pilot(){
         // Default constructor
     }
 
     public Pilot(JSONObject o){
-        if (o.has("pilot_id")) id = Integer.parseInt(o.optString("pilot_id"));
+		if (o.has("id")) id = Integer.parseInt(o.optString("id"));
+        if (o.has("pilot_id")) pilot_id = Integer.parseInt(o.optString("pilot_id"));
         status = Integer.parseInt(o.optString("status"));
         firstname = o.optString("firstname");
         lastname = o.optString("lastname");
@@ -69,12 +71,13 @@ public class Pilot {
     
     public String toString(){
         return String.format("{\"id\":\"%s\", \"race_id\":\"%s\", \"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", id, race_id, pilot_id, status, firstname, lastname, nationality, language, team );
-        
     }
 
 	public String toExtendedString(){
 		return String.format("{\"id\":\"%s\", \"pilot_id\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"time\":\"%s\", \"points\":\"%s\", \"penalty\":\"%s\"}", id, pilot_id, firstname, lastname, time, points, penalty );
-
 	}
 
+	public int compareTo(Pilot p) {
+		return id - p.id;
+	}
 }

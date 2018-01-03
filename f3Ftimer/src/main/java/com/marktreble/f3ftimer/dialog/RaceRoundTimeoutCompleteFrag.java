@@ -64,4 +64,10 @@ public class RaceRoundTimeoutCompleteFrag extends Fragment {
 		
 		return mView;
 	}
+
+	public void startPressed(){
+		RaceRoundTimeoutActivity a = (RaceRoundTimeoutActivity)getActivity();
+		a.setResult(RaceActivity.RESULT_ABORTED, a.mIntent);
+		a.finish();
+	}
 }

@@ -1,75 +1,70 @@
+@media screen and (max-width:400px) {
+    #window { display: none; }
+    #warn { display: block; }
+}
+
+.out {
+	height: 0.0001px;
+	overflow: hidden;
+}
+
+#warn {
+    display: none; text-align: center;
+}
+
+#window {
+	width: 100%;
+}
+
+#view-stack {
+}
+
 body {
 	margin: 0;
 	padding: 0;
 	border: 0;
-	
 	font-family: Helvetica, Arial, sans-serif;
-	font-size: 14px;
-	color: #fff;
-	
-	background: #000000;
-	
-	-webkit-user-select: none;
-  	-moz-user-select: none;
-  	-ms-user-select: none;
-  	user-select: none;
-  	
-  	min-width: 320px;
-  	overflow: hidden;
+	font-size: 12.0pt;
+	color: #000000;
+	background: #ffffff;
 }
 
 h1 {
 	margin: 0;
-	padding: 8px;
-	font-size: 2em;
-	margin-left: 56px;
+	font-size: 140%;
 }
 
-h2 {
+h2, #race-name a.back {
 	margin: 0;
-	padding: 4px;
-	font-size: 1.75em;
-	margin-left: 10px;
+	font-size: 130%;
 }
 
 h3 {
 	width: 100%;
 	text-align: center;
-	font-size: 1.75em;
+	font-size: 110%;
 }
 
 #top {
 	width: 100%;
-	
-	background: #000000; /* Old browsers */
-	
-	background-image: url(../img/ic_launcher.png), -moz-linear-gradient(left,  #000000 0%, #0ea4e3 100%); /* FF3.6+ */
-	background-image: url(../img/ic_launcher.png), -webkit-gradient(linear, left top, right top, color-stop(0%,#000000), color-stop(100%,#0ea4e3)); /* Chrome,Safari4+ */
-	background-image: url(../img/ic_launcher.png), -webkit-linear-gradient(left,  #000000 0%,#0ea4e3 100%); /* Chrome10+,Safari5.1+ */
-	background-image: url(../img/ic_launcher.png), -o-linear-gradient(left,  #000000 0%,#0ea4e3 100%); /* Opera 11.10+ */
-	background-image: url(../img/ic_launcher.png), -ms-linear-gradient(left,  #000000 0%,#0ea4e3 100%); /* IE10+ */
-	background-image: url(../img/ic_launcher.png), linear-gradient(to right,  #000000 0%,#0ea4e3 100%); /* W3C */
-	background-repeat: no-repeat;
-	background-position: 10px 4px, 0 0;
-	background-size: 40px 40px, cover;
-	
-	color: #0ea4e3;
+	background: #ffffff; /* Old browsers */
+	color: #ffffff;
+	cursor: pointer;
 }
 
 #race-name {
-	background: #075271;
-	color: #fff;
+	background: #000000;
+	color: #ffffff;
 	width: 100%;
 }
 
 #race-name a.back {
-	width: 56px;
-	height: 100px;
+	width: 40px;
 	background: transparent;
 	position: absolute;
 	cursor: pointer;
-	text-indent: 56px;
 	overflow: hidden;
+	text-align: center;
 }
 
 #top div#race-name a.back {
@@ -81,91 +76,146 @@ h3 {
 }
 
 #top.back div#race-name h2 {
-	margin-left: 60px;
+	margin-left: 40px;
 }
 
-#top.back div#race-name {
-	background-image: url(../img/back.png);
-	background-repeat: no-repeat;
-	background-position: 10px center;
-	background-size: 40px 40px;
+table {
+    border-spacing: 0px;
+    border-collapse: collapse;
+	text-align: center;
 }
 
-#window {
-	width: 100%;
-	height: 0px;
-	overflow-x: hidden;
-	overflow-y: scroll;
-	position: absolute;
-	min-width: 320px;
-	
+td, tr, th {
+	padding: 1px 4px;
+	border: 1px solid #000000;
+    white-space:nowrap;
 }
 
-#view-stack {
-	width: 1000%;
-	position: absolute;
+.td-border-left {
+	border-left-width: 2px;
+}
+
+.td-border-bottom {
+	border-bottom-width: 2px;
 }
 
 .list {
-	width: 10%;
-	background: #000;
-	margin-left: 0;
-	float: left;
-	color: #ffa500;
+	width: 100%;
+	background: #ffffff;
+	color: #000000;
+	border-collapse: collapse;
 }
 
-.list-item {
-	width: 100%;
-	padding: 10px 0;
-	color: #ffa500;
-	font-size: 1.5em;
-	border-bottom: 2px solid #fff;
+.list-item, .list-item-link {
+	float: left;
+	width: 99%;
+	color: #000000;
+	border-bottom: 1px solid #000000;
+	border-collapse: collapse;
+}
+
+.list-item-link {
 	cursor: pointer;
 }
 
-.list-item:active {
-	background: #333;
+.list-item-link:active {
+	background: #ccc;
 }
 
-.list-item span {
-	margin-left: 10px;
+.span-left, .span-left-italic {
+	float: left;
 }
 
-.pilot-position {
-	float: right;
-	width: 20px;
-	padding-right: 10px;
-	text-align: right;
+.span, .span-live-header, .span-live-legs, .span-live-legs-pos, .span-live-legs-neg  {
+    float: right;
 }
 
-.pilot-points {
-	float:right;
-	width: 76px;
-	text-align: right;
-	padding-right: 10px;
+.span-left-italic {
+	font-style: italic;
 }
 
-.pilot-penalty {
-	float: right;
+.span-italic {
+	font-style: italic;
+}
+
+.span-header {
+	font-weight: bold;
+}
+
+.span-live-header {
+	font-weight: bold;
+}
+
+.span-live-legs-neg {
+	color: #0f0;
+}
+
+.span-live-legs-pos {
 	color: #f00;
 }
 
-.pilot-time {
-	float: right;
+.pilot-rank, .pilot-id, .pilot-name, .pilot-points, .pilot-penalty, .pilot-penalty-none, .pilot-time, .leader-pilot-penalty, .leader-pilot-time, .leader-pilot-points {
+	float: left;
+}
+
+.pilot-rank {
+	text-align: center;
+	width: 9%;
+}
+
+.pilot-id {
+	text-align: center;
+	width: 9%;
+}
+
+.pilot-name {
+	text-align: left;
+	width: 30%;
+}
+
+.pilot-penalty, .pilot-time, .pilot-points {
 	text-align: right;
-	width: 60px;
-	padding-right: 10px;
+	width: 17%;
 }
 
-.out {
-	height: 1px;
-	overflow: hidden;
+.leader-pilot-penalty, .leader-pilot-time, .leader-pilot-points {
+	text-align: right;
+	width: 13%;
 }
 
-#warn { display: none; text-align: center;}
+.list-header-rank, .list-header-pilot-id {
+	float: left;
+	width: 9%;
+	text-align: center;
+	font-size: 120%;
+	font-weight: bold;
+}
 
-@media screen and (max-width:400px){
-    #window { display: none; }
-    #warn { display: block; }
+.list-header-name {
+	float: left;
+	width: 30%;
+	text-align: left;
+	font-size: 120%;
+	font-weight: bold;
+}
 
+.list-header-right {
+	float: left;
+	width: 17%;
+	text-align: right;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.leader-list-header-right {
+	float: left;
+	width: 13%;
+	text-align: right;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.group_header {
+	font-weight: bold;
+	font-style: italic;
 }
