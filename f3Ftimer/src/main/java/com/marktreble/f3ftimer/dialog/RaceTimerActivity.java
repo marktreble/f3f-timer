@@ -474,27 +474,7 @@ public class RaceTimerActivity extends FragmentActivity {
 				float windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
 				boolean windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
 				int windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
-				String title = "";
-				if (windLegal && windSpeedCounter == 20) {
-					title = getString(R.string.app_race)
-							+ String.format("  abs: %.2f °", windAngleAbsolute)
-							+ String.format(" rel: %.2f °", windAngleRelative)
-							+ String.format(" %.2f m/s", windSpeed)
-							+ "   legal";
-				} else if (windLegal) {
-					title = getString(R.string.app_race)
-							+ String.format("  abs: %.2f °", windAngleAbsolute)
-							+ String.format(" rel: %.2f °", windAngleRelative)
-							+ String.format(" %.2f m/s", windSpeed)
-							+ String.format("   legal (%d s)", windSpeedCounter);
-				} else {
-					title = getString(R.string.app_race)
-							+ String.format("  abs: %.2f °", windAngleAbsolute)
-							+ String.format(" rel: %.2f °", windAngleRelative)
-							+ String.format(" %.2f m/s", windSpeed)
-							+ " illegal";
-				}
-				RaceActivity.updateRaceTitle(title);
+				RaceActivity.setShowWindValues(mRace, windLegal, windAngleAbsolute, windAngleRelative, windSpeed, windSpeedCounter);
             }
 		}
 	};

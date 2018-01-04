@@ -221,12 +221,12 @@ public class RaceActivity extends ListActivity {
 
         }
 
-        TextView tt = (TextView) findViewById(R.id.race_title);
         if (mPrefResults) {
-            tt.setText("Round "+Integer.toString(mRnd) + " - " + mRace.name + " (" + getIPAddress(true) + ":8080)");
+            setRaceTitle(mRace.name + " - " + getIPAddress(true) + ":8080");
         } else {
-            tt.setText("Round "+Integer.toString(mRnd) + " - " + mRace.name);
+            setRaceTitle(mRace.name);
         }
+        setRaceRoundTitle(Integer.toString(mRace.round));
 
         // Render the list
         getNamesArray();
@@ -525,8 +525,7 @@ public class RaceActivity extends ListActivity {
         mGroupScoring = datasource2.getGroups(mRid, mRnd);
         datasource2.close();
 
-  		TextView tt = (TextView) findViewById(R.id.race_title);
-  		tt.setText("Round "+Integer.toString(mRnd) + " - "+mRace.name);
+  		setRaceRoundTitle(Integer.toString(mRnd));
 	}
 
 	/*
@@ -1393,34 +1392,45 @@ public class RaceActivity extends ListActivity {
                 float windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
                 boolean windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
                 int windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
-                String title = "";
-                if (windLegal && windSpeedCounter == 20) {
-                    title = getString(R.string.app_race)
-                            + String.format("  abs: %.2f °", windAngleAbsolute)
-                            + String.format(" rel: %.2f °", windAngleRelative)
-                            + String.format(" %.2f m/s", windSpeed)
-                            + "   legal";
-                } else if (windLegal) {
-                    title = getString(R.string.app_race)
-                            + String.format("  abs: %.2f °", windAngleAbsolute)
-                            + String.format(" rel: %.2f °", windAngleRelative)
-                            + String.format(" %.2f m/s", windSpeed)
-                            + String.format("   legal (%d s)", windSpeedCounter);
-                } else {
-                    title = getString(R.string.app_race)
-                            + String.format("  abs: %.2f °", windAngleAbsolute)
-                            + String.format(" rel: %.2f °", windAngleRelative)
-                            + String.format(" %.2f m/s", windSpeed)
-                            + " illegal";
-                }
-                updateRaceTitle(title);
-            }
+                setShowWindValues(mRace, windLegal, windAngleAbsolute, windAngleRelative, windSpeed, windSpeedCounter);
+			}
 		}
-    };
+        };
 
-    public static void updateRaceTitle(String title) {
+    public static void setShowWindValues(Race r, boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
+        String title = "";
+        if (windLegal && windSpeedCounter == 20) {
+            title = Integer.toString(r.round) + " -"
+                    + String.format(" a: %.2f°", windAngleAbsolute)
+                    + String.format(" r: %.2f°", windAngleRelative)
+                    + String.format(" %.2fm/s", windSpeed)
+                    + "   legal";
+        } else if (windLegal) {
+            title = Integer.toString(r.round) + " -"
+                    + String.format(" a: %.2f°", windAngleAbsolute)
+                    + String.format(" r: %.2f°", windAngleRelative)
+                    + String.format(" %.2fm/s", windSpeed)
+                    + String.format(" legal (%d s)", windSpeedCounter);
+        } else {
+            title = Integer.toString(r.round) + " -"
+                    + String.format(" a: %.2f°", windAngleAbsolute)
+                    + String.format(" r: %.2f°", windAngleRelative)
+                    + String.format(" %.2fm/s", windSpeed)
+                    + " illegal";
+        }
+        setRaceRoundTitle(title);
+    }
+
+    public static void setRaceTitle(String title) {
         if (mInstance != null) {
             mInstance.setTitle(title);
+        }
+    }
+
+    public static void setRaceRoundTitle(String title) {
+        if (mInstance != null) {
+            TextView tt = (TextView) mInstance.findViewById(R.id.race_title);
+            tt.setText(String.format("%s %s", mInstance.getString(R.string.race_round), title));
         }
     }
 
@@ -1560,12 +1570,7 @@ public class RaceActivity extends ListActivity {
         mArrAdapter.notifyDataSetChanged();
         invalidateOptionsMenu(); // Refresh menu so that next round becomes active
 
-        TextView tt = (TextView) findViewById(R.id.race_title);
-        if (mPrefResults) {
-            tt.setText("Round "+Integer.toString(mRnd) + " - " + mRace.name + " (Resultserver running on " + getIPAddress(true) + ":8080)");
-        } else {
-            tt.setText("Round "+Integer.toString(mRnd) + " - " + mRace.name);
-        }
+        setRaceRoundTitle(Integer.toString(mRace.round));
 
         new Handler().postDelayed(new Runnable() {
             @Override
