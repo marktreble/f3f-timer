@@ -11,6 +11,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -179,11 +180,16 @@ public class RaceListActivity extends ListActivity {
   		  datasource.open();
   		  datasource.deleteRace(id);
   		  datasource.close();
-		
-  		  getNamesArray();
+
+          // Reset the round timeout
+          String key = "Timeout"+Integer.toString(id);
+          SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
+          SharedPreferences.Editor editor = timeout.edit();
+          editor.putLong("start", 0);
+          editor.apply();
+
+          getNamesArray();
 	   	  mArrAdapter.notifyDataSetChanged();
-
-
 	  }
 	  return true;
 	}

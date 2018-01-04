@@ -50,7 +50,9 @@ public class NewRaceFrag3 extends ListFragment {
 	private AlertDialog mDlg;
 
 	public int mRid;
-	
+
+	private Button next;
+
 	public NewRaceFrag3(){
 		
 	}
@@ -95,7 +97,8 @@ public class NewRaceFrag3 extends ListFragment {
         View v = inflater.inflate(R.layout.race_new_frag3, container, false);
         
         // Listener for next button
-		Button next = (Button) v.findViewById(R.id.button_next);
+		next = v.findViewById(R.id.button_next);
+		next.setEnabled(mArrSelectedIds.size() > 0);
 	    next.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
