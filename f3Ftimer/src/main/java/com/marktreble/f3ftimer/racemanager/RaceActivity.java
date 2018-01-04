@@ -389,15 +389,15 @@ public class RaceActivity extends ListActivity {
             extras.putString(entry.getKey(), entry.getValue().toString());
         }
 
-        USBIOIOService.startDriver(this, mInputSource, mRid, extras);
-        USBOtherService.startDriver(this, mInputSource, mRid, extras);
-        SoftBuzzerService.startDriver(this, mInputSource, mRid, extras);
-        BluetoothHC05Service.startDriver(this, mInputSource, mRid, extras);
-
         boolean pref_usb_tethering = sharedPref.getBoolean("pref_usb_tethering", false);
         if (pref_usb_tethering) {
             setupUsbTethering();
         }
+
+        USBIOIOService.startDriver(this, mInputSource, mRid, extras);
+        USBOtherService.startDriver(this, mInputSource, mRid, extras);
+        SoftBuzzerService.startDriver(this, mInputSource, mRid, extras);
+        BluetoothHC05Service.startDriver(this, mInputSource, mRid, extras);
         TcpIoService.startDriver(this, mInputSource, mRid, extras);
 	}
 	

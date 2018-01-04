@@ -29,33 +29,29 @@ import static java.lang.Thread.sleep;
 public class TcpIoService extends Service implements DriverInterface {
 
 	private static final String TAG = "TcpIoService";
-//	private static final String F3FTIMER_SERVER = "f3ftimer-server";
-	private static final String F3FTIMER_SERVER = "192.168.1.2";
-	//private static final String F3FTIMER_SERVER = "192.168.42.24";
+	private static final String DEFAULT_F3FTIMER_SERVER_IP = "192.168.42.2";
 	private static final int F3FTIMER_SERVER_PORT = 1234;
 
 	// Commands from raspberrypi
-	static final String FT_TURNA = "A";
-	static final String FT_TURNB = "B";
-	static final String FT_START = "S";
-	static final String FT_CANCEL = "C";
-	static final String FT_CANCEL_ZERO = "Z";
-	static final String FT_PENALTY = "P";
-	static final String FT_WIND = "W";
-	static final String FT_TIME = "T";
-	static final String FT_SPEECH = "X";
+	private static final String FT_TURNA = "A";
+	private static final String FT_TURNB = "B";
+	private static final String FT_START = "S";
+	private static final String FT_CANCEL = "C";
+	private static final String FT_CANCEL_ZERO = "Z";
+	private static final String FT_PENALTY = "P";
+	private static final String FT_WIND = "W";
+	private static final String FT_TIME = "T";
+	private static final String FT_SPEECH = "X";
 
-	static final String ICN_CONN = "on";
-	static final String ICN_DISCONN = "off";
+	private static final String ICN_CONN = "on";
+	private static final String ICN_DISCONN = "off";
 
 	private Intent mIntent;
 
 	private int mTimerStatus = 0;
 	private int mState = 0;
 	private boolean mConnected = false;
-	private boolean mConnecting = false;
-
-	private static float mSlopeOrientation = 0.0f;
+	private boolean mDriverDestroyed = true;
 
 	int mWindSpeedCounterSeconds = 0;
 	int mWindSpeedCounter = 0;
@@ -70,8 +66,10 @@ public class TcpIoService extends Service implements DriverInterface {
 
 	private boolean mReceivedAbort = false;
 
-	private static boolean stopConnectThread = false;
+	private static float mSlopeOrientation = 0.0f;
+	private static String mF3ftimerServerIp = DEFAULT_F3FTIMER_SERVER_IP;
 
+	private static boolean stopConnectThread = false;
 	private static Driver mDriver;
 	private static Socket mmSocket;
 	private static InputStream mmInStream;
@@ -89,6 +87,7 @@ public class TcpIoService extends Service implements DriverInterface {
 		super.onCreate();
 		mDriver = new Driver(this);
 
+		mF3ftimerServerIp = PreferenceManager.getDefaultSharedPreferences(this).getString("pref_input_tcpio_ip", DEFAULT_F3FTIMER_SERVER_IP);
 		mSlopeOrientation = Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString("pref_wind_angle_offset", "0.0"));
 
 		this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
@@ -99,11 +98,21 @@ public class TcpIoService extends Service implements DriverInterface {
 		Log.i(TAG, "ONDESTROY!");
 		super.onDestroy();
 
-		mConnected = false;
-		mConnecting = false;
 		stopConnectThread = true;
 
-		driverDisconnected();
+		if (mConnected == true) driverDisconnected();
+
+		try {
+			this.unregisterReceiver(onBroadcast);
+		} catch (IllegalArgumentException e){
+			e.printStackTrace();
+		}
+
+		destroy();
+    }
+
+    private void destroy() {
+		mConnected = false;
 
 		try {
 			if (mmInStream != null) mmInStream.close();
@@ -111,12 +120,6 @@ public class TcpIoService extends Service implements DriverInterface {
 			if (mmSocket != null) mmSocket.close();
 
 		} catch (IOException e){
-			e.printStackTrace();
-		}
-
-		try {
-			this.unregisterReceiver(onBroadcast);
-		} catch (IllegalArgumentException e){
 			e.printStackTrace();
 		}
 
@@ -133,16 +136,17 @@ public class TcpIoService extends Service implements DriverInterface {
 			listenThread = null;
 		}
 
-		if (mDriver != null) {
+		if (mDriver != null && !mDriverDestroyed) {
 			mDriver.destroy();
-			mDriver = null;
+			mDriverDestroyed = true;
 		}
-    }
+	}
 
 	public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
 		if (inputSource.equals(context.getString(R.string.TCP_IO))){
 			Intent serviceIntent = new Intent(context, TcpIoService.class);
 			serviceIntent.putExtras(params);
+			mF3ftimerServerIp = params.getString("pref_input_tcpio_ip", DEFAULT_F3FTIMER_SERVER_IP);
 			mSlopeOrientation = Float.parseFloat(params.getString("pref_wind_angle_offset"));
 			serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
 			context.startService(serviceIntent);
@@ -175,9 +179,6 @@ public class TcpIoService extends Service implements DriverInterface {
 				if (data.equals("get_connection_status")) {
 					if (!mConnected) {
 						driverDisconnected();
-						if (!mConnecting) {
-							startConnectThread();
-						}
 					} else {
 						driverConnected();
 					}
@@ -195,6 +196,12 @@ public class TcpIoService extends Service implements DriverInterface {
 					mSlopeOrientation = Float.valueOf(intent.getExtras().getString("com.marktreble.f3ftimer.value"));
 					Log.d("TcpIoService", "pref_wind_angle_offset=" + mSlopeOrientation);
 				}
+
+				if (data.equals("pref_input_tcpio_ip")) {
+					mF3ftimerServerIp = intent.getExtras().getString("com.marktreble.f3ftimer.value", DEFAULT_F3FTIMER_SERVER_IP);
+					Log.d("TcpIoService", "Connecting to new IP: " + mF3ftimerServerIp);
+					destroy();
+				}
 			}
 		}
 	};
@@ -208,14 +215,11 @@ public class TcpIoService extends Service implements DriverInterface {
 
 		if (!mConnected) {
 			driverDisconnected();
-			Log.d(TAG, "NOT CONNECTED");
-			if (!mConnecting) {
-				startConnectThread();
-			}
 		} else {
-			Log.d(TAG, "ENABLED");
 			driverConnected();
 		}
+
+		startConnectThread();
 
 		return (START_STICKY);
 	}
@@ -348,13 +352,16 @@ public class TcpIoService extends Service implements DriverInterface {
 
 	// socket functions
 	private void startConnectThread() {
-		mConnecting = false;
 		mConnected = false;
-		driverDisconnected();
 
 		stopConnectThread = true;
 		if (connectThread != null) {
 			connectThread.interrupt();
+			try {
+				connectThread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		connectThread = new Thread(new Runnable() {
 			@Override
@@ -362,14 +369,13 @@ public class TcpIoService extends Service implements DriverInterface {
 				Thread.currentThread().setName("ConnectThread" + Thread.currentThread().getId());
 				stopConnectThread = false;
 				while (!stopConnectThread) {
-					mConnecting = true;
-					Log.i(TAG, "Starting Runnable");
+					Log.d(TAG, "Starting Runnable");
 					android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
 					try {
 						// Connect the device through the socket. This will block
 						// until it succeeds or throws an exception
-						InetSocketAddress rpiSocketAdr = new InetSocketAddress(F3FTIMER_SERVER, F3FTIMER_SERVER_PORT);
+						InetSocketAddress rpiSocketAdr = new InetSocketAddress(mF3ftimerServerIp, F3FTIMER_SERVER_PORT);
 						Log.i(TAG, "connecting to " + rpiSocketAdr.getHostName() + ":" + rpiSocketAdr.getPort());
 						mmSocket = new Socket();
 						mmSocket.setReuseAddress(true);
@@ -378,11 +384,12 @@ public class TcpIoService extends Service implements DriverInterface {
 						mmSocket.setSoTimeout(1000);
 						mmSocket.connect(rpiSocketAdr, 5000);
 						// Do work to manage the connection (in a separate thread)
-						Log.i(TAG, "GET IO STREAMS");
+						Log.d(TAG, "GET IO STREAMS");
 						mmInStream = mmSocket.getInputStream();
 						mmOutStream = mmSocket.getOutputStream();
 
 						mDriver.start(mIntent);
+						mDriverDestroyed = false;
 
 						if (listenThread != null) {
 							listenThread.interrupt();
@@ -403,13 +410,16 @@ public class TcpIoService extends Service implements DriverInterface {
 						sendThread.start();
 
 						mConnected = true;
-						mConnecting = false;
 						driverConnected();
 
 						Log.i(TAG, "connected to " + rpiSocketAdr.getHostName() + ":" + rpiSocketAdr.getPort());
-						callbackToUI("driver_started");
 					} catch (IOException connectException) {
 						closeSocketAndStop();
+					}
+					try {
+						sleep(100);
+					} catch (InterruptedException e) {
+						if (!stopConnectThread) e.printStackTrace();
 					}
 					while (mConnected && !stopConnectThread) {
 						try {
@@ -599,15 +609,15 @@ public class TcpIoService extends Service implements DriverInterface {
 	}
 
 	private void closeSocketAndStop() {
-		mConnected = false;
-		mConnecting = false;
-		driverDisconnected();
+		if (mConnected) {
+			driverDisconnected();
+			if (!stopConnectThread) Log.d(TAG, "Not Listening anymore (EXCEPTION)");
+			mConnected = false;
+		}
 		try {
 			mmSocket.close();
 		} catch (IOException e1) {
 			if (!stopConnectThread) e1.printStackTrace();
 		}
-		callbackToUI("driver_stopped");
-		if (!stopConnectThread) Log.i(TAG, "Not Listening (EXCEPTION)");
 	}
 }

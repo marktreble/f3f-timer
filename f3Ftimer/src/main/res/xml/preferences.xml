@@ -11,6 +11,11 @@
             android:entryValues="@array/InputSources"
             android:defaultValue="@string/Demo"/>
 
+        <EditTextPreference
+            android:key="pref_input_tcpio_ip"
+            android:title="@string/input_tcpio_ip"
+            android:defaultValue="192.168.42.2" />
+
         <ListPreference
             android:key="pref_input_src_device"
             android:title="@string/bluetooth_paired_device" />
@@ -104,7 +109,7 @@
         <CheckBoxPreference
             android:key="pref_usb_tether"
             android:title="USB-Tethering"
-            android:summary="Show Tethering menu when connecting via TcpIoService"
+            android:summary="Show Tethering menu before starting Driver"
             android:defaultValue="false" />
 
         <CheckBoxPreference
