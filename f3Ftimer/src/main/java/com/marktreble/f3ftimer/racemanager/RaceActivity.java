@@ -389,7 +389,7 @@ public class RaceActivity extends ListActivity {
             extras.putString(entry.getKey(), entry.getValue().toString());
         }
 
-        boolean pref_usb_tethering = sharedPref.getBoolean("pref_usb_tethering", false);
+        boolean pref_usb_tethering = sharedPref.getBoolean("pref_usb_tether", false);
         if (pref_usb_tethering) {
             setupUsbTethering();
         }

@@ -142,7 +142,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     	if (key.equals("pref_buzzer") 
      	 || key.equals("pref_voice") 
     	 || key.equals("pref_results_server")
-         || key.equals("pref_wind_measurement")){
+         || key.equals("pref_wind_measurement")
+         || key.equals("pref_usb_tether")){
             setStringSummary(key);
             // Send to Service
     		i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
