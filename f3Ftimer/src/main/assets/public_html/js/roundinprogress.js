@@ -63,8 +63,8 @@ function render_roundinprogress(){
 			var pilot_time = model.racetimes[round][group_index][pilot_index].time;
 			var pilot_points = model.racetimes[round][group_index][pilot_index].points;
 			var pilot_status = model.racetimes[round][group_index][pilot_index].status;
-			var flown = model.racetimes[round][group_index][pilot_index].flown;
-			if (flown == "0" || pilot_status == "4") {
+			var pilot_flown = model.racetimes[round][group_index][pilot_index].flown;
+			if (pilot_flown == "0" || pilot_status == "4") {
 				pilot_time = "-";
 				pilot_penalty = "-";
 				pilot_points = "-";

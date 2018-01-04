@@ -66,13 +66,14 @@ function render_startlist(){
             group_pilots.sort(compareStartPos);
             for (pilot_index=0 ; pilot_index<group_pilots.length; pilot_index++){
                 var pilot_id = group_pilots[pilot_index].id;
-                var start_pos = group_pilots[pilot_index].start_pos;
-                var status = group_pilots[pilot_index].status;
+                var pilot_start_pos = group_pilots[pilot_index].start_pos;
+                var pilot_status = group_pilots[pilot_index].status;
                 var pilots_pilot_index = pilots_index_map.get(String(pilot_id));
                 var pilot_name = (model.pilots[pilots_pilot_index].firstname + " " + model.pilots[pilots_pilot_index].lastname).trim();
-
-				if (status == "4")
-					start_pos = "-";
+                var pilot_flown = model.racetimes[round][group_index][pilot_index].flown;
+			    if (pilot_flown != "1" && pilot_status == "4") {
+					pilot_start_pos = "-";
+                }
 
 				var undefinedRow = 0;
 				if (rows1[i + 2] === undefined) {
@@ -92,7 +93,7 @@ function render_startlist(){
 						cols3 = [];
 					}
 				}
-                cols3.push(start_pos);
+                cols3.push(pilot_start_pos);
                 cols3.push(group_index+1);
                 cols3.push(pilot_id);
                 cols3.push(pilot_name);
