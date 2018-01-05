@@ -25,6 +25,7 @@ function render_teamresults(){
 
 	// get final score
 	var sub_totals_final_teamresults = subTotals(last_complete_round);
+
 	// get teams
 	var sub_totals_final_teams = [];
 	for (pilot_index = 0; pilot_index<sub_totals_final_teamresults.length; pilot_index++){
@@ -32,6 +33,12 @@ function render_teamresults(){
 		if (team != "" && -1 == sub_totals_final_teams.indexOf(team))
 			sub_totals_final_teams.push(team);
 	}
+
+    if (sub_totals_final_teams.length < 1){
+        $(list).html("<h3>No teams defined</h3>");
+        return;
+    }
+
     // calc team score
     for (team_index = 0; team_index<sub_totals_final_teams.length; team_index++){
         var team_points = 0.0;
@@ -44,8 +51,10 @@ function render_teamresults(){
         }
         sub_totals_final_teams[team_index] = {team:sub_totals_final_teams[team_index], points:team_points, percent:0.0};
     }
+
     // sort team results
     sub_totals_final_teams.sort(function(a, b){return b.points-a.points});
+
     // calc team percent
     for (team_index = 0; team_index<sub_totals_final_teams.length; team_index++){
         sub_totals_final_teams[team_index].percent = round2Fixed((sub_totals_final_teams[team_index].points / sub_totals_final_teams[0].points) * 100, 2);
