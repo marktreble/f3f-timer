@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/menu_finish_race"
+        android:title="@string/menu_finish_race"/>
+
+    <item
         android:id="@+id/menu_next_round"
         android:title="@string/menu_next_round"/>
 
