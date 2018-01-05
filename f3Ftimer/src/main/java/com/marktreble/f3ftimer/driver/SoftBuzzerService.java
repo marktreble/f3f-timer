@@ -77,7 +77,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
     public static boolean stop(RaceActivity context){
         if (context.isServiceRunning("com.marktreble.f3ftimer.driver.SoftBuzzerService")) {
-            Log.d("SERVER STOPPED", Log.getStackTraceString(new Exception()));
+            Log.d(TAG,"SERVER STOPPED");
             Intent serviceIntent = new Intent(context, SoftBuzzerService.class);
             context.stopService(serviceIntent);
             return true;
