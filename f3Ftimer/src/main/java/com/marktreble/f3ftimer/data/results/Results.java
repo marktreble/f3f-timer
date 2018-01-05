@@ -245,7 +245,7 @@ public class Results {
         mFTDName = "";
         mFTDRound = 0;
 
-        if (completed_rounds>1) {
+        if (completed_rounds>0) {
             // Loop through each round to find the winner, then populate the scores
             for (int rnd = 1; rnd <= completed_rounds; rnd++) {
                 mGroupScoring = datasource.getGroups(mRid, rnd);

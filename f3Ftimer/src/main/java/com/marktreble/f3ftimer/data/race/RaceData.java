@@ -67,7 +67,7 @@ public class RaceData {
 		return database.insert("races", null, values);
 	}
 
-	public Race finishRound(int race_id) {
+	public Race finishRace(int race_id) {
 		String sql = "update races set status=? where id=?";
 		String[] data = {Integer.toString(Race.STATUS_COMPLETE), Integer.toString(race_id)};
 		database.execSQL(sql, data);

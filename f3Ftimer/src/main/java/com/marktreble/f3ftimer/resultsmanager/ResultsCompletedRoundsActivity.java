@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
+import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
@@ -54,20 +55,26 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 		RaceData datasource = new RaceData(this);
   		datasource.open();
   		Race race = datasource.getRace(mRid);
-  		datasource.close();	
+  		datasource.close();
+		
+		TextView tt = (TextView) findViewById(R.id.race_title);
+		tt.setText(race.name);
+		
+		RacePilotData datasource1 = new RacePilotData(this);
+		datasource1.open();
+		boolean roundComplete = datasource1.isRoundComplete(mRid, race.round);
+		datasource1.close();
 
- 		TextView tt = (TextView) findViewById(R.id.race_title);
-  		tt.setText(race.name);
-
+  		int completed_rounds = race.round;
+		if (!roundComplete) completed_rounds--;
+		
 		ArrayList<String> arrOptions = new ArrayList<String>();
-		for (int i=1; i<race.round; i++){
+		for (int i=1; i<=completed_rounds; i++){
 			arrOptions.add(String.format("Round %d", i));			
 		}
-		if (race.status == Race.STATUS_COMPLETE)
-			arrOptions.add(String.format("Round %d", race.round));
 		
 		mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow , arrOptions);
-		if (race.round<=1){
+		if (completed_rounds<1){
 			TextView noneView = new TextView(this);
 	   	   	noneView.setText("No rounds completed yet");
 
