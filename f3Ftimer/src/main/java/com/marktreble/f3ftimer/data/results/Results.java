@@ -232,7 +232,10 @@ public class Results {
 
         mArrGroupings = new ArrayList<>();
 
-        if (race.round<1) return;
+        int completed_rounds = race.round;
+        if (race.status != Race.STATUS_COMPLETE) completed_rounds--;
+
+        if (completed_rounds<1) return;
 
         SparseArray<ArrayList<RaceData.Time>> map_pilots= new SparseArray();
         SparseArray<Float> map_totals= new SparseArray<>();
@@ -241,9 +244,9 @@ public class Results {
         mFTDName = "";
         mFTDRound = 0;
 
-        if (race.round>1) {
+        if (completed_rounds>1) {
             // Loop through each round to find the winner, then populate the scores
-            for (int rnd = 1; rnd < race.round; rnd++) {
+            for (int rnd = 1; rnd <= completed_rounds; rnd++) {
                 mGroupScoring = datasource.getGroups(mRid, rnd);
                 Log.i("ROUND", "R="+rnd);
                 Log.i("GROUP SCORING", mGroupScoring.num_groups+"");
@@ -299,8 +302,7 @@ public class Results {
         datasource.close();
         datasource2.close();
 
-        int numdiscards = (race.round>4) ? ((race.round>15) ? 2 : 1) : 0;
-        int completed_rounds = race.round-1;
+        int numdiscards = (completed_rounds>4) ? ((completed_rounds>15) ? 2 : 1) : 0;
         for(int i = 0; i < map_pilots.size(); i++) {
             int key = map_pilots.keyAt(i);
 
