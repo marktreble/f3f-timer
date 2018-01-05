@@ -20,6 +20,7 @@
     <string name="race_offset">Flugreihenfolge Offset</string>
     <string name="race_rounds_per_flight">Runden pro Flug</string>
     <string name="race_race">Rennen</string>
+    <string name="race_round">Runde</string>
     <string name="race_practice">Übung</string>
     <string name="button_save">Speichern</string>
     <string name="button_next">Nextes</string>

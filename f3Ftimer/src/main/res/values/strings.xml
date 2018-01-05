@@ -24,6 +24,7 @@
     <string name="race_offset">Flying Order Offset</string>
     <string name="race_rounds_per_flight">Rounds per Flight</string>
     <string name="race_race">Race</string>
+    <string name="race_round">Round</string>
     <string name="race_practice">Practice</string>
     <string name="button_save">Save</string>
     <string name="button_add" translatable="false">+</string>

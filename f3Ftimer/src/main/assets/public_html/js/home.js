@@ -38,6 +38,11 @@ function render_home(){
 	});
 	lis.push(li);
 
+	li = createListItemLink("Team Results", function(){
+		pushView(teamresults(), this);
+	});
+	lis.push(li);
+
 	for(var i in lis){
 		$(list).append(lis[i]);
 	}
