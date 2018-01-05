@@ -1446,27 +1446,30 @@ public class RaceActivity extends ListActivity {
 	public boolean onPrepareOptionsMenu(Menu menu) {
 
         getNamesArray(); // just to ensure that the bools below are up to date!
-        
+
+        // Race Complete (Only enable when the round is actually complete)
+        menu.getItem(0).setEnabled(mRoundComplete && mRace.status != Race.STATUS_COMPLETE);
+
         // Round Complete (Only enable when the round is actually complete)
-	    menu.getItem(0).setEnabled(mRoundComplete && mRace.status != Race.STATUS_COMPLETE);
+	    menu.getItem(1).setEnabled(mRoundComplete && mRace.status != Race.STATUS_COMPLETE);
 
         // Change Flying Order (Only enable before the RACE is started)
-        menu.getItem(1).setEnabled(mRoundNotStarted && mRnd == 1);
+        menu.getItem(2).setEnabled(mRoundNotStarted && mRnd == 1);
 
         // Change Start Number (Only enable before the round is started)
-        menu.getItem(2).setEnabled(mRoundNotStarted);
+        menu.getItem(3).setEnabled(mRoundNotStarted);
 
         // Scrub Round
-        menu.getItem(3).setEnabled(!mGroupNotStarted && mRace.status != Race.STATUS_COMPLETE);
+        menu.getItem(4).setEnabled(!mGroupNotStarted && mRace.status != Race.STATUS_COMPLETE);
 
         // Round Timer (Only enable when the race is not complete)
-        menu.getItem(4).setEnabled(mRace.status != Race.STATUS_COMPLETE);
+        menu.getItem(5).setEnabled(mRace.status != Race.STATUS_COMPLETE);
 
         // Group scoring (disable when multiple flights are being used)
-        menu.getItem(5).setEnabled(mRace.rounds_per_flight < 2 && mRace.status != Race.STATUS_COMPLETE);
+        menu.getItem(6).setEnabled(mRace.rounds_per_flight < 2 && mRace.status != Race.STATUS_COMPLETE);
 
         // Add Pilot (Only enable when the race is not complete)
-        menu.getItem(6).setEnabled(mRace.status != Race.STATUS_COMPLETE);
+        menu.getItem(7).setEnabled(mRace.status != Race.STATUS_COMPLETE);
 
         return super.onPrepareOptionsMenu(menu);
 
@@ -1477,6 +1480,9 @@ public class RaceActivity extends ListActivity {
 
         // Handle presses on the action bar items
 	    switch (item.getItemId()) {
+            case R.id.menu_finish_race:
+                finishRace();
+                return true;
 	    	case R.id.menu_next_round:
 	    		nextRound();
 	    		return true;
@@ -1488,7 +1494,7 @@ public class RaceActivity extends ListActivity {
                 return true;
             case R.id.menu_scrub_round:
                 mDlg = new AlertDialog.Builder(mContext)
-                        .setTitle(getString(R.string.menu_scrub_round))
+                        .setTitle(getString(R.string.scrub_round))
                         .setMessage(getString(R.string.menu_scrub_round_confirm))
                         .setNegativeButton(getString(android.R.string.cancel), null)
                         .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
@@ -1544,7 +1550,7 @@ public class RaceActivity extends ListActivity {
     private void finishRace() {
         RaceData datasource = new RaceData(this);
         datasource.open();
-        mRace = datasource.finishRound(mRid);
+        mRace = datasource.finishRace(mRid);
         datasource.close();
     }
 
@@ -1605,8 +1611,10 @@ public class RaceActivity extends ListActivity {
             datasource2.open();
             datasource2.deleteRound(mRid, mRnd);
             datasource2.close();
-
-            mRnd = Math.min(0, mRnd - 1);
+    
+            mRnd = Math.max(1, mRnd - 1);
+    
+            setRaceRoundTitle(Integer.toString(mRnd));
         } else {
             // Just delete the times for the current group
             RacePilotData datasource = new RacePilotData(RaceActivity.this);

@@ -42,7 +42,7 @@
     <string name="abort">Abbrechen</string>
     <string name="resume">Weiter</string>
     <string name="ignore">Ignorieren</string>
-    <string name="scrub_round">Rounde streichen</string>
+    <string name="scrub_round">Runde streichen</string>
     <string name="scrub_group">Gruppe streichen</string>
     <string name="minutes_remaining">Minuten verbleiben</string>
     <string name="off_course">Aus Kurs</string>
@@ -87,10 +87,14 @@
     <string name="end_of_round">Ende der Runde</string>
 
     <string name="next_pilot">Nächster Pilot</string>
-    <string name="finish_race">Rennen Abschließen</string>
+    <string name="finish_race">Rennen abschließen</string>
     <string name="wind_angle_offset">Hangausrichtung in Grad</string>
     <string name="enter_rotate_offset">Anzahl der verschobenen Positionen</string>
     <string name="interrupt">Unterbrechen</string>
     <string name="wind_measurement">Wind Messung</string>
+    <string name="menu_show_round_timeout">Zeige Rundentimeout</string>
+    <string name="menu_scrub_round_confirm">Sind Sie sicher, dass Sie die Runde/Gruppe streichen wollen?</string>
+    <string name="menu_scrub_round">Runde/Gruppe streichen</string>
+    <string name="menu_finish_race">Rennen abschließen</string>
 
 </resources>
