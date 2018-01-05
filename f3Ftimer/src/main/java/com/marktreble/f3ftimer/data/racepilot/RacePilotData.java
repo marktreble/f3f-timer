@@ -38,6 +38,23 @@ public class RacePilotData {
 		//dbp.close();
 	}
 
+	public boolean isRoundComplete(int race_id, int round) {
+		int number_of_pilots_to_fly = 0;
+		String sql = "select count(*) " +
+				"from racepilots rp " +
+				"left join racetimes rt " +
+				"on (rt.race_id=rp.race_id and rt.pilot_id=rp.id and rt.round=?) " +
+				"where rp.race_id=? and rp.status!=? and rt.id is null";
+		String[] data = {Integer.toString(round), Integer.toString(race_id), Integer.toString(Pilot.STATUS_RETIRED)};
+		Cursor cursor = database.rawQuery(sql, data);
+		cursor.moveToFirst();
+		if (!cursor.isAfterLast()){
+			number_of_pilots_to_fly = cursor.getInt(0);
+		}
+		cursor.close();
+		return number_of_pilots_to_fly == 0;
+	}
+
 	public int getMaxRound(int race_id) {
 		String[] cols = {"max(round)"};
 		String where = "race_id=?";

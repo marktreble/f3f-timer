@@ -233,7 +233,8 @@ public class Results {
         mArrGroupings = new ArrayList<>();
 
         int completed_rounds = race.round;
-        if (race.status != Race.STATUS_COMPLETE) completed_rounds--;
+        if (race.status != Race.STATUS_COMPLETE && !datasource2.isRoundComplete(mRid, race.round))
+            completed_rounds--;
 
         if (completed_rounds<1) return;
 
