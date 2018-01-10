@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 'Google Inc.:Google APIs:23'
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.marktreble.f3ftimer"
@@ -20,14 +20,25 @@ android {
 }
 
 dependencies {
-    compile project(':iOIOLibAccessory')
-    compile project(':iOIOLibAndroid')
-    compile project(':iOIOLibBT')
-    compile 'com.android.support:support-v4:23.0.1'
-    compile 'com.android.support:support-annotations:23.0.1'
-    compile project(':usbSerialForAndroid')
-    compile files('libs/acra-4.4.0.jar')
-    compile 'com.nononsenseapps:filepicker:2.4.2'
-    compile 'com.squareup.okhttp3:okhttp:3.0.0-RC1'
-    compile 'com.opencsv:opencsv:3.7'
+
+    implementation 'com.android.support:support-v4:23.0.1'
+    implementation 'com.android.support:support-annotations:23.0.1'
+
+    implementation project(':iOIOLibAccessory')
+    implementation project(':iOIOLibAndroid')
+    implementation project(':iOIOLibBT')
+    implementation project(':usbSerialForAndroid')
+
+    implementation 'com.nononsenseapps:filepicker:2.4.2'
+    implementation 'com.amitshekhar.android:debug-db:1.0.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'org.apache.commons:commons-lang3:3.6'
+    implementation 'com.opencsv:opencsv:4.1'
+
+    api files('libs/acra-4.4.0.jar')
+
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << "-Xlint:divzero" << "-Xlint:unchecked" << "-Xlint:cast"
 }

@@ -1,5 +1,21 @@
 package com.marktreble.f3ftimer.racemanager;
 
+import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.res.AssetManager;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
+
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.race.Race;
+import com.marktreble.f3ftimer.data.race.RaceData;
+import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -8,32 +24,47 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-
-import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.race.Race;
-import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-
-import android.app.Service;
-import android.content.Intent;
-import android.content.res.AssetManager;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.SimpleTimeZone;
 
 public class RaceResultsService extends Service {
 	
 	static boolean DEBUG = true;
+	static SimpleDateFormat HTTP_HEADER_DATE_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
 	
 	ServerSocket mServerSocket;
 	Listener mListener;
 	Integer mRid;
+	byte[] mOut;
+	long mLastRequestTime = 0;
+
+	private int state = 0;
+	private int currentPilotId = 0;
+	private float workingTime = 0;
+	private float climbOutTime = 0;
+	private float flightTime = 0;
+	private float estimatedTime = 0;
+	private int turnNumber = 0;
+	private String turnNumbersStr = "";
+	private String legTimesStr = "";
+	private String fastestLegTimesStr = "";
+	private float fastestFlightTime = 0;
+	private String fastestFlightPilot;
+	private String deltaTimesStr = "";
+	private int penalty = 0;
+	private boolean windLegal = true;
+	private float windAngleAbsolute = 0;
+	private float windAngleRelative = 0;
+	private float windSpeed = 0;
+	private int windSpeedCounter = 0;
 	
 	@Override
     public void onCreate() {
+        HTTP_HEADER_DATE_FORMAT.setTimeZone(new SimpleTimeZone(0, "GMT"));
+        this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onLiveUpdate"));
+        this.registerReceiver(onBroadcast1, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
     }
 		
 	@Override
@@ -47,6 +78,12 @@ public class RaceResultsService extends Service {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		}
+		try {
+			this.unregisterReceiver(onBroadcast);
+			this.unregisterReceiver(onBroadcast1);
+		} catch (IllegalArgumentException e){
+			e.printStackTrace();
 		}
     }
 
@@ -72,7 +109,7 @@ public class RaceResultsService extends Service {
     	mServerSocket = null;
     	mListener = null;
     	try {
-    	    mServerSocket = new ServerSocket(8080);
+    	    mServerSocket = new ServerSocket(8080, 3);
     	} 
     	catch (IOException e) {
 
@@ -93,10 +130,14 @@ public class RaceResultsService extends Service {
     	
 		@Override
 		protected Long doInBackground(ServerSocket... serverSocket) {
+			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 			ss = serverSocket[0];
     		Socket clientSocket = null;
 	    	try {
 	    	    clientSocket = ss.accept();
+	    	    clientSocket.setTcpNoDelay(true);
+	    	    clientSocket.setSoLinger(false, 0);
+	    	    clientSocket.setSoTimeout(1000);
 	    	} 
 	    	catch (IOException e) {
 	    	    return null;
@@ -133,15 +174,23 @@ public class RaceResultsService extends Service {
 				            int i = path.lastIndexOf('.');
 				            if (i>0) ext = path.substring(i+1);
 							
-				            byte[] out;
+							if (request_path.contains("getRaceLiveData.jsp")) {
+								if (0 == mLastRequestTime || (System.currentTimeMillis() - mLastRequestTime) > 500) {
+									mLastRequestTime = System.currentTimeMillis();
 
-				            if (ext.equals("jsp")){
-				            	out = getDynamicPage(request_type, path, ext, query);
-				            } else {
-				            	out = getStaticPage(path, ext);
-				            }
+									mOut = getLivePage(request_type, path, ext, query);
+								}
+							} else if (request_path.contains("getRaceData.jsp")) {
+								if (0 == mLastRequestTime || (System.currentTimeMillis() - mLastRequestTime) > 500) {
+									mLastRequestTime = System.currentTimeMillis();
 
-				            output.write(out);
+									mOut = getDynamicPage(request_type, path, ext, query);
+								}
+							} else {
+								mOut = getStaticPage(path, ext);
+							}
+
+				            output.write(mOut);
 				            output.close();
 						}
 					}
@@ -168,7 +217,7 @@ public class RaceResultsService extends Service {
 				String[] headers = new String[lines.length];
 				do {
 					line = lines[l].trim();
-					Log.i("F3fHTTPServerRequest", line);
+					Log.d("F3fHTTPServerRequest", line);
 					headers[l++] = line;
 				} while (line.length()>0 && l<lines.length);
 			
@@ -245,6 +294,39 @@ public class RaceResultsService extends Service {
             
 			return response;
 		}
+        
+        private byte[] getLivePage(String type, String path, String ext, String query) {
+
+            byte[] response = null;
+            Method method;
+            JSPPagesLive jsp = new JSPPagesLive();
+            
+            String script = path.replaceAll("/", "_").substring(0, path.length()-(ext.length()+1)).toLowerCase();
+
+            try {
+//                Log.i("TRYING METHOD", script);
+                  method = jsp.getClass().getMethod(script, String.class);
+
+                  try {
+                      response = (byte[])method.invoke(jsp, query);
+                  } catch (IllegalArgumentException e) {
+                      return this.get500Page();
+                  } catch (IllegalAccessException e) {
+                      return this.get500Page();
+                  } catch (InvocationTargetException e) {
+                      return this.get500Page();
+                  }
+
+            } catch (SecurityException e) {
+                    Log.i("ERROR", e.getMessage());
+                  return this.get500Page();
+            } catch (NoSuchMethodException e) {
+                  return this.get404Page();
+            }                
+            
+            return response;
+        }
+
 		private byte[] get404Page(){
 			
 			String html = "";
@@ -288,6 +370,7 @@ public class RaceResultsService extends Service {
 
             return (header + html).getBytes();
 		}
+
 		private String getMimeTypeForExtension(String ext){
 			String type = "text/plain";
 			
@@ -321,7 +404,7 @@ public class RaceResultsService extends Service {
 		@Override
 		protected void onPostExecute(Long result){
 			super.onPostExecute(result);
-			if (result == 1){
+            if (null != result && result == 1){
 				mListener = new Listener();
 				mListener.execute(ss);
 			}
@@ -332,72 +415,177 @@ public class RaceResultsService extends Service {
 	public IBinder onBind(Intent intent) {
 		return null;
 	}
-	
+
+    private BroadcastReceiver onBroadcast1 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
+                windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
+                windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
+                windAngleRelative = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_relative");
+                windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
+                windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
+            }
+        }
+    };
+
+    // Binding for UI->Service Communication
+    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.flightTime")) {
+                flightTime = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.flightTime");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.estimatedTime")) {
+                estimatedTime = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.estimatedTime");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.workingTime")) {
+                workingTime = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.workingTime");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.climbOutTime")) {
+                climbOutTime = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.climbOutTime");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.turnNumber")) {
+                turnNumber = intent.getExtras().getInt("com.marktreble.f3ftimer.value.turnNumber");
+                if (turnNumbersStr.length() > 0) turnNumbersStr += "#";
+                turnNumbersStr += String.valueOf(turnNumber);
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.legTime")) {
+				float legTime = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.legTime");
+                if (legTimesStr.length() > 0) legTimesStr += "#";
+                legTimesStr += String.format("%.2f", legTime).replace(",", ".");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.fastestLegTime")) {
+				float fastestLegTime = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.fastestLegTime");
+                if (fastestLegTimesStr.length() > 0) fastestLegTimesStr += "#";
+                fastestLegTimesStr += String.format("%.2f", fastestLegTime).replace(",", ".");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.deltaTime")) {
+				float deltaTime = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.deltaTime");
+                if (deltaTimesStr.length() > 0) deltaTimesStr += "#";
+                if (deltaTime > 0) deltaTimesStr += "+";
+                deltaTimesStr += String.format("%.2f", deltaTime).replace(",", ".");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.currentPilotId")) {
+                currentPilotId = intent.getExtras().getInt("com.marktreble.f3ftimer.value.currentPilotId");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.fastestFlightTime")) {
+                fastestFlightTime = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.fastestFlightTime");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.fastestFlightPilot")) {
+                fastestFlightPilot = intent.getExtras().getString("com.marktreble.f3ftimer.value.fastestFlightPilot");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.fastestLegPilot")) {
+                fastestFlightPilot = intent.getExtras().getString("com.marktreble.f3ftimer.value.fastestLegPilot");
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.penalty")) {
+                penalty = intent.getExtras().getInt("com.marktreble.f3ftimer.value.penalty");
+            }
+            if (turnNumber == 10) {
+                turnNumber++;
+            }
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.state")) {
+                state = intent.getExtras().getInt("com.marktreble.f3ftimer.value.state");
+                if (state == 1) {
+                    turnNumbersStr = "";
+                    deltaTimesStr = "";
+					float[] deltaTimes = new float[]{};
+                    legTimesStr = "";
+					float[] legTimes = new float[]{};
+                    fastestLegTimesStr = "";
+					float[] fastestLegTimes = new float[]{};
+                    fastestFlightTime = 0;
+                    fastestFlightPilot ="";
+                    penalty = 0;
+                }
+            }
+        }
+    };
+
+    public class JSPPagesLive {
+        public byte[] _api_getracelivedata(String query){
+            RaceData datasource = new RaceData(RaceResultsService.this);
+            datasource.open();
+            Race race = datasource.getRace(mRid);
+            datasource.close();
+
+            RacePilotData datasource2 = new RacePilotData(RaceResultsService.this);
+            datasource2.open();
+            Pilot currentPilot = datasource2.getPilot(currentPilotId, mRid);
+            datasource2.close();
+
+            String data = "[{";
+            data += this.addParam("time", String.valueOf(System.currentTimeMillis()/1000L)) + ",";
+            data += this.addParam("race_name", race.name) + ",";
+            data += this.addParam("race_status", String.valueOf(race.status)) + ",";
+            data += this.addParam("current_round", String.valueOf(race.round)) + ",";
+            data += this.addParam("state", String.valueOf(state)) + ",";
+            data += this.addParam("current_pilot", currentPilot.firstname+" "+currentPilot.lastname) + ",";
+            data += this.addParam("current_penalty", String.format("%d", penalty).replace(",", ".")) + ",";
+            data += this.addParam("current_working_time", String.format("%.2f", workingTime).replace(",", ".")) + ",";
+            data += this.addParam("current_climb_out_time", String.format("%.2f", climbOutTime).replace(",", ".")) + ",";
+            if (turnNumber == 0 && state != 8) {
+                data += this.addParam("current_flight_time", String.format("%.2f", flightTime).replace(",", ".")) + ",";
+            } else {
+                data += this.addParam("current_flight_time", String.format("%.2f", flightTime).replace(",", ".")) + ",";
+                data += this.addParam("current_estimated_flight_time", String.format("%.2f", estimatedTime).replace(",", ".")) + ",";
+                data += this.addParam("current_turn_numbers", turnNumbersStr) + ",";
+                data += this.addParam("current_split_times", legTimesStr) + ",";
+                data += this.addParam("fastest_times", fastestLegTimesStr) + ",";
+                data += this.addParam("delta_times", deltaTimesStr) + ",";
+                data += this.addParam("fastest_time", String.format("%.2f", fastestFlightTime).replace(",", ".")) + ",";
+                data += this.addParam("fastest_time_pilot", fastestFlightPilot) + ",";
+            }
+            data += this.addParam("current_wind_angle_absolute", String.format("%.2f", windAngleAbsolute).replace(",", ".")) + ",";
+            data += this.addParam("current_wind_angle_relative", String.format("%.2f", windAngleRelative).replace(",", ".")) + ",";
+            data += this.addParam("current_wind_speed", String.format("%.2f", windSpeed).replace(",", ".")) + ",";
+            data += this.addParam("current_wind_speed_counter", String.format("%d", windSpeedCounter).replace(",", ".")) + ",";
+            data += this.addParam("current_wind_legal", String.format("%b", windLegal).replace(",", "."));
+            data += "}]           ";
+            
+            String header;
+            header = "HTTP/1.1 200 OK\n";
+            header += "Content-Type: application/json; charset=utf-8\n";
+            header += "Content-Length: "+data.length()+"\n";
+            String now = HTTP_HEADER_DATE_FORMAT.format(new Date(System.currentTimeMillis())).replaceFirst("\\x2B\\d\\d:\\d\\d","");
+            header += "Date: "+now+"\n";
+            String expiredate = HTTP_HEADER_DATE_FORMAT.format(new Date(System.currentTimeMillis()+2000)).replaceFirst("\\x2B\\d\\d:\\d\\d","");
+            header += "Expires: "+expiredate+"\n";
+            header += "Cache-Control: max-age=1\n";
+            header += "\r\n";
+
+            return (header + data).getBytes();
+        }
+
+        private String addParam(String name, String value){
+            return addParam(name, value, true);
+        }
+
+        private String addParam(String name, String value, boolean quotes){
+            if (!quotes) return "\""+name+"\":"+value;
+            return "\""+name+"\":\""+value+"\"";
+        }
+    }
+
 	public class JSPPages {
 		public byte[] _api_getracedata(String query){
 			RaceData datasource = new RaceData(RaceResultsService.this);
 	  		datasource.open();
 	  		Race race = datasource.getRace(mRid);
+            datasource.close();
 
 			RacePilotData datasource2 = new RacePilotData(RaceResultsService.this);
 	  		datasource2.open();
-	  		ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0, 0);
+            int maxRound = datasource2.getMaxRound(race.id);
+            String racetimes = datasource2.getTimesSerializedExt(mRid, maxRound);
+            datasource2.close();
+
+			RacePilotData datasource3 = new RacePilotData(RaceResultsService.this);
+            datasource3.open();
+            String pilots = datasource3.getPilotsSerialized(mRid);
+            datasource3.close();
 	  		
 	  		long unixTime = System.currentTimeMillis() / 1000L;
-
-	  		ArrayList<String> p_names = new ArrayList<>();
-	  		for (Pilot p : allPilots){
-  				p_names.add(String.format("\"%s %s\"", p.firstname, p.lastname));
-  			}
-	  		String pilots_array = p_names.toString();
-
-            ArrayList<ArrayList<String>> p_times = new ArrayList<>();
-            ArrayList<Integer> groups = new ArrayList<>();
-
-			for (int rnd=0; rnd<race.round; rnd++){
-                RaceData.Group group = datasource.getGroups(mRid, rnd+1);
-                groups.add(group.num_groups);
-
-				ArrayList<String> round = new ArrayList<>();
-				for (Pilot p : allPilots){
-					float time = datasource2.getPilotTimeInRound(race.id, p.id, rnd+1);
-                    Log.i("RRS", p.toString());
-                    Log.i("RRS", Float.toString(time));
-					if (time>0){
-						round.add(String.format("\"%.2f\"",time));
-					} else {
-						if (rnd == race.round-1){ // is the round in progress
-							if (!p.flown){
-								// Not yet flown ("")
-								round.add("\"\"");
-							} else {
-								// Has flown so time was a zero
-								round.add("\"0\"");
-							}
-						} else {
-							round.add("\"0\"");							
-						}
-					}
-  				}
-  				p_times.add(round);
-  			}
-	  		String times_array = p_times.toString();
-	  		
-	  		ArrayList<ArrayList<String>> p_penalties = new ArrayList<>();
-	  		for (int rnd=0; rnd<race.round; rnd++){
-	  			ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0, 0);
-				ArrayList<String> round = new ArrayList<>();
-				for (int i=0; i<p_names.size(); i++){
-					
-  					round.add(String.format("\"%d\"", pilots_in_round.get(i).penalty *100));
-  				}
-  				p_penalties.add(round);
-  			}
-	  		String penalties_array = p_penalties.toString();
-	  		String groups_array = groups.toString();
-
-	  		datasource2.close();
-	  		datasource.close();
 
             String data = "[{";
             data += this.addParam("time", String.valueOf(unixTime)) + ",";
@@ -406,20 +594,22 @@ public class RaceResultsService extends Service {
             data += this.addParam("current_round", String.valueOf(race.round)) + ",";
             data += this.addParam("ftd", "{}", false) + ",";
             data += this.addParam("round_winners", "[]", false) + ",";
-            data += this.addParam("pilots", pilots_array, false) + ",";
-            data += this.addParam("times", times_array, false) + ",";
-            data += this.addParam("penalties", penalties_array, false) + ",";
-            data += this.addParam("groups", groups_array, false);
-            data += "}]";
-            
+            data += this.addParam("pilots", pilots, false) + ",";
+            data += this.addParam("racetimes", racetimes, false);
+            data += "}]           ";
+
             String header;
             header = "HTTP/1.1 200 OK\n";
             header+= "Content-Type: application/json; charset=utf-8\n";
             header+= "Content-Length: "+data.length()+"\n";
+            String now = HTTP_HEADER_DATE_FORMAT.format(new Date(System.currentTimeMillis())).replaceFirst("\\x2B\\d\\d:\\d\\d","");
+            header += "Date: "+now+"\n";
+            String expiredate = HTTP_HEADER_DATE_FORMAT.format(new Date(System.currentTimeMillis()+2000)).replaceFirst("\\x2B\\d\\d:\\d\\d","");
+            header += "Expires: "+expiredate+"\n";
+            header += "Cache-Control: max-age=30\n";
             header+= "\r\n";
-            
-            return (header + data).getBytes();
 
+            return (header + data).getBytes();
 		}
 		
 		private String addParam(String name, String value){

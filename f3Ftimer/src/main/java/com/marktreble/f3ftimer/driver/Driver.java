@@ -17,6 +17,7 @@ import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.languages.Languages;
+import com.marktreble.f3ftimer.media.TTS;
 
 import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
@@ -27,19 +28,23 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.SoundPool;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.os.Handler;
 import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class Driver implements TextToSpeech.OnInitListener {
+public class Driver implements TTS.onInitListenerProxy {
 
 	private static final String TAG = "Driver";
+
+	private static final String[] sounds = {"pref_buzz_off_course", "pref_buzz_on_course", "pref_buzz_turn", "pref_buzz_turn9", "pref_buzz_penalty"};
 
 	private Context mContext;
 
@@ -54,17 +59,22 @@ public class Driver implements TextToSpeech.OnInitListener {
 	public long[] mLegTimes = new long[10];
 	public Integer mLeg = 0;
 	public boolean mWindLegal = true;
+
+	private boolean mAudibleWindWarning = false;
+
+
+	private Integer mPenalty;
 	
 	public MediaPlayer mPlayer;
 	private boolean mSoundFXon;
 	private boolean mSpeechFXon;
 	
 	private String mDefaultLang;
-	private String mSpeechLang;
+	private String mDefaultSpeechLang;
 	private String mPilotLang;
 	
-	private TextToSpeech mTts;
-	private int mTTSStatus;
+	private TTS mTts;
+	private boolean mSetFullVolume;
 
 	public Handler mHandler = new Handler();
 	
@@ -78,6 +88,15 @@ public class Driver implements TextToSpeech.OnInitListener {
     private final static int SPEECH_DELAY_TIME = 250;
 
     HashMap<String, String> utterance_ids = new HashMap<>();
+
+	private static SoundPool soundPool;
+
+	private int[] soundArray;
+
+	private static boolean alreadyfinalised = false;
+	private static boolean alreadyReceivedFinalizeReq = false;
+
+	protected boolean mWindMeasurement = true;
     
 	public Driver(Context context){
 		mContext = context;
@@ -93,23 +112,41 @@ public class Driver implements TextToSpeech.OnInitListener {
 		if (intent.hasExtra("com.marktreble.f3ftimer.race_id")){
 
 			Bundle extras = intent.getExtras();
-			mRid = extras.getInt("com.marktreble.f3ftimer.race_id");
+			mRid = extras.getInt("com.marktreble.f3ftimer.race_id", 0);
+			mWindMeasurement = extras.getBoolean("pref_wind_measurement", false);
+			mSetFullVolume = extras.getBoolean("pref_full_volume", true);
+			mAudibleWindWarning = extras.getBoolean("pref_audible_wind_warning", false);
+
     	}
 		
     	// Listen for inputs from the UI
 		mContext.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
 
-     	mPlayer  = MediaPlayer.create(mContext, R.raw.base1);
-        
-        AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
-        
-		mSoundFXon = (intent.getStringExtra("pref_buzzer").equals("true"));
-		mSpeechFXon = (intent.getStringExtra("pref_voice").equals("true"));
-		mSpeechLang = intent.getStringExtra("pref_voice_lang");
-		Locale default_lang = Locale.getDefault();
-		if (mSpeechLang == null || mSpeechLang.equals("")) mSpeechLang = String.format("%s_%s", default_lang.getISO3Language(), default_lang.getISO3Country());
-		
+		// TODO
+		// Sound Pool should be placed in it's own class under .media.SoftBuzzer
+		if (soundPool != null) {
+			soundPool.release();
+			soundPool = null;
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			soundPool = new SoundPool.Builder().setMaxStreams(1).build();
+		} else {
+			soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+		}
+
+		setSounds(intent);
+
+		mSoundFXon = intent.getBooleanExtra("pref_buzzer", false);
+		mSpeechFXon = intent.getBooleanExtra("pref_voice", false);
+		mDefaultSpeechLang = intent.getStringExtra("pref_voice_lang");
+		if (mDefaultSpeechLang == null || mDefaultSpeechLang.equals("")) {
+			Locale default_lang = Locale.getDefault();
+			mDefaultSpeechLang = String.format("%s_%s", default_lang.getLanguage(), default_lang.getCountry());
+		}
+		Log.i(TAG, "mDefaultSpeechLang=" + mDefaultSpeechLang);
+		mDefaultLang = Locale.getDefault().getLanguage();
+		mPilotLang = mDefaultSpeechLang;
+
 		mTts = null;
 		mDefaultLang = Locale.getDefault().getLanguage();
 		
@@ -120,6 +157,47 @@ public class Driver implements TextToSpeech.OnInitListener {
 
 	}
 
+	private void setSounds(Intent intent){
+		// soundArray is loaded from preferences
+
+		soundArray = new int[sounds.length];
+		int i=0;
+		for (String sound : sounds) {
+			String value = intent.getStringExtra(sound);
+			int id = mContext.getResources().getIdentifier(value, "raw", mContext.getPackageName());
+			soundArray[i++] = soundPool.load(mContext, id, 1);
+		}
+	}
+
+	private void setSound(String key, String value){
+		int i=0;
+		for (String sound : sounds) {
+			if (key.equals(sound)) {
+				int id = mContext.getResources().getIdentifier(value, "raw", mContext.getPackageName());
+				soundArray[i] = soundPool.load(mContext, id, 1);
+			}
+			i++;
+		}
+	}
+
+	// TTS.onInitListenerProxy
+	public void onInit(int status){
+
+	}
+
+	public void onStart(String utteranceId) {
+
+	}
+
+	public void onDone(String utteranceId){
+		Intent i2 = new Intent("com.marktreble.f3ftimer.onUpdate");
+		i2.putExtra("com.marktreble.f3ftimer.service_callback", "hide_progress");
+		mContext.sendBroadcast(i2);
+	}
+
+	public void onError(String utteranceId) {
+
+	}
 
 	public void destroy(){
         Log.i(TAG, "Destroyed");
@@ -129,14 +207,15 @@ public class Driver implements TextToSpeech.OnInitListener {
 		} catch (IllegalArgumentException e){
 			e.printStackTrace();
 		}
-  		
-  		if (mTts != null) {
-			// Suppress error generated in TTS engine
-			try {
-				mTts.shutdown();
-			} catch (Exception e){
-				e.printStackTrace();
-			}
+
+		if (soundPool != null) {
+			soundPool.release();
+			soundPool = null;
+		}
+
+		if (mTts != null) {
+			mTts.release();
+			mTts = null;
 		}
 	}
 
@@ -183,7 +262,7 @@ public class Driver implements TextToSpeech.OnInitListener {
                 }
 
 				if (data.equals("abort")){
-					mHandler.removeCallbacks(announceWorkingTime);
+					cancelWorkingTime();
 					((DriverInterface)mContext).sendAbort();
 					return;
 				}
@@ -209,12 +288,23 @@ public class Driver implements TextToSpeech.OnInitListener {
 				}
 
 				/* Callbacks from SettingsActivity */
-				if (data.equals("pref_buzzer")){	
+				if (data.equals("pref_buzzer")){
 					mSoundFXon = extras.getBoolean("com.marktreble.f3ftimer.value");
 					return;
 				}
 
-				if (data.equals("pref_voice")){	
+				if (data.equals("pref_buzz_off_course")
+						|| data.equals("pref_buzz_on_course")
+						|| data.equals("pref_buzz_off_course")
+						|| data.equals("pref_buzz_turn")
+						|| data.equals("pref_buzz_turn9")
+						|| data.equals("pref_buzz_penalty")){
+					String value = extras.getString("com.marktreble.f3ftimer.value");
+					setSound(data, value);
+					return;
+				}
+
+				if (data.equals("pref_voice")){
 					mSpeechFXon = extras.getBoolean("com.marktreble.f3ftimer.value");
 					
 					if (mSpeechFXon && mTts == null){
@@ -226,12 +316,23 @@ public class Driver implements TextToSpeech.OnInitListener {
 				
 				if (data.equals("pref_voice_lang")){	
 					if (mSpeechFXon){
-						mSpeechLang = extras.getString("com.marktreble.f3ftimer.value");
+						mDefaultSpeechLang = extras.getString("com.marktreble.f3ftimer.value");
 				  		// Try to set speech lang - if not available then setSpeechFXLanguage returns the default Language
-						mPilotLang = setSpeechFXLanguage();
+						mPilotLang = setSpeechFXLanguage(mPilotLang);
 					}
 					return;
 				}
+
+				if (data.equals("pref_full_volume")){
+					mSetFullVolume = extras.getBoolean("com.marktreble.f3ftimer.value");
+					return;
+				}
+
+				if (data.equals("pref_audible_wind_warning")){
+					mAudibleWindWarning = extras.getBoolean("com.marktreble.f3ftimer.value");
+					return;
+				}
+
 
 				if (data.length()>2){
 					if (data.substring(0,2).equals("::"))
@@ -308,8 +409,9 @@ public class Driver implements TextToSpeech.OnInitListener {
 		mOmitOffCourse = false;
 		mLateEntry = false;
 		mLeg = 0;
+		mPenalty = 0;
 
-  		if (mSpeechFXon && mTTSStatus == TextToSpeech.SUCCESS){
+  		if (mSpeechFXon && mTts.mTTSStatus == TextToSpeech.SUCCESS){
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -323,14 +425,15 @@ public class Driver implements TextToSpeech.OnInitListener {
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mPilotLang = mSpeechLang;
                     RacePilotData datasource2 = new RacePilotData(mContext);
                     datasource2.open();
                     Pilot pilot = datasource2.getPilot(mPid, mRid);
                     datasource2.close();
-                    if (pilot.language!= null && !pilot.language.equals("")){
-                        mPilotLang = String.format("%s_%s", pilot.language, pilot.nationality);
-                    }
+					if (pilot.language!= null && !pilot.language.equals("")){
+						mPilotLang = String.format("%s_%s", pilot.language, pilot.nationality);
+					} else {
+						mPilotLang = mDefaultSpeechLang;
+					}
 					/*
                     Log.i("startPilot:", "Race ID = "+Integer.toString(mRid));
                     Log.i("startPilot:", "Pilot ID = "+Integer.toString(mPid));
@@ -340,9 +443,9 @@ public class Driver implements TextToSpeech.OnInitListener {
 					*/
 
                     // Try to set speech lang - if not available then setSpeechFXLanguage returns the default Language
-                    mPilotLang = setSpeechFXLanguage();
+                    mPilotLang = setSpeechFXLanguage(mPilotLang);
 
-                    speak(String.format("%s %s", pilot.firstname, pilot.lastname), TextToSpeech.QUEUE_ADD);
+                    if (mSpeechFXon) speak(String.format("%s %s", pilot.firstname, pilot.lastname), TextToSpeech.QUEUE_ADD);
 
                 }
             }, 200);
@@ -358,6 +461,12 @@ public class Driver implements TextToSpeech.OnInitListener {
 		}
 	}
 
+	public void cancelWorkingTime(){
+		if (mSpeechFXon) {
+			mHandler.removeCallbacks(announceWorkingTime);
+		}
+	}
+
 	Runnable announceWorkingTime = new Runnable(){
 		@Override
 		public void run() {
@@ -369,7 +478,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 	};
 
 	public void modelLaunched(){
-		mHandler.removeCallbacks(announceWorkingTime);
+		cancelWorkingTime();
 		cancelTimeout();
 		
 	    // Send Launch command to HID
@@ -397,7 +506,13 @@ public class Driver implements TextToSpeech.OnInitListener {
 		mContext.sendBroadcast(i);
 
 		// Buzzer Sound
-		if (mSoundFXon) mPlayer.start();
+		//if (mSoundFXon) mPlayer.start();
+
+		if (mSoundFXon){
+			setAudioVolume();
+			SoftBuzzSound.soundOffCourse(soundPool, soundArray);
+		}
+
 		// Synthesized Call
 		if (mSpeechFXon && !mOmitOffCourse){
             mHandler.postDelayed(new Runnable() {
@@ -419,7 +534,12 @@ public class Driver implements TextToSpeech.OnInitListener {
 		mContext.sendBroadcast(i);
 			
 		// Buzzer Sound
-		if (mSoundFXon) mPlayer.start();
+		//if (mSoundFXon) mPlayer.start();
+		if (mSoundFXon){
+			setAudioVolume();
+			SoftBuzzSound.soundOnCourse(soundPool, soundArray);
+		}
+
 		// Synthesized Call
 		if (mSpeechFXon){
             mHandler.postDelayed(new Runnable() {
@@ -459,7 +579,16 @@ public class Driver implements TextToSpeech.OnInitListener {
 		mContext.sendBroadcast(i);
 
 		// Buzzer Sound
-		if (mSoundFXon) mPlayer.start();
+		//if (mSoundFXon) mPlayer.start();
+		if (mSoundFXon){
+			setAudioVolume();
+			if (mLeg<9) {
+				SoftBuzzSound.soundTurn(soundPool, soundArray);
+			} else {
+				SoftBuzzSound.soundTurn9(soundPool, soundArray);
+			}
+		}
+
 		// Synthesized Call
 		if (mSpeechFXon && mLeg<10 && mLeg>0){
             final String leg = Integer.toString(mLeg) + ((mLeg == 9)? " " + Languages.useLanguage(mContext, mPilotLang).getString(R.string.and_last):"");
@@ -471,6 +600,19 @@ public class Driver implements TextToSpeech.OnInitListener {
                 }
             }, SPEECH_DELAY_TIME);
         }
+	}
+
+	public void incPenalty(){
+		mPenalty++;
+		// Buzzer Sound
+		if (mSoundFXon){
+			setAudioVolume();
+			SoftBuzzSound.soundPenalty(soundPool, soundArray);
+		}
+
+		Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+		i.putExtra("com.marktreble.f3ftimer.value.penalty", mPenalty);
+		mContext.sendBroadcast(i);
 	}
 
 	public void runComplete(){
@@ -551,18 +693,35 @@ public class Driver implements TextToSpeech.OnInitListener {
 	}
 
 
-	public void windLegal(){
-		mWindLegal = true;
-		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-		i.putExtra("com.marktreble.f3ftimer.service_callback", "wind_legal");
-		mContext.sendBroadcast(i);
+	void windLegal(){
+		if (mWindMeasurement) {
+			if (!mWindLegal) {
+				mWindLegal = true;
+				Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+				i.putExtra("com.marktreble.f3ftimer.service_callback", "wind_legal");
+				mContext.sendBroadcast(i);
+			}
+		}
 	}
-	
-	public void windIllegal(){
-		mWindLegal = false;
-		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-		i.putExtra("com.marktreble.f3ftimer.service_callback", "wind_illegal");
-		mContext.sendBroadcast(i);
+
+	void windIllegal(){
+		if (mWindMeasurement) {
+			if (mWindLegal) {
+				mWindLegal = false;
+				Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+				i.putExtra("com.marktreble.f3ftimer.service_callback", "wind_illegal");
+				mContext.sendBroadcast(i);
+
+				if (mSpeechFXon) {
+					// use contest language instead of pilot language here, so that the operator can understand this
+					String text = Languages.useLanguage(mContext, mDefaultSpeechLang).getString(R.string.wind_warning);
+					Languages.useLanguage(mContext, mDefaultLang);
+					setSpeechFXLanguage(mDefaultSpeechLang);
+					speak(text, TextToSpeech.QUEUE_ADD);
+					setSpeechFXLanguage(mPilotLang);
+				}
+			}
+		}
 	}
 	
 	public void startPressed(){
@@ -577,59 +736,12 @@ public class Driver implements TextToSpeech.OnInitListener {
 	}
 
 	private void startSpeechSynthesiser() {
-        mTts = new TextToSpeech(mContext, this);
+        mTts = TTS.sharedTTS(mContext, this);
     }
 
-    public void onInit(int status){
-        mTTSStatus = status;
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            initUtteranceListenerForMinICS();
-        } else {
-            initUtteranceListenerForOtherThanICS();
-        }
-    }
-
-    @TargetApi(15)
-    private void initUtteranceListenerForMinICS(){
-        Log.i(TAG, "SETTING UP UTTERANCE PROGRESS FOR >=ICS");
-        mTts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-            @Override
-            public void onStart(String utteranceId) {
-            }
-
-            @Override
-            public void onDone(String utteranceId) {
-                Intent i2 = new Intent("com.marktreble.f3ftimer.onUpdate");
-                i2.putExtra("com.marktreble.f3ftimer.service_callback", "hide_progress");
-                mContext.sendBroadcast(i2);
-            }
-
-            @Override
-            public void onError(String utteranceId) {
-                Log.i(TAG, "UTTERANCE_ERROR");
-
-            }
-        });
-    }
     
-    @TargetApi(11)
-    private void initUtteranceListenerForOtherThanICS(){
-        Log.i(TAG, "SETTING UP UTTERANCE PROGRESS FOR <ICS");
-        mTts.setOnUtteranceCompletedListener(new TextToSpeech.OnUtteranceCompletedListener() {
-            @Override
-            public void onUtteranceCompleted(String utteranceId) {
-                Intent i2 = new Intent("com.marktreble.f3ftimer.onUpdate");
-                i2.putExtra("com.marktreble.f3ftimer.service_callback", "hide_progress");
-                mContext.sendBroadcast(i2);
-            }
-        });
-        
-    }
-    
-    public void
-
-	beginRoundTimeout(){
+    public void beginRoundTimeout(){
 		Log.i(TAG, "Timeout Started");
 
         // Start round inactive timeout (3 minutes)
@@ -667,6 +779,7 @@ public class Driver implements TextToSpeech.OnInitListener {
 	}
 	
 	private void cancelDialog(){
+
 		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
 		i.putExtra("com.marktreble.f3ftimer.service_callback", "cancel");
 		mContext.sendBroadcast(i);
@@ -757,34 +870,70 @@ public class Driver implements TextToSpeech.OnInitListener {
 		}
     }
 
-	private String setSpeechFXLanguage(){
-        if (mTts == null){
-            Log.i(TAG, "TTS IS NULL!");
-        }
-		String lang = Languages.setSpeechLanguage(mPilotLang, mSpeechLang, mTts);
-		
-		if (!lang.equals("")){
-
-			Log.i(TAG, "TTS LANG: "+lang);
-            
-			mTts.setLanguage(Languages.stringToLocale(lang));
-
+    // TODO
+	// setSpeechFXLanguage and speak belong in .media.TTS class!
+	private String setSpeechFXLanguage(String language){
+		String lang;
+		if (!mSpeechFXon) {
+			lang = language;
+		} else if (mTts == null) {
+			Log.i(TAG, "TTS IS NULL!");
+			lang = language;
 		} else {
-			// Unchanged, so return the pilot language
-			lang = mPilotLang;
+			lang = Languages.setSpeechLanguage(language, mDefaultSpeechLang, mTts.ttsengine());
+			if (mTts != null && lang != null && !lang.equals("")) {
+				Log.i(TAG, "TTS set speech engine language: " + lang);
+				mTts.ttsengine().setLanguage(Languages.stringToLocale(lang));
+			} else {
+				// Unchanged, so return the pilot language
+				lang = language;
+			}
+			Log.i(TAG, "TTS LANG: " + lang);
 		}
-		
+
 		return lang;
 	}
-    
+
     @TargetApi(21)
     private void speak(String text, int queueMode){
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.KITKAT) {
+		setAudioVolume();
+
+		if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.KITKAT) {
             utterance_ids.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, text);
-            mTts.speak(text, queueMode, utterance_ids);
+            mTts.ttsengine().speak(text, queueMode, utterance_ids);
         } else {
-            mTts.speak(text, queueMode, null, text);
+            mTts.ttsengine().speak(text, queueMode, null, text);
         }
-        
+
     }
+
+    private void setAudioVolume(){
+		if (mSetFullVolume) {
+			AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+			audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
+		}
+	}
+
+    public static class SoftBuzzSound {
+    	public static void soundOffCourse(SoundPool player, int[] ref){
+			player.play(ref[0], 1, 1, 1, 0, 1f);
+		}
+
+		public static void soundOnCourse(SoundPool player, int[] ref){
+			player.play(ref[1], 1, 1, 1, 0, 1f);
+		}
+
+		public static void soundTurn(SoundPool player, int[] ref){
+			player.play(ref[2], 1, 1, 1, 0, 1f);
+		}
+
+		public static void soundTurn9(SoundPool player, int[] ref){
+			player.play(ref[3], 1, 1, 1, 0, 1f);
+		}
+
+		public static void soundPenalty(SoundPool player, int[] ref){
+			player.play(ref[4], 1, 1, 1, 0, 1f);
+		}
+
+	}
 }

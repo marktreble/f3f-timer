@@ -5,6 +5,7 @@
 	    <item>USB - IOIO</item>
         <item>USB - Other</item>
         <item>Bluetooth - HC-05</item>
+        <item>TCP/IP Socket - f3ftimer-server:1234</item>
 	</string-array>
 
     <string-array name="options_stopbits" translatable="false">
@@ -85,4 +86,9 @@
     </string-array>
 
     <string-array name="empty_array" translatable="false" />
+
+    <string-array name="options_sounds" translatable="false">
+        <item>@string/whistle</item>
+        <item>@string/beep</item>
+    </string-array>
 </resources>

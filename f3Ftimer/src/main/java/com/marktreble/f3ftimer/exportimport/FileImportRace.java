@@ -4,7 +4,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -35,20 +34,20 @@ public class FileImportRace extends BaseImport {
 
         super.onCreate(savedInstanceState);
 
-        Intent i = new Intent(mContext, FilePickerActivity.class);
+        Intent i = new Intent(mContext, FilteredFilePickerActivity.class);
         // This works if you defined the intent filter
         // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
 
         // Set these depending on your use case. These are the defaults.
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
-        i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_MODE, FilteredFilePickerActivity.MODE_FILE);
 
         // Configure initial directory by specifying a String.
         // You could specify a String like "/storage/emulated/0/", but that can
         // dangerous. Always use Android's API calls to get paths to the SD-card or
         // internal memory.
-        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+        i.putExtra(FilteredFilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
 
         startActivityForResult(i, ACTION_PICK_FILE);
 
@@ -162,7 +161,15 @@ public class FileImportRace extends BaseImport {
         if (extension.equals("json")) {
             String data = readFile(uri);
             if (!data.equals("")){
-                super.importRace(data);
+                super.importRaceJSON(data);
+                return true;
+            }
+        }
+
+        if (extension.equals("csv")) {
+            String data = readFile(uri);
+            if (!data.equals("")){
+                super.importRaceCSV(data);
                 return true;
             }
         }

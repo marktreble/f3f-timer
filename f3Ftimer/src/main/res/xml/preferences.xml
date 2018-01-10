@@ -11,6 +11,11 @@
             android:entryValues="@array/InputSources"
             android:defaultValue="@string/Demo"/>
 
+        <EditTextPreference
+            android:key="pref_input_tcpio_ip"
+            android:title="@string/input_tcpio_ip"
+            android:defaultValue="192.168.43.1" />
+
         <ListPreference
             android:key="pref_input_src_device"
             android:title="@string/bluetooth_paired_device" />
@@ -46,12 +51,6 @@
         android:title="@string/audio"
         android:persistent="false">
         <CheckBoxPreference
-            android:key="pref_buzzer"
-            android:title="Buzzer"
-            android:summary="Play buzzer sound on the android device"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
             android:key="pref_voice"
             android:title="Voice Synthesis"
             android:summary="Use voice synthesis for CD calls"
@@ -61,10 +60,136 @@
             android:key="pref_voice_lang"
             android:title="Language for Voice Synthesis"
             android:dependency="pref_voice" />
+
+        <CheckBoxPreference
+            android:key="pref_full_volume"
+            android:title="Set Volume Automatically"
+            android:summary="Always keep volume at full"
+            android:defaultValue="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="button_sound"
+        android:title="@string/soft_buzz"
+        android:persistent="false">
+        <CheckBoxPreference
+            android:key="pref_buzzer"
+            android:title="Buzzer"
+            android:summary="Play buzzer sound on the android device"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="pref_buzz_off_course"
+            android:title="@string/snd_off_course"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+            android:defaultValue="@string/whistle" />
+
+        <ListPreference
+            android:key="pref_buzz_on_course"
+            android:title="@string/snd_on_course"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+            android:defaultValue="@string/whistle" />
+
+        <ListPreference
+            android:key="pref_buzz_turn"
+            android:title="@string/snd_turn"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+            android:defaultValue="@string/whistle" />
+
+        <ListPreference
+            android:key="pref_buzz_turn9"
+            android:title="@string/snd_turn9"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+            android:defaultValue="@string/whistle" />
+
+        <ListPreference
+            android:key="pref_buzz_penalty"
+            android:title="@string/snd_penalty"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+             android:defaultValue="@string/beep" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="button_wind"
+        android:title="@string/wind_meter_settings"
+        android:persistent="false">
+        <CheckBoxPreference
+            android:id="@+id/wind_measurement"
+            android:defaultValue="true"
+            android:key="pref_wind_measurement"
+            android:summary="Enable wind measurement"
+            android:title="@string/wind_measurement"/>
+
+        <EditTextPreference
+            android:id="@+id/wind_angle_offset"
+            android:defaultValue="0"
+            android:key="pref_wind_angle_offset"
+            android:numeric="decimal"
+            android:singleLine="true"
+            android:title="@string/wind_angle_offset"/>
+
+        <CheckBoxPreference
+            android:id="@+id/audible_wind_warning"
+            android:defaultValue="false"
+            android:key="pref_audible_wind_warning"
+            android:summary="Enable audible wind warning"
+            android:title="@string/wind_warning_audible"/>
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="button_other"
+        android:title="@string/external_results_http"
+        android:persistent="false">
+
+       <CheckBoxPreference
+            android:key="pref_results_server"
+            android:title="Run Results Server"
+            android:summary="Serve results over HTTP"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="pref_wifi_hotspot"
+            android:title="Start Wifi Hotspot"
+            android:summary="Activate Wifi Hotspot to broadcast results"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="pref_usb_tether"
+            android:title="USB-Tethering"
+            android:summary="Show Tethering menu before starting Driver"
+            android:defaultValue="false" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/external_results_BT"
+        android:persistent="false">
+        <CheckBoxPreference
+            android:key="pref_results_display"
+            android:title="Run External Results Display"
+            android:summary="Broadcast results over Bluetooth"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="pref_external_display"
+            android:title="Paired Device to use as external display"
+            android:dependency="pref_results_display" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/other_settings"
         android:persistent="false">
 
@@ -73,24 +198,6 @@
             android:title="Manual Entry"
             android:summary="Allow times to be entered manually"
             android:defaultValue="false" />
-
-       <CheckBoxPreference
-            android:key="pref_results_server"
-            android:title="Run Results Server"
-            android:summary="Broadcast results over wifi (http://192.168.43.1:8080)"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
-            android:key="pref_results_display"
-            android:title="Run External Results Display"
-            android:summary="Broadcast results over Bluetooth to a remote android Device"
-            android:defaultValue="false" />
-
-        <ListPreference
-            android:key="pref_external_display"
-            android:title="Paired Device to use as external display"
-            android:dependency="pref_results_display" />
-
         <CheckBoxPreference android:key="acra.enable"
             android:title="@string/pref_enable_acra"
             android:summaryOn="@string/pref_acra_enabled"

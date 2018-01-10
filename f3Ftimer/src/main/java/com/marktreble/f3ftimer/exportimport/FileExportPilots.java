@@ -16,6 +16,8 @@ import java.util.ArrayList;
  */
 public class FileExportPilots extends BaseExport {
 
+    private int mExportFileType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,18 +31,43 @@ public class FileExportPilots extends BaseExport {
         if (mDlg != null) mDlg = null;
     }
 
+
     @Override
     protected void beginExport(){
-        exportPilotData();
 
-        finish();
+        mDlg = new AlertDialog.Builder( this )
+                .setTitle( "Select file type" )
+                .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mExportFileType = which;
+                    }
+                })
+                .setPositiveButton( "OK", new DialogInterface.OnClickListener() {
+                    public void onClick( DialogInterface dialog, int clicked )
+                    {
+                        if (mExportFileType >0) {
+                            mDlg.dismiss();
+                            exportPilotData();
+
+                            finish();
+                        }
+                    }
+                } )
+                .show();
+
     }
 
     private void exportPilotData(){
         // Serialize all race data, pilots, times + groups
-        String data = super.getSerialisedPilotData();
-        Log.d("EXPORT DATA", data);
 
-        new SpreadsheetExport().writeExportFile(mContext, data, "pilots.json", mSaveFolder);
+        switch (mExportFileType) {
+            case EXPORT_FILE_TYPE_JSON:
+                new SpreadsheetExport().writeExportFile(mContext, super.getSerialisedPilotData(), "pilots.json", mSaveFolder);
+                break;
+            case EXPORT_FILE_TYPE_CSV:
+                new SpreadsheetExport().writeExportFile(mContext, super.getCSVPilotData(), "pilots.csv", mSaveFolder);
+                break;
+        }
     }
 }

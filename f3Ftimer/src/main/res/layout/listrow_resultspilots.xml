@@ -46,6 +46,23 @@
         </TextView>
 
         <TextView
+            android:id="@+id/group"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_weight="0"
+            android:background="@drawable/circle_group"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:layout_marginRight="8dp"
+            android:minHeight="68dp"
+            android:textColor="@color/text2"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:visibility="gone">
+
+        </TextView>
+
+        <TextView
             android:id="@+id/text1"
             android:layout_width="0dp"
             android:layout_height="fill_parent"

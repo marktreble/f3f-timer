@@ -17,6 +17,7 @@ import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -144,7 +145,20 @@ public class NewRaceFrag3 extends ListFragment {
 	        	}
 	        }
 	    });
-	    
+
+		// Listener for rotate button
+		Button rotate = (Button) v.findViewById(R.id.button_rotate);
+		rotate.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//TODO
+				// This would be much better done with an AlertDialog rater than an activity
+				// Code would be simpler & shorter, and it would be visually better from a UI perspective.
+				Intent intent = new Intent(getContext(), RotateEditActivity.class);
+				startActivityForResult(intent, 1);
+			}
+		});
+
 	    // Listener for manual re-order button
 	    Button manual = (Button) v.findViewById(R.id.button_manual);
 	    manual.setOnClickListener(new View.OnClickListener() {
@@ -162,8 +176,21 @@ public class NewRaceFrag3 extends ListFragment {
 	    setList();
 		return v;
 	}
-	
-	
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RaceActivity.RESULT_OK) {
+			if (mArrSelectedIds.size()>1){
+				int rotate_offset = Integer.parseInt(data.getStringExtra("rotate_offset"));
+				rotateSelectedArray(rotate_offset);
+				getSelectedArray();
+				mArrAdapter.notifyDataSetChanged();
+			}
+		}
+	}
+
 	private void setList(){
     	   	mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_reorder, R.id.text1 , mArrNames){
             @Override
@@ -390,7 +417,22 @@ public class NewRaceFrag3 extends ListFragment {
 			mArrSelectedIds.set(rnd2,  tmpint);
 		}
 	}
-	
+
+	private void rotateSelectedArray(int rotate_offset){
+		int sz = mArrSelectedIds.size();
+		Integer[] dst = new Integer[sz];
+		Integer[] src = new Integer[sz];
+		mArrSelectedIds.toArray(src);
+		rotate_offset = rotate_offset % sz;
+		if (rotate_offset<0) rotate_offset = rotate_offset + sz;
+		System.arraycopy(src, 0, dst, rotate_offset, sz - rotate_offset);
+		System.arraycopy(src, sz - rotate_offset, dst, 0, rotate_offset);
+		for (int i=0; i<sz; i++) {
+			mArrSelectedIds.set(i, dst[i]);
+		}
+	}
+
+
 	public class DialogSelectionClickHandler implements DialogInterface.OnMultiChoiceClickListener
 	{
 		public void onClick( DialogInterface dialog, int clicked, boolean selected )

@@ -74,12 +74,46 @@
                 android:gravity="center"
                 />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/button_rotate_wrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="12dp"
+            android:layout_toEndOf="@+id/button_scramble_wrapper"
+            android:layout_toRightOf="@+id/button_scramble_wrapper"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/button_rotate"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_alignBottom="@+id/button_scramble_wrapper"
+                android:layout_toEndOf="@+id/button_manual_wrapper"
+                android:layout_toRightOf="@+id/button_manual_wrapper"
+                android:background="@drawable/rotate"
+                android:contentDescription="@string/button_rotate"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Rotate Shuffle"
+                android:textColor="@color/text2"
+                android:textSize="12sp"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
         <LinearLayout
             android:id="@+id/button_manual_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button_scramble_wrapper"
+            android:layout_toRightOf="@+id/button_rotate_wrapper"
             android:layout_marginLeft="12dp"
             android:orientation="vertical">
             <Button

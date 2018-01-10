@@ -128,7 +128,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
                 row = convertView;
                 }
                 
-                Pilot p = (Pilot)mArrPilots.get(position);
+                Pilot p = mArrPilots.get(position);
                 
                 TextView p_number = (TextView) row.findViewById(R.id.number);
                 p_number.setText(mArrNumbers.get(position));

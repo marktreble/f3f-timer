@@ -105,7 +105,7 @@ public class Languages {
 					ret = fallback;
 				}
 			}
-			Log.i("Switching Speech Language to ", ret);			
+			Log.i("Speech Lang to ", ret);
 		} else {
 			Log.i("Languages", "NO Language Change");
 		}

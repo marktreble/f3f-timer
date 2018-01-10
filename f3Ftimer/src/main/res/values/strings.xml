@@ -30,6 +30,7 @@
     <string name="button_next">Next</string>
     <string name="button_done">Done</string>
     <string name="button_scramble">S</string>
+    <string name="button_rotate">R</string>
     <string name="button_manual">M</string>
     <string name="button_up">^</string>
     <string name="button_down">v</string>
@@ -55,8 +56,8 @@
     <string name="on_course">On Course</string>
     <string name="working_time">Working Time</string>
     <string name="and_last">And Last</string>
-    <string name="next_round">Finish Round</string>
-    <string name="wind_warning">Wind Illegal</string>
+    <string name="finish_race">Finish Race</string>
+    <string name="next_round">End Round</string>
     <string name="penalty">P</string>
     <string name="app_results">Results Manager</string>
     <string name="refly">Refly?</string>
@@ -90,17 +91,23 @@
     <string name="USB_IOIO" translatable="false">USB - IOIO</string>
     <string name="USB_OTHER">USB - Other</string>
     <string name="BLUETOOTH_HC_05" translatable="false">Bluetooth - HC-05</string>
+    <string name="TCP_IO" translatable="false">TCP/IP Socket - f3ftimer-server:1234</string>
     <string name="Demo">Demo Mode - On Screen Buzzers</string>
+    <string name="input_tcpio_ip">IP / host name for \"f3ftimer-server\"</string>
     <string name="bluetooth_paired_device">HC-05 Paired Device</string>
+    <string name="external_results_http">External Results (HTTP)</string>
+    <string name="external_results_BT">External Results (Bluetooth)</string>
     <string name="connection_settings">Connection Settings</string>
     <string name="other_settings">Other Settings</string>
     <string name="usb_baudrate">Baud Rate</string>
     <string name="usb_stopbits">Stop Bits</string>
     <string name="usb_databits">Data Bits</string>
     <string name="usb_parity">Parity</string>
+    <string name="soft_buzz">Software Buzzer</string>
     <string name="none">None</string>
     <string name="enter_num_groups">Enter Number of Groups</string>
     <string name="enter_start_number">Enter Start Number</string>
+    <string name="enter_rotate_offset">Enter number of shifted positions</string>
     <string name="wifi">Wifi Buzzers</string>
     <string name="pref_enable_acra">Enable ACRA Crash Reports</string>
     <string name="pref_acra_enabled">Enabled</string>
@@ -110,6 +117,13 @@
     <string name="de">German</string>
     <string name="nl">Dutch</string>
     <string name="es">Spanish</string>
+
+    <!-- Wind Measurement -->
+    <string name="wind_meter_settings">Wind Meter Settings</string>
+    <string name="wind_warning">Wind Illegal</string>
+    <string name="wind_angle_offset">Slope Orientation in degrees</string>
+    <string name="wind_measurement">Wind Measurement</string>
+    <string name="wind_warning_audible">Wind Warning Audible</string>
 
     <!-- Soft Buzzers -->
     <string name="A" translatable="false">A</string>
@@ -124,5 +138,16 @@
     <string name="password">Password</string>
     <string name="btn_login">Log In</string>
     <string name="USBJE" translatable="false">USB - Jon Edison Timer Box</string>
+
+    <!-- Sounds -->
+    <string name="whistle">whistle</string>
+    <string name="beep">beep</string>
+
+    <!-- Sound Settings -->
+    <string name="snd_off_course">Off Course</string>
+    <string name="snd_on_course">On Course</string>
+    <string name="snd_turn">Turn</string>
+    <string name="snd_turn9">Last Turn</string>
+    <string name="snd_penalty">Penalty</string>
 
 </resources>

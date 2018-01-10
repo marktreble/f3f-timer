@@ -23,7 +23,7 @@
         
                 <!-- Race Manager App -->
         <activity
-            android:name="com.marktreble.f3ftimer.racemanager.RaceListActivity"
+            android:name=".racemanager.RaceListActivity"
             android:label="@string/app_race" 
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:theme="@style/AppTheme" 
@@ -47,7 +47,7 @@
         </activity>
         
         <activity
-            android:name="com.marktreble.f3ftimer.racemanager.RaceActivity"
+            android:name=".racemanager.RaceActivity"
             android:theme="@style/AppTheme"
             android:label="@string/app_race"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
@@ -57,48 +57,57 @@
 		<service android:name=".driver.USBIOIOService"
 		    	 android:label="F3F Race Timer Server"
 		    	 android:exported="false"
-		    	 android:process="com.marktreble.f3ftimer.driver">
+		    	 android:process=".driver">
     		<intent-filter>
-        		<action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+        		<action android:name=".RaceTimerService" />
     		</intent-filter>
    		</service>
 
         <service android:name=".driver.USBOtherService"
             android:label="F3F Race Timer Server"
             android:exported="false"
-            android:process="com.marktreble.f3ftimer.driver">
+            android:process=".driver">
             <intent-filter>
-                <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+                <action android:name=".RaceTimerService" />
             </intent-filter>
         </service>
 
         <service android:name=".driver.BluetoothHC05Service"
             android:label="F3F Race Timer Server"
             android:exported="false"
-            android:process="com.marktreble.f3ftimer.driver">
+            android:process=".driver">
             <intent-filter>
-                <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+                <action android:name=".RaceTimerService" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".driver.TcpIoService"
+            android:label="Tcp Socket Server connecting to host raspberrypi on port 1234"
+            android:exported="false"
+            android:process=".driver">
+            <intent-filter>
+                <action android:name=".RaceTimerService" />
             </intent-filter>
         </service>
 
         <service android:name=".driver.SoftBuzzerService"
             android:label="F3F Race Timer Server"
             android:exported="false"
-            android:process="com.marktreble.f3ftimer.driver">
+            android:process=".driver">
             <intent-filter>
-                <action android:name="com.marktreble.f3ftimer.RaceTimerService" />
+                <action android:name=".RaceTimerService" />
             </intent-filter>
         </service>
 
-        <service android:name="com.marktreble.f3ftimer.racemanager.RaceResultsService" android:label="F3F Race Results Server" android:exported="false">
+        <service android:name=".racemanager.RaceResultsService" android:label="F3F Race Results Server" android:exported="false">
     		<intent-filter>
-        		<action android:name="com.marktreble.f3ftimer.RaceResultsService" />
+        		<action android:name=".RaceResultsService" />
     		</intent-filter>
 		</service>
 
-        <service android:name="com.marktreble.f3ftimer.racemanager.RaceResultsDisplayService" android:label="F3F Race Results Display Server" android:exported="false">
+        <service android:name=".racemanager.RaceResultsDisplayService" android:label="F3F Race Results Display Server" android:exported="false">
             <intent-filter>
-                <action android:name="com.marktreble.f3ftimer.RaceResultsDisplayService" />
+                <action android:name=".RaceResultsDisplayService" />
             </intent-filter>
         </service>
 
@@ -169,55 +178,59 @@
         
         <!--  Dialogs -->
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.NewRaceActivity" android:theme="@style/Theme.Transparent"
+            android:name=".dialog.NewRaceActivity" android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
         </activity>
         
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.PilotsEditActivity" android:theme="@style/Theme.Transparent"
+            android:name=".dialog.PilotsEditActivity" android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
         </activity>
         
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.AboutActivity" android:theme="@style/Theme.Transparent">
+            android:name=".dialog.AboutActivity" android:theme="@style/Theme.Transparent">
         </activity>
 
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.HelpActivity" android:theme="@style/Theme.Transparent">
+            android:name=".dialog.HelpActivity" android:theme="@style/Theme.Transparent">
         </activity>
         
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.RaceTimerActivity" android:theme="@style/Theme.Transparent">
+            android:name=".dialog.RaceTimerActivity" android:theme="@style/Theme.Transparent">
   		</activity>
 
         <activity 
-            android:name="com.marktreble.f3ftimer.dialog.NextRoundActivity" android:theme="@style/Theme.Transparent">
+            android:name=".dialog.NextRoundActivity" android:theme="@style/Theme.Transparent">
   		</activity>
 
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.SettingsActivity" android:theme="@style/Theme.Transparent">
+            android:name=".dialog.SettingsActivity" android:theme="@style/Theme.Transparent">
   		</activity>
 
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.TimeEntryActivity" android:theme="@style/Theme.Transparent"
+            android:name=".dialog.TimeEntryActivity" android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
   		</activity>
 
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.RaceRoundTimeoutActivity" android:theme="@style/Theme.Transparent">
+            android:name=".dialog.RaceRoundTimeoutActivity" android:theme="@style/Theme.Transparent">
   		</activity>
 
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.GroupScoreEditActivity" android:theme="@style/Theme.Transparent"
+            android:name=".dialog.GroupScoreEditActivity" android:theme="@style/Theme.Transparent"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
         </activity>
 
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.FlyingOrderEditActivity" android:theme="@style/Theme.Transparent">
+            android:name=".dialog.FlyingOrderEditActivity" android:theme="@style/Theme.Transparent">
         </activity>
 
         <activity
-            android:name="com.marktreble.f3ftimer.dialog.StartNumberEditActivity" android:theme="@style/Theme.Transparent">
+            android:name=".dialog.StartNumberEditActivity" android:theme="@style/Theme.Transparent">
+        </activity>
+
+        <activity
+            android:name=".dialog.RotateEditActivity" android:theme="@style/Theme.Transparent">
         </activity>
 
         <activity
@@ -249,7 +262,7 @@
         </activity>
 
         <activity
-            android:name="com.marktreble.f3ftimer.exportimport.BluetoothExportRace" android:theme="@style/Theme.Overlay">
+            android:name=".exportimport.BluetoothExportRace" android:theme="@style/Theme.Overlay">
         </activity>
 
         <activity
@@ -261,7 +274,7 @@
         </activity>
 
         <activity
-            android:name="com.nononsenseapps.filepicker.FilePickerActivity"
+            android:name=".exportimport.FilteredFilePickerActivity"
             android:label="@string/app_name"
             android:theme="@style/FilePickerTheme">
             <intent-filter>

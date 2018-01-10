@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
@@ -26,6 +28,13 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
     static final String ICN_CONN = "on";
     static final String ICN_DISCONN = "off";
+
+    private Handler mWindEmulator;
+    private static float mSlopeOrientation = 0.0f;
+
+    int mWindSpeedCounterSeconds = 0;
+    int mWindSpeedCounter = 0;
+    long mWindTimestamp;
 
 	/*
 	 * General life-cycle function overrides
@@ -61,6 +70,8 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         mBoardConnected = false;
         driverDisconnected();
 
+        mWindEmulator.removeCallbacksAndMessages(null);
+
     }
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
@@ -93,7 +104,10 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
                 Bundle extras = intent.getExtras();
-                String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
+                if (extras == null)
+                    extras = new Bundle();
+
+                String data = extras.getString("com.marktreble.f3ftimer.ui_callback", "");
                 Log.i(TAG, data);
 
                 if (data.equals("get_connection_status")) {
@@ -102,6 +116,10 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
                     } else {
                         driverDisconnected();
                     }
+                }
+
+                if (data.equals("pref_wind_angle_offset")) {
+                    mSlopeOrientation = Float.valueOf(intent.getExtras().getString("com.marktreble.f3ftimer.value"));
                 }
             }
         }
@@ -116,9 +134,60 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         mDriver.start(intent);
         driverConnected();
 
-    	return (START_STICKY);    	
+        // Output dummy wind readings
+        Bundle extras = intent.getExtras();
+        mWindTimestamp = System.currentTimeMillis();
+        mSlopeOrientation = 0.f;
+        if (extras != null)
+            mSlopeOrientation = Float.parseFloat(extras.getString("pref_wind_angle_offset", "0.0"));
+
+        mWindEmulator = new Handler();
+        Runnable runnable = new Runnable() {
+
+            @Override
+            public void run() {
+                Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+                float wind_angle_absolute = mSlopeOrientation + (float)(Math.random()*2) - 1.f;
+                float wind_angle_relative = wind_angle_absolute - mSlopeOrientation;
+                if (wind_angle_absolute > 180 + mSlopeOrientation) {
+                    wind_angle_relative -= 360;
+                }
+                float wind_speed = 6f + (float)(Math.random()*3) - 1.5f;
+                if (wind_speed < 3 || wind_speed > 25) {
+                    mWindSpeedCounter++;
+                } else {
+                    mWindSpeedCounter = 0;
+                    mWindSpeedCounterSeconds = 0;
+                    mWindTimestamp = System.currentTimeMillis();
+                }
+                if (mWindSpeedCounter == 2) {
+                    mWindSpeedCounterSeconds++;
+                    mWindSpeedCounter = 0;
+                }
+
+                boolean windLegal;
+                if ((wind_angle_relative > 45 || wind_angle_relative < -45) || mWindSpeedCounterSeconds >= 20
+                        || (System.currentTimeMillis() - mWindTimestamp >= 20000)) {
+                    mWindSpeedCounterSeconds = 20;
+                    mDriver.windIllegal();
+                    windLegal = false;
+                } else {
+                    mDriver.windLegal();
+                    windLegal = true;
+                }
+
+                String wind_data = formatWindValues(windLegal, wind_angle_absolute, wind_angle_relative, wind_speed, 20- mWindSpeedCounterSeconds);
+                i.putExtra("com.marktreble.f3ftimer.value.wind_values", wind_data);
+                sendBroadcast(i);
+
+                mWindEmulator.postDelayed(this, 1000);
+            }
+        };
+        mWindEmulator.post(runnable);
+
+        return (START_STICKY);
     }
-       	
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		return null;
@@ -184,5 +253,27 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         mTimerStatus = 0;
         mDriver.ready();
 
+    }
+
+    public String formatWindValues(boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
+        String str = "";
+        if (windLegal && windSpeedCounter == 20) {
+            str = String.format(" a: %.2f°", windAngleAbsolute)
+                    + String.format(" r: %.2f°", windAngleRelative)
+                    + String.format(" %.2fm/s", windSpeed)
+                    + "   legal";
+        } else if (windLegal) {
+            str = String.format(" a: %.2f°", windAngleAbsolute)
+                    + String.format(" r: %.2f°", windAngleRelative)
+                    + String.format(" %.2fm/s", windSpeed)
+                    + String.format(" legal (%d s)", windSpeedCounter);
+        } else {
+            str = String.format(" a: %.2f°", windAngleAbsolute)
+                    + String.format(" r: %.2f°", windAngleRelative)
+                    + String.format(" %.2fm/s", windSpeed)
+                    + " illegal";
+        }
+
+        return str;
     }
 }

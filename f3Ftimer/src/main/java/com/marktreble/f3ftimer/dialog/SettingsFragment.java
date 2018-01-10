@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.languages.Languages;
+import com.marktreble.f3ftimer.media.TTS;
 import com.marktreble.f3ftimer.wifi.Wifi;
 
 import android.bluetooth.BluetoothAdapter;
@@ -33,22 +34,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener, OnInitListener {
+public class SettingsFragment extends PreferenceFragment
+        implements OnSharedPreferenceChangeListener, TTS.onInitListenerProxy {
 	
-	private TextToSpeech mTts;
+	private TTS mTts;
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        mTts = TTS.sharedTTS(getActivity(), this);
+
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
-        
-        mTts = new TextToSpeech(getActivity(), this);
+
 	}
 	
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (view!=null)
             view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_dialog));
@@ -59,16 +61,30 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         setLangSummary("pref_voice_lang");
         setLangSummary("pref_input_src");
         setStringSummary("pref_usb_baudrate");
+        setStringSummary("pref_input_tcpio_ip");
         setListSummary("pref_usb_stopbits", R.array.options_stopbits);
         setListSummary("pref_usb_databits", R.array.options_databits);
         setListSummary("pref_usb_parity", R.array.options_parity);
         setBTDeviceSummary("pref_external_display");
 
-    	Preference pref_results_server = findPreference("pref_results_server");
-        if (!Wifi.canEnableWifiHotspot(getActivity())){
-        	pref_results_server.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
+        setStringSummary("pref_wind_angle_offset");
+        setStringSummary("pref_wind_measurement");
+
+        setListSummary("pref_buzz_off_course", R.array.options_sounds);
+        setListSummary("pref_buzz_on_course", R.array.options_sounds);
+        setListSummary("pref_buzz_turn", R.array.options_sounds);
+        setListSummary("pref_buzz_turn9", R.array.options_sounds);
+        setListSummary("pref_buzz_penalty", R.array.options_sounds);
+
+
+        Preference pref_results_server = findPreference("pref_results_server");
+
+        Preference pref_wifi_hotspot = findPreference("pref_wifi_hotspot");
+        String ip = Wifi.getIPAddress(true);
+        if (pref_wifi_hotspot.isEnabled()) {
+            pref_results_server.setSummary("Broadcasting results over wifi (http://" + ip + ":8080)\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
         } else {
-        	pref_results_server.setSummary("Broadcast results over wifi (http://192.168.43.1:8080)");
+            pref_results_server.setSummary("Serve results over HTTP");
         }
 
 		return view;
@@ -89,24 +105,62 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         // Callbacks to input driver
         
     	if (key.equals("pref_buzzer") 
-     	 || key.equals("pref_voice") 
-    	 || key.equals("pref_results_server")){
+                || key.equals("pref_voice")
+                || key.equals("pref_results_server")
+                || key.equals("pref_wind_measurement")
+                || key.equals("pref_usb_tether")
+                || key.equals("pref_audible_wind_warning")
+                || key.equals("pref_full_volume")){
     		// Send to Service
-    		i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
-    		i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
-    		i.putExtra("com.marktreble.f3ftimer.value", sharedPreferences.getBoolean(key, true));
-    		getActivity().sendBroadcast(i);
+            sendBooleanValueToService(key, sharedPreferences.getBoolean(key, false));
     	}
-    		    	
+
+        if (key.equals("pref_usb_baudrate")
+                || key.equals("pref_input_tcpio_ip")){
+            setStringSummary(key);
+            sendStringValueToService(key, sharedPreferences.getString(key, ""));
+        }
+
+        if (key.equals("pref_buzz_off_course")
+                || key.equals("pref_buzz_on_course")
+                || key.equals("pref_buzz_turn")
+                || key.equals("pref_buzz_turn9")
+                || key.equals("pref_buzz_penalty")) {
+            setStringSummary(key);
+            sendStringValueToService(key, sharedPreferences.getString(key, ""));
+        }
+
+
     	if (key.equals("pref_voice_lang")){
     		// Send to Service
-    		i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
-    		i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
-    		i.putExtra("com.marktreble.f3ftimer.value", sharedPreferences.getString(key, ""));
-    		getActivity().sendBroadcast(i);
+            setLangSummary(key);
+            String lang = sharedPreferences.getString(key, "");
+            String[] l = lang.split("_");
+            if (l.length == 2) {
+                Locale lo = new Locale(l[0], l[1]);
+                // set default text language
+                getResources().getConfiguration().locale = lo;
+                sendStringValueToService(key, sharedPreferences.getString(key, ""));
+                Log.i("SETTINGS", "Changed speech language to " + lo.getDisplayName());
+            }
     	}
 
-
+        if (key.equals("pref_wind_angle_offset")){
+            float angle = Float.parseFloat(sharedPreferences.getString(key, "0.0"));
+            if (angle < 0) {
+                angle = -angle;
+            }
+            if (angle > 360) {
+                angle = angle % 360;
+            }
+            String anglestr = String.format("%.1f", angle).replace(",", ".");
+            if (pref instanceof EditTextPreference) {
+                EditTextPreference textPref = (EditTextPreference) pref;
+                textPref.setText(anglestr);
+            }
+            setStringSummary("pref_wind_angle_offset");
+            sendStringValueToService(key, anglestr);
+        }
     }
     
     @Override
@@ -123,11 +177,26 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
+    private void sendStringValueToService(String key, String value) {
+        Intent i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
+        i.putExtra("com.marktreble.f3ftimer.value", value);
+        getActivity().sendBroadcast(i);
+    }
+
+    private void sendBooleanValueToService(String key, boolean value) {
+        Intent i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
+        i.putExtra("com.marktreble.f3ftimer.value", value);
+        getActivity().sendBroadcast(i);
+    }
+
     private void setInputSourceActiveFields(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String inputSource = sharedPref.getString("pref_input_src", "");
         if (inputSource.equals(getString(R.string.BLUETOOTH_HC_05))){
             // BT - Hide baud rate etc.., and show device picker
+            findPreference("pref_input_tcpio_ip").setEnabled(false);
             findPreference("pref_usb_baudrate").setEnabled(false);
             findPreference("pref_usb_stopbits").setEnabled(false);
             findPreference("pref_usb_databits").setEnabled(false);
@@ -137,6 +206,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
         } else if (inputSource.equals(getString(R.string.Demo))) {
             // Demo mode - hide all options
+            findPreference("pref_input_tcpio_ip").setEnabled(false);
             findPreference("pref_usb_baudrate").setEnabled(false);
             findPreference("pref_usb_stopbits").setEnabled(false);
             findPreference("pref_usb_databits").setEnabled(false);
@@ -145,6 +215,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             findPreference("pref_input_src_device").setEnabled(false);
         } else {
             // USB - Hide device picker, show baud rate etc..
+            if (inputSource.equals(getString(R.string.TCP_IO))) {
+                findPreference("pref_input_tcpio_ip").setEnabled(true);
+            } else {
+                findPreference("pref_input_tcpio_ip").setEnabled(false);
+            }
+
             findPreference("pref_usb_baudrate").setEnabled(true);
             findPreference("pref_usb_stopbits").setEnabled(true);
             findPreference("pref_usb_databits").setEnabled(true);
@@ -217,15 +293,22 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
     @Override
 	public void onInit(int status) {
-        // Populate pref_input_src_device with paired devics
+        // Populate pref_input_src_device with paired devices
         populateInputSourceDevices();
+
+        // Populate pref_external_display with paired devices
+        populateExternalDisplayDevices();
 
         // Populate pref_voice_lang with installed voices
         populateVoices();
 
-        // Populate pref_external_display with paired devics
-        populateExternalDisplayDevices();
     }
+
+    public void onStart(String utteranceId){ }
+
+    public void onDone(String utteranceId){ }
+
+    public void onError(String utteranceId){ }
 
     private void populateVoices() {
         String[] languages = Languages.getAvailableLanguages(getActivity());
@@ -238,7 +321,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
             int ttsres = TextToSpeech.LANG_NOT_SUPPORTED;
             try {
-                ttsres = mTts.isLanguageAvailable(locale);
+                ttsres = mTts.ttsengine().isLanguageAvailable(locale);
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
             }
@@ -299,10 +382,13 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         pref.setEntryValues(values);
 
     }
-	
+
     @Override
     public void onDestroy(){
     	super.onDestroy();
-    	mTts.shutdown();
+    	if (mTts != null){
+    	    mTts.release();
+    	    mTts = null;
+        }
     }
 }

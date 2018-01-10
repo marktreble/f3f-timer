@@ -43,8 +43,10 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 	private ArrayAdapter<String> mArrAdapter;
 	private ArrayList<String> mArrNames;
     private ArrayList<String> mArrNumbers;
-    private ArrayList<Pilot> mArrPilots;
+	private ArrayList<Pilot> mArrPilots;
+	private ArrayList<Integer> mArrGroups;
 
+	private Integer mNumGroups;
 	private Integer mRid;
 	private Integer mRound;
 
@@ -80,12 +82,14 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 		RaceData.Group groups = datasource.getGroups(mRid, mRound);
   		datasource.close();
 
+  		mNumGroups = groups.num_groups;
+
 		String group_scored = "";
-		if (groups.num_groups>1){
-			group_scored = String.format(" - Group Scored (%d)", groups.num_groups);
+		if (mNumGroups>1){
+			group_scored = String.format(" - %d Groups", groups.num_groups);
 		}
  		TextView tt = (TextView) findViewById(R.id.race_title);
-  		tt.setText(String.format("Round %d%s", mRound, group_scored));
+  		tt.setText(String.format("R%d%s", mRound, group_scored));
 
 	    setList();
 	    setListAdapter(mArrAdapter);
@@ -102,6 +106,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 		mArrNames = r.mArrNames;
 		mArrPilots = r.mArrPilots;
 		mArrNumbers = r.mArrNumbers;
+		mArrGroups = r.mArrGroups;
 	}
 	
 	private void setList(){
@@ -124,6 +129,14 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 
                 TextView p_number = (TextView) row.findViewById(R.id.number);
 				p_number.setText(mArrNumbers.get(position));
+
+				TextView p_group = (TextView) row.findViewById(R.id.group);
+				if (mNumGroups>1) {
+					p_group.setVisibility(View.VISIBLE);
+					p_group.setText(String.format("%d", mArrGroups.get(position) + 1));
+				} else {
+					p_group.setVisibility(View.GONE);
+				}
 				//p_number.setText(p.position);
 
                 TextView p_name = (TextView) row.findViewById(R.id.text1);

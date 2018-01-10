@@ -89,7 +89,7 @@ public class PilotsEditActivity extends Activity {
 		String[] str_countries = new String[countries.length];
 		int i=0;
 		for (CharSequence country : countries){
-			str_countries[i++] = (String) country.toString();
+			str_countries[i++] = country.toString();
 		}
 		mNationality_adapter = new ArrayAdapter<String>(this, R.layout.iconspinner , R.id.ics_label, str_countries){
    	   		@Override
@@ -274,10 +274,10 @@ public class PilotsEditActivity extends Activity {
         p.email = email.getText().toString().trim().toLowerCase();
         p.frequency = frequency.getText().toString().trim();
         p.models = capitalise(models.getText().toString().trim());
-        p.nationality = (String) getResources().getStringArray(R.array.countrycodes)[nationality.getSelectedItemPosition()];
+        p.nationality =  getResources().getStringArray(R.array.countrycodes)[nationality.getSelectedItemPosition()];
         String[] languages = Languages.getAvailableLanguages(mContext);
         if (language.getSelectedItemPosition()>=0)
-            p.language = (String) languages[language.getSelectedItemPosition()];
+            p.language = languages[language.getSelectedItemPosition()];
 
         String regEx = "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}\\b";
 

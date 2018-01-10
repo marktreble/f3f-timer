@@ -87,7 +87,7 @@ public class PilotsActivity extends ListActivity {
                 row = convertView;
                 }
                 
-                Pilot p = (Pilot)mArrPilots.get(position);
+                Pilot p = mArrPilots.get(position);
                 
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));

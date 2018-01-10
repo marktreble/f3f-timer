@@ -5,6 +5,7 @@
  */
 package com.marktreble.f3ftimer.racemanager;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.marktreble.f3ftimer.driver.*;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
+import com.marktreble.f3ftimer.usb.USB;
 import com.marktreble.f3ftimer.wifi.Wifi;
 
 import android.app.ActionBar;
@@ -34,6 +36,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -62,6 +65,7 @@ public class RaceActivity extends ListActivity {
 	public static int RESULT_ABORTED = 4; // Changed from 2 to 4 because of conflict with dialog dismissal
     public static int ROUND_SCRUBBED = 3;
     public static int ENABLE_BLUETOOTH = 5;
+    public static int RACE_FINISHED = 6;
 
 	// Dialogs
 	static int DLG_SETTINGS = 0;
@@ -93,6 +97,7 @@ public class RaceActivity extends ListActivity {
 	private boolean mPrefResults;
     private boolean mPrefResultsDisplay;
     private String mPrefExternalDisplay;
+    private boolean mPrefWindMeasurement;
 
     private boolean mRoundComplete;
     private boolean mRoundNotStarted;
@@ -116,6 +121,7 @@ public class RaceActivity extends ListActivity {
     private ImageView mStatus;
     private String mStatusIcon;
     private boolean mConnectionStatus;
+    private TextView mWindReadings;
 
     private String mExternalDisplayStatusIcon;
     private ImageView mExternalDisplayStatus;
@@ -154,9 +160,6 @@ public class RaceActivity extends ListActivity {
         mGroupScoring = datasource.getGroups(race.id, race.round);
   		datasource.close();
   		mRace = race;
-  		
-  		setRound();
-
 
         mListView = getListView();
         registerForContextMenu(mListView);
@@ -171,13 +174,18 @@ public class RaceActivity extends ListActivity {
         mStatus = (ImageView)findViewById(R.id.connection_status);
         mStatusIcon = "off";
 
+        mWindReadings = (TextView)findViewById(R.id.wind_readings);
+
+
         // Register for notifications
         registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
         registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
+        getPreferences();
+        setRound();
+
         if (savedInstanceState == null){
 	        // Start Results server
-            getPreferences();
 	       	startServers();
 
             final Handler handler = new Handler();
@@ -262,23 +270,43 @@ public class RaceActivity extends ListActivity {
         USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
-        
+        TcpIoService.stop(this);
+
         Intent serviceIntent = null;
         
         // Start Timer Driver
         Bundle extras = getIntent().getExtras();
+        if (extras == null)
+            extras = new Bundle();
+
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         Map<String,?> keys = sharedPref.getAll();
 
         for(Map.Entry<String,?> entry : keys.entrySet()){
-            extras.putString(entry.getKey(), entry.getValue().toString());
+            if (entry.getValue() instanceof String)
+                extras.putString(entry.getKey(), (String) entry.getValue());
+
+            if (entry.getValue() instanceof Boolean)
+                extras.putBoolean(entry.getKey(), (Boolean) entry.getValue());
+
+        }
+
+        boolean pref_usb_tethering = sharedPref.getBoolean("pref_usb_tether", false);
+        if (pref_usb_tethering) {
+            if (!USB.setupUsbTethering(getApplicationContext())){
+                // Enable tethering
+                Intent tetherSettings = new Intent();
+                tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+                tetherSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(tetherSettings);
+            }
         }
 
         USBIOIOService.startDriver(this, mInputSource, mRid, extras);
         USBOtherService.startDriver(this, mInputSource, mRid, extras);
         SoftBuzzerService.startDriver(this, mInputSource, mRid, extras);
         BluetoothHC05Service.startDriver(this, mInputSource, mRid, extras);
-
+        TcpIoService.startDriver(this, mInputSource, mRid, extras);
 	}
 	
 	public void stopServers(){
@@ -296,7 +324,7 @@ public class RaceActivity extends ListActivity {
         USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
-
+        TcpIoService.stop(this);
     }
 	
 	@Override
@@ -381,9 +409,13 @@ public class RaceActivity extends ListActivity {
 
         mPower.setText(mBatteryLevel);
 
+        if (mPrefWindMeasurement) {
+            mWindReadings.setVisibility(View.VISIBLE);
+        } else {
+            mWindReadings.setVisibility(View.GONE);
+        }
 
-
-
+        setResultsIP();
 
     }
 	
@@ -399,21 +431,70 @@ public class RaceActivity extends ListActivity {
         mPrefResults = sharedPref.getBoolean("pref_results_server", false);
         mPrefResultsDisplay = sharedPref.getBoolean("pref_results_display", false);
         mPrefExternalDisplay = sharedPref.getString("pref_external_display", "");
+        mPrefWindMeasurement = sharedPref.getBoolean("pref_wind_measurement", false);
 	}
 	
-	private void setRound(){
-  		mRnd = mRace.round;
+	private void setRound() {
+        mRnd = mRace.round;
 
         RaceData datasource2 = new RaceData(RaceActivity.this);
         datasource2.open();
         mGroupScoring = datasource2.getGroups(mRid, mRnd);
         datasource2.close();
 
-  		TextView tt = (TextView) findViewById(R.id.race_title);
-  		tt.setText("Round "+Integer.toString(mRnd) + " - "+mRace.name);
+        TextView tt = (TextView) findViewById(R.id.race_title);
 
+        String title = String.format("R%d - %s", mRnd, mRace.name);
+        tt.setText(title);
+
+    }
+
+    private void setResultsIP(){
+        TextView results = (TextView) findViewById(R.id.results_ip);
+  		if (mPrefResults){
+  		    results.setVisibility(View.VISIBLE);
+            new fetchIPAsyncTask(results).execute();
+
+        } else {
+            results.setVisibility(View.GONE);
+        }
 
 	}
+
+	private static class fetchIPAsyncTask extends AsyncTask<Void, Void, String> {
+
+        WeakReference<TextView> mViewWR;
+
+        fetchIPAsyncTask(TextView view){
+            mViewWR = new WeakReference<>(view);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String ip = "";
+            while (ip.equals("")) {
+                ip = Wifi.getIPAddress(true);
+                if (ip.equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+            return ip;
+        }
+
+        @Override
+        protected void onPostExecute(String ip) {
+            // update the UI (this is executed on UI thread)
+            super.onPostExecute(ip);
+            TextView view = mViewWR.get();
+            view.setText(String.format("%s:8080", ip));
+        }
+    }
+
 	/*
 	 * Start a pilot on his run
 	 */
@@ -587,7 +668,13 @@ public class RaceActivity extends ListActivity {
             getNamesArray();
             mArrAdapter.notifyDataSetChanged();
 		}
-		
+
+        if(resultCode==RaceActivity.RACE_FINISHED){
+            if (requestCode == RaceActivity.DLG_NEXT_ROUND) {
+                finishRace();
+            }
+        }
+
 		if(resultCode==RaceActivity.ROUND_SCRUBBED){
 			if (requestCode == RaceActivity.DLG_TIMEOUT){
                 scrubRound();
@@ -1249,10 +1336,32 @@ public class RaceActivity extends ListActivity {
                     startActivityForResult(enableBtIntent, ENABLE_BLUETOOTH);
                 }
 
+                if (data.equals("finishRace")){
+                    finishRace();
+                }
+
+                if (data.equals("wind_legal")) {
+                }
+
+                if (data.equals("wind_illegal")) {
+                }
+            } else if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
+			    /*
+                float windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
+                float windAngleRelative = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_relative");
+                float windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
+                boolean windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
+                int windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
+                setShowWindValues(mRace, windLegal, windAngleAbsolute, windAngleRelative, windSpeed, windSpeedCounter);
+                */
+			    if (mPrefWindMeasurement){
+			        mWindReadings.setText(intent.getExtras().getString("com.marktreble.f3ftimer.value.wind_values"));
+                }
+
+
             }
 		}
-        };
-
+    };
 
     @Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -1353,6 +1462,15 @@ public class RaceActivity extends ListActivity {
     public void onOptionsMenuClosed(Menu menu) {
         mMenuShown = false;
         super.onOptionsMenuClosed(menu);
+    }
+
+    private void finishRace() {
+        RaceData datasource = new RaceData(this);
+        datasource.open();
+        datasource.nextRound(mRid);
+        datasource.setStatus(mRid,Race.STATUS_COMPLETE);
+        datasource.close();
+        finish();
     }
 
     private void nextRound(){

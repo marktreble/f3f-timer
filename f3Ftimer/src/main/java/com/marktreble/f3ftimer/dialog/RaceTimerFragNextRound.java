@@ -41,9 +41,17 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
 	            
 	        }
 	    });
-	    
-        Button fin = (Button) mView.findViewById(R.id.button_next_round);
-	    fin.setOnClickListener(new View.OnClickListener() {
+
+		Button fin = (Button) mView.findViewById(R.id.button_finish_race);
+		fin.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finishRace();
+			}
+		});
+
+		Button next = (Button) mView.findViewById(R.id.button_next_round);
+	    next.setOnClickListener(new View.OnClickListener() {
 	        @Override
 	        public void onClick(View v) {
 	        	next();
@@ -68,7 +76,13 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
     	a.setResult(RaceActivity.RESULT_ABORTED, null);
     	a.finish();
 	}
-	
+
+	public void finishRace(){
+		NextRoundActivity a = (NextRoundActivity)getActivity();
+		a.setResult(RaceActivity.RACE_FINISHED, null);
+		a.finish();
+	}
+
 	public void next(){
 		NextRoundActivity a = (NextRoundActivity)getActivity();
     	a.setResult(RaceActivity.RESULT_OK, null);

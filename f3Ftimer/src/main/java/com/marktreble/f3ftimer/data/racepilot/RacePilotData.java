@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -282,7 +283,7 @@ public class RacePilotData {
         for(int i=0;i<pilots.size(); i++){
             if (i>0) array+=",";
             Pilot p = pilots.get(i);
-            String str_pilot = String.format("{\"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", p.pilot_id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language, p.team);
+            String str_pilot = String.format(Locale.ENGLISH, "{\"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", p.pilot_id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language, p.team);
             array+= str_pilot;
         }
         array+= "]";
@@ -299,7 +300,7 @@ public class RacePilotData {
             for(int j=0;j<pilots.size(); j++) {
                 if (j > 0) array += ",";
                 Pilot p = pilots.get(j);
-                String str_pilot = String.format("{\"time\":\"%s\", \"flown\":\"%d\", \"penalty\":\"%d\"}", p.time, (p.flown)?1:0, p.penalty);
+                String str_pilot = String.format(Locale.ENGLISH, "{\"time\":\"%s\", \"flown\":\"%d\", \"penalty\":\"%d\"}", p.time, (p.flown)?1:0, p.penalty);
                 array+= str_pilot;
             }
             array+="]";
@@ -308,5 +309,63 @@ public class RacePilotData {
         return array;
 
     }
+
+	public int getMaxRound(int race_id) {
+		String[] cols = {"max(round)"};
+		String where = "race_id=?";
+		String[] whereArgs = {Integer.toString(race_id)};
+		Cursor cursor = database.query("racetimes", cols, where, whereArgs, null, null, null);
+		cursor.moveToFirst();
+		int maxRound = 0;
+		if (!cursor.isAfterLast()){
+			maxRound = cursor.getInt(0);
+		}
+		cursor.close();
+		return maxRound;
+	}
+
+
+	public String getTimesSerializedExt(int race_id, int round){
+		StringBuilder array = new StringBuilder("[");
+		for (int i=0;i<round; i++){
+			ArrayList<Pilot> allPilots = getAllPilotsForRace(race_id, i+1, 0, 0);
+
+			/* split into groups */
+			ArrayList<ArrayList<Pilot>> groups = new ArrayList<>();
+			ArrayList<Pilot> group_pilots = new ArrayList<>();
+			groups.add(group_pilots);
+			int last_group = 1;
+			for(int j=0;j<allPilots.size(); j++) {
+				Pilot p = allPilots.get(j);
+				if (p.group > 0 && p.group != last_group) {
+					while (groups.size() < p.group) {
+						groups.add(new ArrayList<Pilot>());
+					}
+					group_pilots = groups.get(p.group - 1);
+					last_group = p.group;
+				}
+				group_pilots.add(p);
+			}
+
+			/* generate extended strings for all pilots per group */
+			if (i>0) array.append(",");
+			array.append("[");
+			for(int j=0; j<groups.size(); j++) {
+				if (j > 0) array.append(",");
+				array.append("[");
+				group_pilots = groups.get(j);
+				for(int k=0; k<group_pilots.size(); k++) {
+					if (k > 0) array.append(",");
+					Pilot p = group_pilots.get(k);
+					String str_pilot = String.format(Locale.ENGLISH, "{\"id\":\"%d\", \"group\":\"%d\", \"start_pos\":\"%d\", \"status\":\"%d\", \"flown\":\"%d\", \"time\":\"%.2f\", \"penalty\":\"%d\", \"points\":\"%.2f\"}", p.id, p.group, p.number, p.status, (p.flown) ? 1 : 0, p.time, p.penalty, p.points);
+					array.append(str_pilot);
+				}
+				array.append("]");
+			}
+			array.append("]");
+		}
+		array.append("]");
+		return array.toString();
+	}
 
 }

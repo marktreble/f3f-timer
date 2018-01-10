@@ -146,7 +146,7 @@ public class Results {
 
     /* getResultsForCompletedRound(context, race ID, round number)
      *
-     * Populates: mArrNames, mArrPilots, mArrNumbers
+     * Populates: mArrNames, mArrPilots, mArrNumbers, mArrGroups
      *
      */
     public void getResultsForCompletedRound(Context context, int mRid, int mRound){
@@ -190,6 +190,7 @@ public class Results {
         // Reinitialise
         mArrNames = new ArrayList<>();
         mArrNumbers = new ArrayList<>();
+        mArrGroups = new ArrayList<>();
 
         int pos=1;
         int c=1;
@@ -203,6 +204,7 @@ public class Results {
             previousscore = p.points;
             p.position = pos;
             mArrNumbers.add(String.format("%d", p.position));
+            mArrGroups.add(p.group);
             c++;
         }
 
@@ -213,6 +215,7 @@ public class Results {
      * Populates: mArrNames, mArrNumbers, mArrPilots, mArrScores, mArrTimes, mFTD, mFTDName, mFTDRound
      *
      */
+    @SuppressWarnings("unchecked")
     public void getResultsForRace(Context context, int mRid, boolean ordered){
 
         RaceData datasource = new RaceData(context);
@@ -236,7 +239,7 @@ public class Results {
 
         if (race.round<1) return;
 
-        SparseArray<ArrayList<RaceData.Time>> map_pilots= new SparseArray();
+        SparseArray<ArrayList<RaceData.Time>> map_pilots= new SparseArray<>();
         SparseArray<Float> map_totals= new SparseArray<>();
 
         mFTD = 9999;
@@ -277,6 +280,7 @@ public class Results {
 
                     ArrayList<RaceData.Time> arr_times;
                     Object o = map_pilots.get(p.id);
+
                     if (o != null) {
                         arr_times =(ArrayList<RaceData.Time>)o;
                     } else {
