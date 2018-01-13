@@ -151,6 +151,8 @@ public class RaceActivity extends ListActivity {
 
     private RaceData.Group mGroupScoring;
 
+    private Handler mRaceTitleHandler;
+
     private static RaceActivity mInstance = null;
 
 
@@ -207,10 +209,10 @@ public class RaceActivity extends ListActivity {
 	        // Start Results server
 	       	startServers();
 
-            final Handler handler = new Handler();
             final int delay = 5000; //milliseconds
-
-            handler.postDelayed(new Runnable(){
+    
+            mRaceTitleHandler = new Handler();
+            mRaceTitleHandler.postDelayed(new Runnable(){
                 public void run(){
                     Log.d("UUUUU", "CHECKING CONN");
                     sendCommand("get_connection_status");
@@ -220,7 +222,7 @@ public class RaceActivity extends ListActivity {
                         if (!ip.equals("")) ip =  " - " + ip + ":8080";
                         setRaceTitle(mRace.name + ip);
                     }
-                    handler.postDelayed(this, delay);
+                    if (mRaceTitleHandler != null) mRaceTitleHandler.postDelayed(this, delay);
                 }
             }, delay);
 
@@ -249,7 +251,9 @@ public class RaceActivity extends ListActivity {
 
         unregisterReceiver(onBroadcast);
         unregisterReceiver(mBatInfoReceiver);
-
+        
+        mRaceTitleHandler = null;
+        
         if (isFinishing()) {
             Log.i("DRIVER", "STOP SERVERS");
             stopServers();
@@ -1617,6 +1621,7 @@ public class RaceActivity extends ListActivity {
             datasource.open();
             Log.i("RACEACTIVITY", "DELETE GROUP: "+mRid+":"+mRnd+":"+mNextPilot.position);
             datasource.deleteGroup(mRid, mRnd, mNextPilot.position, mArrGroups, mArrPilots);
+            datasource.setStartPos(mRid, mRnd, mRace.offset, mRace.start_number, true);
             datasource.close();
         }
 

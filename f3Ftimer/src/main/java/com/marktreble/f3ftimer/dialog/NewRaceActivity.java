@@ -84,6 +84,7 @@ public class NewRaceActivity extends FragmentActivity {
   			racepilotsdatasource.addPilot(p, race_id);
 			Log.i("NEWRACE", p.toString());
   		}
+		racepilotsdatasource.setStartPos(race_id, r.round, r.offset, r.start_number, true);
   		pilotsdatasource.close();
   		racepilotsdatasource.close();
 	}

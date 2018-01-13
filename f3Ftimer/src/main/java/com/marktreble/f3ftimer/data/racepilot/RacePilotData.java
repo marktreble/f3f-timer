@@ -320,7 +320,16 @@ public class RacePilotData {
 			} else {
 				rotate_count = (((round - 1) * offset) % numPilots);
 			}
-
+			
+			/* overwrite existing start positions if not valid */
+			if (!forceOverwrite) {
+				for (int i = 0; i < numPilots; i++) {
+					if (allPilots.get(i).start_pos == 0 || allPilots.get(i).start_pos > numPilots) {
+						forceOverwrite = true;
+					}
+				}
+			}
+			
 			/* Commit the pilots list only, if start order is changed systematically.
 			 * Don't touch it, if it was predefined by import. */
 			if (start_number != 0 || offset != 0 || forceOverwrite) {

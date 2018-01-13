@@ -78,7 +78,7 @@ public class RaceDatabase extends SQLiteOpenHelper {
 			" primary key (race_id, round, pilot_id));";
 
     public RaceDatabase(Context context){
-    	super(context, DATABASE_NAME, null, DATABASE_VERSION);	
+    	super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     
     @Override

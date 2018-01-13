@@ -351,27 +351,20 @@ function createTableListItemScores(cellData, rowIndex, colIndex, nameColIndex){
 	if (rowIndex >= 2) {
 		if (colIndex >= 6) {
 			if (colIndex == nameColIndex) {
-				span = createSpanScores(cellData, 'span-left-italic');
+				span = createSpan(cellData, 'span-left-italic');
 			} else {
-				span = createSpanScores(cellData, 'span-italic');
+				span = createSpan(cellData, 'span-italic');
 			}
 		} else {
 			if (colIndex == nameColIndex) {
-				span = createSpanScores(cellData, 'span-left');
+				span = createSpan(cellData, 'span-left');
 			} else {
-				span = createSpanScores(cellData, 'span');
+				span = createSpan(cellData, 'span');
 			}
 		}
     } else {
         span = createHeaderSpanScores(cellData);
     }
-	return span;
-}
-
-function createSpanScores(cellData, spanClassName){
-	var span = document.createElement('span');
-	$(span).addClass(spanClassName);
-	$(span).html(cellData);
 	return span;
 }
 

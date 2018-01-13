@@ -1,16 +1,12 @@
 function liveInfo(){
 	var list = document.createElement('div');
-	$(list).addClass('liveinfo list');
-	
+	list.classList.add('liveinfo');
+	list.classList.add('list');
+
 	return list;
 }
 
-var rowIndexLive;
-var colIndexLive;
-
 function render_liveinfo(){
-    var lis = [];
-
     var cols1 = [];
     var cols2 = [];
     var cols3 = [];
@@ -27,7 +23,8 @@ function render_liveinfo(){
 	var rows2 = [];
 	var rows3 = [];
 
-    $('#race-name h2').html(modelLive.race_name+" - Live Info (Round "+modelLive.current_round+")");
+    var topHeading = document.getElementById('race-name').children[1];
+    topHeading.innerHTML = modelLive.race_name+" - Live Info (Round "+modelLive.current_round+")";
 
     cols1 = "#Abs#Rel#Speed#Status";
     cols1 = cols1.split("#");
@@ -104,28 +101,33 @@ function render_liveinfo(){
         cols5.push("Flight finished");
     }
 
-	rowIndexLive = 0;
+    var list = document.getElementsByClassName('liveinfo list')[0];
+	list.innerHTML = "";
+
     table1 = createTableLive(rows1, 1);
-    table2 = createTableLive(rows2, 2);
-    table3 = createTableLive(rows3, 3);
+    list.appendChild(table1);
 
-    lis.push(table1);
-    lis.push("<br>");
-    lis.push(table2);
-    lis.push("<br>");
-    lis.push(table3);
-
-    var list = $('div.liveinfo');
-    $(list).html(lis);
+	var width2 = 0;
+	if (rows2.length > 0) {
+		table2 = createTableLive(rows2, 2);
+		width2 = table2.rows[0].cells[0].offsetWidth;
+		list.appendChild(document.createElement('br'));
+		list.appendChild(table2);
+	}
+	var width3 = 0;
+	if (rows3.length > 0) {
+		table3 = createTableLive(rows3, 3);
+		width3 = table3.rows[0].cells[0].offsetWidth;
+		list.appendChild(document.createElement('br'));
+		list.appendChild(table3);
+	}
 
 	// adjust first column width of tables
-	var width1 = $(table2).eq(0).find("tr > td:first").width()+10;
-	var width2 = $(table3).eq(0).find("tr > td:first").width()+10;
-	var max = Math.max(width1, width2);
+	var max = Math.max(width2, width3);
 	if (max > 0) {
-		$(table1).eq(0).find("tr > td:first").width(max);
-		$(table2).eq(0).find("tr > td:first").width(max);
-		$(table3).eq(0).find("tr > td:first").width(max);
+		table1.rows[0].cells[0].width = max;
+		table2.rows[0].cells[0].width = max;
+		table3.rows[0].cells[0].width = max;
 	}
 }
 
@@ -155,15 +157,8 @@ function createListItemLive(cellData, rowIndexLive, colIndexLive, tableNo){
 		(tableNo != 2 && colIndexLive > 0 && rowIndexLive > 0)) {
 	    span = createSpanLiveLegs(cellData, rowIndexLive, colIndexLive, tableNo);
     } else {
-	    span = createSpanLive(cellData);
+	    span = createSpan(cellData, 'span-live-header');
     }
-	return span;
-}
-
-function createSpanLive(cellData){
-	var span = document.createElement('span');
-	$(span).addClass('span-live-header');
-	$(span).html(cellData);
 	return span;
 }
 
@@ -171,13 +166,13 @@ function createSpanLiveLegs(cellData, rowIndexLive, colIndexLive, tableNo){
 	var span = document.createElement('span');
 	if (tableNo == 3 && rowIndexLive == 3 && colIndexLive > 0) {
         if (cellData < 0) {
-            $(span).addClass('span-live-legs-neg');
+            span.classList.add('span-live-legs-neg');
         } else {
-            $(span).addClass('span-live-legs-pos');
+            span.classList.add('span-live-legs-pos');
         }
 	} else {
-	    $(span).addClass('span-live-legs');
+	    span.classList.add('span-live-legs');
     }
-	$(span).html(cellData);
+	span.innerHTML = cellData;
 	return span;
 }

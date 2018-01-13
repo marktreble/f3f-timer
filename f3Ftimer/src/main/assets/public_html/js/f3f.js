@@ -210,3 +210,10 @@ function createListItemLink(label, callback){
 	if (callback) $(li).bind('click', callback);
 	return li;
 }
+
+function createSpan(cellData, spanClassName){
+	var span = document.createElement('span');
+	span.classList.add(spanClassName);
+	span.innerHTML = cellData;
+	return span;
+}
