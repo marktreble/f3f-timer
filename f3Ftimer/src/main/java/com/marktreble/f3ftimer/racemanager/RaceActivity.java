@@ -48,7 +48,6 @@ import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.FlyingOrderEditActivity;
 import com.marktreble.f3ftimer.dialog.GroupScoreEditActivity;
@@ -215,17 +214,19 @@ public class RaceActivity extends ListActivity {
                 public void run(){
                     Log.d("UUUUU", "CHECKING CONN");
                     sendCommand("get_connection_status");
+                    // update the displayed IP address
+                    if (mPrefResults) {
+                        String ip = getIPAddress(true);
+                        if (!ip.equals("")) ip =  " - " + ip + ":8080";
+                        setRaceTitle(mRace.name + ip);
+                    }
                     handler.postDelayed(this, delay);
                 }
             }, delay);
 
         }
 
-        if (mPrefResults) {
-            setRaceTitle(mRace.name + " - " + getIPAddress(true) + ":8080");
-        } else {
-            setRaceTitle(mRace.name);
-        }
+        setRaceTitle(mRace.name);
         setRaceRoundTitle(Integer.toString(mRace.round));
 
         // Render the list
@@ -307,7 +308,6 @@ public class RaceActivity extends ListActivity {
                 if (ifs != null) {
                     while (ifs.hasMoreElements()) {
                         NetworkInterface iface = ifs.nextElement();
-                        System.out.println(iface.getName());
                         if (!iface.getName().contains("usb") && !iface.getName().contains("rndis")) {
                             continue;
                         }
@@ -317,10 +317,6 @@ public class RaceActivity extends ListActivity {
                             InetAddress addr = en.nextElement();
                             String s = addr.getHostAddress();
                             int end = s.lastIndexOf("%");
-                            if (end > 0)
-                                System.out.println("\t" + s.substring(0, end));
-                            else
-                                System.out.println("\t" + s);
                         }
                         break;
                     }
@@ -998,7 +994,7 @@ public class RaceActivity extends ListActivity {
             for (int i=0; i<mArrPilots.size(); i+=mRace.rounds_per_flight){
                 Pilot p = mArrPilots.get(i+r);
                 if (p.time > 0)
-                    p.points = Results.round2Fixed(((ftg[mArrGroups.get(i+r)] / p.time) * 1000), 2);
+                    p.points = (ftg[mArrGroups.get(i+r)] / p.time) * 1000;
 
                 if ((p.time==0 || Float.isNaN(p.time)) && p.flown) // Avoid division by 0
                     p.points = 0;
@@ -1696,5 +1692,5 @@ public class RaceActivity extends ListActivity {
             mBatteryLevel = String.format("%d%%", level);
 	        mPower.setText(mBatteryLevel);
 	    }
-	  };
+	};
 }

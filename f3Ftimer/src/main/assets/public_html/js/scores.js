@@ -5,9 +5,6 @@ function scores(){
 	return list;
 }
 
-var rowIndexScores = 0;
-var colIndexScores = 0;
-
 function render_scores(){
     var last_complete_round = model.current_round - 1;
     if (model.race_status == 2) last_complete_round = model.current_round;
@@ -37,13 +34,13 @@ function render_scores(){
 	var sub_totals_final = subTotals(last_complete_round);
 
 	cols1.push("Total");
-	cols2.push("Pos");
+	cols2.push("Place");
 	cols2.push("Id");
 	cols2.push("Name");
 	cols2.push("Team");
-	cols2.push("Pts");
+	cols2.push("Points");
 	cols2.push("%");
-	cols2.push("Pen");
+	cols2.push("Penalty Points");
 	for (d = num_discards; d > 0 ; d--) {
 	    cols2.push("Discard"+d);
 	}
@@ -51,18 +48,21 @@ function render_scores(){
     for (round = 0; round<last_complete_round; round++) {
         cols1.push("Round " + (round+1));
 
-        cols2.push("Grp");
+        cols2.push("Group");
         cols2.push("Time");
-        cols2.push("Pen");
-        cols2.push("Pts");
-        cols2.push("Pos");
-        cols2.push("Sum");
+        cols2.push("Penalty Points");
+        cols2.push("Points");
+        if (round == 0) cols2.push("Place (R1)");
+        else if (round == 1) cols2.push("Place (R1,R2)");
+        else if (round == last_complete_round-1) cols2.push("Place");
+        else cols2.push("Place (R1-R" + (round+1) + ")");
+        //cols2.push("Sum");
 
 		if (round < last_complete_round) {
-        	var sub_totals = subTotals(round+1);
+        	var sub_totals_round = subTotals(round+1);
 			var sub_totals_pilots_index_map = new Map();
-			for (var i in sub_totals) {
-				sub_totals_pilots_index_map.set(sub_totals[i].pilot_id, i);
+			for (var i in sub_totals_round) {
+				sub_totals_pilots_index_map.set(sub_totals_round[i].pilot_id, i);
 			}
 		}
 
@@ -79,24 +79,31 @@ function render_scores(){
 						} else {
 							cols3 = rows1[p];
 						}
-						if (model.racetimes[round][group_index][pilot_index].flown == "0") {
-							pilot_time = "-";
-						} else {
-							pilot_time = model.racetimes[round][group_index][pilot_index].time + 's';
-						}
+                        var pilot_status = model.pilots[sub_totals_pilots_index_map.get(String(sub_totals_final[p].pilot_id))].status;
+						var pilot_group;
 						if (model.racetimes[round][group_index][pilot_index].group == "0") {
 							pilot_group = "-";
 						} else {
 							pilot_group = model.racetimes[round][group_index][pilot_index].group;
 						}
 						cols3.push(pilot_group)
-						cols3.push(pilot_time)
-						cols3.push(model.racetimes[round][group_index][pilot_index].penalty * 100)
-						cols3.push(model.racetimes[round][group_index][pilot_index].points)
-						if (round < last_complete_round) {
+						var pilot_time;
+                        var pilot_flown = model.racetimes[round][group_index][pilot_index].flown;
+						if (pilot_flown == "0" || pilot_status == "4") {
+							pilot_time = "-";
+						} else {
+							pilot_time = model.racetimes[round][group_index][pilot_index].time + " s";
+						}
+						cols3.push(pilot_time);
+						var pilot_penalties = model.racetimes[round][group_index][pilot_index].penalty * 100;
+						pilot_penalties = pilot_penalties == 0 ? "-" : -pilot_penalties;
+						cols3.push(pilot_penalties);
+						var pilot_points = parseFloat(model.racetimes[round][group_index][pilot_index].points);
+						cols3.push(pilot_points.toFixed(2))
+						if (round <= last_complete_round) {
 		                    var sub_totals_pilot_index = sub_totals_pilots_index_map.get(String(sub_totals_final[p].pilot_id));
-							cols3.push(sub_totals[sub_totals_pilot_index].rank);
-							cols3.push(sub_totals[sub_totals_pilot_index].total.toFixed(2));
+							cols3.push(sub_totals_round[sub_totals_pilot_index].rank);
+							//cols3.push(sub_totals[sub_totals_pilot_index].total.toFixed(2));
 						}
 
 						if (undefinedRow == 1) {
@@ -113,17 +120,17 @@ function render_scores(){
 				cols3.push("");
 				cols3.push("");
 				cols3.push("");
-				cols3.push("");
+				//cols3.push("");
 				cols3.push("");
 			}
 		}
     }
 
-	// render discards
+	// set discards style
 	for (p = 0; p < sub_totals_final.length; p++) {
 		for (d = 0; d < sub_totals_final[p].discards.length; d++) {
-			if (rows1[p].length - 6 > 0) {
-				rows1[p][(sub_totals_final[p].discards[d].round_id * 6) + 3] = '<s>' + sub_totals_final[p].discards[d].points + '</s>';
+			if (rows1[p].length - 5 > 0) {
+				rows1[p][(sub_totals_final[p].discards[d].round_id * 5) + 3] = '<s>' + parseFloat(sub_totals_final[p].discards[d].points).toFixed(2) + '</s>';
 			}
 		}
 	}
@@ -135,10 +142,12 @@ function render_scores(){
 		if (sub_totals_final[p] !== undefined) {
 			if (sub_totals_final[p].discards !== undefined) {
 				for (d = sub_totals_final[p].discards.length - 1; d >= 0 ; d--) {
-					cols3.unshift(sub_totals_final[p].discards[d].points);
+					var discard_points = parseFloat(sub_totals_final[p].discards[d].points);
+					cols3.unshift(discard_points.toFixed(2));
 				}
 			}
-			cols3.unshift(sub_totals_final[p].penalties);
+			if (sub_totals_final[p].penalties == 0) cols3.unshift("-");
+			else cols3.unshift(sub_totals_final[p].penalties);
 			cols3.unshift(sub_totals_final[p].percent.toFixed(2));
 			cols3.unshift(sub_totals_final[p].total.toFixed(2));
 			cols3.unshift(sub_totals_final[p].team);
@@ -151,7 +160,6 @@ function render_scores(){
 	rows1.unshift(cols2);
 	rows1.unshift(cols1);
 
-	rowIndexScores = 0;
     table1 = createTableScores(rows1, 2, num_discards);
 
     lis.push(table1);
@@ -174,7 +182,7 @@ function subTotals(last_round) {
 		pilots_index_map.set(model.pilots[i].id, i);
 	}
 
-	// create score items with time and points
+	// create pilot score array with time and points and subtotals array
 	for (var round = 0; round<last_round; round++){
 	    pilot_scores[round] = [];
         for (group_index = 0; group_index < model.racetimes[round].length; group_index++){
@@ -183,14 +191,17 @@ function subTotals(last_round) {
                 var pilot_id = model.racetimes[round][group_index][pilot_index].id;
                 var pilot_penalty = model.racetimes[round][group_index][pilot_index].penalty * 100;
                 var pilot_time = model.racetimes[round][group_index][pilot_index].time;
-                var pilot_points = model.racetimes[round][group_index][pilot_index].points;
-                var flown = model.racetimes[round][group_index][pilot_index].flown;
-				if (flown == "0") {
+                var pilot_points = parseFloat(model.racetimes[round][group_index][pilot_index].points);
+			    var pilot_status = model.pilots[pilots_index_map.get(pilot_id)].status;
+                var pilot_flown = model.racetimes[round][group_index][pilot_index].flown;
+			    /* nullify all scores that should be ignored */
+			    if (pilot_status == "4" || pilot_flown == "0") {
 					pilot_penalty = "0";
+					pilot_time = "0.00";
 					pilot_points = "0.00";
 				}
 
-                pilot_scores[round].push({pilot_id:pilot_id, penalty:pilot_penalty, points:pilot_points});
+                pilot_scores[round].push({pilot_id:pilot_id, penalty:pilot_penalty, points:pilot_points, flown:pilot_flown, status:pilot_status});
 
                 if (undefined === sub_totals.find(function(tt){return tt.pilot_id == pilot_id})){
                     var pilots_pilot_index = pilots_index_map.get(String(pilot_id));
@@ -206,37 +217,40 @@ function subTotals(last_round) {
     for (i=0; i<sub_totals.length; i++){
         // Sort the individual pilot's round, so that discards can be removed
         var pilot_penalties = 0;
-        var pilot_points = [];
+        var tmp_pilot_points = [];
 
         for (var round = 0; round<last_round; round++){
             for (j=0; j<pilot_scores[round].length; j++){
                 if (pilot_scores[round][j].pilot_id == sub_totals[i].pilot_id){
-                    pilot_points.push({pilot_id:sub_totals[i].pilot_id, round_id:round, points:pilot_scores[round][j].points});
+                    tmp_pilot_points.push({pilot_id:sub_totals[i].pilot_id, round_id:round, points:pilot_scores[round][j].points});
                     pilot_penalties += parseInt(pilot_scores[round][j].penalty);
                     break;
                 }
             }
         }
-        pilot_points.sort(function(a, b){return b.points-a.points});
+        function comparePoints(a, b) {
+            return b.pilot_id - a.pilot_id;
+        }
+        tmp_pilot_points.sort(comparePoints);
 
         // Remove discards
         for (pilot_discard_count = sub_num_discards; pilot_discard_count>0; pilot_discard_count--){
-            if (pilot_discard_count == 2 && pilot_points.length >= second_discard_round){
-                sub_totals[i].discards.push(pilot_points.pop());
-            } else if (pilot_discard_count == 1 && pilot_points.length >= first_discard_round){
-                sub_totals[i].discards.push(pilot_points.pop());
+            if (pilot_discard_count == 2 && tmp_pilot_points.length >= second_discard_round){
+                sub_totals[i].discards.push(tmp_pilot_points.pop());
+            } else if (pilot_discard_count == 1 && tmp_pilot_points.length >= first_discard_round){
+                sub_totals[i].discards.push(tmp_pilot_points.pop());
             }
         }
         // Total up the remaining
         var tot = 0;
-        for (var pp in pilot_points){
-            tot += parseFloat(pilot_points[pp].points);
+        for (var pp in tmp_pilot_points){
+            tot += parseFloat(tmp_pilot_points[pp].points);
         }
-        sub_totals[i].total = parseFloat(round2Fixed(tot - pilot_penalties, 2));
+        sub_totals[i].total = parseFloat(tot - pilot_penalties);
         sub_totals[i].penalties = pilot_penalties;
     }
 
-    sub_totals.sort(function(a, b){
+    function compareSubtotalPoints(a, b) {
         if (b.total - a.total == 0) {
             var sum_discards_b = 0;
             for (d in b.discards) {
@@ -254,12 +268,14 @@ function subTotals(last_round) {
         } else {
             return b.total-a.total;
         }
-    });
+    }
+
+    sub_totals.sort(compareSubtotalPoints);
 
     // calculate relative total score and rank
     var rank = 1;
     for (i=0; i<sub_totals.length; i++){
-		sub_totals[i].percent = round2Fixed((sub_totals[i].total / sub_totals[0].total) * 100, 2);
+		sub_totals[i].percent = (sub_totals[i].total / sub_totals[0].total) * 100;
         sub_totals[i].rank = rank;
     	// check for tied score
     	if (i < sub_totals.length - 1) {
@@ -300,36 +316,31 @@ function createTableScores(tableData, nameColIndex, num_discards) {
     var table = document.createElement('table');
     var tableBody = document.createElement('tbody');
 
-    tableData.forEach(function(rowData) {
+    for (var rowIndexScores=0; rowIndexScores<tableData.length; rowIndexScores++) {
         var row = document.createElement('tr');
-        colIndexScores = 0;
-        rowData.forEach(function(cellData) {
+        for(var colIndexScores=0 ; colIndexScores < tableData[rowIndexScores].length; colIndexScores++) {
             var cell = document.createElement('td');
             if (rowIndexScores == 0) {
             	if (colIndexScores == 0) {
 					$(cell).attr('colspan', 7 + num_discards);
                 } else {
-					$(cell).attr('colspan', 6);
+					$(cell).attr('colspan', 5);
                 }
 				$(cell).addClass('td-border-left');
+            }
+            if (rowIndexScores >= 1) {
+                if (colIndexScores >= 7 && ((colIndexScores - num_discards - 7) % 5) == 0) {
+                    $(cell).addClass('td-border-left');
+                }
             }
             if (rowIndexScores == 1) {
                 $(cell).addClass('td-border-bottom');
             }
-            if (rowIndexScores >= 1) {
-                if (colIndexScores > num_discards + 1) {
-                    if (((colIndexScores - num_discards - 1) % 6) == 0) {
-                        $(cell).addClass('td-border-left');
-                    }
-                }
-            }
-            cell.appendChild(createTableListItemScores(cellData, rowIndexScores, colIndexScores, nameColIndex));
+            cell.appendChild(createTableListItemScores(tableData[rowIndexScores][colIndexScores], rowIndexScores, colIndexScores, nameColIndex));
             row.appendChild(cell);
-            colIndexScores++;
-        });
+        }
         tableBody.appendChild(row);
-        rowIndexScores++;
-    });
+    }
 
     table.appendChild(tableBody);
     return table;

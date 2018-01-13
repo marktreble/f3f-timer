@@ -38,7 +38,7 @@ function render_home(){
 	});
 	lis.push(li);
 
-	li = createListItemLink("Team Results", function(){
+	li = createListItemLink("Overall Team Standings", function(){
 		pushView(teamresults(), this);
 	});
 	lis.push(li);

@@ -110,11 +110,31 @@ function render_teamresults(){
 		rows1.push(cols1);
     }
 
-	table2 = createTableTeamResults(rows1, 4);
+	table2 = createTableTeamResults(rows1, -1);
     lis.push(table2);
-
 	$(list).empty();
     $(list).html(lis);
+
+	// adjust column width of tables
+	var max_cell_width = [];
+	for (table_index = 1; table_index<rows1.length; table_index++){
+		var table = table2.rows[table_index].cells[4].firstChild;
+		for (col_index = 0; col_index<table.rows[0].cells.length; col_index++){
+			var cell_width = table.rows[0].cells[col_index].offsetWidth;
+			if (max_cell_width[col_index] === undefined) max_cell_width.push(cell_width);
+			else if (max_cell_width[col_index] < cell_width) {
+				max_cell_width[col_index] = cell_width;
+			}
+		}
+	}
+	for (table_index = 1; table_index<rows1.length; table_index++){
+		var td = table2.rows[table_index].cells[4];
+		td.style.padding = "0px";
+		var table = table2.rows[table_index].cells[4].firstChild;
+		for (col_index = 0; col_index<table.rows[0].cells.length; col_index++){
+			table.rows[0].cells[col_index].width = max_cell_width[col_index];
+		}
+	}
 }
 
 function createTableTeamResults(tableData, nameColIndex) {
@@ -124,17 +144,17 @@ function createTableTeamResults(tableData, nameColIndex) {
     var tableBody = document.createElement('tbody');
 
     for (td = 0; td < tableData.length; td++) {
-    	if (tableData[td].tagName === "TABLE") {
-    		tableBody.appendChild(tableData[td]);
-    	} else {
-			var row = document.createElement('tr');
-			for (cd = 0; cd < tableData[td].length; cd++) {
-				var cell = document.createElement('td');
+		var row = document.createElement('tr');
+		for (cd = 0; cd < tableData[td].length; cd++) {
+			var cell = document.createElement('td');
+			if (tableData[td][cd].tagName === "TABLE") {
+				cell.appendChild(tableData[td][cd]);
+			} else {
 				cell.appendChild(createTableListItemTeamResults(tableData[td][cd], td, cd, nameColIndex));
-				row.appendChild(cell);
 			}
-			tableBody.appendChild(row);
-    	}
+			row.appendChild(cell);
+		}
+		tableBody.appendChild(row);
     }
 
     table.appendChild(tableBody);

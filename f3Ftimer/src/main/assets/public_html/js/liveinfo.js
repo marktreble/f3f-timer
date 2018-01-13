@@ -71,9 +71,9 @@ function render_liveinfo(){
 		    rows3.push(cols7);
             cols8 = ("Leg:#"+modelLive.current_split_times).split("#");
             rows3.push(cols8);
-            cols9 = ("Fastest:#"+modelLive.current_fastest_times).split("#");
+            cols9 = ("Fastest:#"+modelLive.fastest_times).split("#");
             rows3.push(cols9);
-            cols10 = ("Delta:#"+modelLive.current_delta_times).split("#");
+            cols10 = ("Delta:#"+modelLive.delta_times).split("#");
             rows3.push(cols10);
 			if (cols7.length < 11 && modelLive.current_estimated_flight_time > 0) {
 				cols11 = [ "Estimated: " ];
@@ -84,17 +84,17 @@ function render_liveinfo(){
 				rows3.push(cols11);
 			}
             cols7.push("Overall");
-            var n = round2Fixed(modelLive.current_split_times.split("#").reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }, 0), 2);
+            var n = modelLive.current_split_times.split("#").reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }, 0).toFixed(2);
             cols8.push(n);
 			if (cols7.length >= 12) {
 			    cols9.push(modelLive.fastest_time);
-			    var n = round2Fixed(modelLive.current_flight_time - modelLive.fastest_time, 2);
+			    var n = (modelLive.current_flight_time - modelLive.fastest_time).toFixed(2);
 			    cols10.push((n>0?'+':'') + n);
                 cols9[0] = "Fastest (" + modelLive.fastest_time_pilot.trim() + "):";
             } else {
-            	var n = round2Fixed(modelLive.current_fastest_times.split("#").reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }, 0), 2);
+            	var n = modelLive.fastest_times.split("#").reduce(function(a, b) { return parseFloat(a) + parseFloat(b); }, 0).toFixed(2);
                 cols9.push(n);
-                n = round2Fixed(cols8[cols8.length - 1] - cols9[cols9.length - 1], 2);
+                n = (cols8[cols8.length - 1] - cols9[cols9.length - 1]).toFixed(2);
                 cols10.push((n>0?'+':'') + n);
                 cols9[0] = "Fastest (" + modelLive.fastest_time_pilot.trim() + "):";
             }
@@ -105,9 +105,9 @@ function render_liveinfo(){
     }
 
 	rowIndexLive = 0;
-    table1 = createTableLive(rows1);
-    table2 = createTableLive(rows2);
-    table3 = createTableLive(rows3);
+    table1 = createTableLive(rows1, 1);
+    table2 = createTableLive(rows2, 2);
+    table3 = createTableLive(rows3, 3);
 
     lis.push(table1);
     lis.push("<br>");
@@ -129,33 +129,31 @@ function render_liveinfo(){
 	}
 }
 
-function createTableLive(tableData) {
+function createTableLive(tableData, tableNo) {
 	if (tableData == "") return;
 
     var table = document.createElement('table');
     var tableBody = document.createElement('tbody');
 
-    tableData.forEach(function(rowData) {
+    for (var rowIndexLive = 0; rowIndexLive<tableData.length; rowIndexLive++) {
         var row = document.createElement('tr');
-        colIndexLive = 0;
-        rowData.forEach(function(cellData) {
+        for (var colIndexLive = 0; colIndexLive<tableData[rowIndexLive].length; colIndexLive++) {
             var cell = document.createElement('td');
-            cell.appendChild(createListItemLive(cellData, rowIndexLive, colIndexLive));
+            cell.appendChild(createListItemLive(tableData[rowIndexLive][colIndexLive], rowIndexLive, colIndexLive, tableNo));
             row.appendChild(cell);
-            colIndexLive++;
-        });
+        }
         tableBody.appendChild(row);
-        rowIndexLive++;
-    });
+    }
 
     table.appendChild(tableBody);
     return table;
 }
 
-function createListItemLive(cellData, rowIndexLive, colIndexLive){
+function createListItemLive(cellData, rowIndexLive, colIndexLive, tableNo){
 	var span;
-	if (colIndexLive >= 1 && rowIndexLive != 0 && rowIndexLive != 6) {
-	    span = createSpanLiveLegs(cellData);
+	if ((tableNo == 2 && colIndexLive > 0) ||
+		(tableNo != 2 && colIndexLive > 0 && rowIndexLive > 0)) {
+	    span = createSpanLiveLegs(cellData, rowIndexLive, colIndexLive, tableNo);
     } else {
 	    span = createSpanLive(cellData);
     }
@@ -169,9 +167,9 @@ function createSpanLive(cellData){
 	return span;
 }
 
-function createSpanLiveLegs(cellData){
+function createSpanLiveLegs(cellData, rowIndexLive, colIndexLive, tableNo){
 	var span = document.createElement('span');
-	if (rowIndexLive == 9 && colIndexLive > 0) {
+	if (tableNo == 3 && rowIndexLive == 3 && colIndexLive > 0) {
         if (cellData < 0) {
             $(span).addClass('span-live-legs-neg');
         } else {

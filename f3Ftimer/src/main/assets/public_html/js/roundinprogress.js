@@ -37,7 +37,7 @@ function render_roundinprogress(){
 	$(hli).append(listHead);
 	listHead = document.createElement('span');
 	$(listHead).addClass('list-header-right');
-	$(listHead).html("Pen.");
+	$(listHead).html("Penalty Points");
 	$(hli).append(listHead);
 	listHead = document.createElement('span');
 	$(listHead).addClass('list-header-right');
@@ -62,14 +62,15 @@ function render_roundinprogress(){
 			var pilot_penalty = model.racetimes[round][group_index][pilot_index].penalty * 100;
 			var pilot_time = model.racetimes[round][group_index][pilot_index].time;
 			var pilot_points = model.racetimes[round][group_index][pilot_index].points;
-			var pilot_status = model.racetimes[round][group_index][pilot_index].status;
+			var pilot_status = model.pilots[pilots_index_map.get(pilot_id)].status;
 			var pilot_flown = model.racetimes[round][group_index][pilot_index].flown;
-			if (pilot_flown == "0" || pilot_status == "4") {
-				pilot_time = "-";
-				pilot_penalty = "-";
-				pilot_points = "-";
-			}
-			group_times[group_index].push({rank:0,start_pos:pilot_start_pos,id:pilot_id,name:pilot_name,time:pilot_time,penalty:pilot_penalty,points:pilot_points});
+			if (pilot_status == "4") pilot_flown = "0";
+			if (pilot_flown == "0") {
+                pilot_penalty = "0";
+                pilot_points = "0.00";
+            }
+
+			group_times[group_index].push({rank:0, start_pos:pilot_start_pos, id:pilot_id, name:pilot_name, time:pilot_time, penalty:pilot_penalty, points:pilot_points, flown:pilot_flown});
 
 			var li = document.createElement('div');
 			$(li).addClass('list-item');
@@ -80,6 +81,8 @@ function render_roundinprogress(){
 			var res;
 			var ap = Number(a.points);
 			var bp = Number(b.points);
+            if (a.flown == "0") return 1;
+            if (b.flown == "0") return -1;
 			if (Number.isNaN(ap) && !Number.isNaN(bp)) {
 				res = 1;
 			} else if (!Number.isNaN(ap) && Number.isNaN(bp)) {
@@ -93,16 +96,16 @@ function render_roundinprogress(){
 			return res;
 		}
 
-		group_times[group_index].sort(comparePoints)
+		group_times[group_index].sort(comparePoints);
 
+        // set rank in group
 		var rank = 1;
 		var last_points = group_times[group_index][0].points;
 		for (var p in group_times[group_index]) {
-			var pilot = group_times[group_index][p];
-			if (pilot.points != last_points) rank++;
-			pilot.rank = pilot.time != "-" ? rank : "-";
-			last_points = pilot.points;
-		}
+			if (group_times[group_index][p].points != last_points) rank++;
+			group_times[group_index][p].rank =  rank;
+			last_points = group_times[group_index][p].points;
+        }
 
     	var li = document.createElement('div');
 		$(li).addClass('list-item');
@@ -116,7 +119,7 @@ function render_roundinprogress(){
     }
 
 	// Loop through groups list, calculate points and add all pilot info to page list
-	var group_header_count = 1;
+   	var group_header_count = 1;
 	for (var g in group_times) {
         function compareStartPos(a, b) {
             var res;
@@ -137,7 +140,7 @@ function render_roundinprogress(){
             return res;
         }
 
-		group_times[g].sort(compareStartPos)
+		group_times[g].sort(compareStartPos);
 
 		// add all pilot info to page list
 		for (var p in group_times[g]) {
@@ -161,17 +164,17 @@ function render_roundinprogress(){
 
 			var time = document.createElement('span');
 			$(time).addClass('pilot-time');
-			$(time).html(pilot.time + (pilot.time != "-" ? "s" : ""));
+			$(time).html(pilot.flown == "0" ? "-" : pilot.time + " s");
 			$(lis[pilot_index_list]).append(time);
 
 			var penalty = document.createElement('span');
 			$(penalty).addClass('pilot-penalty');
-			$(penalty).html(pilot.penalty);
+			$(penalty).html((pilot.flown == "0" || pilot.penalty == 0) ? "-" : -pilot.penalty);
 			$(lis[pilot_index_list]).append(penalty);
 
 			var points = document.createElement('span');
 			$(points).addClass('pilot-points');
-			$(points).html(pilot.points);
+			$(points).html(parseFloat(pilot.points).toFixed(2));
 			$(lis[pilot_index_list]).append(points);
 		}
 		group_header_count += model.racetimes[round][g].length + 1;

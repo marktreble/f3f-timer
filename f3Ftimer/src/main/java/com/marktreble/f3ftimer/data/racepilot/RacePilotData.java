@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.RaceDatabase;
@@ -13,7 +12,6 @@ import com.marktreble.f3ftimer.data.race.RaceDatabase;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Locale;
 
 public class RacePilotData {
 	// Database fields
@@ -397,7 +395,7 @@ public class RacePilotData {
 		while (!cursor.isAfterLast()) {
 			Pilot p = cursorToPilot(cursor, true);
 			p.round = round;
-			Log.d("RACEPILOTDATA", "PILOT:"+p.toString());
+			//Log.d("RACEPILOTDATA", "PILOT:"+p.toString());
 			allPilots.add(p);
 			cursor.moveToNext();
 		}
@@ -528,7 +526,7 @@ public class RacePilotData {
 				for(int k=0; k<group_pilots.size(); k++) {
 					if (k > 0) array.append(",");
 					Pilot p = group_pilots.get(k);
-					String str_pilot = String.format(Locale.ENGLISH, "{\"id\":\"%d\", \"group\":\"%d\", \"start_pos\":\"%d\", \"status\":\"%d\", \"flown\":\"%d\", \"time\":\"%.2f\", \"penalty\":\"%d\", \"points\":\"%.2f\"}", p.id, p.group, p.start_pos, p.status, (p.flown) ? 1 : 0, p.time, p.penalty, p.points);
+					String str_pilot = String.format("{\"id\":\"%d\", \"group\":\"%d\", \"start_pos\":\"%d\", \"flown\":\"%d\", \"time\":\"%s\", \"penalty\":\"%d\", \"points\":\"%s\"}", p.id, p.group, p.start_pos, (p.flown) ? 1 : 0, String.format("%.2f",p.time).replace(",","."), p.penalty, String.format("%f",p.points).replace(",","."));
 					array.append(str_pilot);
 				}
 				array.append("]");

@@ -68,7 +68,7 @@ function render_completedrounds_results(){
 	$(hli).append(listHead);
 	listHead = document.createElement('span');
 	$(listHead).addClass('list-header-right');
-	$(listHead).html("Pen.");
+	$(listHead).html("Penalty Points");
 	$(hli).append(listHead);
 	listHead = document.createElement('span');
 	$(listHead).addClass('list-header-right');
@@ -91,17 +91,12 @@ function render_completedrounds_results(){
 			var pilot_name = (model.pilots[pilots_index_map.get(pilot_id)].firstname + " " + model.pilots[pilots_index_map.get(pilot_id)].lastname).trim();
 			var pilot_penalty = model.racetimes[round][group_index][pilot_index].penalty * 100;
 			var pilot_time = model.racetimes[round][group_index][pilot_index].time;
-			var pilot_points = Math.max(model.racetimes[round][group_index][pilot_index].points, 0).toFixed(2);
-			var flown = model.racetimes[round][group_index][pilot_index].flown;
-			if (flown == "0") {
-				pilot_time = "-";
-				pilot_penalty = "-";
-				pilot_points = "-";
-			} else {
-			    //pilot_points -= pilot_penalty;
-			    //pilot_points = pilot_points.toFixed(2);
-			}
-			group_times[group_index].push({id:pilot_id,name:pilot_name,time:pilot_time,penalty:pilot_penalty,points:pilot_points,rank:0});
+			var pilot_points = model.racetimes[round][group_index][pilot_index].points;
+			var pilot_status = model.pilots[pilots_index_map.get(pilot_id)].status;
+			var pilot_flown = model.racetimes[round][group_index][pilot_index].flown;
+            if (pilot_status == "4") pilot_flown = "0";
+
+			group_times[group_index].push({id:pilot_id, name:pilot_name, time:pilot_time, penalty:pilot_penalty, points:pilot_points, flown:pilot_flown, rank:0});
 
 			var li = document.createElement('div');
 			$(li).addClass('list-item');
@@ -126,6 +121,8 @@ function render_completedrounds_results(){
             var res;
             var ap = Number(a.points);
             var bp = Number(b.points);
+            if (a.flown == "0") return 1;
+            if (b.flown == "0") return -1;
             if (Number.isNaN(ap) && !Number.isNaN(bp)) {
                 res = 1;
             } else if (!Number.isNaN(ap) && Number.isNaN(bp)) {
@@ -138,19 +135,23 @@ function render_completedrounds_results(){
             //console.log("a=%o b=%o ap=%o bp=%o res=%o", a, b, ap, bp, res);
             return res;
         }
+
         // Sort group by points
         group_times[g].sort(comparePoints);
 
-		// add all pilot info to page list
+        // set rank in group
 		var rank = 1;
 		var last_points = group_times[g][0].points;
 		for (var p in group_times[g]) {
+			if (group_times[g][p].points != last_points) rank++;
+			group_times[g][p].rank = rank;
+			last_points = group_times[g][p].points;
+        }
+
+		// add all pilot info to page list
+		for (var p in group_times[g]) {
 			var pilot = group_times[g][p];
 			var pilot_index_list = parseInt(p) + group_header_count + 1;
-
-			if (pilot.points != last_points) rank++;
-			pilot.rank = pilot.time != "-" ? rank : "-";
-			last_points = pilot.points;
 
 			var pos = document.createElement('span');
 			$(pos).addClass('pilot-rank');
@@ -169,17 +170,17 @@ function render_completedrounds_results(){
 
 			var time = document.createElement('span');
 			$(time).addClass('pilot-time');
-			$(time).html(pilot.time);
+			$(time).html(pilot.flown == "0" ? "-" : pilot.time + " s");
 			$(lis[pilot_index_list]).append(time);
 
 			var penalty = document.createElement('span');
 			$(penalty).addClass('pilot-penalty');
-			$(penalty).html(pilot.penalty);
+			$(penalty).html((pilot.flown == "0" || pilot.penalty == 0) ? "-" : -pilot.penalty);
 			$(lis[pilot_index_list]).append(penalty);
 
 			var points = document.createElement('span');
 			$(points).addClass('pilot-points');
-			$(points).html(pilot.points);
+			$(points).html(parseFloat(pilot.points).toFixed(2));
 			$(lis[pilot_index_list]).append(points);
 		}
 		group_header_count += model.racetimes[round][g].length + 1;
