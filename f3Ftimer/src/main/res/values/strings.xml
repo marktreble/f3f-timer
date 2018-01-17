@@ -12,6 +12,7 @@
     <string name="menu_settings">Settings</string>
     <string name="app_pilots">Pilot Manager</string>
     <string name="app_race">Race Manager</string>
+    <string name="pilot_name">Pilot Name</string>
     <string name="pilot_firstname">First Name</string>
     <string name="pilot_surname">Surname</string>
     <string name="pilot_email">Email Address</string>
@@ -19,6 +20,8 @@
     <string name="pilot_models">Models</string>
     <string name="pilot_nationality">Nationality</string>
     <string name="pilot_language">Language</string>
+    <string name="pilot_team">Team Name</string>
+
     <string name="race_name">Race Name</string>
     <string name="race_type">Race Type</string>
     <string name="race_offset">Flying Order Offset</string>
@@ -35,7 +38,13 @@
     <string name="button_up">^</string>
     <string name="button_down">v</string>
     <string name="button_next_pilot">Next Pilot</string>
+    <string name="skip_number">Skip number</string>
+    <string name="add_pilot">Add Pilot</string>
+    <string name="random_shuffle">Random Shuffle</string>
+    <string name="rotate_shuffle">Rotate Shuffle</string>
+    <string name="manual_shuffle">Manual Shuffle</string>
     <string name="empty"></string>
+    <string name="resize">Resize</string>
     <string name="retired">Ret</string>
     <string name="reflight">RF</string>
     <string name="notime" translatable="false">--.--</string>
@@ -58,7 +67,7 @@
     <string name="and_last">And Last</string>
     <string name="finish_race">Finish Race</string>
     <string name="next_round">End Round</string>
-    <string name="penalty">P</string>
+    <string name="penalty">P%d</string>
     <string name="app_results">Results Manager</string>
     <string name="refly">Refly?</string>
     <string name="finish">Finish</string>
@@ -118,6 +127,19 @@
     <string name="nl">Dutch</string>
     <string name="es">Spanish</string>
 
+    <string name="ftd_result">Fastest Time: %.2fs by %s in round %d</string>
+
+    <!-- Headings -->
+    <string name="leader_board">Leader Board</string>
+    <string name="group_heading">Group %d</string>
+    <string name="no_rounds">No rounds completed yet</string>
+    <string name="no_teams">No teams set in the race</string>
+    <string name="team_results">Team Results</string>
+
+    <!-- Validation -->
+    <string name="invalid_email">Email address is invalid</string>
+
+
     <!-- Wind Measurement -->
     <string name="wind_meter_settings">Wind Meter Settings</string>
     <string name="wind_warning">Wind Illegal</string>
@@ -130,7 +152,6 @@
     <string name="B" translatable="false">B</string>
     <string name="end_of_round">End of Round</string>
     <string name="run_complete">Run Complete</string>
-    <string name="pilot_team">Team Name</string>
 
     <!-- API -->
     <string name="source_url">Source (URL)</string>
@@ -149,5 +170,10 @@
     <string name="snd_turn">Turn</string>
     <string name="snd_turn9">Last Turn</string>
     <string name="snd_penalty">Penalty</string>
+
+    <!-- Import/Export Dialogs -->
+    <string name="awaiting_connection">Awaiting Connection…</string>
+    <string name="http_protocol_hint" translatable="false">http(s)://</string>
+    <string name="remember_login_details">  Remember these details</string>
 
 </resources>

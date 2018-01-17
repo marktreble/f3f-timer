@@ -136,7 +136,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
                 TextView group_header_label = (TextView) row.findViewById(R.id.group_header_label);
                 if (mGroupScoring.num_groups>1 && mFirstInGroup.get(position)){
                     group_header.setVisibility(View.VISIBLE);
-                    group_header_label.setText("Group "+(mArrGroups.get(position)+1));
+                    group_header_label.setText(String.format(getString(R.string.group_heading), mArrGroups.get(position)+1));
                 } else {
                     group_header.setVisibility(View.GONE);
                 }
@@ -150,14 +150,14 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
                 TextView points = (TextView) row.findViewById(R.id.points);
                 if (p.flown || p.status==Pilot.STATUS_RETIRED){
-            		points.setText(Float.toString(p.points));
+            		points.setText(String.format("%.2f", p.points));
                 } else {
             		points.setText("");
                 }
 
 				TextView penalty = (TextView) row.findViewById(R.id.penalty);
 				if (p.penalty >0){
-					penalty.setText(getResources().getString(R.string.penalty) + p.penalty);
+					penalty.setText(String.format(getResources().getString(R.string.penalty), p.penalty));
 				} else {
 					penalty.setText(getResources().getString(R.string.empty));
 				}

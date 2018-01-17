@@ -93,10 +93,12 @@ public abstract class BaseExport extends Activity {
         Log.d("EXPORT", "ONACTIVITYRESULT " + requestCode + ":" + resultCode);
         if (requestCode == ACTION_PICK_FOLDER && resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor ed = sharedPref.edit();
-            ed.putString("export_save_folder", uri.getPath());
-            ed.commit();
+            if (uri != null) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+                SharedPreferences.Editor ed = sharedPref.edit();
+                ed.putString("export_save_folder", uri.getPath());
+                ed.commit();
+            }
 
             promptForSaveFolder();
         } else {

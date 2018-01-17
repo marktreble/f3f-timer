@@ -112,7 +112,7 @@ public class NewRaceFrag2 extends ListFragment {
                 Integer pid = mArrIds.get(position);
                 if (mArrSelectedIds.contains(pid)){
                 	int index = mArrSelectedIds.lastIndexOf(pid) + 1;
-					nm.setText(Integer.toString(index));
+					nm.setText(String.format("%d", index));
 					nm.setVisibility(View.VISIBLE);
                 	row.setBackgroundColor(getResources().getColor(R.color.lt_grey));
                 } else {
@@ -162,7 +162,7 @@ public class NewRaceFrag2 extends ListFragment {
 
 	private void setNextNumber(){
 		int index = mArrSelectedIds.size()+1;
-		next_number.setText(Integer.toString(index));
+		next_number.setText(String.format("%d", index));
 	}
 
 	@Override

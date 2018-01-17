@@ -48,7 +48,7 @@
     <string name="and_last">und Finale</string>
     <string name="next_round">Finish Runde</string>
     <string name="wind_warning">Wind ungültig</string>
-    <string name="penalty">P</string>
+    <string name="penalty">P%d</string>
     <string name="app_results">Ergebnisse</string>
     <string name="refly">Neuflug?</string>
     <string name="finish">Akzeptieren</string>

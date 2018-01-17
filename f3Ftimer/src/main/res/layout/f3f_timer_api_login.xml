@@ -28,7 +28,7 @@
 		        android:layout_height="wrap_content"
 		        android:ems="10"
 		        android:inputType="textUri"
-				android:hint="http(s)://">
+				android:hint="@string/http_protocol_hint">
 
 		        <requestFocus />
 		    </EditText>
@@ -76,7 +76,7 @@
 					android:layout_width="0dp"
 					android:layout_weight="1"
 					android:layout_height="wrap_content"
-					android:text="  Remember these details"
+					android:text="@string/remember_login_details"
 					android:textAppearance="?android:attr/textAppearanceSmall"
 					/>
 			</LinearLayout>
@@ -84,7 +84,7 @@
                 android:id="@+id/login"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
+                android:layout_gravity="end"
                 android:layout_weight="0"
                 android:text="@string/btn_login" />
 		</LinearLayout>

@@ -51,7 +51,7 @@
             android:textColor="@color/text2"
             android:gravity="center_vertical|center_horizontal"
             android:background="@drawable/round_button"
-            android:text="Skip number" />
+            android:text="@string/skip_number" />
 
         <Button
             android:id="@+id/button_next"

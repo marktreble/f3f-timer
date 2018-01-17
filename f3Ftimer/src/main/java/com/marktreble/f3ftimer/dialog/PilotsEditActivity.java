@@ -316,7 +316,7 @@ public class PilotsEditActivity extends Activity {
                     (ViewGroup) findViewById(R.id.toast_layout_root));
 
             TextView text = (TextView) layout.findViewById(R.id.text);
-            text.setText("Email address is invalid");
+            text.setText(getString(R.string.invalid_email));
 
             Toast toast = new Toast(getApplicationContext());
             toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);

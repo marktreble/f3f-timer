@@ -215,7 +215,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		est.setText("");
 
 		TextView status = (TextView) mView.findViewById(R.id.status);
-		status.setText("Run Complete");
+		status.setText(getString(R.string.run_complete));
 
 		Button abort = (Button) mView.findViewById(R.id.button_abort);
 		abort.setVisibility(View.GONE);

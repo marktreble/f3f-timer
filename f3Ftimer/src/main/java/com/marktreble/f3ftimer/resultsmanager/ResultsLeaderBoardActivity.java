@@ -77,7 +77,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 		}		
  
  		TextView tt = (TextView) findViewById(R.id.race_title);
-  		tt.setText("Leader Board");
+  		tt.setText(getString(R.string.leader_board));
 
 	    setList();
 	    setListAdapter(mArrAdapter);
@@ -167,9 +167,9 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 
         TextView ftdView = new TextView(mContext);
    	   	if (mFTD<9999) {
-            ftdView.setText(String.format("Fastest Time: %.2fs by %s in round %d", mFTD, mFTDName, mFTDRound));
+            ftdView.setText(String.format(getString(R.string.ftd_result), mFTD, mFTDName, mFTDRound));
         } else {
-            ftdView.setText("No rounds completed yet");
+            ftdView.setText(getString(R.string.no_rounds));
         }
 
         Resources r = getResources();

@@ -191,14 +191,9 @@ public class CH340SerialDriver implements UsbSerialDriver {
          * and if it is {@link UsbConstants#USB_DIR_IN}, then the transfer
          * is a read.
          *
-         * @param requestType request type for this transaction
          * @param request request ID for this transaction
          * @param value value field for this transaction
          * @param index index field for this transaction
-         * @param buffer buffer for data portion of transaction,
-         * or null if no data needs to be sent or received
-         * @param length the length of the data to send or receive
-         * @param timeout in milliseconds
          * @return length of data transferred (or zero) for success,
          * or negative value for failure
          *

@@ -65,7 +65,7 @@ public class ResultsTeamsActivity extends ListActivity {
         }
 
         TextView tt = (TextView) findViewById(R.id.race_title);
-        tt.setText("Team Results");
+        tt.setText(getString(R.string.team_results));
 
         setList();
         setListAdapter(mArrAdapter);
@@ -133,7 +133,7 @@ public class ResultsTeamsActivity extends ListActivity {
 
         if (mArrNames.size() == 0) {
             TextView ftdView = new TextView(mContext);
-            ftdView.setText("No teams set in the race");
+            ftdView.setText(getString(R.string.no_teams));
 
             Resources r = getResources();
             int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());

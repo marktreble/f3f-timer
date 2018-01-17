@@ -46,7 +46,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="@color/text2"
-                android:text="Add Pilot"
+                android:text="@string/add_pilot"
                 android:gravity="center"
                 />
         </LinearLayout>
@@ -70,7 +70,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="@color/text2"
-                android:text="Random Shuffle"
+                android:text="@string/random_shuffle"
                 android:gravity="center"
                 />
         </LinearLayout>
@@ -101,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Rotate Shuffle"
+                android:text="@string/rotate_shuffle"
                 android:textColor="@color/text2"
                 android:textSize="12sp"
                 android:textStyle="bold"/>
@@ -128,7 +128,7 @@
                 android:textSize="12sp"
                 android:textStyle="bold"
                 android:textColor="@color/text2"
-                android:text="Manual Shuffle"
+                android:text="@string/manual_shuffle"
                 android:gravity="center"
                 />
         </LinearLayout>

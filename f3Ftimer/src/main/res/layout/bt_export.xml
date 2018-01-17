@@ -17,7 +17,7 @@
             android:layout_weight="1"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="@color/text2"
-            android:text="Awaiting Connection..."/>
+            android:text="@string/awaiting_connection"/>
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

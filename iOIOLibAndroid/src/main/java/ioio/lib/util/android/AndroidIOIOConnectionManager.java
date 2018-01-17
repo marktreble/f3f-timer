@@ -11,7 +11,7 @@ import ioio.lib.util.IOIOConnectionRegistry;
  * An extension of {@link IOIOConnectionManager} for the Android environment.
  * <p>
  * <i><b>Note</b>: This utility is not typically intended for use by end-users.
- * See {@link IOIOActivity} and {@link IOIOSerive} for high-level utilities,
+ * See {@link IOIOActivity} and {@link IOIOService} for high-level utilities,
  * which facilitate the creation of Android-based applications.</i>
  * <p>
  * The reason for this extension is that some Android-related connections (e.g.

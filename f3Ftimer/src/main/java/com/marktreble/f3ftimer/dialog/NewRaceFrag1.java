@@ -71,8 +71,8 @@ public class NewRaceFrag1 extends Fragment {
         NewRaceActivity a = (NewRaceActivity)getActivity();
 
         if (a.name != null) name.setText(a.name);
-        if (a.rpf >0) rpf.setText(a.rpf.toString());
-        if (a.offset >0) offset.setText(a.offset.toString());
+        if (a.rpf >0) rpf.setText(String.format("%d",a.rpf));
+        if (a.offset >0) offset.setText(String.format("%d", a.offset));
 
 
         return mView;

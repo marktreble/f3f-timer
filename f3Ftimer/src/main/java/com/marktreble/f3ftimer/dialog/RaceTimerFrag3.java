@@ -147,7 +147,7 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
 	
 	public void setOffCourse(){
 		TextView status = (TextView) mView.findViewById(R.id.status);
-		status.setText("Off The Course");
+		status.setText(getString(R.string.off_course));
 	}
 
 	public void next(){

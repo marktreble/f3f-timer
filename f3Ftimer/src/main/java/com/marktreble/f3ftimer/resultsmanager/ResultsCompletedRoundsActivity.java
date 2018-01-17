@@ -66,7 +66,7 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 		mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow , arrOptions);
 		if (race.round<=1){
 			TextView noneView = new TextView(this);
-	   	   	noneView.setText("No rounds completed yet");
+	   	   	noneView.setText(getString(R.string.no_rounds));
 
 			noneView.setTextColor(r.getColor(R.color.text2));
 			int px1 = (int)TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
