@@ -53,7 +53,6 @@ public class RaceResultsDisplayService extends Service {
     private static ConnectedThread mConnectedThread;
 
     public static Handler mHandler = null;
-    public static Handler mHandler2 = null;
     public static int mState = STATE_NONE;
     public static String deviceName;
     public Vector<Byte> packdata = new Vector<>(2048);
@@ -81,7 +80,7 @@ public class RaceResultsDisplayService extends Service {
         this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onExternalUpdate"));
 
         mContext = this;
-        mHandler2 = new Handler();
+        mHandler = new Handler();
 
         super.onCreate();
     }
@@ -90,7 +89,6 @@ public class RaceResultsDisplayService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         Log.d(TAG, "ONBIND");
-        mHandler = ((F3FtimerApplication) getApplication()).getHandler();
         return mBinder;
     }
 
@@ -199,7 +197,7 @@ public class RaceResultsDisplayService extends Service {
 
     public synchronized void stop() {
         setState(STATE_NONE);
-        mHandler2.removeCallbacks(reconnect);
+        mHandler.removeCallbacks(reconnect);
         displayDisconnected();
 
         if (mConnectThread != null) {
@@ -270,7 +268,7 @@ public class RaceResultsDisplayService extends Service {
 
     public void reconnect(){
         Log.d(TAG, "Reconnecting in 3 seconds...");
-        mHandler2.postDelayed(reconnect, 3000);
+        mHandler.postDelayed(reconnect, 3000);
     }
 
     private final static Object obj = new Object();

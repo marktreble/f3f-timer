@@ -22,19 +22,6 @@ public class F3FtimerApplication extends Application {
         ACRA.init(this);
     }
 
-    Handler.Callback realCallback = null;
-    Handler handler = new Handler() {
-        public void handleMessage(android.os.Message msg) {
-            if (realCallback != null) {
-                realCallback.handleMessage(msg);
-            }
-        };
-    };
-    public Handler getHandler() {
-        return handler;
-    }
-    public void setCallBack(Handler.Callback callback) {
-        this.realCallback = callback;
-    }
+
 
 }

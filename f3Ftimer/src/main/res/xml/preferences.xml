@@ -185,6 +185,8 @@
         <ListPreference
             android:key="pref_external_display"
             android:title="Paired Device to use as external display"
+            android:entries="@array/empty_array"
+            android:entryValues="@array/empty_array"
             android:dependency="pref_results_display" />
 
     </PreferenceCategory>
