@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -67,7 +68,7 @@ public class API {
     public boolean mIsJSON = true;
 
     public void makeAPICall(Context context, String base, int method, Map<String, String> params){
-        api = new apiCall(context, base, method);
+        api = new apiCall(context, base, method, mAppendEndpoint, mIsJSON, mCallback, request);
         api.execute(params);
     }
 
@@ -75,17 +76,25 @@ public class API {
         api.cancel(true);
     }
 
-    public class apiCall extends AsyncTask<Map<String, String>, Void, String> {
-        Context mContext;
+    public static class apiCall extends AsyncTask<Map<String, String>, Void, String> {
+        private WeakReference<Context> mContext;
         String mBase;
         int mMethod;
+        boolean mAppendEndpoint;
+        boolean mIsJSON;
+        APICallbackInterface mCallback;
+        String mRequest;
 
 
-        public apiCall(Context context, String base, int method) {
+        apiCall(Context context, String base, int method, boolean appendEndpoint, boolean isJSON, APICallbackInterface callback, String request) {
             super();
-            mContext = context;
+            mContext = new WeakReference<>(context);
             mBase = base;
             mMethod = method;
+            mAppendEndpoint = appendEndpoint;
+            mIsJSON = isJSON;
+            mCallback = callback;
+            mRequest = request;
         }
 
         @Override
@@ -216,9 +225,9 @@ public class API {
 
                     if (mCallback != null) {
                         if (status.equals(STATUS_OK)) {
-                            mCallback.onAPISuccess(request, o);
+                            mCallback.onAPISuccess(mRequest, o);
                         } else {
-                            mCallback.onAPIError(request, o);
+                            mCallback.onAPIError(mRequest, o);
                         }
                     }
                     return;
@@ -237,25 +246,25 @@ public class API {
                 }
 
                 if (success.equals("1")){
-                    mCallback.onAPISuccess(request, o);
+                    mCallback.onAPISuccess(mRequest, o);
                 } else {
-                    mCallback.onAPIError(request, o);
+                    mCallback.onAPIError(mRequest, o);
                 }
                 return;
             }
 
             if (response == null){
-                ((Activity)mContext).runOnUiThread(new Runnable() {
+                ((Activity)mContext.get()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        new AlertDialog.Builder(mContext)
+                        new AlertDialog.Builder(mContext.get())
                                 .setTitle("Network Unavailable")
                                 .setMessage("Please check that you are connected to either WiFi or a Mobile network")
                                 .setOnCancelListener(new DialogInterface.OnCancelListener() {
                                     @Override
                                     public void onCancel(DialogInterface dialog) {
                                         if (mCallback != null)
-                                            mCallback.onAPIError(request, null);
+                                            mCallback.onAPIError(mRequest, null);
 
                                     }
                                 })
@@ -265,7 +274,7 @@ public class API {
 
             } else {
                 if (mCallback != null)
-                    mCallback.onAPIError(request, null);
+                    mCallback.onAPIError(mRequest, null);
             }
         }
     }

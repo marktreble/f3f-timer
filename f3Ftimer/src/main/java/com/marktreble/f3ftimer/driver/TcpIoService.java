@@ -70,7 +70,7 @@ public class TcpIoService extends Service implements DriverInterface {
 	private static String mF3ftimerServerIp = DEFAULT_F3FTIMER_SERVER_IP;
 
 	private static boolean stopConnectThread = false;
-	private static Driver mDriver;
+	private Driver mDriver;
 	private static Socket mmSocket;
 	private static InputStream mmInStream;
 	private static OutputStream mmOutStream;

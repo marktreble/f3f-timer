@@ -44,7 +44,7 @@ import android.util.Log;
 public class BluetoothIOIOConnectionBootstrap implements
 		IOIOConnectionBootstrap {
 
-	private static final String TAG = "BluetoothIOIOConnectionDiscovery";
+	private static final String TAG = "BTIOIOConnDiscovery";
 	private final BluetoothAdapter adapter_;
 
 	public BluetoothIOIOConnectionBootstrap() throws NoRuntimeSupportException {

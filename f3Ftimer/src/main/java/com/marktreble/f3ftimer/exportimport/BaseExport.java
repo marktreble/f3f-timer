@@ -22,7 +22,7 @@ import com.nononsenseapps.filepicker.FilePickerActivity;
 /**
  * Created by marktreble on 09/12/2015.
  */
-public class BaseExport extends Activity {
+public abstract class BaseExport extends Activity {
 
     final CharSequence[] filetypes = {"json", "csv"};
     final static int EXPORT_FILE_TYPE_JSON = 0;

@@ -269,7 +269,7 @@ public class CH340SerialDriver implements UsbSerialDriver {
             valueLow = 0x9c;
 
             value |= valueLow;
-            value |= (int)(valueHigh << 8);
+            value |= valueHigh << 8;
 
             switch(baudRate) {
                 case 50:
@@ -371,7 +371,7 @@ public class CH340SerialDriver implements UsbSerialDriver {
             }
 
             index |= 0x88 |indexLow;
-            index |= (int)(indexHigh << 8);
+            index |= indexHigh << 8;
 
             Uart_Control_Out(UartCmd.VENDOR_SERIAL_INIT, value, index);
         }

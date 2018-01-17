@@ -366,7 +366,7 @@ public class RaceTimerActivity extends FragmentActivity {
 					if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
 						if (mWindIllegalDuringFlight) {
 							// show wind warning if it was illegal during flight
-							((RaceTimerFrag4) mCurrentFragment).setWindWarning(true);
+							mCurrentFragment.setWindWarning(true);
 						}
 						((RaceTimerFrag4) mCurrentFragment).setFinal(time, fastestFlightTime, fastestFlightPilot);
                     }

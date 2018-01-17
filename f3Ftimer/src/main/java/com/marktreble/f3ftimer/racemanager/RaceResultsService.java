@@ -127,7 +127,7 @@ public class RaceResultsService extends Service {
     private class Listener extends AsyncTask<ServerSocket, Integer, Long> {
 
     	ServerSocket ss;
-    	
+
 		@Override
 		protected Long doInBackground(ServerSocket... serverSocket) {
 			Thread.currentThread().setPriority(Thread.MIN_PRIORITY);

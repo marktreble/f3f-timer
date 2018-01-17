@@ -376,7 +376,7 @@ public class CH341AndroidDriver {
 		valueLow = 0x9c;
 		
 		value |= valueLow;
-		value |= (int)(valueHigh << 8);
+		value |= valueHigh << 8;
 		
 		switch(baudRate) {
 		case 50:
@@ -478,7 +478,7 @@ public class CH341AndroidDriver {
 		}
 		
 		index |= 0x88 |indexLow;
-		index |= (int)(indexHigh << 8);
+		index |= indexHigh << 8;
 		
 		Uart_Control_Out(UartCmd.VENDOR_SERIAL_INIT, value, index);
 		if(flowControl == 1) {
@@ -665,7 +665,7 @@ public class CH341AndroidDriver {
 			{
 				synchronized(this) 
 				{
-					UsbDevice localUsbDevice = (UsbDevice)intent.getParcelableExtra("device");
+					UsbDevice localUsbDevice = intent.getParcelableExtra("device");
 					if(intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
 					{
 						OpenUsbDevice(localUsbDevice);

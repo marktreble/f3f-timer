@@ -29,10 +29,8 @@
     <string name="button_up">^</string>
     <string name="button_down">v</string>
     <string name="button_next_pilot">Nächster Pilot</string>
-    <string name="empty"></string>
     <string name="retired">Ret</string>
     <string name="reflight">RF</string>
-    <string name="notime">--.--</string>
     <string name="start_working_time">Starte Startzeitfenster</string>
     <string name="working_time_started">Startzeitfenster gestartet</string>
     <string name="late_entry">Später Eintritt</string>

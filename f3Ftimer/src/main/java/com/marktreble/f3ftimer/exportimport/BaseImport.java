@@ -30,7 +30,7 @@ import java.util.ArrayList;
 /**
  * Created by marktreble on 09/12/2015.
  */
-public class BaseImport extends Activity {
+public abstract class BaseImport extends Activity {
 
     Context mContext;
     public Activity mActivity;
