@@ -145,6 +145,56 @@ public class RaceData {
 		return allPilots;
 	}
 
+	public void setFastestLegTimes(Integer race_id, Integer round, Integer pilot_id, long[] fastestLegTimes) {
+		database.delete("fastestLegTimes", "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round) + "'", null);
+
+		ContentValues values = new ContentValues();
+		values.put("race_id", race_id);
+		values.put("round", round);
+		values.put("pilot_id", pilot_id);
+		for (int i = 0 ; i < fastestLegTimes.length; i++) {
+			values.put("leg" + String.valueOf(i), fastestLegTimes[i]);
+		}
+		database.insert("fastestLegTimes", null, values);
+	}
+
+	public void getFastestLegTimes(Integer race_id, Integer round, Integer[] pilot_id, long[] fastestLegTimes) {
+		Cursor cursor = database.query("fastestLegTimes", null, "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round) + "'", null, null, null, null);
+		cursor.moveToFirst();
+		if (!cursor.isAfterLast()) {
+			pilot_id[0] = cursor.getInt(2);
+			if (cursor.getColumnCount() == 3 + fastestLegTimes.length) {
+				for (int i = 0 ; i < fastestLegTimes.length; i++) {
+					fastestLegTimes[i] = cursor.getLong(i + 3);
+				}
+			} else {
+				Log.e("RaceData", "Invalid FastestLegTime data in database.");
+			}
+		}
+		cursor.close();
+	}
+
+	public void setFastestFlightTime(Integer race_id, Integer round, Integer pilot_id, Float time) {
+		database.delete("fastestFlightTime", "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round) + "'", null);
+
+		ContentValues values = new ContentValues();
+		values.put("race_id", race_id);
+		values.put("round", round);
+		values.put("pilot_id", pilot_id);
+		values.put("time", time);
+		database.insert("fastestFlightTime", null, values);
+	}
+
+	public void getFastestFlightTime(Integer race_id, Integer round, Integer[] pilot_id, float[] time) {
+		Cursor cursor = database.query("fastestFlightTime", null, "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round) + "'", null, null, null, null);
+		cursor.moveToFirst();
+		if (!cursor.isAfterLast()) {
+			pilot_id[0] = cursor.getInt(2);
+			time[0] = cursor.getFloat(3);
+		}
+		cursor.close();
+	}
+
 	private Race cursorToRace(Cursor cursor) {
 		Race r = new Race();
 		r.id = cursor.getInt(0);
@@ -165,14 +215,16 @@ public class RaceData {
     }
 
     public String getGroupsSerialized(int id, int round){
-        String array = "[";
+        StringBuilder jsonarray = new StringBuilder();
+        jsonarray.append("[");
         for (int i=0;i<round; i++){
-            if (i>0) array+=",";
+            if (i>0) 	jsonarray.append(",");
 			Group group = getGroups(id, i+1);
-            array+= String.format("{\"groups\":%d,\"start_pilot\":%d}", group.num_groups, group.start_pilot);
+			String str_group = String.format("{\"groups\":%d,\"start_pilot\":%d}", group.num_groups, group.start_pilot);
+            jsonarray.append(str_group);
         }
-        array+="]";
-        return array;
+        jsonarray.append("]");
+        return jsonarray.toString();
     }
 
 	public class Group {

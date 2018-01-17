@@ -278,10 +278,13 @@ public class RaceResultsService extends Service {
                   try {
                 	  response = (byte[])method.invoke(jsp, query);
                   } catch (IllegalArgumentException e) {
+					  e.printStackTrace();
                    	  return this.get500Page();
                   } catch (IllegalAccessException e) {
+					  e.printStackTrace();
                    	  return this.get500Page();
-                  } catch (InvocationTargetException e) {		
+                  } catch (InvocationTargetException e) {
+					  e.printStackTrace();
                    	  return this.get500Page();
                   }
 
@@ -486,6 +489,9 @@ public class RaceResultsService extends Service {
             }
             if (intent.hasExtra("com.marktreble.f3ftimer.value.state")) {
                 state = intent.getExtras().getInt("com.marktreble.f3ftimer.value.state");
+				// TODO
+				// State of 1? - what does that mean?
+				// Should be declared as a semantically named constant to make the code readable
                 if (state == 1) {
                     turnNumbersStr = "";
                     deltaTimesStr = "";

@@ -27,6 +27,8 @@ import java.util.ArrayList;
  */
 public class FileImportRace extends BaseImport {
 
+    final static String TAG = "FileImportRace";
+
     private static final int ACTION_PICK_FILE = 1;
 
     @Override

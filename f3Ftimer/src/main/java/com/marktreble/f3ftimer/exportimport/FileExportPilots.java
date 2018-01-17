@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
+import com.marktreble.f3ftimer.filesystem.FileExport;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 
 import java.util.ArrayList;
@@ -16,24 +17,13 @@ import java.util.ArrayList;
  */
 public class FileExportPilots extends BaseExport {
 
+    final static String TAG = "FileExportPilots";
+
     private int mExportFileType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        promptForSaveFolder();
-    }
-
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        if (mDlg != null) mDlg = null;
-    }
-
-
-    @Override
-    protected void beginExport(){
 
         mDlg = new AlertDialog.Builder( this )
                 .setTitle( "Select file type" )
@@ -46,16 +36,27 @@ public class FileExportPilots extends BaseExport {
                 .setPositiveButton( "OK", new DialogInterface.OnClickListener() {
                     public void onClick( DialogInterface dialog, int clicked )
                     {
-                        if (mExportFileType >0) {
+                        if (mExportFileType >=0) {
                             mDlg.dismiss();
-                            exportPilotData();
+                            promptForSaveFolder();
 
-                            finish();
                         }
                     }
                 } )
                 .show();
+    }
 
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        if (mDlg != null) mDlg = null;
+    }
+
+
+    @Override
+    protected void beginExport(){
+        exportPilotData();
+        finish();
     }
 
     private void exportPilotData(){
@@ -63,10 +64,11 @@ public class FileExportPilots extends BaseExport {
 
         switch (mExportFileType) {
             case EXPORT_FILE_TYPE_JSON:
-                new SpreadsheetExport().writeExportFile(mContext, super.getSerialisedPilotData(), "pilots.json", mSaveFolder);
+                new FileExport().writeExportFile(mContext, super.getSerialisedPilotData(), "pilots.json", mSaveFolder);
                 break;
+
             case EXPORT_FILE_TYPE_CSV:
-                new SpreadsheetExport().writeExportFile(mContext, super.getCSVPilotData(), "pilots.csv", mSaveFolder);
+                new FileExport().writeExportFile(mContext, super.getCSVPilotData(), "pilots.csv", mSaveFolder);
                 break;
         }
     }

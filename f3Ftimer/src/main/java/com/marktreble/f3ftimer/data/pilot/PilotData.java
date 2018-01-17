@@ -131,5 +131,18 @@ public class PilotData {
 
 		return array;
 	}
+
+	public String getCSV(){
+		String csv = "";
+		ArrayList<Pilot> pilots = getAllPilots();
+		for(int i=0;i<pilots.size(); i++){
+			if (i>0) csv+="\r\n";
+			Pilot p = pilots.get(i);
+			String str_pilot = String.format("%s, %s, %s, %s, %s, %s, %s, %s", p.firstname, p.lastname, p.nationality, p.language,  p.team, p.frequency, p.models, p.email);
+			csv+= str_pilot;
+		}
+
+		return csv;
+	}
 	
 }

@@ -178,75 +178,10 @@ public class F3xvaultApiImportRace extends BaseImport
         }
 
         if (request.equals(API.F3XV_IMPORT_RACE)) {
-            JSONObject race_data = new JSONObject();
-            JSONObject race = new JSONObject();
-            JSONArray race_pilots = new JSONArray();
-
+            JSONObject race_data = null;
             try {
                 String csvdata = data.getString("data");
-                String tmpfile = "f3xvdata.txt";
-                File file;
-                int line_no = 0;
-                int bib_no = 1;
-                try {
-                    file = File.createTempFile(tmpfile, null, mContext.getCacheDir());
-                    OutputStream os = new FileOutputStream(file);
-                    OutputStreamWriter outputStreamWriter = new OutputStreamWriter(os);
-                    outputStreamWriter.write(csvdata);
-                    outputStreamWriter.close();
-
-                    CSVReader reader = new CSVReader(new FileReader(file.getAbsolutePath()));
-                    String [] fields;
-                    JSONObject pilot;
-                    while ((fields = reader.readNext()) != null) {
-                        switch (line_no++) {
-                            case 0:
-                                // Race Data
-                                race.put("name", fields[1]);
-                                race.put("type", "1");
-                                race.put("offset", "0");
-                                race.put("status", "0");
-                                race.put("round", "1");
-                                race.put("rounds_per_flight", "1");
-                                race.put("start_number", "1");
-                                race.put("race_id", fields[0]);
-                                break;
-                            case 1:
-                                // Pilot headers - ignore
-                                break;
-                            default:
-                                // Pilots
-                                int pilot_bib_number = Integer.parseInt(fields[1]);
-                                while (bib_no++<pilot_bib_number && bib_no<200){
-                                    pilot = new JSONObject();
-                                    race_pilots.put(pilot);
-
-                                }
-                                pilot = new JSONObject();
-                                pilot.put("pilot_id", fields[0]);
-                                pilot.put("status", "1");
-                                pilot.put("firstname", fields[2]);
-                                pilot.put("lastname", fields[3]);
-                                pilot.put("email", "");
-                                pilot.put("frequency", "");
-                                pilot.put("models", "");
-                                pilot.put("nationality", "");
-                                pilot.put("language", "");
-                                pilot.put("team", fields[7]);
-                                race_pilots.put(pilot);
-                                break;
-
-                        }
-                    }
-                    race_data.put("race", race);
-                    race_data.put("racepilots", race_pilots);
-                    race_data.put("racetimes", new JSONArray());
-                    race_data.put("racegroups", new JSONArray());
-
-                }
-                catch (IOException e) {
-                    Log.e("Exception", "File write failed: " + e.toString());
-                }
+                race_data = parseRaceCSV(csvdata);
 
             } catch (JSONException  e) {
                 e.printStackTrace();

@@ -8,7 +8,7 @@ import android.util.Log;
 public class RaceDatabase extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "races.db";
-	private static final int DATABASE_VERSION = 9;
+	private static final int DATABASE_VERSION = 10;
 				
 	private static final String RACE_TABLE_CREATE = "create table races " +
 			 "(id integer primary key," +
@@ -51,6 +51,29 @@ public class RaceDatabase extends SQLiteOpenHelper {
             " groups integer," +
 			" start_pilot integer);";
 
+	private static final String FASTESTLEGTIMES_TABLE_CREATE = "create table if not exists fastestLegTimes " +
+			"(race_id integer," +
+			" round integer," +
+			" pilot_id integer," +
+			" leg0 long," +
+			" leg1 long," +
+			" leg2 long," +
+			" leg3 long," +
+			" leg4 long," +
+			" leg5 long," +
+			" leg6 long," +
+			" leg7 long," +
+			" leg8 long," +
+			" leg9 long," +
+			" primary key (race_id, round, pilot_id));";
+
+	private static final String FASTESTFLIGHTTIME_TABLE_CREATE = "create table if not exists fastestFlightTime " +
+			"(race_id integer," +
+			" round integer," +
+			" pilot_id integer," +
+			" time float," +
+			" primary key (race_id, round, pilot_id));";
+
     public RaceDatabase(Context context){
     	super(context, DATABASE_NAME, null, DATABASE_VERSION);	
     }
@@ -61,7 +84,10 @@ public class RaceDatabase extends SQLiteOpenHelper {
         db.execSQL(RACEPILOTS_TABLE_CREATE);
         db.execSQL(RACETIMES_TABLE_CREATE);
         db.execSQL(RACEGROUPS_TABLE_CREATE);
-    }
+		db.execSQL(FASTESTLEGTIMES_TABLE_CREATE);
+		db.execSQL(FASTESTFLIGHTTIME_TABLE_CREATE);
+
+	}
     
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -107,6 +133,12 @@ public class RaceDatabase extends SQLiteOpenHelper {
 		if (newVersion>8 && oldVersion<=8){
 			sql = "alter table races add race_id integer";
 			db.execSQL(sql);
+		}
+
+		if (newVersion>9 && oldVersion<=9){
+			db.execSQL(FASTESTLEGTIMES_TABLE_CREATE);
+			db.execSQL(FASTESTFLIGHTTIME_TABLE_CREATE);
+
 		}
 
 	}

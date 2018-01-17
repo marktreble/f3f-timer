@@ -7,6 +7,7 @@ package com.marktreble.f3ftimer.dialog;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -123,9 +124,9 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		TextView status = (TextView) mView.findViewById(R.id.status);
 		status.setText(getString(R.string.on_course));
 
-        setLeg(mLap, mEstimate);
+        setLeg(mLap, mEstimate, 0, 0, 0, "");
 		if (mFinalTime>=0)
-			setFinal(mFinalTime);
+			setFinal(mFinalTime, 0 , "");
 		
 		super.setPilotName();
 
@@ -156,7 +157,9 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		}
 	};
 
-	public void setLeg(int number, long estimated){
+	public void setLeg(int number, long estimated, long fastestLegTime, long legTime, long deltaTime, String fastestFlightPilot){
+		RaceTimerActivity a = (RaceTimerActivity)getActivity();
+
 		// Stop the clock here
 		if (number == 10 && mFinalTime<0){
             long elapsed = System.currentTimeMillis() - mStart;
@@ -167,7 +170,6 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 			TextView min = (TextView) mView.findViewById(R.id.mintime);
 			min.setText("");
 
-			RaceTimerActivity a = (RaceTimerActivity)getActivity();
             a.sendCommand(String.format("::%.2f", (float)elapsed/1000));
         }
 
@@ -175,6 +177,15 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		mEstimate = estimated;
 		
 		if (number>0){
+			Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+			i.putExtra("com.marktreble.f3ftimer.value.turnNumber", number);
+			i.putExtra("com.marktreble.f3ftimer.value.legTime", legTime / 1000.0f);
+			i.putExtra("com.marktreble.f3ftimer.value.fastestLegTime", fastestLegTime / 1000.0f);
+			i.putExtra("com.marktreble.f3ftimer.value.fastestLegPilot", fastestFlightPilot);
+			i.putExtra("com.marktreble.f3ftimer.value.deltaTime", deltaTime / 1000.0f);
+			i.putExtra("com.marktreble.f3ftimer.value.estimatedTime", estimated / 1000.0f);
+			a.sendBroadcast(i);
+
 			TextView lap = (TextView) mView.findViewById(R.id.lap);
 			String str_lap = String.format("Turn: %d", number);
 			lap.setText(str_lap);
@@ -188,7 +199,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		
 	}
 	
-	public void setFinal(Float time){
+	public void setFinal(Float time, float fastestFlightTime, String fastestFlightPilot){
 		mHandler.removeCallbacks(updateClock);
 		TextView cd = (TextView) mView.findViewById(R.id.time);
 		String str_time = String.format("%.2f", time);
@@ -225,6 +236,16 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		// Start Round Timeout now
 		RaceTimerActivity a = (RaceTimerActivity) getActivity();
 		a.sendCommand("begin_timeout");
+
+		/* send to ResultsServer Live Listener */
+		Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+		i.putExtra("com.marktreble.f3ftimer.value.fastestFlightTime", fastestFlightTime);
+		i.putExtra("com.marktreble.f3ftimer.value.fastestFlightPilot", fastestFlightPilot);
+		// TODO
+		// State of 6? - what does that mean?
+		// Should be declared as a semantically named constant to make the code readable
+		i.putExtra("com.marktreble.f3ftimer.value.state", 6);
+		a.sendBroadcast(i);
 
 	}
 		

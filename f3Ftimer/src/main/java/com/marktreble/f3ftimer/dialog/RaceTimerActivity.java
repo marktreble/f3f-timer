@@ -50,6 +50,7 @@ public class RaceTimerActivity extends FragmentActivity {
     public int mRound;
 	public String mNumber;
 	public boolean mWindLegal;
+	public boolean mWindIllegalDuringFlight = false;
 	private RaceTimerFrag mCurrentFragment;
 	private int mCurrentFragmentId;
 	private Context mContext;
@@ -346,17 +347,28 @@ public class RaceTimerActivity extends FragmentActivity {
 				}
 
 				if (data.equals("leg_complete")){
-					long time = extras.getLong("com.marktreble.f3ftimer.time");
-					int number = extras.getInt("com.marktreble.f3ftimer.number");
-                    if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
-                        ((RaceTimerFrag4) mCurrentFragment).setLeg(number, time);
-                    }
+					int legNumber = extras.getInt("com.marktreble.f3ftimer.number");
+					long estimatedFlightTime = extras.getLong("com.marktreble.f3ftimer.estimate");
+					long legTime = extras.getLong("com.marktreble.f3ftimer.legTime");
+					long fastestLegTime = extras.getLong("com.marktreble.f3ftimer.fastestLegTime");
+					String fastestFlightPilot = extras.getString("com.marktreble.f3ftimer.fastestFlightPilot");
+					long deltaTime = extras.getLong("com.marktreble.f3ftimer.delta");
+					if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
+						((RaceTimerFrag4) mCurrentFragment).setLeg(legNumber, estimatedFlightTime, fastestLegTime, legTime, deltaTime, fastestFlightPilot);
+					}
 				}
 
 				if (data.equals("run_complete")){
 					Float time = extras.getFloat("com.marktreble.f3ftimer.time");
-                    if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
-                        ((RaceTimerFrag4) mCurrentFragment).setFinal(time);
+					Float fastestFlightTime = extras.getFloat("com.marktreble.f3ftimer.fastestFlightTime");
+					String fastestFlightPilot = extras.getString("com.marktreble.f3ftimer.fastestFlightPilot");
+
+					if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
+						if (mWindIllegalDuringFlight) {
+							// show wind warning if it was illegal during flight
+							((RaceTimerFrag4) mCurrentFragment).setWindWarning(true);
+						}
+						((RaceTimerFrag4) mCurrentFragment).setFinal(time, fastestFlightTime, fastestFlightPilot);
                     }
 				}
 

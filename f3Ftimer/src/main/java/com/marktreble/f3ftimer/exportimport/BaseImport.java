@@ -1,7 +1,9 @@
 package com.marktreble.f3ftimer.exportimport;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -11,11 +13,18 @@ import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.opencsv.CSVReader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 /**
@@ -148,97 +157,171 @@ public class BaseImport extends Activity {
     }
 
     protected void importRaceCSV(String data) {
-        // TODO
-        // Should use openCSV for parsing, and is not currently compliant with the database structure
-        /*
-        Log.i("IMPORT", "CSV RACE DATA: "+ data);
-        try {
-            String[] lines = data.split("\r\n|\n");
-            RaceData datasource1 = new RaceData(mContext);
-            datasource1.open();
+        JSONObject race_data = parseRaceCSV(data);
 
-            int colMode = lines[0].split(";")[0].equals("results") ? 5 : 2;
+        if (race_data != null) {
+            importRaceJSON(race_data.toString());
+            mActivity.setResult(RESULT_OK);
+            mActivity.finish();
 
-            String racename = lines[0].split(";")[1];
-            Race race = datasource1.getRace(racename);
-            if (race == null) {
-                race = new Race();
-                race.name = racename;
-                datasource1.saveRace(race);
-                race = datasource1.getRace(racename);
-            }
-            int race_id = race.id;
-
-            RacePilotData datasource2 = new RacePilotData(mContext);
-            datasource2.open();
-
-            PilotData datasource3 = new PilotData(mContext);
-            datasource3.open();
-
-            int group_count = 0;
-
-            for (int i = 2; i < lines.length; i++) {
-                String[] values = lines[i].split(";");
-                int pilot_id = Integer.parseInt(values[0]);
-                Pilot p = datasource3.getPilot(pilot_id);
-                int round = 1;
-                for (int j = 1; j < values.length; j+=colMode) {
-                    int group = Integer.parseInt(values[j]);
-                    int start_pos = Integer.parseInt(values[j + 1].trim());
-                    p.status = Pilot.STATUS_NORMAL;
-                    p.group = group;
-                    if (p.group > group_count) group_count = p.group;
-                    p.start_pos = start_pos;
-                    p.round = round++;
-                    if (colMode > 2) {
-                        p.time = Float.parseFloat(values[j + 2].trim());
-                        p.penalty = Integer.parseInt(values[j + 3].trim());
-                        p.points = Float.parseFloat(values[j + 4].trim());
-                    }
-                    datasource2.importPilot(p, race_id);
-                }
-                datasource1.setGroups(race_id, i - 1, group_count);
-            }
-            datasource1.close();
-            datasource2.close();
-            datasource3.close();
-        } catch (Exception e){
-            e.printStackTrace();
+        } else {
+            new AlertDialog.Builder(mContext)
+                    .setTitle("Import Failed")
+                    .setMessage("Sorry, something went wrong!")
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mActivity.finish();
+                        }
+                    })
+                    .show();
         }
-        */
     }
 
-    protected void importPilotsCSV(String data){
+    protected JSONObject parseRaceCSV(String data){
+        JSONObject race_data = new JSONObject();
+        JSONObject race = new JSONObject();
+        JSONArray race_pilots = new JSONArray();
+
+        try {
+            String tmpfile = "csv.txt";
+            File file;
+            int line_no = 0;
+            int bib_no = 1;
+            try {
+                file = File.createTempFile(tmpfile, null, mContext.getCacheDir());
+                OutputStream os = new FileOutputStream(file);
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(os);
+                outputStreamWriter.write(data);
+                outputStreamWriter.close();
+
+                CSVReader reader = new CSVReader(new FileReader(file.getAbsolutePath()));
+                String [] fields;
+                JSONObject pilot;
+                while ((fields = reader.readNext()) != null) {
+                    switch (line_no++) {
+                        case 0:
+                            // Race Data
+                            race.put("name", fields[1]);
+                            race.put("type", "1");
+                            race.put("offset", "0");
+                            race.put("status", "0");
+                            race.put("round", "1");
+                            race.put("rounds_per_flight", "1");
+                            race.put("start_number", "1");
+                            race.put("race_id", fields[0]);
+                            break;
+                        case 1:
+                            // Pilot headers - ignore
+                            break;
+                        default:
+                            // Pilots
+                            int pilot_bib_number = Integer.parseInt(fields[1]);
+                            while (bib_no++<pilot_bib_number && bib_no<200){
+                                pilot = new JSONObject();
+                                race_pilots.put(pilot);
+
+                            }
+                            pilot = new JSONObject();
+                            pilot.put("pilot_id", fields[0]);
+                            pilot.put("status", "1");
+                            pilot.put("firstname", fields[2]);
+                            pilot.put("lastname", fields[3]);
+                            pilot.put("email", "");
+                            pilot.put("frequency", "");
+                            pilot.put("models", "");
+                            pilot.put("nationality", "");
+                            pilot.put("language", "");
+                            pilot.put("team", fields[7]);
+                            race_pilots.put(pilot);
+                            break;
+
+                    }
+                }
+                race_data.put("race", race);
+                race_data.put("racepilots", race_pilots);
+                race_data.put("racetimes", new JSONArray());
+                race_data.put("racegroups", new JSONArray());
+
+            }
+            catch (IOException e) {
+                Log.e("Exception", "File write failed: " + e.toString());
+                return null;
+            }
+
+        } catch (JSONException  e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return race_data;
+    }
+
+    protected void importPilotsCSV(String data) {
         //TODO
         // Should use openCSV for parsing
+        JSONArray pilot_data = parsePilotsCSV(data);
 
-        Log.i("IMPORT", "CSV PILOTS DATA: "+ data);
-        try {
-            PilotData datasource = new PilotData(mContext);
-            datasource.open();
+        if (pilot_data != null) {
+            importPilotsJSON(pilot_data.toString());
+            mActivity.setResult(RESULT_OK);
+            mActivity.finish();
 
-            CountryCodes countryCodes = CountryCodes.sharedCountryCodes(mContext);
-
-            String[] lines = data.split("\r\n|\n");
-            for (int i = 1; i < lines.length; i++) {
-                String[] values = lines[i].split(";");
-                Pilot pilot = new Pilot();
-                if (values.length>0) pilot.id = Integer.parseInt(values[0]);
-                if (values.length>1) pilot.firstname = values[1];
-                if (values.length>2) pilot.lastname = values[2];
-                if (values.length>3) {
-                    pilot.nationality = countryCodes.findIsoCountryCode(values[3]);
-                }
-                if (values.length>4) pilot.language = values[4];
-                if (values.length>5) pilot.team = values[5];
-                if (values.length>6) pilot.frequency = values[6];
-                if (values.length>7) pilot.models = values[7];
-                if (values.length>8) pilot.email = values[8];
-                datasource.savePilot(pilot);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
+        } else {
+            new AlertDialog.Builder(mContext)
+                    .setTitle("Import Failed")
+                    .setMessage("Sorry, something went wrong!")
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            mActivity.finish();
+                        }
+                    })
+                    .show();
         }
+
+    }
+
+    protected JSONArray parsePilotsCSV(String data){
+        JSONArray pilot_data = new JSONArray();
+
+        try {
+            String tmpfile = "csv.txt";
+            File file;
+            try {
+                file = File.createTempFile(tmpfile, null, mContext.getCacheDir());
+                OutputStream os = new FileOutputStream(file);
+                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(os);
+                outputStreamWriter.write(data);
+                outputStreamWriter.close();
+
+                CountryCodes countryCodes = CountryCodes.sharedCountryCodes(mContext);
+
+                CSVReader reader = new CSVReader(new FileReader(file.getAbsolutePath()));
+                String [] fields;
+                JSONObject pilot;
+                while ((fields = reader.readNext()) != null) {
+                    pilot = new JSONObject();
+                    pilot.put("firstname", fields[0]);
+                    pilot.put("lastname", fields[1]);
+                    pilot.put("nationality", countryCodes.findIsoCountryCode(fields[2]));
+                    pilot.put("language", fields[3]);
+                    pilot.put("team", fields[4]);
+                    pilot.put("frequency", fields[5]);
+                    pilot.put("models", fields[6]);
+                    pilot.put("email", fields[7]);
+                    pilot_data.put(pilot);
+                }
+            }
+            catch (IOException e) {
+                Log.e("Exception", "File write failed: " + e.toString());
+                return null;
+            }
+
+        } catch (JSONException  e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return pilot_data;
     }
 
 }

@@ -59,6 +59,9 @@ public class Driver implements TTS.onInitListenerProxy {
 	public long[] mLegTimes = new long[10];
 	public Integer mLeg = 0;
 	public boolean mWindLegal = true;
+	private long mFastestLegTime[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	private float mFastestFlightTime = 0.0f;
+	private String mFastestFlightPilot = "";
 
 	private boolean mAudibleWindWarning = false;
 
@@ -267,8 +270,9 @@ public class Driver implements TTS.onInitListenerProxy {
 					return;
 				}
 
-				if (data.equals("finalise")){			
-					runFinalised();
+				if (data.equals("finalise")){
+					int delayed = extras.getInt("com.marktreble.f3ftimer.delayed");
+					runFinalised(delayed);
 					return;
 				}
 
@@ -559,25 +563,42 @@ public class Driver implements TTS.onInitListenerProxy {
 		}
 	}
 
-	public void legComplete(){	
+	public void legComplete(){
+		if (mLeg >= mFastestLegTime.length) {
+			// prevent processing of extra button pushes
+			return;
+		}
+
 		long now = System.currentTimeMillis();
 		long time = now - mLastLegTime;
+		long deltaTime = time - mFastestLegTime[mLeg];
+		if (mFastestLegTime[mLeg] == 0) {
+			mFastestLegTime[mLeg] = time;
+			deltaTime = 0;
+		}
 		mLastLegTime+=time;
-		mLegTimes[mLeg] = time; 
+		mLegTimes[mLeg] = time;
 		mLeg++;
-			
+
 		// calculate the mean
 		long mean = (now-mTimeOnCourse)/mLeg;
-			
+
 		// Estimate is current time + (mean*laps remaining)
-		long estimate = (now-mTimeOnCourse) + (mean * (10-mLeg)); 
-			
+		long estimate = (now-mTimeOnCourse) + (mean * (10-mLeg));
+
 		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
 		i.putExtra("com.marktreble.f3ftimer.service_callback", "leg_complete");
-		i.putExtra("com.marktreble.f3ftimer.time", estimate);
+		i.putExtra("com.marktreble.f3ftimer.estimate", estimate);
 		i.putExtra("com.marktreble.f3ftimer.number", mLeg);
+		i.putExtra("com.marktreble.f3ftimer.legTime", time);
+		i.putExtra("com.marktreble.f3ftimer.delta", deltaTime);
+		i.putExtra("com.marktreble.f3ftimer.fastestLegTime", mFastestLegTime[mLeg-1]);
+		i.putExtra("com.marktreble.f3ftimer.fastestFlightPilot", mFastestFlightPilot);
 		mContext.sendBroadcast(i);
 
+		if (deltaTime < 0) {
+			mFastestLegTime[mLeg-1] = time;
+		}
 		// Buzzer Sound
 		//if (mSoundFXon) mPlayer.start();
 		if (mSoundFXon){
@@ -616,80 +637,132 @@ public class Driver implements TTS.onInitListenerProxy {
 	}
 
 	public void runComplete(){
-  		// Update the UI
-  		Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
+		// Update the UI
+		Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
 		intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_complete");
 		intent.putExtra("com.marktreble.f3ftimer.time", mPilot_Time);
+		if (mFastestFlightTime == 0) {
+			intent.putExtra("com.marktreble.f3ftimer.fastestFlightTime", mPilot_Time);
+			RacePilotData datasource2 = new RacePilotData(mContext);
+			datasource2.open();
+			Pilot fastestPilot = datasource2.getPilot(mPid, mRid);
+			datasource2.close();
+			String fastestPilotStr = String.format("%s %s", fastestPilot.firstname, fastestPilot.lastname);
+			intent.putExtra("com.marktreble.f3ftimer.fastestFlightPilot", fastestPilotStr);
+		} else {
+			intent.putExtra("com.marktreble.f3ftimer.fastestFlightTime", mFastestFlightTime);
+			intent.putExtra("com.marktreble.f3ftimer.fastestFlightPilot", mFastestFlightPilot);
+		}
 		mContext.sendBroadcast(intent);
+		alreadyfinalised = false;
+		alreadyReceivedFinalizeReq = false;
 		
 	}
-	
-	public void runFinalised(){
-		// Save the time to the database
 
-		RacePilotData datasource = new RacePilotData(mContext);
-		datasource.open();
-		datasource.setPilotTimeInRound(mRid, mPid, mRnd, mPilot_Time);
-        datasource.close();
+	public void runFinalised(int delayed) {
+		if (!alreadyfinalised) {
+			if (!alreadyReceivedFinalizeReq) {
+				alreadyReceivedFinalizeReq = true;
+				// Save the time to the database
+				RacePilotData datasource1 = new RacePilotData(mContext);
+				datasource1.open();
+				datasource1.setPilotTimeInRound(mRid, mPid, mRnd, mPilot_Time);
 
-		// Get the time
-		String str_time = String.format("%.2f", mPilot_Time);
-		str_time = str_time.replace(".", " ");
+				// Get the time
+				String str_time = String.format("%.2f", mPilot_Time);
+				str_time = str_time.replace(".", " ");
 
-		// Get the pilot's name
-		RacePilotData datasource2 = new RacePilotData(mContext);
-		datasource2.open();
-		Pilot pilot = datasource2.getPilot(mPid, mRid);
-		datasource2.close();
-		String str_name = String.format("%s %s", pilot.firstname, pilot.lastname);
-		String str_nationality = pilot.nationality;
+				// Get the pilot's name
+				Pilot pilot = datasource1.getPilot(mPid, mRid);
+				String str_name = String.format("%s %s", pilot.firstname, pilot.lastname);
+				String str_nationality = pilot.nationality;
+
+				datasource1.close();
+
+				RaceData datasource = new RaceData(mContext);
+				datasource.open();
+				if (mFastestFlightTime == 0 || mPilot_Time < mFastestFlightTime) {
+					mFastestFlightTime = mPilot_Time;
+					mFastestFlightPilot = String.format("%s %s", pilot.firstname, pilot.lastname);
+					datasource.setFastestFlightTime(mRid, mRnd, pilot.id, mFastestFlightTime);
+				}
+				datasource.setFastestLegTimes(mRid, mRnd, pilot.id, mFastestLegTime);
+				datasource.close();
+
+				if (mPenalty > 0) {
+					// Post to the UI that the currently active pilot got a penalty
+					Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+					i.putExtra("com.marktreble.f3ftimer.service_callback", "incPenalty");
+					i.putExtra("com.marktreble.f3ftimer.pilot_id", mPid);
+					i.putExtra("com.marktreble.f3ftimer.penalty", mPenalty);
+					mContext.sendOrderedBroadcast(i, null);
+					Log.d(TAG, "POST PENALTY BACK TO UI");
+					mPenalty = 0;
+				}
+
+				// Speak the time
+				if (mSpeechFXon) speak(str_time, TextToSpeech.QUEUE_ADD);
+				Log.d(TAG, "TIME SPOKEN");
+
+				// Update the .txt file
+				new SpreadsheetExport().writeResultsFile(mContext, mRace);
+				Log.d(TAG, "EXPORT FILE WRITTEN");
+				SystemClock.sleep(1000);
+
+				// Post to the Race Results Display Service
+				Results r = new Results();
+				r.getOrderedRoundInProgress(mContext, mRid);
+
+				String topthree = "";
+				String[] position = {"1st", "2nd", "3rd"};
+
+				for (int count = 0; count < 3; count++) {
+					if (r.mArrNames.size() > count) {
+						Pilot p = r.mArrPilots.get(count);
+						topthree += String.format("%s %s %.2f   ", position[count], StringUtils.stripAccents(r.mArrNames.get(count)), p.time);
+					}
+				}
+
+				String str_round_results = String.format("Round %d positions: %s", mRnd, topthree);
+
+				//str_round_results = "Testing...";
+
+				Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
+				intent2.putExtra("com.marktreble.f3ftimer.external_results_callback", "run_finalised");
+				intent2.putExtra("com.marktreble.f3ftimer.pilot_nationality", str_nationality);
+				intent2.putExtra("com.marktreble.f3ftimer.pilot_name", str_name);
+				intent2.putExtra("com.marktreble.f3ftimer.pilot_time", String.format("%.2f", mPilot_Time));
+				intent2.putExtra("com.marktreble.f3ftimer.current_round", String.format("%d", mRnd));
+				intent2.putExtra("com.marktreble.f3ftimer.current_round_results", str_round_results);
 
 
-		// Speak the time
-		if (mSpeechFXon) speak(str_time, TextToSpeech.QUEUE_ADD);
-		Log.d(TAG, "TIME SPOKEN");
-        
-		// Update the .txt file
-        new SpreadsheetExport().writeResultsFile(mContext, mRace);
-		Log.d(TAG, "EXPORT FILE WRITTEN");
-		SystemClock.sleep(1000);
+				mContext.sendBroadcast(intent2);
+				Log.d(TAG, "POST BACK TO EXTERNAL RESULTS: " + str_round_results);
+			}
 
-		// Post back to the UI (RaceTimerActivity);
-  		Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
-		intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
-		mContext.sendOrderedBroadcast(intent, null);
-		Log.d(TAG, "POST BACK TO UI");
-
-		// Post to the Race Results Display Service
-		Results r = new Results();
-		r.getOrderedRoundInProgress(mContext, mRid);
-
-		String topthree = "";
-		String[] position = {"1st", "2nd", "3rd"};
-
-		for (int count=0; count<3; count++) {
-			if (r.mArrNames.size() > count) {
-				Pilot p = r.mArrPilots.get(count);
-				topthree+= String.format("%s %s %.2f   ", position[count], StringUtils.stripAccents(r.mArrNames.get(count)), p.time);
+			if (delayed != 0) {
+				// Post back to the UI (RaceTimerActivity) after timeout;
+				mHandler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (!alreadyfinalised) {
+							alreadyfinalised = true;
+							Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
+							intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
+							mContext.sendOrderedBroadcast(intent, null);
+							Log.d(TAG, "POST BACK TO UI");
+						}
+					}
+				}, 5000);
+			} else {
+				// Post back to the UI (RaceTimerActivity), when the user clicks the button before the timeout runs out;
+				alreadyfinalised = true;
+				Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
+				intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
+				mContext.sendOrderedBroadcast(intent, null);
+				Log.d(TAG, "POST BACK TO UI");
 			}
 		}
-
-		String str_round_results = String.format("Round %d positions: %s", mRnd, topthree);
-
-		//str_round_results = "Testing...";
-
-		Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
-		intent2.putExtra("com.marktreble.f3ftimer.external_results_callback", "run_finalised");
-		intent2.putExtra("com.marktreble.f3ftimer.pilot_nationality", str_nationality);
-		intent2.putExtra("com.marktreble.f3ftimer.pilot_name", str_name);
-		intent2.putExtra("com.marktreble.f3ftimer.pilot_time", String.format("%.2f", mPilot_Time));
-		intent2.putExtra("com.marktreble.f3ftimer.current_round", String.format("%d", mRnd));
-		intent2.putExtra("com.marktreble.f3ftimer.current_round_results", str_round_results);
-
-
-		mContext.sendBroadcast(intent2);
-		Log.d(TAG, "POST BACK TO EXTERNAL RESULTS: "+str_round_results);
-
 	}
 
 
@@ -716,9 +789,9 @@ public class Driver implements TTS.onInitListenerProxy {
 					// use contest language instead of pilot language here, so that the operator can understand this
 					String text = Languages.useLanguage(mContext, mDefaultSpeechLang).getString(R.string.wind_warning);
 					Languages.useLanguage(mContext, mDefaultLang);
-					setSpeechFXLanguage(mDefaultSpeechLang);
+					//setSpeechFXLanguage(mDefaultSpeechLang);
 					speak(text, TextToSpeech.QUEUE_ADD);
-					setSpeechFXLanguage(mPilotLang);
+					//setSpeechFXLanguage(mPilotLang);
 				}
 			}
 		}

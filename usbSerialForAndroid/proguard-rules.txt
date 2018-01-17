@@ -4,3 +4,5 @@
 -keep public class <Cp21xxSerialDriver>
 -keep public class <FtdiSerialDriver>
 -keep public class <ProlificSerialDriver>
+-keep public class <JSPPages>
+-keep public class <JSPPagesLive>

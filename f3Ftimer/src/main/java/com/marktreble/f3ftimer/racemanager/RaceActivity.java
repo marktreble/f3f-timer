@@ -95,6 +95,7 @@ public class RaceActivity extends ListActivity {
     private String mInputSource = "";
     private String mInputSourceDevice = "";
 	private boolean mPrefResults;
+	private boolean mPrefWifiHotspot;
     private boolean mPrefResultsDisplay;
     private String mPrefExternalDisplay;
     private boolean mPrefWindMeasurement;
@@ -239,10 +240,12 @@ public class RaceActivity extends ListActivity {
     	// Start Results server
 		if (mPrefResults){
 			Log.i("START SERVICE","RESULTS");
-			if (Wifi.canEnableWifiHotspot(this)){
-    			mWifiSavedState = Wifi.enableWifiHotspot(this);
-                Log.i("WIFI", "Enabled - saved state " + ((mWifiSavedState) ? "On" : "Off"));
-			}
+			if (mPrefWifiHotspot) {
+                if (Wifi.canEnableWifiHotspot(this)) {
+                    mWifiSavedState = Wifi.enableWifiHotspot(this);
+                    Log.i("WIFI", "Enabled - saved state " + ((mWifiSavedState) ? "On" : "Off"));
+                }
+            }
             RaceResultsService.stop(this);
             
 			Intent serviceIntent = new Intent(this, RaceResultsService.class);			    	
@@ -342,6 +345,7 @@ public class RaceActivity extends ListActivity {
         outState.putString("pref_input_source", mInputSource);
         outState.putString("pref_input_source_device", mInputSourceDevice);
         outState.putBoolean("pref_results", mPrefResults);
+        outState.putBoolean("pref_wifi_hotspot", mPrefWifiHotspot);
         outState.putBoolean("pref_results_display", mPrefResultsDisplay);
         outState.putString("pref_external_display", mPrefExternalDisplay);
 
@@ -366,6 +370,7 @@ public class RaceActivity extends ListActivity {
         mInputSource = savedInstanceState.getString("pref_input_source");
         mInputSourceDevice = savedInstanceState.getString("pref_input_source_device");
         mPrefResults = savedInstanceState.getBoolean("pref_results");
+        mPrefWifiHotspot = savedInstanceState.getBoolean("pref_wifi_hotspot");
         mPrefResultsDisplay = savedInstanceState.getBoolean("pref_results_display");
         mPrefExternalDisplay = savedInstanceState.getString("pref_external_display");
 
@@ -382,13 +387,15 @@ public class RaceActivity extends ListActivity {
         String sInputSource = mInputSource;
         String sInputSourceDevice = mInputSourceDevice;
         boolean sPrefResults = mPrefResults;
+        boolean sPrefWifiHotspot = mPrefWifiHotspot;
         boolean sPrefResultsDisplay = mPrefResultsDisplay;
         String sPrefExternalDisplay = mPrefExternalDisplay;
      	getPreferences();
 
      	if (!sInputSource.equals(mInputSource) 	                    // Input src changed
-     		|| sPrefResults!=mPrefResults 		                    // Results server toggled
-            || sPrefResultsDisplay!=mPrefResultsDisplay             // External Display server toggled
+                || sPrefResults!=mPrefResults 		                    // Results server toggled
+                || sPrefWifiHotspot!=mPrefWifiHotspot 		           // wifi hotspot toggled
+                || sPrefResultsDisplay!=mPrefResultsDisplay             // External Display server toggled
                 || !sInputSourceDevice.equals(mInputSourceDevice)   // Input Source device changed
                 || !sPrefExternalDisplay.equals(mPrefExternalDisplay) // Extrenal Display device changed
      		){
@@ -429,6 +436,7 @@ public class RaceActivity extends ListActivity {
         mInputSource = sharedPref.getString("pref_input_src", getString(R.string.Demo));
         mInputSourceDevice = sharedPref.getString("pref_input_src_device", "");
         mPrefResults = sharedPref.getBoolean("pref_results_server", false);
+        mPrefWifiHotspot = sharedPref.getBoolean("pref_wifi_hotspot", false);
         mPrefResultsDisplay = sharedPref.getBoolean("pref_results_display", false);
         mPrefExternalDisplay = sharedPref.getString("pref_external_display", "");
         mPrefWindMeasurement = sharedPref.getBoolean("pref_wind_measurement", false);
@@ -1006,7 +1014,8 @@ public class RaceActivity extends ListActivity {
    	   		public View getView(int position, View convertView, ViewGroup parent) {
                 View row;
                 
-                if (mArrNames.get(position) == null) return null;
+                //if (mArrNames.get(position) == null) return null;
+                if (0 > position || position >= mArrNames.size() || mArrNames.get(position) == null) return convertView;
                 
                 if (null == convertView) {
                 row = getLayoutInflater().inflate(R.layout.listrow_racepilots, parent, false);
@@ -1220,7 +1229,7 @@ public class RaceActivity extends ListActivity {
         if (mTimeoutDialogShown) return;
 
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
-        intent.putExtra("start", 0l);
+        intent.putExtra("start", 0L);
         intent.putExtra("group_scored", (mGroupScoring.num_groups > 1));
         startActivityForResult(intent, DLG_TIMEOUT);
         mTimeoutDialogShown = true;
@@ -1236,11 +1245,13 @@ public class RaceActivity extends ListActivity {
 
 	public boolean isServiceRunning(String serviceClassName){
         final ActivityManager activityManager = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
-        final List<android.app.ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
+        if (activityManager != null) {
+            final List<android.app.ActivityManager.RunningServiceInfo> services = activityManager.getRunningServices(Integer.MAX_VALUE);
 
-        for (android.app.ActivityManager.RunningServiceInfo runningServiceInfo : services) {
-            if (runningServiceInfo.service.getClassName().equals(serviceClassName)){
-                return true;
+            for (android.app.ActivityManager.RunningServiceInfo runningServiceInfo : services) {
+                if (runningServiceInfo.service.getClassName().equals(serviceClassName)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -1259,7 +1270,10 @@ public class RaceActivity extends ListActivity {
 		public void onReceive(Context context, Intent intent) {
 			if (intent.hasExtra("com.marktreble.f3ftimer.service_callback")){
 				Bundle extras = intent.getExtras();
-				String data = extras.getString("com.marktreble.f3ftimer.service_callback");
+                String data = null;
+                if (extras != null) {
+                    data = extras.getString("com.marktreble.f3ftimer.service_callback");
+                }
 				if (data == null){
 					return;
 				}
@@ -1340,7 +1354,7 @@ public class RaceActivity extends ListActivity {
                     finishRace();
                 }
 
-                if (data.equals("wind_legal")) {
+                if (data.equals("wind_legal")){
                 }
 
                 if (data.equals("wind_illegal")) {
@@ -1355,7 +1369,10 @@ public class RaceActivity extends ListActivity {
                 setShowWindValues(mRace, windLegal, windAngleAbsolute, windAngleRelative, windSpeed, windSpeedCounter);
                 */
 			    if (mPrefWindMeasurement){
-			        mWindReadings.setText(intent.getExtras().getString("com.marktreble.f3ftimer.value.wind_values"));
+			        Bundle extras = intent.getExtras();
+			        if (extras !=null) {
+                        mWindReadings.setText(extras.getString("com.marktreble.f3ftimer.value.wind_values"));
+                    }
                 }
 
 

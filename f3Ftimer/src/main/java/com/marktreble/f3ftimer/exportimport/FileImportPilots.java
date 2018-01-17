@@ -13,7 +13,6 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
-import com.nononsenseapps.filepicker.FilePickerActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
  */
 public class FileImportPilots extends BaseImport {
 
+    final static String TAG = "FileImportPilots";
+
     private static final int ACTION_PICK_FILE = 1;
 
     @Override
@@ -34,20 +35,20 @@ public class FileImportPilots extends BaseImport {
 
         super.onCreate(savedInstanceState);
 
-        Intent i = new Intent(mContext, FilePickerActivity.class);
+        Intent i = new Intent(mContext, FilteredFilePickerActivity.class);
         // This works if you defined the intent filter
         // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
 
         // Set these depending on your use case. These are the defaults.
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
-        i.putExtra(FilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
-        i.putExtra(FilePickerActivity.EXTRA_MODE, FilePickerActivity.MODE_FILE);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, true);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_CREATE_DIR, false);
+        i.putExtra(FilteredFilePickerActivity.EXTRA_MODE, FilteredFilePickerActivity.MODE_FILE);
 
         // Configure initial directory by specifying a String.
         // You could specify a String like "/storage/emulated/0/", but that can
         // dangerous. Always use Android's API calls to get paths to the SD-card or
         // internal memory.
-        i.putExtra(FilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+        i.putExtra(FilteredFilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
 
         startActivityForResult(i, ACTION_PICK_FILE);
 
@@ -57,7 +58,7 @@ public class FileImportPilots extends BaseImport {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ACTION_PICK_FILE && resultCode == Activity.RESULT_OK) {
-            if (data.getBooleanExtra(FilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
+            if (data.getBooleanExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
                 // Multiple files import
                 String failures = "";
                 int successes = 0;
@@ -83,7 +84,7 @@ public class FileImportPilots extends BaseImport {
                     // For Ice Cream Sandwich
                 } else {
                     ArrayList<String> paths = data.getStringArrayListExtra
-                            (FilePickerActivity.EXTRA_PATHS);
+                            (FilteredFilePickerActivity.EXTRA_PATHS);
 
                     if (paths != null) {
                         for (String path: paths) {

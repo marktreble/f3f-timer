@@ -237,6 +237,7 @@ public class RacePilotData {
 
 			cursor.moveToNext();
 		}
+		cursor.close();
 
 		Collections.sort(allTeams, new Comparator<String>() {
 			@Override
@@ -278,35 +279,37 @@ public class RacePilotData {
 	}
 
     public String getPilotsSerialized(int id){
-        String array = "[";
+        StringBuilder jsonarray = new StringBuilder();
+        jsonarray.append("[");
         ArrayList<Pilot> pilots = getAllPilotsForRace(id, 0, 0, 1);
         for(int i=0;i<pilots.size(); i++){
-            if (i>0) array+=",";
+            if (i>0) jsonarray.append(",");
             Pilot p = pilots.get(i);
             String str_pilot = String.format(Locale.ENGLISH, "{\"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", p.pilot_id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language, p.team);
-            array+= str_pilot;
+            jsonarray.append(str_pilot);
         }
-        array+= "]";
+		jsonarray.append("]");
         
-        return array;
+        return jsonarray.toString();
     }
 
     public String getTimesSerialized(int id, int round){
-        String array = "[";
+        StringBuilder jsonarray = new StringBuilder();
+        jsonarray.append("[");
         for (int i=0;i<=round; i++){
-            if (i>0) array+=",";
-            array+="[";
+            if (i>0) jsonarray.append(",");
+            jsonarray.append("[");
             ArrayList<Pilot> pilots = getAllPilotsForRace(id, i+1, 0, 0);
             for(int j=0;j<pilots.size(); j++) {
-                if (j > 0) array += ",";
+                if (j > 0) jsonarray.append(",");
                 Pilot p = pilots.get(j);
                 String str_pilot = String.format(Locale.ENGLISH, "{\"time\":\"%s\", \"flown\":\"%d\", \"penalty\":\"%d\"}", p.time, (p.flown)?1:0, p.penalty);
-                array+= str_pilot;
+                jsonarray.append(str_pilot);
             }
-            array+="]";
+            jsonarray.append("]");
         }
-        array+="]";
-        return array;
+        jsonarray.append("]");
+        return jsonarray.toString();
 
     }
 
@@ -357,7 +360,7 @@ public class RacePilotData {
 				for(int k=0; k<group_pilots.size(); k++) {
 					if (k > 0) array.append(",");
 					Pilot p = group_pilots.get(k);
-					String str_pilot = String.format(Locale.ENGLISH, "{\"id\":\"%d\", \"group\":\"%d\", \"start_pos\":\"%d\", \"status\":\"%d\", \"flown\":\"%d\", \"time\":\"%.2f\", \"penalty\":\"%d\", \"points\":\"%.2f\"}", p.id, p.group, p.number, p.status, (p.flown) ? 1 : 0, p.time, p.penalty, p.points);
+					String str_pilot = String.format(Locale.ENGLISH, "{\"id\":\"%d\", \"group\":\"%d\", \"start_pos\":\"%s\", \"status\":\"%d\", \"flown\":\"%d\", \"time\":\"%.2f\", \"penalty\":\"%d\", \"points\":\"%.2f\"}", p.id, p.group, p.number, p.status, (p.flown) ? 1 : 0, p.time, p.penalty, p.points);
 					array.append(str_pilot);
 				}
 				array.append("]");

@@ -23,6 +23,7 @@ import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.filesystem.FileExport;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.nononsenseapps.filepicker.FilePickerActivity;
 
@@ -37,6 +38,8 @@ import java.util.UUID;
  * Created by marktreble on 27/12/14.
  */
 public class FileExportRace extends BaseExport {
+
+    final static String TAG = "FileExportRace";
 
     ArrayList<String> mArrNames;
     ArrayList<Race> mArrRaces;
@@ -107,7 +110,7 @@ public class FileExportRace extends BaseExport {
                 .setPositiveButton( "OK", new DialogInterface.OnClickListener() {
                     public void onClick( DialogInterface dialog, int clicked )
                     {
-                        if (mExportFileType >0) {
+                        if (mExportFileType >=0) {
                             mDlg.dismiss();
                             promptForSaveFolder();
                         }
@@ -140,11 +143,11 @@ public class FileExportRace extends BaseExport {
 
         switch (mExportFileType){
             case EXPORT_FILE_TYPE_JSON:
-                new SpreadsheetExport().writeExportFile(mContext, super.getSerialisedRaceData(r.id, r.round), r.name + ".json", mSaveFolder);
+                new FileExport().writeExportFile(mContext, super.getSerialisedRaceData(r.id, r.round), r.name + ".json", mSaveFolder);
                 break;
 
             case EXPORT_FILE_TYPE_CSV:
-                new SpreadsheetExport().writeExportFile(mContext, super.getCSVRaceData(r.id, r.round), r.name + ".csv", mSaveFolder);
+                new FileExport().writeExportFile(mContext, super.getCSVRaceData(r.id, r.round), r.name + ".csv", mSaveFolder);
                 break;
         }
 

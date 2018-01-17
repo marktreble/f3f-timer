@@ -156,12 +156,9 @@ public class BaseExport extends Activity {
     }
 
     protected String getCSVPilotData(){
-        //TODO
-        // Currently outputting JSON!
-        // CSV Format to be determined
         PilotData datasource = new PilotData(mContext);
         datasource.open();
-        String pilots = datasource.getSerialized();
+        String pilots = datasource.getCSV();
         datasource.close();
 
         return pilots;
