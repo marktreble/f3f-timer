@@ -38,7 +38,7 @@ public class FileExportPilots extends BaseExport {
                     {
                         if (mExportFileType >=0) {
                             mDlg.dismiss();
-                            promptForSaveFolder();
+                            promptForSaveFolder(null);
 
                         }
                     }

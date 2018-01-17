@@ -35,14 +35,15 @@
             	android:layout_height="wrap_content"
             	android:orientation="horizontal"
 			    android:layout_marginTop="@dimen/twenty"
-            	style="?android:attr/buttonBarButtonStyle"> 
-		
-				<Button android:id="@+id/button_abort"
-				    android:layout_width="fill_parent"
-	            	android:layout_weight="1"
-				    android:layout_height="80dp"
-				    android:text="@string/abort"
-				    style="?android:attr/buttonBarButtonStyle"></Button>
+            	style="?android:attr/buttonBarButtonStyle">
+
+			<Button
+				android:id="@+id/button_abort"
+				android:layout_width="fill_parent"
+				android:layout_weight="1"
+				android:layout_height="80dp"
+				android:text="@string/abort"
+				style="?android:attr/buttonBarButtonStyle" />
 
 				<Button
 					android:id="@+id/button_finish_race"
@@ -52,11 +53,12 @@
 					android:layout_height="80dp"
 					android:text="@string/finish_race"/>
 
-				<Button android:id="@+id/button_next_round"
-				    android:layout_width="fill_parent"
-	            	android:layout_weight="1"
-				    android:layout_height="80dp"
-				    android:text="@string/next_round"
-				    style="?android:attr/buttonBarButtonStyle"></Button>
+			<Button
+				android:id="@+id/button_next_round"
+				android:layout_width="fill_parent"
+				android:layout_weight="1"
+				android:layout_height="80dp"
+				android:text="@string/next_round"
+				style="?android:attr/buttonBarButtonStyle" />
 		</LinearLayout>
 </LinearLayout>

@@ -2,7 +2,7 @@
 <resources>
 
 	<string-array name="nationalities">
-	    <item></item>
+            <item />
         <item>Australien</item>
         <item>Tschechien</item>
         <item>Dänemark</item>

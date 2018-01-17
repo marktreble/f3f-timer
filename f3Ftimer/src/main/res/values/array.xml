@@ -29,7 +29,7 @@
     </string-array>
 
     <string-array name="countrycodes" translatable="false">
-	    <item></item>
+        <item />
         <item>AU</item>
         <item>CZ</item>
         <item>DK</item>
@@ -46,7 +46,7 @@
     </string-array>
 
     <string-array name="nationalities">
-        <item></item>
+        <item />
         <item>Australia</item>
         <item>Czech Republic</item>
         <item>Denmark</item>

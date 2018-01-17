@@ -112,7 +112,7 @@ public class FileExportRace extends BaseExport {
                     {
                         if (mExportFileType >=0) {
                             mDlg.dismiss();
-                            promptForSaveFolder();
+                            promptForSaveFolder(null);
                         }
                     }
                 } )

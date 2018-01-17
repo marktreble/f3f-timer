@@ -43,7 +43,7 @@
     <string name="random_shuffle">Random Shuffle</string>
     <string name="rotate_shuffle">Rotate Shuffle</string>
     <string name="manual_shuffle">Manual Shuffle</string>
-    <string name="empty"></string>
+    <string name="empty" />
     <string name="resize">Resize</string>
     <string name="retired">Ret</string>
     <string name="reflight">RF</string>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string-array name="nationalities">
-	    <item></item>
+        <item />
         <item>Australia</item>
         <item>Czech Republic</item>
         <item>Denmark</item>
