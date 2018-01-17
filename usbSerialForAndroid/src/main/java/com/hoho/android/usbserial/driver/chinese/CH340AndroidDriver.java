@@ -20,7 +20,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class CH340AndroidDriver {
-	public static final String TAG = "123456789";
+	public static final String TAG = "CH340USBDriver";
 	private UsbManager mUsbmanager;
 	private PendingIntent mPendingIntent;
 	private UsbDevice mUsbDevice;
@@ -66,7 +66,6 @@ public class CH340AndroidDriver {
 		ReadTimeOutMillis = 10000;
 			
 		ArrayAddDevice("1a86:7523");
-		//ArrayAddDevice("1a86:5523");
 	}
 	
 	private void ArrayAddDevice(String str)
@@ -89,8 +88,9 @@ public class CH340AndroidDriver {
 		UsbInterface intf;
 		if(mDevice == null)
 			return;
+
 		intf = getUsbInterface(mDevice);
-		if((mDevice != null) && (intf != null)) {
+		if(intf != null) {
 			localObject = this.mUsbmanager.openDevice(mDevice);
 			if(localObject != null) {
 				if(((UsbDeviceConnection)localObject).claimInterface(intf, true)) {
@@ -100,7 +100,7 @@ public class CH340AndroidDriver {
 					if(!enumerateEndPoint(intf))
 						return;
 					Toast.makeText(mContext, "Device Has Attached to Android", Toast.LENGTH_LONG).show();
-					if(READ_ENABLE == false){
+					if(!READ_ENABLE){
 						READ_ENABLE = true;
 						readThread = new read_thread(mBulkInPoint, mDeviceConnection);
 						readThread.start();
@@ -172,19 +172,20 @@ public class CH340AndroidDriver {
 	public int ResumeUsbList()
 	{
 		mUsbmanager = (UsbManager) mContext.getSystemService(Context.USB_SERVICE);
-		HashMap<String, UsbDevice> deviceList = mUsbmanager.getDeviceList();
+		HashMap<String, UsbDevice> deviceList = new HashMap<>();
+		if (mUsbmanager != null) {
+			deviceList = mUsbmanager.getDeviceList();
+		}
 		Log.i("usbsize","size="+deviceList.size());
 		if(deviceList.isEmpty()) {
 			Toast.makeText(mContext, "No Device Or Device Not Match", Toast.LENGTH_LONG).show();
 			return 2;
 		}
-		Iterator<UsbDevice> localIterator = deviceList.values().iterator();
-		while(localIterator.hasNext()) {
-			UsbDevice localUsbDevice = localIterator.next();
+
+		for (UsbDevice localUsbDevice: deviceList.values()){
 			for(int i = 0; i < DeviceCount; ++i) {
-//				 Log.d(TAG, "DeviceCount is " + DeviceCount);
-				if(String.format("%04x:%04x", new Object[]{Integer.valueOf(localUsbDevice.getVendorId()), 
-						Integer.valueOf(localUsbDevice.getProductId()) }).equals(DeviceNum.get(i))) {
+				String hexid = String.format("%04x:%04x", localUsbDevice.getVendorId(), localUsbDevice.getProductId());
+				if(hexid.equals(DeviceNum.get(i))) {
 					IntentFilter filter = new IntentFilter(mString);
 					filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 					mContext.registerReceiver(mUsbReceiver, filter);
@@ -215,13 +216,13 @@ public class CH340AndroidDriver {
 			Toast.makeText(mContext, "No Device Or Device Not Match", Toast.LENGTH_LONG).show();
 			return null;
 		}
-		Iterator<UsbDevice> localIterator = deviceList.values().iterator();
-		while(localIterator.hasNext()) {
-			UsbDevice localUsbDevice = localIterator.next();
+
+		for (UsbDevice localUsbDevice: deviceList.values()){
 			for(int i = 0; i < DeviceCount; ++i) {
 //				 Log.d(TAG, "DeviceCount is " + DeviceCount);
-				if(String.format("%04x:%04x", new Object[]{Integer.valueOf(localUsbDevice.getVendorId()), 
-						Integer.valueOf(localUsbDevice.getProductId()) }).equals(DeviceNum.get(i))) {
+				String hexid = String.format("%04x:%04x", localUsbDevice.getVendorId(), localUsbDevice.getProductId());
+
+				if(hexid.equals(DeviceNum.get(i))) {
 					IntentFilter filter = new IntentFilter(mString);
 					filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 					mContext.registerReceiver(mUsbReceiver, filter);
@@ -265,7 +266,7 @@ public class CH340AndroidDriver {
      *       int index, byte[] buffer, int length, int timeout)
      */
 	
-	public int Uart_Control_Out(int request, int value, int index)
+	private int Uart_Control_Out(int request, int value, int index)
 	{
 		int retval = 0;
 		retval = mDeviceConnection.controlTransfer(UsbType.USB_TYPE_VENDOR | UsbType.USB_RECIP_DEVICE | UsbType.USB_DIR_OUT,
@@ -274,7 +275,7 @@ public class CH340AndroidDriver {
 		return retval;
 	}
 	
-	public int Uart_Control_In(int request, int value, int index, byte[] buffer, int length)
+	private int Uart_Control_In(int request, int value, int index, byte[] buffer, int length)
 	{
 		int retval = 0;
 		retval = mDeviceConnection.controlTransfer(UsbType.USB_TYPE_VENDOR | UsbType.USB_RECIP_DEVICE | UsbType.USB_DIR_IN,
@@ -287,7 +288,7 @@ public class CH340AndroidDriver {
 		return Uart_Control_Out(UartCmd.VENDOR_MODEM_OUT, ~control, 0);
 	}
 	
-	public int Uart_Tiocmset(int set, int clear)
+	private int Uart_Tiocmset(int set, int clear)
 	{
 		int control = 0;
 		if((set & UartModem.TIOCM_RTS) == UartModem.TIOCM_RTS)
@@ -692,7 +693,7 @@ public class CH340AndroidDriver {
 
 		public void run()
 		{		
-			while(READ_ENABLE == true)
+			while(READ_ENABLE)
 			{
 				while(totalBytes > (maxnumbytes - 63))
 				{

@@ -17,10 +17,10 @@ import android.util.Log;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-import com.nononsenseapps.filepicker.FilePickerActivity;
 
 /**
  * Created by marktreble on 09/12/2015.
+ * Base class for data exports
  */
 public abstract class BaseExport extends Activity {
 
@@ -45,9 +45,13 @@ public abstract class BaseExport extends Activity {
 
     }
 
-    protected void promptForSaveFolder(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        mSaveFolder = sharedPref.getString("export_save_folder", Environment.getExternalStorageDirectory().getPath());
+    protected void promptForSaveFolder(String folder){
+        if (folder == null) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            mSaveFolder = sharedPref.getString("export_save_folder", Environment.getExternalStorageDirectory().getPath());
+        } else {
+            mSaveFolder = folder;
+        }
 
         mDlg = new AlertDialog.Builder(mContext)
                 .setTitle("Save Location")
@@ -97,12 +101,13 @@ public abstract class BaseExport extends Activity {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
                 SharedPreferences.Editor ed = sharedPref.edit();
                 ed.putString("export_save_folder", uri.getPath());
-                ed.commit();
+                ed.apply();
+
+                promptForSaveFolder(uri.getPath());
             }
 
-            promptForSaveFolder();
         } else {
-            promptForSaveFolder();
+            promptForSaveFolder(null);
         }
     }
 
@@ -121,9 +126,7 @@ public abstract class BaseExport extends Activity {
         String racetimes = datasource2.getTimesSerialized(race_id, round);
         datasource2.close();
 
-        String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
-
-        return data;
+        return String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
     }
 
     protected String getSerialisedPilotData(){
@@ -152,9 +155,7 @@ public abstract class BaseExport extends Activity {
         String racetimes = datasource2.getTimesSerialized(race_id, round);
         datasource2.close();
 
-        String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
-
-        return data;
+        return  String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
     }
 
     protected String getCSVPilotData(){

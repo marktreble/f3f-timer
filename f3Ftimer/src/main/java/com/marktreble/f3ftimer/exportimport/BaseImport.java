@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 /**
  * Created by marktreble on 09/12/2015.
+ * Base class for data imports
  */
 public abstract class BaseImport extends Activity {
 
@@ -118,9 +119,8 @@ public abstract class BaseImport extends Activity {
                     int flown = pilottime.optInt("flown");
                     int penalty = pilottime.optInt("penalty");
 
-                    Log.i("BT", String.format("FLOWN == %d", flown));
-                    if (flown == 1) {
-                        Log.i("BT", String.format("RACE %d, PILOT %d, ROUND %d, TIME %s", race_id, pilot_id, i+1, time));
+                    if (flown == Pilot.STATUS_FLOWN
+                            || flown == Pilot.STATUS_NORMAL) {
                         datasource2.setPilotTimeInRound(race_id, pilot_id, i+1, time);
                         if (penalty>0)
                             datasource2.setPenalty(race_id, pilot_id, i+1, penalty);

@@ -158,8 +158,11 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 		public void onReceive(Context context, Intent intent) {
 			if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
 				Bundle extras = intent.getExtras();
-				String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
-				Log.i(TAG, data);
+				String data = null;
+				if (extras != null){
+					data = extras.getString("com.marktreble.f3ftimer.ui_callback");
+					Log.i(TAG, data);
+				}
 
 				if (data == null) return;
 
@@ -183,7 +186,9 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     	super.onStartCommand(intent, flags, startId);
 
 		Bundle extras = intent.getExtras();
-		mInputSourceDevice = extras.getString("pref_input_src_device");
+		if (extras != null) {
+			mInputSourceDevice = extras.getString("pref_input_src_device");
+		}
 
 		Log.i("DRIVER", "SENDING UPDATE: "+ICN_DISCONN);
 		Intent icn = new Intent("com.marktreble.f3ftimer.onUpdate");
@@ -451,7 +456,6 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 					StringBuilder sb = new StringBuilder(charArray.length);
 					StringBuilder hexString = new StringBuilder();
 					for (char c : charArray) {
-						if (c < 0) throw new IllegalArgumentException();
 						sb.append(Character.toString(c));
 
 						String hex = Integer.toHexString(0xFF & c);
