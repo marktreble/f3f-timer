@@ -14,9 +14,13 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
+import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+
+import java.util.ArrayList;
 
 /**
  * Created by marktreble on 09/12/2015.
@@ -140,22 +144,59 @@ public abstract class BaseExport extends Activity {
     }
 
     protected String getCSVRaceData(int race_id, int round){
-        //TODO
-        // Currently outputting JSON!
-        // CSV Format to be determined
+
         RaceData datasource = new RaceData(mContext);
         datasource.open();
-        String race = datasource.getSerialized(race_id);
+        Race race = datasource.getRace(race_id);
         String racegroups = datasource.getGroupsSerialized(race_id, round);
         datasource.close();
 
         RacePilotData datasource2 = new RacePilotData(mContext);
         datasource2.open();
-        String racepilots = datasource2.getPilotsSerialized(race_id);
+        ArrayList<Pilot> racepilots = datasource2.getAllPilotsForRace(race_id,0,race.offset, 0);
         String racetimes = datasource2.getTimesSerialized(race_id, round);
         datasource2.close();
 
-        return  String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
+        StringBuilder csvdata = new StringBuilder();
+
+        String race_params = "";
+        race_params+= String.format("\"%d\",", race.race_id);
+        race_params+= String.format("\"%s\",", race.name);
+        race_params+= String.format("\"%d\",", race.type);
+        race_params+= String.format("\"%d\",", race.offset);
+        race_params+= String.format("\"%d\",", race.status);
+        race_params+= String.format("\"%d\",", race.round);
+        race_params+= String.format("\"%d\",", race.rounds_per_flight);
+        race_params+= String.format("\"%d\"\n", race.start_number);
+
+        csvdata.append(race_params);
+        csvdata.append("\n");
+
+        for(Pilot p : racepilots) {
+            String pilot_params = "";
+            pilot_params+= String.format("\"%d\",", p.pilot_id);
+            pilot_params+= String.format("\"%s\",", p.number);
+            pilot_params+= String.format("\"%s\",", p.firstname);
+            pilot_params+= String.format("\"%s\",", p.lastname);
+            // TODO f3xvault params Class (class=f3f), AMA (nac_number), FAI (fai_id)not yet in our database
+            pilot_params+= ",";
+            pilot_params+= ",";
+            pilot_params+= ",";
+            pilot_params+= String.format("\"%s\",", p.team);
+            // Extra data not in f3xvault api
+            pilot_params+= String.format("\"%d\",", p.status);
+            pilot_params+= String.format("\"%s\",", p.email);
+            pilot_params+= String.format("\"%s\",", p.frequency);
+            pilot_params+= String.format("\"%s\",", p.models);
+            pilot_params+= String.format("\"%s\",", p.nationality);
+            pilot_params+= String.format("\"%s\",", p.language);
+            csvdata.append(pilot_params);
+        }
+
+        // TODO add groups and times for full race data
+
+
+        return  csvdata.toString();
     }
 
     protected String getCSVPilotData(){

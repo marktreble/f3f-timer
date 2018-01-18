@@ -201,14 +201,14 @@ public abstract class BaseImport extends Activity {
                     switch (line_no++) {
                         case 0:
                             // Race Data
-                            race.put("name", fields[1]);
-                            race.put("type", "1");
-                            race.put("offset", "0");
-                            race.put("status", "0");
-                            race.put("round", "1");
-                            race.put("rounds_per_flight", "1");
-                            race.put("start_number", "1");
                             race.put("race_id", fields[0]);
+                            race.put("name", fields[1]);
+                            race.put("type", (fields.length<3) ? "1" : fields[2]);
+                            race.put("offset", (fields.length<4) ? "0" : fields[3]);
+                            race.put("status", (fields.length<5) ? "0" : fields[4]);
+                            race.put("round", (fields.length<6) ? "1" : fields[5]);
+                            race.put("rounds_per_flight", (fields.length<7) ? "1" : fields[6]);
+                            race.put("start_number", (fields.length<8) ? "1" : fields[7]);
                             break;
                         case 1:
                             // Pilot headers - ignore
@@ -223,15 +223,19 @@ public abstract class BaseImport extends Activity {
                             }
                             pilot = new JSONObject();
                             pilot.put("pilot_id", fields[0]);
-                            pilot.put("status", "1");
                             pilot.put("firstname", fields[2]);
                             pilot.put("lastname", fields[3]);
-                            pilot.put("email", "");
-                            pilot.put("frequency", "");
-                            pilot.put("models", "");
-                            pilot.put("nationality", "");
-                            pilot.put("language", "");
+                            // TODO add these fields adding to database
+                            //pilot.put("class", fields[4]);
+                            //pilot.put("nac_number", fields[5]);
+                            //pilot.put("fai_id", fields[6]);
                             pilot.put("team", fields[7]);
+                            pilot.put("status", (fields.length<9) ? "1" : fields[8]);
+                            pilot.put("email", (fields.length<10) ? "" : fields[9]);
+                            pilot.put("frequency", (fields.length<11) ? "" : fields[10]);
+                            pilot.put("models", (fields.length<12) ? "" : fields[11]);
+                            pilot.put("nationality", (fields.length<13) ? "" : fields[12]);
+                            pilot.put("language", (fields.length<14) ? "" : fields[13]);
                             race_pilots.put(pilot);
                             break;
 
@@ -239,6 +243,8 @@ public abstract class BaseImport extends Activity {
                 }
                 race_data.put("race", race);
                 race_data.put("racepilots", race_pilots);
+
+                // TODO add groups and times for full race data when imported from file
                 race_data.put("racetimes", new JSONArray());
                 race_data.put("racegroups", new JSONArray());
 
