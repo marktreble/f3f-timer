@@ -244,7 +244,7 @@ public interface PulseInput extends Closeable {
 		/** The scaling factor as an integer. */
 		public final int scaling;
 
-		private PulseMode(int s) {
+		PulseMode(int s) {
 			scaling = s;
 		}
 	}
@@ -263,7 +263,7 @@ public interface PulseInput extends Closeable {
 		/** The value in Hertz units. */
 		public final int hertz;
 
-		private ClockRate(int h) {
+		ClockRate(int h) {
 			hertz = h;
 		}
 	}

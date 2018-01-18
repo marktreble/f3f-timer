@@ -100,7 +100,7 @@ public class FtdiSerialDriver implements UsbSerialDriver {
     /**
      * FTDI chip types.
      */
-    private static enum DeviceType {
+    private enum DeviceType {
         TYPE_BM, TYPE_AM, TYPE_2232C, TYPE_R, TYPE_2232H, TYPE_4232H;
     }
 
