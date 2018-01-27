@@ -1,0 +1,221 @@
+@media screen and (max-width:400px) {
+    #window { display: none; }
+    #warn { display: block; }
+}
+
+.out {
+	height: 0.0001px;
+	overflow: hidden;
+}
+
+#warn {
+    display: none; text-align: center;
+}
+
+#window {
+	width: 100%;
+}
+
+#view-stack {
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-family: Helvetica, Arial, sans-serif;
+	font-size: 12.0pt;
+	color: #000000;
+	background: #ffffff;
+}
+
+h1 {
+	margin: 0;
+	font-size: 140%;
+}
+
+h2, #race-name a.back {
+	margin: 0;
+	font-size: 130%;
+}
+
+h3 {
+	width: 100%;
+	text-align: center;
+	font-size: 110%;
+}
+
+#top {
+	width: 100%;
+	background: #ffffff; /* Old browsers */
+	color: #ffffff;
+	cursor: pointer;
+}
+
+#race-name {
+	background: #000000;
+	color: #ffffff;
+	width: 100%;
+}
+
+#race-name a.back {
+	width: 40px;
+	background: transparent;
+	position: absolute;
+	cursor: pointer;
+	overflow: hidden;
+	text-align: center;
+}
+
+#top div#race-name a.back {
+	display: none;
+}
+
+#top.back div#race-name a.back {
+	display: block;
+}
+
+#top.back div#race-name h2 {
+	margin-left: 40px;
+}
+
+table {
+    border-spacing: 0px;
+    border-collapse: collapse;
+	text-align: center;
+}
+
+td, tr, th {
+	padding: 1px 4px;
+	border: 1px solid #000000;
+    white-space:nowrap;
+}
+
+.td-border-left {
+	border-left-width: 2px;
+}
+
+.td-border-bottom {
+	border-bottom-width: 2px;
+}
+
+.list {
+	width: 100%;
+	background: #ffffff;
+	color: #000000;
+	border-collapse: collapse;
+}
+
+.list-item, .list-item-link {
+	float: left;
+	width: 99%;
+	color: #000000;
+	border-bottom: 1px solid #000000;
+	border-collapse: collapse;
+}
+
+.list-item-link {
+	cursor: pointer;
+}
+
+.list-item-link:active {
+	background: #ccc;
+}
+
+.span-left, .span-left-italic {
+	float: left;
+}
+
+.span, .span-live-header, .span-live-legs, .span-live-legs-pos, .span-live-legs-neg  {
+    float: right;
+}
+
+.span-left-italic {
+	font-style: italic;
+}
+
+.span-italic {
+	font-style: italic;
+}
+
+.span-header {
+	font-weight: bold;
+}
+
+.span-live-header {
+	font-weight: bold;
+}
+
+.span-live-legs-neg {
+	color: #0f0;
+}
+
+.span-live-legs-pos {
+	color: #f00;
+}
+
+.pilot-rank, .pilot-id, .pilot-name, .pilot-points, .pilot-penalty, .pilot-penalty-none, .pilot-time, .leader-pilot-penalty, .leader-pilot-time, .leader-pilot-points {
+	float: left;
+}
+
+.pilot-rank {
+	text-align: center;
+	width: 9%;
+}
+
+.pilot-id {
+	text-align: center;
+	width: 9%;
+}
+
+.pilot-name {
+	text-align: left;
+	width: 30%;
+}
+
+.pilot-penalty, .pilot-time, .pilot-points {
+	text-align: right;
+	width: 17%;
+}
+
+.leader-pilot-penalty, .leader-pilot-time, .leader-pilot-points {
+	text-align: right;
+	width: 13%;
+}
+
+.list-header-rank, .list-header-pilot-id {
+	float: left;
+	width: 9%;
+	text-align: center;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.list-header-name {
+	float: left;
+	width: 30%;
+	text-align: left;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.list-header-right {
+	float: left;
+	width: 17%;
+	text-align: right;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.leader-list-header-right {
+	float: left;
+	width: 13%;
+	text-align: right;
+	font-size: 120%;
+	font-weight: bold;
+}
+
+.group_header {
+	font-weight: bold;
+	font-style: italic;
+}

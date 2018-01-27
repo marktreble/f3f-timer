@@ -5,12 +5,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
@@ -25,6 +28,7 @@ import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.SimpleTimeZone;
@@ -228,8 +232,16 @@ public class RaceResultsService extends Service {
 		
 		private byte[] getStaticPage(String path, String ext){
 			byte[] response = null;
-						
-			String resourcefile = "public_html"+path;
+			
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			String resultsServerStyle = sharedPref.getString("pref_results_server_style", getResources().getStringArray(R.array.options_results_server_style)[0]);
+			String resourcefile = "";
+			if (resultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[0])) {
+				resourcefile = "public_html";
+			} else if (resultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[1])) {
+				resourcefile = "public_html_sh";
+			}
+			resourcefile += path;
 			Log.i("HTTP REQUEST", resourcefile);
 			
 			AssetManager am = getAssets();
@@ -569,34 +581,106 @@ public class RaceResultsService extends Service {
 
 	public class JSPPages {
 		public byte[] _api_getracedata(String query){
+			
+			long unixTime = System.currentTimeMillis() / 1000L;
+
+			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+			String resultsServerStyle = sharedPref.getString("pref_results_server_style", getResources().getStringArray(R.array.options_results_server_style)[0]);
+			String racetimes = "";
+			
 			RaceData datasource = new RaceData(RaceResultsService.this);
-	  		datasource.open();
-	  		Race race = datasource.getRace(mRid);
-            datasource.close();
+			datasource.open();
+			Race race = datasource.getRace(mRid);
 
-			RacePilotData datasource2 = new RacePilotData(RaceResultsService.this);
-	  		datasource2.open();
-            int maxRound = datasource2.getMaxRound(race.id);
-            String racetimes = datasource2.getTimesSerializedExt(mRid, maxRound);
-            datasource2.close();
+			String data = "[{";
+			
+			if (resultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[0])) {
+				RacePilotData datasource2 = new RacePilotData(RaceResultsService.this);
+				datasource2.open();
+				ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0);
+				
+				ArrayList<String> p_names = new ArrayList<>();
+				for (Pilot p : allPilots){
+					p_names.add(String.format("\"%s %s\"", p.firstname, p.lastname));
+				}
+				String pilots_array = p_names.toString();
+				
+				ArrayList<ArrayList<String>> p_times = new ArrayList<>();
+				ArrayList<Integer> groups = new ArrayList<>();
+				
+				for (int rnd=0; rnd<race.round; rnd++){
+					RaceData.Group group = datasource.getGroups(mRid, rnd+1);
+					groups.add(group.num_groups);
+					
+					ArrayList<String> round = new ArrayList<>();
+					for (Pilot p : allPilots){
+						float time = datasource2.getPilotTimeInRound(race.id, p.id, rnd+1);
+						//Log.i("RRS", p.toString());
+						//Log.i("RRS", Float.toString(time));
+						if (time>0){
+							round.add(String.format("\"%.2f\"",time).replace(",","."));
+						} else {
+							if (rnd == race.round-1){ // is the round in progress
+								if (!p.flown){
+									// Not yet flown ("")
+									round.add("\"\"");
+								} else {
+									// Has flown so time was a zero
+									round.add("\"0\"");
+								}
+							} else {
+								round.add("\"0\"");
+							}
+						}
+					}
+					p_times.add(round);
+				}
+				String times_array = p_times.toString();
+				
+				ArrayList<ArrayList<String>> p_penalties = new ArrayList<>();
+				for (int rnd=0; rnd<race.round; rnd++){
+					ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1);
+					ArrayList<String> round = new ArrayList<>();
+					for (int i=0; i<p_names.size(); i++){
+						
+						round.add(String.format("\"%d\"", pilots_in_round.get(i).penalty *100));
+					}
+					p_penalties.add(round);
+				}
+				String penalties_array = p_penalties.toString();
+				String groups_array = groups.toString();
+				
+				datasource2.close();
 
-			RacePilotData datasource3 = new RacePilotData(RaceResultsService.this);
-            datasource3.open();
-            String pilots = datasource3.getPilotsSerialized(mRid);
-            datasource3.close();
-	  		
-	  		long unixTime = System.currentTimeMillis() / 1000L;
-
-            String data = "[{";
-            data += this.addParam("time", String.valueOf(unixTime)) + ",";
-            data += this.addParam("race_name", race.name) + ",";
-            data += this.addParam("race_status", String.valueOf(race.status)) + ",";
-            data += this.addParam("current_round", String.valueOf(race.round)) + ",";
-            data += this.addParam("ftd", "{}", false) + ",";
-            data += this.addParam("round_winners", "[]", false) + ",";
-            data += this.addParam("pilots", pilots, false) + ",";
-            data += this.addParam("racetimes", racetimes, false);
-            data += "}]           ";
+				data += this.addParam("time", String.valueOf(unixTime)) + ",";
+				data += this.addParam("race_name", race.name) + ",";
+				data += this.addParam("race_status", String.valueOf(race.status)) + ",";
+				data += this.addParam("current_round", String.valueOf(race.round)) + ",";
+				data += this.addParam("ftd", "{}", false) + ",";
+				data += this.addParam("round_winners", "[]", false) + ",";
+				data += this.addParam("pilots", pilots_array, false) + ",";
+				data += this.addParam("times", times_array, false) + ",";
+				data += this.addParam("penalties", penalties_array, false) + ",";
+				data += this.addParam("groups", groups_array, false);
+			} else if (resultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[1])) {
+				RacePilotData datasource2 = new RacePilotData(RaceResultsService.this);
+				datasource2.open();
+				int maxRound = datasource2.getMaxRound(race.id);
+				racetimes = datasource2.getTimesSerializedExt(mRid, maxRound);
+				String pilots = datasource2.getPilotsSerialized(mRid);
+				datasource2.close();
+				
+				data += this.addParam("time", String.valueOf(unixTime)) + ",";
+				data += this.addParam("race_name", race.name) + ",";
+				data += this.addParam("race_status", String.valueOf(race.status)) + ",";
+				data += this.addParam("current_round", String.valueOf(race.round)) + ",";
+				data += this.addParam("ftd", "{}", false) + ",";
+				data += this.addParam("round_winners", "[]", false) + ",";
+				data += this.addParam("pilots", pilots, false) + ",";
+				data += this.addParam("racetimes", racetimes, false);
+			}
+			data += "}]           ";
+			datasource.close();
 
             String header;
             header = "HTTP/1.1 200 OK\n";

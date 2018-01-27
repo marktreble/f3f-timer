@@ -95,10 +95,31 @@
             android:defaultValue="false" />
 
         <CheckBoxPreference
+            android:key="acra.enable"
+            android:title="@string/pref_enable_acra"
+            android:summaryOn="@string/pref_acra_enabled"
+            android:summaryOff="@string/pref_acra_disabled"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="button_results"
+        android:title="@string/results_settings"
+        android:persistent="false">
+
+        <CheckBoxPreference
             android:key="pref_results_server"
             android:title="Run Results Server"
             android:summary="Serve results per HTTP"
             android:defaultValue="false" />
+
+        <ListPreference
+            android:defaultValue="f3ftimer"
+            android:entries="@array/options_results_server_style"
+            android:entryValues="@array/options_results_server_style"
+            android:key="pref_results_server_style"
+            android:summary="Results Server Style"
+            android:title="Results Server Style"/>
 
         <CheckBoxPreference
             android:key="pref_wifi_hotspot"
@@ -122,11 +143,5 @@
             android:key="pref_external_display"
             android:title="Paired Device to use as external display"
             android:dependency="pref_results_display" />
-
-        <CheckBoxPreference android:key="acra.enable"
-            android:title="@string/pref_enable_acra"
-            android:summaryOn="@string/pref_acra_enabled"
-            android:summaryOff="@string/pref_acra_disabled"
-            android:defaultValue="true"/>
     </PreferenceCategory>
 </PreferenceScreen>

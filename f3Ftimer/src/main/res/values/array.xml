@@ -85,5 +85,10 @@
         <item>Share on Social Media</item>
     </string-array>
 
+    <string-array name="options_results_server_style">
+        <item>f3ftimer</item>
+        <item>puristic</item>
+    </string-array>
+
     <string-array name="empty_array" translatable="false" />
 </resources>

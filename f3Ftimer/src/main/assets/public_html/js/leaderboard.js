@@ -44,7 +44,7 @@ function render_leaderboard(){
 			pilot_time = times[round][p].time;
 			penalty = times[round][p].penalty;
 			var points = round2Fixed(fastest/pilot_time*1000, 2);
-			if (p.time==0 || Float.isNaN(p.time)) points = 0;
+			if (pilot_time == 0) points = 0;
 			times[round][p].points = points;
 		}
 		
@@ -69,7 +69,7 @@ function render_leaderboard(){
 		// Total up the remaining
 		var tot = 0;
 		for (var r in pilot_points){
-			tot += pilot_points[r];
+			tot += parseFloat(pilot_points[r]);
 		}
 		times[0][i].total = round2Fixed(tot - pilot_penalties, 2);
 	}

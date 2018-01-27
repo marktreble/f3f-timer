@@ -89,6 +89,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         setListSummary("pref_usb_stopbits", R.array.options_stopbits);
         setListSummary("pref_usb_databits", R.array.options_databits);
         setListSummary("pref_usb_parity", R.array.options_parity);
+        setListSummary("pref_results_server_style", R.array.options_results_server_style);
         setBTDeviceSummary("pref_external_display");
 
     	Preference pref_results_server = findPreference("pref_results_server");
@@ -134,6 +135,9 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             }
             if (key.equals("pref_usb_parity")) {
                 setListSummary("pref_usb_parity", R.array.options_parity);
+            }
+            if (key.equals("pref_results_server_style")) {
+                setListSummary("pref_results_server_style", R.array.options_results_server_style);
             }
         }
 

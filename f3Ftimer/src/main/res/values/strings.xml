@@ -98,6 +98,7 @@
     <string name="bluetooth_paired_device">HC-05 Paired Device</string>
     <string name="connection_settings">Connection Settings</string>
     <string name="other_settings">Other Settings</string>
+    <string name="results_settings">Results Settings</string>
     <string name="usb_baudrate">Baud Rate</string>
     <string name="usb_stopbits">Stop Bits</string>
     <string name="usb_databits">Data Bits</string>
