@@ -161,7 +161,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
          || key.equals("pref_wind_measurement")
          || key.equals("pref_usb_tether")
          || key.equals("pref_audible_wind_warning")
-         || key.equals("pref_full_volume")){
+         || key.equals("pref_full_volume")
+         || key.equals("pref_extended_json_format")){
 		    sendBooleanValueToService(key, sharedPreferences.getBoolean(key, false));
     	}
 

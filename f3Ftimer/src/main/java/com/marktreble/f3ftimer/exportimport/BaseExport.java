@@ -83,7 +83,6 @@ public class BaseExport extends Activity {
                         mActivity.finish();
                     }
                 }).show();
-
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -105,24 +104,6 @@ public class BaseExport extends Activity {
 
     void beginExport(){}
 
-    protected String getSerialisedRaceData(int race_id, int round){
-        RaceData datasource = new RaceData(mContext);
-        datasource.open();
-        String race = datasource.getSerialized(race_id);
-        String racegroups = datasource.getGroupsSerialized(race_id, round);
-        datasource.close();
-
-        RacePilotData datasource2 = new RacePilotData(mContext);
-        datasource2.open();
-        String racepilots = datasource2.getPilotsSerialized(race_id);
-        String racetimes = datasource2.getTimesSerialized(race_id, round);
-        datasource2.close();
-
-        String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
-
-        return data;
-    }
-
     protected String getJSONRaceData(int race_id, int round){
         RaceData datasource = new RaceData(mContext);
         datasource.open();
@@ -133,7 +114,16 @@ public class BaseExport extends Activity {
         RacePilotData datasource2 = new RacePilotData(mContext);
         datasource2.open();
         String racepilots = datasource2.getPilotsSerialized(race_id);
-        String racetimes = datasource2.getTimesSerializedExt(race_id, round); // TODO resolve conflicting use cases
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean extended_json_format = sharedPref.getBoolean("pref_extended_json_format", false);
+        String racetimes = "";
+        if (extended_json_format) {
+            racetimes = datasource2.getTimesSerializedExt(race_id, round);
+        } else {
+            racetimes = datasource2.getTimesSerialized(race_id, round);
+        }
+
         datasource2.close();
 
         String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);

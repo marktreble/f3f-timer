@@ -9,8 +9,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
@@ -411,7 +413,13 @@ public class BluetoothImportRace extends BaseImport {
     };
     
     protected void importRace(String data){
-        super.importRaceJSON(data);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        boolean extended_json_format = sharedPref.getBoolean("pref_extended_json_format", false);
+        if (extended_json_format) {
+            super.importRaceJSONExt(data);
+        } else {
+            super.importRaceJSON(data);
+        }
 
         closeSocket();
         mActivity.setResult(RESULT_OK);

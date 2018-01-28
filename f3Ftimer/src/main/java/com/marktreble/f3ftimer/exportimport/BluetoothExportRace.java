@@ -244,7 +244,7 @@ public class BluetoothExportRace extends BaseExport {
         Race r = datasource.getRace(race_id);
         datasource.close();
 
-        String data = super.getSerialisedRaceData(r.id, r.round);
+        String data = super.getJSONRaceData(r.id, r.round);
 
         byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
 

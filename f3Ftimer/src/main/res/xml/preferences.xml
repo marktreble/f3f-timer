@@ -203,6 +203,12 @@
             android:defaultValue="false" />
 
         <CheckBoxPreference
+            android:key="pref_extended_json_format"
+            android:title="Extended export/import JSON format"
+            android:summary="Use extended JSON format for export/import to/from file"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
             android:key="acra.enable"
             android:title="@string/pref_enable_acra"
             android:summaryOn="@string/pref_acra_enabled"

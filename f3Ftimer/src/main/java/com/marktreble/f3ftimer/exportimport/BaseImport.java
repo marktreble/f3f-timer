@@ -130,24 +130,7 @@ public class BaseImport extends Activity {
         }
     }
 
-    protected void importPilotsJSON(String data){
-        try {
-            JSONArray pilots = new JSONArray(data);
-
-            PilotData datasource = new PilotData(mContext);
-            datasource.open();
-
-            for (int i = 0; i < pilots.length(); i++) {
-                JSONObject p = pilots.optJSONObject(i);
-                Pilot pilot = new Pilot(p);
-                datasource.savePilot(pilot);
-            }
-        } catch (JSONException e){
-            e.printStackTrace();
-        }
-    }
-
-    protected void importRaceJSON1(String data){ // TODO resolve conflicting use cases
+    protected void importRaceJSONExt(String data){
         // Parse json and add to database
         Log.i("IMPORT", "JSON RACE DATA: "+ data);
 
@@ -215,6 +198,23 @@ public class BaseImport extends Activity {
                 }
             }
             datasource2.close();
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+    
+    protected void importPilotsJSON(String data){
+        try {
+            JSONArray pilots = new JSONArray(data);
+
+            PilotData datasource = new PilotData(mContext);
+            datasource.open();
+
+            for (int i = 0; i < pilots.length(); i++) {
+                JSONObject p = pilots.optJSONObject(i);
+                Pilot pilot = new Pilot(p);
+                datasource.savePilot(pilot);
+            }
         } catch (JSONException e){
             e.printStackTrace();
         }

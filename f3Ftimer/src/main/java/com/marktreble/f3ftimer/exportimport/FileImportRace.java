@@ -6,10 +6,12 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
@@ -160,7 +162,13 @@ public class FileImportRace extends BaseImport {
         if (extension.equals("json")) {
             String data = readFile(uri);
             if (!data.equals("")){
-                super.importRaceJSON1(data);
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                boolean extended_json_format = sharedPref.getBoolean("pref_extended_json_format", false);
+                if (extended_json_format) {
+                    super.importRaceJSONExt(data);
+                } else {
+                    super.importRaceJSON(data);
+                }
                 return true;
             }
         } else if (extension.equals("csv")) {

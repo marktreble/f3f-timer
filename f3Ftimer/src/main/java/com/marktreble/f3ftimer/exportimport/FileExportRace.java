@@ -85,10 +85,10 @@ public class FileExportRace extends BaseExport {
                 .setPositiveButton( "OK", new DialogInterface.OnClickListener() {
                     public void onClick( DialogInterface dialog, int clicked )
                     {
-                        if (mExportFileType >0) {
+                        if (mExportFileType >= 0) {
                             mDlg.dismiss();
-                        promptForSaveFolder();
-                    }
+                            promptForSaveFolder();
+                        }
                     }
                 } )
                 .show();
