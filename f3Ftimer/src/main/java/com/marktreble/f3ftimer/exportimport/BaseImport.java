@@ -170,10 +170,13 @@ public class BaseImport extends Activity {
             datasource2.open();
 
             // Import Pilots
+            ArrayList<Integer> pilot_new_ids = new ArrayList<>();
             for (int i=0; i<racepilots_json.length(); i++){
                 JSONObject p = racepilots_json.optJSONObject(i);
                 Pilot pilot = new Pilot(p);
+                pilot.id = pilot.pilot_id;
                 int new_id = (int)datasource2.addPilot(pilot, race_id);
+                pilot_new_ids.add(new_id);
             }
 
             // Import Race Pilot times
@@ -184,6 +187,7 @@ public class BaseImport extends Activity {
                     for (int k=0; k<pilots_json.length(); k++) {
                         JSONObject pilot_json = pilots_json.optJSONObject(k);
                         int p_id = pilot_json.optInt("id");
+                        p_id = pilot_new_ids.get(p_id - 1);
                         Pilot p = datasource2.getPilot(p_id, race_id);
                         p.race_id = race_id;
                         p.round = i+1;
