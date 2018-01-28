@@ -8,6 +8,7 @@ function completedRounds(){
 function render_completedrounds(){
     var last_complete_round = model.current_round - 1;
     if (model.race_status == 2) last_complete_round = model.current_round;
+
 	$('#race-name h2').html(model.race_name+" - Results by Round");
 
 	var list = $('div.completedrounds');

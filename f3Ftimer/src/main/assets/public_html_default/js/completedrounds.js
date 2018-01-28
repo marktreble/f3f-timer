@@ -10,12 +10,15 @@ function render_completedrounds(){
 
 	var list = $('div.completedrounds');
 
-	if (model.current_round == 1){
+    var last_complete_round = model.current_round - 1;
+    if (model.race_status == 2) last_complete_round = model.current_round;
+
+	if (last_complete_round < 1){
 		$(list).html("<h3>No rounds completed yet<h3>");
 		return;
 	}
 
-	for (r=1; r<model.current_round; r++){
+	for (r=1; r<=last_complete_round; r++){
 		li = createListItem("Round "+r.toString(), function(){
 			pushView(resultsForRound(), this);
 		});
@@ -77,7 +80,8 @@ function render_completedrounds_results(){
 		}
 	}
 	// Loop through times and calculate points
-	for (var p in times){
+	// TODO implement group scoring
+    for (var p in times){
 		pilot_time = times[p].time;
 		penalty = times[p].penalty;
 		var points = round2Fixed((fastest/pilot_time*1000)-penalty, 2);

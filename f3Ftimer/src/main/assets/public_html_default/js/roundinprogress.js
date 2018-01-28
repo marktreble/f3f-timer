@@ -34,6 +34,7 @@ function render_roundinprogress(){
 	}
 
 	// Loop through times and calculate points
+    // TODO implement group scoring
 	for (var p in times){
 		pilot_time = times[p].time;
 		penalty = times[p].penalty;

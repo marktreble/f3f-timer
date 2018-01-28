@@ -9,8 +9,11 @@ function render_leaderboard(){
 	$('#race-name h2').html("Leader Board");
 	
 	var list = $('div.leaderboard');
-	
-	if (model.current_round == 1){
+
+    var last_complete_round = model.current_round - 1;
+    if (model.race_status == 2) last_complete_round = model.current_round;
+
+	if (last_complete_round < 1){
 		$(list).html("<h3>No rounds completed yet<h3>");
 		return;
 	}
@@ -19,7 +22,8 @@ function render_leaderboard(){
 	var total_points = [];
 	
 	var times = [];
-	for (round = 0; round<model.current_round; round++){
+	// TODO implement group scoring
+	for (round = 0; round<last_complete_round; round++){
 		var fastest = 999;
 
 		times.push(round);
@@ -51,14 +55,16 @@ function render_leaderboard(){
 	}
 
 	var scores = [];
-	var num_discards = (model.current_round>3) ? ((model.current_round>14) ? 2 : 1) : 0;
+	var num_discards = (last_complete_round>3) ? ((last_complete_round>14) ? 2 : 1) : 0;
 	for (i=0; i<model.pilots.length; i++){
 		// Sort the individual pilot's round, so that discards can be removed
 		var pilot_points = [];
 		var pilot_penalties = 0;
-		for (round = 0; round<model.current_round-1; round++){
-			pilot_points.push(times[round][i].points);
-			pilot_penalties += parseInt(times[round][i].penalty, 10);
+		for (round = 0; round<last_complete_round; round++){
+			if (times[round].length >= i+1) {
+				pilot_points.push(times[round][i].points);
+				pilot_penalties += parseInt(times[round][i].penalty, 10);
+			}
 		}
 		pilot_points.sort(function(a, b){return b-a});
 		
