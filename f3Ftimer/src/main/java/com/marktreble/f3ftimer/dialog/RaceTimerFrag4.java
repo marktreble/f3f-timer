@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class RaceTimerFrag4 extends RaceTimerFrag {
 
@@ -90,7 +91,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
                 if (mClickedOnce) return;
                 mClickedOnce = true;
 				mStartPressed = true;
-	        	next(0);
+	        	next();
 	            
 	        }
 	    });
@@ -281,11 +282,11 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		a.sendBroadcast(i);
 	}
 		
-	public void next(int delayed) {
+	public void next() {
 		RaceTimerActivity a = (RaceTimerActivity) getActivity();
 		// Tell Driver to finalise the score
 		// Driver will post back run_finalised when finished
-		a.sendOrderedCommand("finalise", delayed);
+		a.sendOrderedCommand("finalise");
 	}
 
 	public void cont(){
@@ -295,10 +296,18 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
 		i.putExtra("com.marktreble.f3ftimer.value.state", 0);
 		a.sendBroadcast(i);
-
-		RaceTimerFrag5 f = new RaceTimerFrag5();
-		f.mFinalTime = mFinalTime;
-		a.getFragment(f, 5);
+		
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(a);
+		boolean automatic_progression = sharedPref.getBoolean("pref_automatic_pilot_progression", false);
+		if (automatic_progression) {
+			a.sendCommand("abort");
+			a.setResult(RaceActivity.RESULT_OK);
+			a.finish();
+		} else {
+			RaceTimerFrag5 f = new RaceTimerFrag5();
+			f.mFinalTime = mFinalTime;
+			a.getFragment(f, 5);
+		}
 	}
 	
     public void reflight(){
@@ -316,7 +325,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 		mClickedOnce = true;
 		if (!mStartPressed) {
 			mStartPressed = true;
-			next(1);
+			next();
 		}
 	}
  }

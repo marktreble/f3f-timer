@@ -43,6 +43,8 @@ public class RaceResultsService extends Service {
 	Integer mRid;
 	byte[] mOut;
 	long mLastRequestTime = 0;
+	
+	private String mResultsServerStyle;
 
 	private int state = 0;
 	private int currentPilotId = 0;
@@ -69,6 +71,9 @@ public class RaceResultsService extends Service {
         HTTP_HEADER_DATE_FORMAT.setTimeZone(new SimpleTimeZone(0, "GMT"));
         this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onLiveUpdate"));
         this.registerReceiver(onBroadcast1, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
+		this.registerReceiver(onBroadcast2, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
+		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		mResultsServerStyle = sharedPref.getString("pref_results_server_style", getResources().getStringArray(R.array.options_results_server_style)[0]);
     }
 		
 	@Override
@@ -86,6 +91,7 @@ public class RaceResultsService extends Service {
 		try {
 			this.unregisterReceiver(onBroadcast);
 			this.unregisterReceiver(onBroadcast1);
+			this.unregisterReceiver(onBroadcast2);
 		} catch (IllegalArgumentException e){
 			e.printStackTrace();
 		}
@@ -233,10 +239,7 @@ public class RaceResultsService extends Service {
 		private byte[] getStaticPage(String path, String ext){
 			byte[] response = null;
 			
-			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			String resultsServerStyle = sharedPref.getString("pref_results_server_style", getResources().getStringArray(R.array.options_results_server_style)[0]);
-			String resourcefile = "";
-			resourcefile = "public_html_"+resultsServerStyle+path;
+			String resourcefile = "public_html_"+mResultsServerStyle+path;
 			Log.i("HTTP REQUEST", resourcefile);
 			
 			AssetManager am = getAssets();
@@ -425,7 +428,7 @@ public class RaceResultsService extends Service {
 
     private BroadcastReceiver onBroadcast1 = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent) { //TODO fix
             if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
                 windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
                 windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
@@ -435,6 +438,24 @@ public class RaceResultsService extends Service {
             }
         }
     };
+
+	private BroadcastReceiver onBroadcast2 = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")){
+				Bundle extras = intent.getExtras();
+				String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
+				Log.d("UI->Service", data);
+				
+				if (data == null) return;
+				
+				if (data.equals("pref_results_server_style")) {
+					mResultsServerStyle = extras.getString("com.marktreble.f3ftimer.value");
+					return;
+				}
+			}
+		}
+	};
 
     // Binding for UI->Service Communication
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
@@ -579,17 +600,13 @@ public class RaceResultsService extends Service {
 
 			long unixTime = System.currentTimeMillis() / 1000L;
 
-			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			String resultsServerStyle = sharedPref.getString("pref_results_server_style", getResources().getStringArray(R.array.options_results_server_style)[0]);
-			String racetimes = "";
-			
 			RaceData datasource = new RaceData(RaceResultsService.this);
 			datasource.open();
 			Race race = datasource.getRace(mRid);
-
+			
 			String data = "[{";
 			
-			if (resultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[0])) {
+			if (mResultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[0])) {
 				RacePilotData datasource2 = new RacePilotData(RaceResultsService.this);
 				datasource2.open();
 				ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0);
@@ -657,11 +674,11 @@ public class RaceResultsService extends Service {
 				data += this.addParam("times", times_array, false) + ",";
 				data += this.addParam("penalties", penalties_array, false) + ",";
 				data += this.addParam("groups", groups_array, false);
-			} else if (resultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[1])) {
+			} else if (mResultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[1])) {
 				RacePilotData datasource2 = new RacePilotData(RaceResultsService.this);
 				datasource2.open();
 				int maxRound = datasource2.getMaxRound(race.id);
-				racetimes = datasource2.getTimesSerializedExt(mRid, maxRound);
+				String racetimes = datasource2.getTimesSerializedExt(mRid, maxRound);
 				String pilots = datasource2.getPilotsSerialized(mRid);
 				datasource2.close();
 				

@@ -162,7 +162,7 @@ public class FileImportRace extends BaseImport {
         if (extension.equals("json")) {
             String data = readFile(uri);
             if (!data.equals("")){
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
                 boolean extended_json_format = sharedPref.getBoolean("pref_extended_json_format", false);
                 if (extended_json_format) {
                     super.importRaceJSONExt(data);

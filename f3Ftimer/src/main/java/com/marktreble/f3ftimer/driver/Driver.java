@@ -95,11 +95,13 @@ public class Driver implements TTS.onInitListenerProxy {
 
 	private int[] soundArray;
 
-    private static boolean alreadyfinalised = false;
-	private static boolean alreadyReceivedFinalizeReq = false;
+    private static boolean mSentFinaliseIndication = false;
+	private static boolean mStartedDelayedFinalisation = false;
+	private static boolean mReceivedFinaliseRequest = false;
 
     protected boolean mWindMeasurement = true;
-
+	protected boolean mAutomaticProgression = false;
+	
 
 	public Driver(Context context){
 		mContext = context;
@@ -119,6 +121,7 @@ public class Driver implements TTS.onInitListenerProxy {
 			mWindMeasurement = extras.getBoolean("pref_wind_measurement", false);
 			mSetFullVolume = extras.getBoolean("pref_full_volume", true);
 			mAudibleWindWarning = extras.getBoolean("pref_audible_wind_warning", false);
+			mAutomaticProgression = extras.getBoolean("pref_automatic_pilot_progression", false);
     	}
 
     	// Listen for inputs from the UI
@@ -274,14 +277,14 @@ public class Driver implements TTS.onInitListenerProxy {
                 }
 
 				if (data.equals("abort")){
+					mSentFinaliseIndication = true; /* prevent that a pending delayed automatic progression handler sends a broadcast */
 					cancelWorkingTime();
 					((DriverInterface)mContext).sendAbort();
 					return;
 				}
 
                 if (data.equals("finalise")){
-                    int delayed = extras.getInt("com.marktreble.f3ftimer.delayed");
-                    runFinalised(delayed);
+					runFinalised();
 					return;
 				}
 
@@ -347,9 +350,13 @@ public class Driver implements TTS.onInitListenerProxy {
 
                 if (data.equals("pref_wind_measurement")) {
                     mWindMeasurement = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value");
-                    Log.d("TcpIoService", "pref_wind_measurement=" + mWindMeasurement);
                     return;
                 }
+				
+				if (data.equals("pref_automatic_pilot_progression")) {
+					mAutomaticProgression = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value");
+					return;
+				}
 
 				if (data.length()>2){
 					if (data.substring(0,2).equals("::"))
@@ -681,14 +688,24 @@ public class Driver implements TTS.onInitListenerProxy {
 			intent.putExtra("com.marktreble.f3ftimer.fastestFlightPilot", mFastestFlightPilot);
 		}
 		mContext.sendBroadcast(intent);
-        alreadyfinalised = false;
-		alreadyReceivedFinalizeReq = false;
+        mSentFinaliseIndication = false;
+		mStartedDelayedFinalisation = false;
+		mReceivedFinaliseRequest = false;
+		if (mAutomaticProgression) {
+			mHandler.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					Log.d(TAG, "POST BACK TO UI: automatic runFinalised() call");
+					runFinalised();
+				}
+			}, 500);
+		}
 	}
 	
-	public void runFinalised(int delayed) {
-		if (!alreadyfinalised) {
-			if (!alreadyReceivedFinalizeReq) {
-				alreadyReceivedFinalizeReq = true;
+	public void runFinalised() {
+		if (!mSentFinaliseIndication) {
+			if (!mReceivedFinaliseRequest) {
+				mReceivedFinaliseRequest = true;
 				// Save the time to the database
 				RacePilotData datasource1 = new RacePilotData(mContext);
 				datasource1.open();
@@ -757,32 +774,35 @@ public class Driver implements TTS.onInitListenerProxy {
 				intent2.putExtra("com.marktreble.f3ftimer.current_round", String.format("%d", mRnd));
 				intent2.putExtra("com.marktreble.f3ftimer.current_round_results", str_round_results);
 
-
 				mContext.sendBroadcast(intent2);
 				Log.d(TAG, "POST BACK TO EXTERNAL RESULTS: " + str_round_results);
 			}
-
-			if (delayed != 0) {
+			
+			/* Start delayed finalisation, if configured.
+			 * If the delayed finalisation has already been started then immediatly progress when a second request arrives
+			 * (the user pressed the accept button). */
+			if (mAutomaticProgression && !mStartedDelayedFinalisation) {
+				mStartedDelayedFinalisation = true;
 				// Post back to the UI (RaceTimerActivity) after timeout;
 				mHandler.postDelayed(new Runnable() {
 					@Override
 					public void run() {
-						if (!alreadyfinalised) {
-							alreadyfinalised = true;
+						if (!mSentFinaliseIndication) {
+							mSentFinaliseIndication = true;
 							Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
 							intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
 							mContext.sendOrderedBroadcast(intent, null);
-							Log.d(TAG, "POST BACK TO UI");
+							Log.d(TAG, "POST BACK TO UI: runFinalised");
 						}
 					}
 				}, 5000);
 			} else {
 				// Post back to the UI (RaceTimerActivity), when the user clicks the button before the timeout runs out;
-				alreadyfinalised = true;
+				mSentFinaliseIndication = true;
 				Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
 				intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
 				mContext.sendOrderedBroadcast(intent, null);
-				Log.d(TAG, "POST BACK TO UI");
+				Log.d(TAG, "POST BACK TO UI: runFinalised");
 			}
 		}
 	}

@@ -203,6 +203,12 @@
             android:defaultValue="false" />
 
         <CheckBoxPreference
+            android:key="pref_automatic_pilot_progression"
+            android:title="Automatic Pilot Progression"
+            android:summary="Automatically progress to next pilot after 5s when the flight is finalised"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
             android:key="pref_extended_json_format"
             android:title="Extended export/import JSON format"
             android:summary="Use extended JSON format for export/import to/from file"

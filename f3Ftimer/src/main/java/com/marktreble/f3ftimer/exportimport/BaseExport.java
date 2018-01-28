@@ -115,7 +115,7 @@ public class BaseExport extends Activity {
         datasource2.open();
         String racepilots = datasource2.getPilotsSerialized(race_id);
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean extended_json_format = sharedPref.getBoolean("pref_extended_json_format", false);
         String racetimes = "";
         if (extended_json_format) {

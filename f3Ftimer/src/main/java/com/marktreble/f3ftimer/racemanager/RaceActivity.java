@@ -323,7 +323,7 @@ public class RaceActivity extends ListActivity {
 
         boolean pref_usb_tethering = sharedPref.getBoolean("pref_usb_tether", false);
         if (pref_usb_tethering) {
-            if (!USB.setupUsbTethering(getApplicationContext())){
+            if (!USB.setupUsbTethering(mContext)){
                 // Enable tethering
                 Intent tetherSettings = new Intent();
                 tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
@@ -1258,7 +1258,7 @@ public class RaceActivity extends ListActivity {
     }
 
 	public boolean isServiceRunning(String serviceClassName){
-        final ActivityManager activityManager = (ActivityManager)getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
+        final ActivityManager activityManager = (ActivityManager)mContext.getSystemService(Context.ACTIVITY_SERVICE);
         final List<ActivityManager.RunningServiceInfo> services;
         if (activityManager != null) {
             services = activityManager.getRunningServices(Integer.MAX_VALUE);

@@ -89,7 +89,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
 
     	Preference pref_results_server = findPreference("pref_results_server");
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
         boolean wifi_hotspot = sharedPreferences.getBoolean("pref_wifi_hotspot", false);
         String ip = Wifi.getIPAddress(true);
     	if (wifi_hotspot) {
@@ -138,6 +138,7 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
             }
             if (key.equals("pref_results_server_style")) {
                 setListSummary("pref_results_server_style", R.array.options_results_server_style);
+                sendStringValueToService(key, sharedPreferences.getString(key, ""));
             }
         }
 
@@ -162,7 +163,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
          || key.equals("pref_usb_tether")
          || key.equals("pref_audible_wind_warning")
          || key.equals("pref_full_volume")
-         || key.equals("pref_extended_json_format")){
+         || key.equals("pref_extended_json_format")
+         || key.equals("pref_automatic_pilot_progression")){
 		    sendBooleanValueToService(key, sharedPreferences.getBoolean(key, false));
     	}
 
