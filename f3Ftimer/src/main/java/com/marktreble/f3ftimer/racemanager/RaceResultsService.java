@@ -428,13 +428,22 @@ public class RaceResultsService extends Service {
 
     private BroadcastReceiver onBroadcast1 = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) { //TODO fix
+        public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
-                windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
-                windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
-                windAngleRelative = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_relative");
-                windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
-                windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
+            	String windValues = intent.getStringExtra("com.marktreble.f3ftimer.value.wind_values");
+				String[] windValuesSplit = windValues.split(".: ");
+				windLegal = !windValues.contains("illegal");
+				try {
+					windAngleAbsolute = Float.parseFloat(windValuesSplit[1].substring(0, windValuesSplit[1].indexOf("°")));
+					windAngleRelative = Float.parseFloat(windValuesSplit[2].substring(0, windValuesSplit[2].indexOf("°")));
+					windSpeed = Float.parseFloat(windValuesSplit[3].substring(0, windValuesSplit[3].indexOf("m/s")));
+					windSpeedCounter = 0;
+					if (windValues.contains("(")) {
+						windSpeedCounter = Integer.parseInt(windValues.substring(windValues.indexOf("(") + 1, windValues.indexOf("s)")));
+					}
+				} catch (NullPointerException | ArrayIndexOutOfBoundsException | NumberFormatException e) {
+					e.printStackTrace();
+				}
             }
         }
     };

@@ -32,7 +32,7 @@ function render_liveinfo(){
     if (modelLive.current_wind_legal == "true" && parseInt(modelLive.current_wind_speed_counter) == 20) {
         cols1 = "Wind:#" + modelLive.current_wind_angle_absolute+" °#"+modelLive.current_wind_angle_relative+" °#"+modelLive.current_wind_speed+" m/s#legal";
     } else if (modelLive.current_wind_legal == "true") {
-        cols1 = "Wind:#" + modelLive.current_wind_angle_absolute+" °#"+modelLive.current_wind_angle_relative+" °#"+modelLive.current_wind_speed+" m/s#illegal ("+modelLive.current_wind_speed_counter+"s)";
+        cols1 = "Wind:#" + modelLive.current_wind_angle_absolute+" °#"+modelLive.current_wind_angle_relative+" °#"+modelLive.current_wind_speed+" m/s#illegal ("+modelLive.current_wind_speed_counter+" s)";
     } else {
         cols1 = "Wind:#" + modelLive.current_wind_angle_absolute+" °#"+modelLive.current_wind_angle_relative+" °#"+modelLive.current_wind_speed+" m/s#illegal";
     }

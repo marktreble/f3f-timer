@@ -13,10 +13,14 @@ import android.util.Log;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
+import java.text.DecimalFormat;
+
 public class SoftBuzzerService extends Service implements DriverInterface, Thread.UncaughtExceptionHandler {
 
     private static final String TAG = "SoftBuzzerService";
     
+    private static DecimalFormat mNumberFormatter = new DecimalFormat("+0.00;-0.00");
+
 	private Driver mDriver;
 
     public int mTimerStatus = 0;
@@ -255,22 +259,21 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     public String formatWindValues(boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
         String str = "";
         if (windLegal && windSpeedCounter == 20) {
-            str = String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
+            str += String.format("a: %s°", mNumberFormatter.format(windAngleAbsolute)).replace(",",".")
+                    + String.format(" r: %s°", mNumberFormatter.format(windAngleRelative)).replace(",",".")
+                    + String.format(" v: %.2fm/s", windSpeed).replace(",",".")
                     + "   legal";
         } else if (windLegal) {
-            str = String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
-                    + String.format(" legal (%d s)", windSpeedCounter);
+            str += String.format("a: %s°", mNumberFormatter.format(windAngleAbsolute)).replace(",",".")
+                    + String.format(" r: %s°", mNumberFormatter.format(windAngleRelative)).replace(",",".")
+                    + String.format(" v: %.2fm/s", windSpeed).replace(",",".")
+                    + String.format("   legal (%ds)", windSpeedCounter);
         } else {
-            str = String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
+            str += String.format("a: %s°", mNumberFormatter.format(windAngleAbsolute)).replace(",",".")
+                    + String.format(" r: %s°", mNumberFormatter.format(windAngleRelative)).replace(",",".")
+                    + String.format(" v: %.2fm/s", windSpeed).replace(",",".")
                     + " illegal";
         }
-
         return str;
     }
 }

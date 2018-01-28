@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.text.DecimalFormat;
 
 import static java.lang.Thread.sleep;
 
@@ -45,7 +46,9 @@ public class TcpIoService extends Service implements DriverInterface {
 
 	private static final String ICN_CONN = "on_rasp";
 	private static final String ICN_DISCONN = "off_rasp";
-
+	
+	private static DecimalFormat mNumberFormatter = new DecimalFormat("+0.00;-0.00");
+	
 	private Intent mIntent;
 
 	private int mTimerStatus = 0;
@@ -629,19 +632,19 @@ public class TcpIoService extends Service implements DriverInterface {
 	public String formatWindValues(boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
 		String str = "";
 		if (windLegal && windSpeedCounter == 20) {
-			str = String.format(" a: %.2f°", windAngleAbsolute)
-					+ String.format(" r: %.2f°", windAngleRelative)
-					+ String.format(" %.2fm/s", windSpeed)
+			str += String.format("a: %s°", mNumberFormatter.format(windAngleAbsolute)).replace(",",".")
+					+ String.format(" r: %s°", mNumberFormatter.format(windAngleRelative)).replace(",",".")
+					+ String.format(" v: %.2fm/s", windSpeed).replace(",",".")
 					+ "   legal";
 		} else if (windLegal) {
-			str = String.format(" a: %.2f°", windAngleAbsolute)
-					+ String.format(" r: %.2f°", windAngleRelative)
-					+ String.format(" %.2fm/s", windSpeed)
-					+ String.format(" legal (%d s)", windSpeedCounter);
+			str += String.format("a: %s°", mNumberFormatter.format(windAngleAbsolute)).replace(",",".")
+					+ String.format(" r: %s°", mNumberFormatter.format(windAngleRelative)).replace(",",".")
+					+ String.format(" v: %.2fm/s", windSpeed).replace(",",".")
+					+ String.format("   legal (%ds)", windSpeedCounter);
 		} else {
-			str = String.format(" a: %.2f°", windAngleAbsolute)
-					+ String.format(" r: %.2f°", windAngleRelative)
-					+ String.format(" %.2fm/s", windSpeed)
+			str += String.format("a: %s°", mNumberFormatter.format(windAngleAbsolute)).replace(",",".")
+					+ String.format(" r: %s°", mNumberFormatter.format(windAngleRelative)).replace(",",".")
+					+ String.format(" v: %.2fm/s", windSpeed).replace(",",".")
 					+ " illegal";
 		}
 		return str;
