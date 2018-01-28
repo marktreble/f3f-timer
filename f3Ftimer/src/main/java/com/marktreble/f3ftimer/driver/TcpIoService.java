@@ -230,12 +230,6 @@ public class TcpIoService extends Service implements DriverInterface {
 		return null;
 	}
 
-	private void callbackToUI(String cmd){
-		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-		i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
-		this.sendBroadcast(i);
-	}
-
 	private class SendThread extends Thread {
 		private Handler handler;
 		private Looper myLooper;
@@ -650,8 +644,6 @@ public class TcpIoService extends Service implements DriverInterface {
 					+ String.format(" %.2fm/s", windSpeed)
 					+ " illegal";
 		}
-
 		return str;
 	}
-
 }

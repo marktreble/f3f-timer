@@ -153,8 +153,7 @@ public class NewRaceFrag3 extends ListFragment {
 		rotate.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				//TODO
-				// This would be much better done with an AlertDialog rater than an activity
+				// TODO: This would be much better done with an AlertDialog rater than an activity
 				// Code would be simpler & shorter, and it would be visually better from a UI perspective.
 				Intent intent = new Intent(getContext(), RotateEditActivity.class);
 				startActivityForResult(intent, 1);

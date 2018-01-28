@@ -807,13 +807,13 @@ public class Driver implements TTS.onInitListenerProxy {
                 i.putExtra("com.marktreble.f3ftimer.service_callback", "wind_illegal");
                 mContext.sendBroadcast(i);
 
-                if (mSpeechFXon) {
-					// use contest language instead of pilot language here, so that the operator can understand this
+                if (mSpeechFXon && mAudibleWindWarning) {
+					// don't use contest language instead of pilot language here,
+					// because switching TTS language when a pilot is flying could delay crucial announcements
+					// (like the count down of climb out time)
 					String text = Languages.useLanguage(mContext, mDefaultSpeechLang).getString(R.string.wind_warning);
 					Languages.useLanguage(mContext, mDefaultLang);
-					setSpeechFXLanguage(mDefaultSpeechLang);
 					speak(text, TextToSpeech.QUEUE_ADD);
-					setSpeechFXLanguage(mPilotLang);
 				}
             }
         }
