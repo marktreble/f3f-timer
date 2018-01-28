@@ -149,7 +149,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
            		row.setBackgroundColor(getResources().getColor(R.color.background));
            		
                 TextView time = (TextView) row.findViewById(R.id.time);
-           		time.setText(String.format("%.2f", p.points));
+           		time.setText(String.format("%.2f", p.points).replace(",", "."));
 
                 TextView points = (TextView) row.findViewById(R.id.points);
            		points.setText(String.format("%.2f", mArrScores.get(position)));

@@ -43,8 +43,8 @@ public class TcpIoService extends Service implements DriverInterface {
 	private static final String FT_TIME = "T";
 	private static final String FT_SPEECH = "X";
 
-	private static final String ICN_CONN = "on";
-	private static final String ICN_DISCONN = "off";
+	private static final String ICN_CONN = "on_rasp";
+	private static final String ICN_DISCONN = "off_rasp";
 
 	private Intent mIntent;
 
@@ -471,15 +471,15 @@ public class TcpIoService extends Service implements DriverInterface {
 									break;
 								case FT_CANCEL:
 									Log.d(TAG, "received: \"" + strbuf + "\"");
-									mDriver.cancelDialog();
+									cancelDialog();
 									mReceivedAbort = true;
-									mDriver.abort();
+									sendAbort();
 									break;
 								case FT_CANCEL_ZERO:
 									Log.d(TAG, "received: \"" + strbuf + "\"");
-									mDriver.scoreZeroAndCancelDialogAndNextPilot();
+									scoreZeroAndCancelDialogAndNextPilot();
 									mReceivedAbort = true;
-									mDriver.abort();
+									sendAbort();
 									break;
 								case FT_PENALTY:
 									Log.d(TAG, "received: \"" + strbuf + "\"");
@@ -563,14 +563,10 @@ public class TcpIoService extends Service implements DriverInterface {
 												mDriver.windLegal();
 												windLegal = true;
 											}
-											Intent i2 = new Intent("com.marktreble.f3ftimer.onUpdate");
-											i2.putExtra("com.marktreble.f3ftimer.value.wind_values", "");
-											i2.putExtra("com.marktreble.f3ftimer.value.wind_legal", windLegal);
-											i2.putExtra("com.marktreble.f3ftimer.value.wind_angle_absolute", wind_angle_absolute);
-											i2.putExtra("com.marktreble.f3ftimer.value.wind_angle_relative", wind_angle_relative);
-											i2.putExtra("com.marktreble.f3ftimer.value.wind_speed", wind_speed);
-											i2.putExtra("com.marktreble.f3ftimer.value.wind_speed_counter", 20 - mWindSpeedCounterSeconds);
-											sendBroadcast(i2);
+											Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+											String wind_data = formatWindValues(windLegal, wind_angle_absolute, wind_angle_relative, wind_speed, 20- mWindSpeedCounterSeconds);
+											i.putExtra("com.marktreble.f3ftimer.value.wind_values", wind_data);
+											sendBroadcast(i);
 										} catch (NumberFormatException e) {
 											if (!stopConnectThread) e.printStackTrace();
 										}
@@ -620,4 +616,42 @@ public class TcpIoService extends Service implements DriverInterface {
 			if (!stopConnectThread) e1.printStackTrace();
 		}
 	}
+
+	private void cancelDialog(){
+		mDriver.cancelWorkingTime();
+		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+		i.putExtra("com.marktreble.f3ftimer.service_callback", "cancel");
+		sendBroadcast(i);
+	}
+
+	private void scoreZeroAndCancelDialogAndNextPilot(){
+		mDriver.cancelWorkingTime();
+		Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+		i.putExtra("com.marktreble.f3ftimer.service_callback", "score_zero_and_cancel");
+		i.putExtra("com.marktreble.f3ftimer.pilot_id", mDriver.mPid);
+		sendBroadcast(i);
+	}
+
+	public String formatWindValues(boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
+		String str = "";
+		if (windLegal && windSpeedCounter == 20) {
+			str = String.format(" a: %.2f°", windAngleAbsolute)
+					+ String.format(" r: %.2f°", windAngleRelative)
+					+ String.format(" %.2fm/s", windSpeed)
+					+ "   legal";
+		} else if (windLegal) {
+			str = String.format(" a: %.2f°", windAngleAbsolute)
+					+ String.format(" r: %.2f°", windAngleRelative)
+					+ String.format(" %.2fm/s", windSpeed)
+					+ String.format(" legal (%d s)", windSpeedCounter);
+		} else {
+			str = String.format(" a: %.2f°", windAngleAbsolute)
+					+ String.format(" r: %.2f°", windAngleRelative)
+					+ String.format(" %.2fm/s", windSpeed)
+					+ " illegal";
+		}
+
+		return str;
+	}
+
 }

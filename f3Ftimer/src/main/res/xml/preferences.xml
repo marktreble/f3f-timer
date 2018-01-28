@@ -51,12 +51,6 @@
         android:title="@string/audio"
         android:persistent="false">
         <CheckBoxPreference
-            android:key="pref_buzzer"
-            android:title="Buzzer"
-            android:summary="Play buzzer sound on the android device"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
             android:key="pref_voice"
             android:title="Voice Synthesis"
             android:summary="Use voice synthesis for CD calls"
@@ -66,18 +60,76 @@
             android:key="pref_voice_lang"
             android:title="Language for Voice Synthesis"
             android:dependency="pref_voice" />
+
+        <CheckBoxPreference
+            android:key="pref_full_volume"
+            android:title="Set Volume Automatically"
+            android:summary="Always keep volume at full"
+            android:defaultValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="button_other"
-        android:title="@string/other_settings"
+        android:key="button_sound"
+        android:title="@string/soft_buzz"
+        android:persistent="false">
+        <CheckBoxPreference
+            android:key="pref_buzzer"
+            android:title="Buzzer"
+            android:summary="Play buzzer sound on the android device"
+            android:defaultValue="false" />
+
+        <ListPreference
+            android:key="pref_buzz_off_course"
+            android:title="@string/snd_off_course"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+            android:defaultValue="@string/whistle" />
+
+        <ListPreference
+            android:key="pref_buzz_on_course"
+            android:title="@string/snd_on_course"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+            android:defaultValue="@string/whistle" />
+
+        <ListPreference
+            android:key="pref_buzz_turn"
+            android:title="@string/snd_turn"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+            android:defaultValue="@string/whistle" />
+
+        <ListPreference
+            android:key="pref_buzz_turn9"
+            android:title="@string/snd_turn9"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+            android:defaultValue="@string/whistle" />
+
+        <ListPreference
+            android:key="pref_buzz_penalty"
+            android:title="@string/snd_penalty"
+            android:dependency="pref_buzzer"
+            android:entries="@array/options_sounds"
+            android:entryValues="@array/options_sounds"
+             android:defaultValue="@string/beep" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="button_wind"
+        android:title="@string/wind_meter_settings"
         android:persistent="false">
 
         <CheckBoxPreference
             android:id="@+id/wind_measurement"
             android:defaultValue="true"
             android:key="pref_wind_measurement"
-            android:summary="Enable/Disable wind measurement"
+            android:summary="Enable wind measurement"
             android:title="@string/wind_measurement"/>
 
         <EditTextPreference
@@ -89,28 +141,22 @@
             android:title="@string/wind_angle_offset"/>
 
         <CheckBoxPreference
-            android:key="pref_manual_entry"
-            android:title="Manual Entry"
-            android:summary="Allow times to be entered manually"
-            android:defaultValue="false" />
-
-        <CheckBoxPreference
-            android:key="acra.enable"
-            android:title="@string/pref_enable_acra"
-            android:summaryOn="@string/pref_acra_enabled"
-            android:summaryOff="@string/pref_acra_disabled"
-            android:defaultValue="true"/>
+            android:id="@+id/audible_wind_warning"
+            android:defaultValue="false"
+            android:key="pref_audible_wind_warning"
+            android:summary="Enable audible wind warning"
+            android:title="@string/wind_warning_audible"/>
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="button_results"
-        android:title="@string/results_settings"
+        android:title="@string/external_results_http"
         android:persistent="false">
 
         <CheckBoxPreference
             android:key="pref_results_server"
             android:title="Run Results Server"
-            android:summary="Serve results per HTTP"
+            android:summary="Serve results over HTTP"
             android:defaultValue="false" />
 
         <ListPreference
@@ -144,4 +190,24 @@
             android:title="Paired Device to use as external display"
             android:dependency="pref_results_display" />
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="button_other"
+        android:title="@string/other_settings"
+        android:persistent="false">
+
+        <CheckBoxPreference
+            android:key="pref_manual_entry"
+            android:title="Manual Entry"
+            android:summary="Allow times to be entered manually"
+            android:defaultValue="false" />
+
+        <CheckBoxPreference
+            android:key="acra.enable"
+            android:title="@string/pref_enable_acra"
+            android:summaryOn="@string/pref_acra_enabled"
+            android:summaryOff="@string/pref_acra_disabled"
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+
 </PreferenceScreen>

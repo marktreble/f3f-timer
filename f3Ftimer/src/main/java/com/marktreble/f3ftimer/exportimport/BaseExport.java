@@ -23,6 +23,10 @@ import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
  */
 public class BaseExport extends Activity {
 
+    final CharSequence[] filetypes = {"json", "csv"};
+    final static int EXPORT_FILE_TYPE_JSON = 0;
+    final static int EXPORT_FILE_TYPE_CSV = 1;
+
     private static final int ACTION_PICK_FOLDER = 1;
 
     Context mContext;
@@ -119,7 +123,7 @@ public class BaseExport extends Activity {
         return data;
     }
 
-    protected String getSerialisedRaceDataFile(int race_id, int round){
+    protected String getJSONRaceData(int race_id, int round){
         RaceData datasource = new RaceData(mContext);
         datasource.open();
         String race = datasource.getSerialized(race_id);
@@ -129,7 +133,7 @@ public class BaseExport extends Activity {
         RacePilotData datasource2 = new RacePilotData(mContext);
         datasource2.open();
         String racepilots = datasource2.getPilotsSerialized(race_id);
-        String racetimes = datasource2.getTimesSerializedExt(race_id, round);
+        String racetimes = datasource2.getTimesSerializedExt(race_id, round); // TODO resolve conflicting use cases
         datasource2.close();
 
         String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
@@ -137,7 +141,41 @@ public class BaseExport extends Activity {
         return data;
     }
 
-    protected String getSerialisedPilotData(){
+    protected String getJSONPilotData(){
+        PilotData datasource = new PilotData(mContext);
+        datasource.open();
+        String pilots = datasource.getSerialized();
+        datasource.close();
+
+        return pilots;
+
+    }
+
+    protected String getCSVRaceData(int race_id, int round){
+        //TODO
+        // Currently outputting JSON!
+        // CSV Format to be determined
+        RaceData datasource = new RaceData(mContext);
+        datasource.open();
+        String race = datasource.getSerialized(race_id);
+        String racegroups = datasource.getGroupsSerialized(race_id, round);
+        datasource.close();
+
+        RacePilotData datasource2 = new RacePilotData(mContext);
+        datasource2.open();
+        String racepilots = datasource2.getPilotsSerialized(race_id);
+        String racetimes = datasource2.getTimesSerialized(race_id, round);
+        datasource2.close();
+
+        String data = String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
+
+        return data;
+    }
+
+    protected String getCSVPilotData(){
+        //TODO
+        // Currently outputting JSON!
+        // CSV Format to be determined
         PilotData datasource = new PilotData(mContext);
         datasource.open();
         String pilots = datasource.getSerialized();

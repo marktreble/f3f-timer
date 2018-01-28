@@ -159,13 +159,13 @@ public class FileImportPilots extends BaseImport {
         if (extension.equals("json")) {
             String data = readFile(uri);
             if (!data.equals("")){
-                super.importPilotsJson(data);
+                super.importPilotsJSON(data);
                 return true;
             }
         } else if (extension.equals("csv")) {
             String data = readFile(uri);
             if (!data.equals("")){
-                super.importPilotsCsv(data);
+                super.importPilotsCSV(data);
                 return true;
             }
         }

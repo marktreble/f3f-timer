@@ -14,6 +14,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.media.TTS;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -138,7 +139,7 @@ public class Languages {
 	    return new Locale(l,c);
 	}
 
-	public static void getAvailableTtsVoiceLanguages(Context context, TextToSpeech mTts, ArrayList<Locale> availableLocales) {
+	public static void getAvailableTtsVoiceLanguages(Context context, TTS mTts, ArrayList<Locale> availableLocales) {
 		// Populate pref_voice_lang with installed voices
 		String[] languages = Languages.getAvailableLanguages(context);
 
@@ -152,7 +153,7 @@ public class Languages {
 				locale = new Locale(lsa[0], lsa[1]);
 				try {
 					if (!locale.getISO3Country().equals("")) {
-						int ttsres = mTts.isLanguageAvailable(locale);
+						int ttsres = mTts.ttsengine().isLanguageAvailable(locale);
 						if (ttsres == TextToSpeech.LANG_COUNTRY_AVAILABLE) {
 							boolean hasLang = false;
 							for (String lang : languages) {

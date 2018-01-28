@@ -4,12 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-
-
-import com.marktreble.f3ftimer.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +25,8 @@ import okhttp3.Response;
 /**
  * Created by marktreble on 04/01/2016.
  */
+
+
 public class API {
 
     private static final String TAG = "APIDEBUG";
@@ -222,14 +220,18 @@ public class API {
                     return;
                 }
             } else {
-                String success = response.substring(0,1);
-
+                String success = "";
                 JSONObject o = new JSONObject();
-                try {
-                    o.put("data", response.substring(1).trim());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+
+                if (response != null && response.length()>0) {
+                    success = response.substring(0, 1);
+                    try {
+                        o.put("data", response.substring(1).trim());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
+
                 if (success.equals("1")){
                     mCallback.onAPISuccess(request, o);
                 } else {

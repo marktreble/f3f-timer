@@ -1,5 +1,6 @@
 package com.marktreble.f3ftimer.dialog;
 
+
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -11,7 +12,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -21,7 +21,7 @@ import android.view.ViewGroup;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.languages.Languages;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
+import com.marktreble.f3ftimer.media.TTS;
 import com.marktreble.f3ftimer.wifi.Wifi;
 
 import java.util.ArrayList;
@@ -29,44 +29,31 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener, TextToSpeech.OnInitListener {
+public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener, TTS.onInitListenerProxy {
 	
-	private TextToSpeech mTts;
-	private String mCaller;
+	private TTS mTts;
 
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+		mTts = TTS.sharedTTS(getActivity(), this);
+
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
-
-        Intent intent = getActivity().getIntent(); // gets the previously created intent
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            mCaller = extras.getString("caller");
-            if (mCaller != null && mCaller.equals("racelistactivity")) {
-                findPreference("pref_voice_lang").setEnabled(true);
-                mTts = new TextToSpeech(getActivity(), this);
-            } else {
-                // disable changing voice
-                findPreference("pref_voice_lang").setEnabled(false);
-            }
-        }
     }
 
-    @Override
+  @Override
     public void onDestroy(){
         super.onDestroy();
-        if (mCaller.equals("racelistactivity")) {
-            mTts.stop();
-            mTts.shutdown();
+    	if (mTts != null){
+    	    mTts.release();
+    	    mTts = null;
         }
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (view!=null)
             view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_dialog));
@@ -81,10 +68,8 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         setInputSourceActiveFields();
         setBTDeviceSummary("pref_input_src_device");
         setLangSummary("pref_voice_lang");
-        setStringSummary("pref_input_tcpio_ip");
-        setStringSummary("pref_wind_angle_offset");
-        setStringSummary("pref_wind_measurement");
         setStringSummary("pref_usb_baudrate");
+        setStringSummary("pref_input_tcpio_ip");
         setListSummary("pref_input_src", R.array.InputSources);
         setListSummary("pref_usb_stopbits", R.array.options_stopbits);
         setListSummary("pref_usb_databits", R.array.options_databits);
@@ -92,16 +77,25 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         setListSummary("pref_results_server_style", R.array.options_results_server_style);
         setBTDeviceSummary("pref_external_display");
 
+        setStringSummary("pref_wind_angle_offset");
+        setStringSummary("pref_wind_measurement");
+        
+        setListSummary("pref_buzz_off_course", R.array.options_sounds);
+        setListSummary("pref_buzz_on_course", R.array.options_sounds);
+        setListSummary("pref_buzz_turn", R.array.options_sounds);
+        setListSummary("pref_buzz_turn9", R.array.options_sounds);
+        setListSummary("pref_buzz_penalty", R.array.options_sounds);
+
+
     	Preference pref_results_server = findPreference("pref_results_server");
 
-        Preference pref_wifi_hotspot = findPreference("pref_wifi_hotspot");
-        String ip = RaceActivity.getIPAddress(true);
-    	if (pref_wifi_hotspot.isEnabled()) {
-            if (!Wifi.canEnableWifiHotspot(getActivity())) {
-                pref_results_server.setSummary("Broadcast results over wifi (http://" + ip + ":8080)\"\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
-            }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        boolean wifi_hotspot = sharedPreferences.getBoolean("pref_wifi_hotspot", false);
+        String ip = Wifi.getIPAddress(true);
+    	if (wifi_hotspot) {
+            pref_results_server.setSummary("Broadcasting results over wifi (http://" + ip + ":8080)\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
         } else {
-        	pref_results_server.setSummary("Broadcast results over wifi (http://" + ip + ":8080)");
+        	pref_results_server.setSummary("Serve results over HTTP (http://" + ip + ":8080)");
         }
 
 		return view;
@@ -112,6 +106,12 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         // Populate pref_voice_lang with installed voices
         populateVoices();
     }
+
+    public void onStart(String utteranceId){ }
+
+    public void onDone(String utteranceId){ }
+
+    public void onError(String utteranceId){ }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
     	Intent i;
@@ -142,22 +142,46 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         }
 
         // Callbacks to input driver
+    
+        if (key.equals("pref_wifi_hotspot")) {
+            boolean wifi_hotspot = sharedPreferences.getBoolean(key, false);
+            Preference pref_results_server = findPreference("pref_results_server");
+            String ip = Wifi.getIPAddress(true);
+            if (wifi_hotspot) {
+                pref_results_server.setSummary("Broadcasting results over wifi (http://" + ip + ":8080)\nYour device may not support this.\nYou will need to enable 'portable wifi hotspot' manually in your settings app.");
+            } else {
+                pref_results_server.setSummary("Serve results over HTTP (http://" + ip + ":8080)");
+            }
+            sendBooleanValueToService(key, sharedPreferences.getBoolean(key, false));
+        }
         
-    	if (key.equals("pref_buzzer") 
-     	 || key.equals("pref_voice") 
-    	 || key.equals("pref_results_server")
+        if (key.equals("pref_buzzer")
+     	 || key.equals("pref_voice")
+         || key.equals("pref_results_server")
          || key.equals("pref_wind_measurement")
-         || key.equals("pref_usb_tether")){
-            setStringSummary(key);
-            // Send to Service
-    		i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
-    		i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
-    		i.putExtra("com.marktreble.f3ftimer.value", sharedPreferences.getBoolean(key, true));
-    		getActivity().sendBroadcast(i);
+         || key.equals("pref_usb_tether")
+         || key.equals("pref_audible_wind_warning")
+         || key.equals("pref_full_volume")){
+		    sendBooleanValueToService(key, sharedPreferences.getBoolean(key, false));
     	}
+
+        if (key.equals("pref_usb_baudrate")
+                || key.equals("pref_input_tcpio_ip")){
+            setStringSummary(key);
+            sendStringValueToService(key, sharedPreferences.getString(key, ""));
+        }
 
         if (key.equals("pref_input_tcpio_ip")) {
             setStringSummary(key);
+            sendStringValueToService(key, sharedPreferences.getString(key, ""));
+        }
+
+        if (key.equals("pref_buzz_off_course")
+         || key.equals("pref_buzz_on_course")
+         || key.equals("pref_buzz_turn")
+         || key.equals("pref_buzz_turn9")
+         || key.equals("pref_buzz_penalty")) {
+            setListSummary(key, R.array.options_sounds);
             sendStringValueToService(key, sharedPreferences.getString(key, ""));
         }
 
@@ -213,29 +237,42 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
         getActivity().sendBroadcast(i);
     }
 
+    private void sendBooleanValueToService(String key, boolean value) {
+        Intent i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
+        i.putExtra("com.marktreble.f3ftimer.value", value);
+        getActivity().sendBroadcast(i);
+    }
+
     private void setInputSourceActiveFields(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String inputSource = sharedPref.getString("pref_input_src", "");
-
-        /* by default disable usb and IP settings */
-        findPreference("pref_input_tcpio_ip").setEnabled(false);
-
-        findPreference("pref_usb_baudrate").setEnabled(false);
-        findPreference("pref_usb_stopbits").setEnabled(false);
-        findPreference("pref_usb_databits").setEnabled(false);
-        findPreference("pref_usb_parity").setEnabled(false);
-
         if (inputSource.equals(getString(R.string.BLUETOOTH_HC_05))){
             // BT - Hide baud rate etc.., and show device picker
+	        findPreference("pref_input_tcpio_ip").setEnabled(false);
+	        findPreference("pref_usb_baudrate").setEnabled(false);
+	        findPreference("pref_usb_stopbits").setEnabled(false);
+	        findPreference("pref_usb_databits").setEnabled(false);
+	        findPreference("pref_usb_parity").setEnabled(false);
+
             findPreference("pref_input_src_device").setEnabled(true);
         } else if (inputSource.equals(getString(R.string.Demo))) {
             // Demo mode - hide all options
+            findPreference("pref_input_tcpio_ip").setEnabled(false);
+            findPreference("pref_usb_baudrate").setEnabled(false);
+            findPreference("pref_usb_stopbits").setEnabled(false);
+            findPreference("pref_usb_databits").setEnabled(false);
+            findPreference("pref_usb_parity").setEnabled(false);
+
             findPreference("pref_input_src_device").setEnabled(false);
-        } else if (inputSource.equals(getString(R.string.TCP_IO))) {
-            findPreference("pref_input_src_device").setEnabled(true);
-            findPreference("pref_input_tcpio_ip").setEnabled(true);
         } else {
             // USB - Hide device picker, show baud rate etc..
+            if (inputSource.equals(getString(R.string.TCP_IO))) {
+                findPreference("pref_input_tcpio_ip").setEnabled(true);
+            } else {
+                findPreference("pref_input_tcpio_ip").setEnabled(false);
+            }
+
             findPreference("pref_usb_baudrate").setEnabled(true);
             findPreference("pref_usb_stopbits").setEnabled(true);
             findPreference("pref_usb_databits").setEnabled(true);

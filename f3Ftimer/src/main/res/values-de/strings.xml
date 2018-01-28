@@ -90,7 +90,6 @@
     <string name="finish_race">Rennen abschließen</string>
     <string name="wind_angle_offset">Hangausrichtung in Grad</string>
     <string name="enter_rotate_offset">Anzahl der verschobenen Positionen</string>
-    <string name="interrupt">Unterbrechen</string>
     <string name="wind_measurement">Wind Messung</string>
     <string name="menu_show_round_timeout">Zeige Rundentimeout</string>
     <string name="menu_scrub_round_confirm">Sind Sie sicher, dass Sie die Runde/Gruppe streichen wollen?</string>

@@ -29,8 +29,13 @@ function render_scores(){
 		return;
 	}
 
+	var model_pilots_index_map = new Map();
+	for (var i in model.pilots) {
+		model_pilots_index_map.set(model.pilots[i].id, i);
+	}
+
 	// Add html elements
-	// get end score order
+	// get final score
 	var sub_totals_final = subTotals(last_complete_round);
 
 	cols1.push("Total");
@@ -79,7 +84,7 @@ function render_scores(){
 						} else {
 							cols3 = rows1[p];
 						}
-                        var pilot_status = model.pilots[sub_totals_pilots_index_map.get(String(sub_totals_final[p].pilot_id))].status;
+                        var pilot_status = model.pilots[model_pilots_index_map.get(model.racetimes[round][group_index][pilot_index].id)].status;
 						var pilot_group;
 						if (model.racetimes[round][group_index][pilot_index].group == "0") {
 							pilot_group = "-";
@@ -103,7 +108,7 @@ function render_scores(){
 						if (round <= last_complete_round) {
 		                    var sub_totals_pilot_index = sub_totals_pilots_index_map.get(String(sub_totals_final[p].pilot_id));
 							cols3.push(sub_totals_round[sub_totals_pilot_index].rank);
-							//cols3.push(sub_totals[sub_totals_pilot_index].total.toFixed(2));
+							//cols3.push(sub_totals_round[sub_totals_pilot_index].total.toFixed(2));
 						}
 
 						if (undefinedRow == 1) {
@@ -229,7 +234,7 @@ function subTotals(last_round) {
             }
         }
         function comparePoints(a, b) {
-            return b.pilot_id - a.pilot_id;
+            return b.points - a.points;
         }
         tmp_pilot_points.sort(comparePoints);
 

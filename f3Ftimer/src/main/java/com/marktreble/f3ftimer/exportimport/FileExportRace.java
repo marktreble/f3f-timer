@@ -16,12 +16,13 @@ import java.util.ArrayList;
  */
 public class FileExportRace extends BaseExport {
 
-
     ArrayList<String> mArrNames;
     ArrayList<Race> mArrRaces;
 
     String[] _options;  	// String array of all races in database
     boolean[] _selections;	// bool array of which has been selected
+
+    private int mExportFileType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,29 @@ public class FileExportRace extends BaseExport {
                     {
                         Log.d("EXPORT", "ONCLICKPOSITOVE");
                         mDlg.dismiss();
+                        showExportTypeList();
+                    }
+                } )
+                .show();
+    }
+
+    private void showExportTypeList(){
+
+        mDlg = new AlertDialog.Builder( this )
+                .setTitle( "Select file type" )
+                .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mExportFileType = which;
+                    }
+                })
+                .setPositiveButton( "OK", new DialogInterface.OnClickListener() {
+                    public void onClick( DialogInterface dialog, int clicked )
+                    {
+                        if (mExportFileType >0) {
+                            mDlg.dismiss();
                         promptForSaveFolder();
+                    }
                     }
                 } )
                 .show();
@@ -92,9 +115,16 @@ public class FileExportRace extends BaseExport {
 
     private void exportRaceData(Race r){
         // Serialize all race data, pilots, times + groups
-        String data = super.getSerialisedRaceDataFile(r.id, r.round);
-        Log.d("EXPORT DATA", data);
 
-        new SpreadsheetExport().writeExportFile(mContext, data, r.name+".json", mSaveFolder);
+        switch (mExportFileType){
+            case EXPORT_FILE_TYPE_JSON:
+                new SpreadsheetExport().writeExportFile(mContext, super.getJSONRaceData(r.id, r.round), r.name + ".json", mSaveFolder);
+                break;
+
+            case EXPORT_FILE_TYPE_CSV:
+                new SpreadsheetExport().writeExportFile(mContext, super.getCSVRaceData(r.id, r.round), r.name + ".csv", mSaveFolder);
+                break;
+        }
+
     }
 }

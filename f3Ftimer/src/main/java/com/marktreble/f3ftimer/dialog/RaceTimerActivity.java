@@ -45,9 +45,9 @@ public class RaceTimerActivity extends FragmentActivity {
 	public Race mRace;
     public int mRound;
 	public String mNumber;
-	public boolean mWindLegal = true;
-	public boolean mWindIlegalDuringFlight = false;
-	public RaceTimerFrag mCurrentFragment;
+	public boolean mWindIllegalDuringFlight = false;
+	private static boolean mWindLegal = true; /* set this once at program start and later only update it via service callbacks */
+	private RaceTimerFrag mCurrentFragment;
 	private int mCurrentFragmentId;
 	private Context mContext;
 	private FragmentActivity mActivity;
@@ -61,7 +61,7 @@ public class RaceTimerActivity extends FragmentActivity {
 	public static int WINDOW_STATE_FULL = 0;
 	public static int WINDOW_STATE_MINIMIZED = 1;
 
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		getWindow().setFlags(LayoutParams.FLAG_NOT_TOUCH_MODAL,
@@ -394,7 +394,7 @@ public class RaceTimerActivity extends FragmentActivity {
 					Float time = extras.getFloat("com.marktreble.f3ftimer.time");
 					Float fastestFlightTime = extras.getFloat("com.marktreble.f3ftimer.fastestFlightTime");
 					String fastestFlightPilot = extras.getString("com.marktreble.f3ftimer.fastestFlightPilot");
-					if (mWindIlegalDuringFlight) {
+					if (mWindIllegalDuringFlight) {
 						// show wind warning if it was illegal during flight
 						(mCurrentFragment).setWindWarning(true);
 					}
@@ -419,7 +419,7 @@ public class RaceTimerActivity extends FragmentActivity {
 				
 				if (data.equals("wind_illegal")){
 					mWindLegal = false;
-					mWindIlegalDuringFlight = true;
+					mWindIllegalDuringFlight = true;
 					(mCurrentFragment).setWindWarning(true);
 				}
 
@@ -431,7 +431,7 @@ public class RaceTimerActivity extends FragmentActivity {
 				if (data.equals("start_pressed")){
 					if (mCurrentFragment.getClass().equals(RaceTimerFrag2.class)) {
 						// reset illegal wind state before model is launched
-						mWindIlegalDuringFlight = !mWindLegal;
+						mWindIllegalDuringFlight = !mWindLegal;
 					}
 					(mCurrentFragment).startPressed();
 				}
@@ -468,13 +468,6 @@ public class RaceTimerActivity extends FragmentActivity {
                     Integer penalty = extras.getInt("com.marktreble.f3ftimer.penalty");
                     incPenalty(pilot_id, penalty);
                 }
-            } else if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
-				float windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
-				float windAngleRelative = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_relative");
-				float windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
-				boolean windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
-				int windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
-				RaceActivity.setShowWindValues(mRace, windLegal, windAngleAbsolute, windAngleRelative, windSpeed, windSpeedCounter);
             }
 		}
 	};

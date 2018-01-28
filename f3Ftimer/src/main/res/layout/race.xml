@@ -42,6 +42,7 @@
 	        android:textStyle="bold" >
         
     	</TextView>
+
 		<ImageView
 			android:id="@+id/external_display_connection_status"
 			android:layout_width="16dp"
@@ -61,10 +62,46 @@
 
 </LinearLayout>
 
+    <TextView
+        android:id="@+id/results_ip"
+        android:background="#075271"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_weight="0"
+        android:lines="1"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:paddingLeft="20dp"
+        android:paddingRight="30dp"
+        android:textColor="@color/text2"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="gone">
+
+    </TextView>
+	<TextView
+		android:id="@+id/wind_readings"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_gravity="start"
+		android:layout_weight="0"
+		android:lines="1"
+		android:gravity="center"
+		android:paddingTop="4dp"
+		android:paddingBottom="4dp"
+		android:background="@color/text2"
+		android:textColor="@color/text4"
+		android:textSize="20sp"
+		android:textStyle="bold"
+        android:visibility="gone">
+	</TextView>
+
     <ListView
       android:id="@android:id/list"
-      android:layout_width="fill_parent"
-      android:layout_height="fill_parent"
+      	android:layout_width="match_parent"
+      	android:layout_height="0dp"
+		android:layout_weight="1"
       android:cacheColorHint="@color/background"
       android:divider="#cccccc"
       android:dividerHeight="2dp"

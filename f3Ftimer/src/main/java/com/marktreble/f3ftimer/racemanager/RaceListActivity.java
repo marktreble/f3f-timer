@@ -75,7 +75,7 @@ public class RaceListActivity extends ListActivity {
     static final int EXPORT_SRC_BT = 0;
     static final int EXPORT_SRC_FILE = 1;
 
-    @Override
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         Log.i("ONACTIVITYRESULT", "ONCREATE");
 		super.onCreate(savedInstanceState);
@@ -91,7 +91,7 @@ public class RaceListActivity extends ListActivity {
 
 		mContext = this;
         mActivity = this;
-
+		
 		setContentView(R.layout.race_manager);
 			    
 	    getNamesArray();
@@ -193,6 +193,7 @@ public class RaceListActivity extends ListActivity {
 	  }
 	  return true;
 	}
+
 	private void getNamesArray(){
 
 		RaceData datasource = new RaceData(this);
@@ -341,7 +342,6 @@ public class RaceListActivity extends ListActivity {
 
     public void settings(){
 		Intent intent = new Intent(mContext, SettingsActivity.class);
-        intent.putExtra("caller", "racelistactivity");
     	startActivityForResult(intent, 1);
 	}
 

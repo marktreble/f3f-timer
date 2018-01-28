@@ -45,7 +45,7 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
 		fin.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				finish();
+				finishRace();
 			}
 		});
 	    
@@ -76,7 +76,7 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
     	a.finish();
 	}
 
-	public void finish(){
+	public void finishRace(){
 		NextRoundActivity a = (NextRoundActivity)getActivity();
 		a.setResult(RaceActivity.RACE_FINISHED, null);
 		a.finish();

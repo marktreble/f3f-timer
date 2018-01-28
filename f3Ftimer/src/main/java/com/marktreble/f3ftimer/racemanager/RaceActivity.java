@@ -20,6 +20,7 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -67,14 +68,11 @@ import com.marktreble.f3ftimer.driver.USBOtherService;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
+import com.marktreble.f3ftimer.usb.USB;
 import com.marktreble.f3ftimer.wifi.Wifi;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -116,6 +114,7 @@ public class RaceActivity extends ListActivity {
 	private boolean mPrefResults;
     private boolean mPrefResultsDisplay;
     private String mPrefExternalDisplay;
+    private boolean mPrefWindMeasurement;
 
     private boolean mRoundComplete;
     private boolean mRoundNotStarted;
@@ -139,6 +138,7 @@ public class RaceActivity extends ListActivity {
     private ImageView mStatus;
     private String mStatusIcon;
     private boolean mConnectionStatus;
+    private TextView mWindReadings;
 
     private String mExternalDisplayStatusIcon;
     private ImageView mExternalDisplayStatus;
@@ -153,8 +153,6 @@ public class RaceActivity extends ListActivity {
 
     private Handler mRaceTitleHandler;
 
-    private static RaceActivity mInstance = null;
-
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -167,7 +165,6 @@ public class RaceActivity extends ListActivity {
 		view.setPadding(0, 0, px, 0);
 		
 		mContext = this;
-        mInstance = this;
 		
 		setContentView(R.layout.race);
 			
@@ -201,6 +198,9 @@ public class RaceActivity extends ListActivity {
         mStatus = (ImageView)findViewById(R.id.connection_status);
         mStatusIcon = "off";
 
+        mWindReadings = (TextView)findViewById(R.id.wind_readings);
+
+
         // Register for notifications
         registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
         registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
@@ -216,19 +216,13 @@ public class RaceActivity extends ListActivity {
                 public void run(){
                     Log.d("UUUUU", "CHECKING CONN");
                     sendCommand("get_connection_status");
-                    // update the displayed IP address
-                    if (mPrefResults) {
-                        String ip = getIPAddress(true);
-                        if (!ip.equals("")) ip =  " - " + ip + ":8080";
-                        setRaceTitle(mRace.name + ip);
-                    }
                     if (mRaceTitleHandler != null) mRaceTitleHandler.postDelayed(this, delay);
                 }
             }, delay);
 
         }
-
-        setRaceTitle(mRace.name);
+        
+        setTitle(mRace.name);
         setRaceRoundTitle(Integer.toString(mRace.round));
 
         // Render the list
@@ -267,76 +261,6 @@ public class RaceActivity extends ListActivity {
 		//stopServers();
 		super.onBackPressed();
 	}
-
-    /**
-     * Get IP address of the first network interface found (IPv4 prior to IPv6).
-     */
-    public static String getIPAddress(boolean useIPv4) {
-        try {
-            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress();
-                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        boolean isIPv4 = sAddr.indexOf(':')<0;
-
-                        if (useIPv4) {
-                            if (isIPv4)
-                                return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                                return delim<0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } // for now eat exceptions
-        return "";
-    }
-
-    public void setupUsbTethering() {
-        IntentFilter extraFilterToGetBatteryInfo = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent extraIntentToGetBatteryInfo = getApplicationContext().registerReceiver(null, extraFilterToGetBatteryInfo);
-        int chargePlug = extraIntentToGetBatteryInfo.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-        boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
-        if (usbCharge) {
-            try {
-                boolean found = false;
-                Enumeration<NetworkInterface> ifs = NetworkInterface.getNetworkInterfaces();
-                if (ifs != null) {
-                    while (ifs.hasMoreElements()) {
-                        NetworkInterface iface = ifs.nextElement();
-                        if (!iface.getName().contains("usb") && !iface.getName().contains("rndis")) {
-                            continue;
-                        }
-                        found = true;
-                        Enumeration<InetAddress> en = iface.getInetAddresses();
-                        while (en.hasMoreElements()) {
-                            InetAddress addr = en.nextElement();
-                            String s = addr.getHostAddress();
-                            int end = s.lastIndexOf("%");
-                        }
-                        break;
-                    }
-                }
-                if (!found) {
-                    // Enable tethering
-                    Intent tetherSettings = new Intent();
-                    tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
-                    tetherSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(tetherSettings);
-                }
-            } catch (SocketException ex) {
-                // error handling appropriate for your application
-            }
-        }
-    }
 
 	public void startServers(){
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -378,20 +302,34 @@ public class RaceActivity extends ListActivity {
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
         TcpIoService.stop(this);
-        
+
         Intent serviceIntent = null;
         
         // Start Timer Driver
         Bundle extras = getIntent().getExtras();
+        if (extras == null)
+            extras = new Bundle();
+
         Map<String,?> keys = sharedPref.getAll();
 
         for(Map.Entry<String,?> entry : keys.entrySet()){
-            extras.putString(entry.getKey(), entry.getValue().toString());
+            if (entry.getValue() instanceof String)
+                extras.putString(entry.getKey(), (String) entry.getValue());
+
+            if (entry.getValue() instanceof Boolean)
+                extras.putBoolean(entry.getKey(), (Boolean) entry.getValue());
+
         }
 
         boolean pref_usb_tethering = sharedPref.getBoolean("pref_usb_tether", false);
         if (pref_usb_tethering) {
-            setupUsbTethering();
+            if (!USB.setupUsbTethering(getApplicationContext())){
+                // Enable tethering
+                Intent tetherSettings = new Intent();
+                tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+                tetherSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(tetherSettings);
+            }
         }
 
         USBIOIOService.startDriver(this, mInputSource, mRid, extras);
@@ -402,8 +340,8 @@ public class RaceActivity extends ListActivity {
 	}
 	
 	public void stopServers(){
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		// Stop all Servers
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (RaceResultsService.stop(this)){
             boolean pref_wifi_hotspot = sharedPref.getBoolean("pref_wifi_hotspot", false);
             if (pref_wifi_hotspot && Wifi.canEnableWifiHotspot(this) && !mInputSource.equals(getString(R.string.TCP_IO))){
@@ -501,6 +439,14 @@ public class RaceActivity extends ListActivity {
             mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName() )));
 
         mPower.setText(mBatteryLevel);
+
+        if (mPrefWindMeasurement) {
+            mWindReadings.setVisibility(View.VISIBLE);
+        } else {
+            mWindReadings.setVisibility(View.GONE);
+        }
+
+        setResultsIP();
     }
 	
 	public void onPause(){
@@ -515,18 +461,64 @@ public class RaceActivity extends ListActivity {
         mPrefResults = sharedPref.getBoolean("pref_results_server", false);
         mPrefResultsDisplay = sharedPref.getBoolean("pref_results_display", false);
         mPrefExternalDisplay = sharedPref.getString("pref_external_display", "");
+        mPrefWindMeasurement = sharedPref.getBoolean("pref_wind_measurement", false);
 	}
 	
-	private void setRound(){
-  		mRnd = mRace.round;
+	private void setRound() {
+        mRnd = mRace.round;
 
         RaceData datasource2 = new RaceData(RaceActivity.this);
         datasource2.open();
         mGroupScoring = datasource2.getGroups(mRid, mRnd);
         datasource2.close();
 
-  		setRaceRoundTitle(Integer.toString(mRnd));
+        setRaceRoundTitle(Integer.toString(mRnd));
 	}
+
+    private void setResultsIP(){
+        TextView results = findViewById(R.id.results_ip);
+  		if (mPrefResults){
+  		    results.setVisibility(View.VISIBLE);
+            new fetchIPAsyncTask(results).execute();
+
+        } else {
+            results.setVisibility(View.GONE);
+        }
+	}
+
+	private static class fetchIPAsyncTask extends AsyncTask<Void, Void, String> {
+
+        WeakReference<TextView> mViewWR;
+
+        fetchIPAsyncTask(TextView view){
+            mViewWR = new WeakReference<>(view);
+        }
+
+        @Override
+        protected String doInBackground(Void... params) {
+            String ip = "";
+            while (ip.equals("")) {
+                ip = Wifi.getIPAddress(true);
+                if (ip.equals("")){
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e){
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+            return ip;
+        }
+
+        @Override
+        protected void onPostExecute(String ip) {
+            // update the UI (this is executed on UI thread)
+            super.onPostExecute(ip);
+            TextView view = mViewWR.get();
+            view.setText(String.format("%s:8080", ip));
+        }
+    }
 
 	/*
 	 * Start a pilot on his run
@@ -956,7 +948,7 @@ public class RaceActivity extends ListActivity {
                     } else {
                         // Unset round not started flag
                         // Somebody has flown
-                        if ((p.status & Pilot.STATUS_RETIRED) == 0) {
+                        if ((p.status & Pilot.STATUS_RETIRED) != Pilot.STATUS_RETIRED) {
 
 
                             mRoundNotStarted = false;
@@ -998,7 +990,7 @@ public class RaceActivity extends ListActivity {
             for (int i=0; i<mArrPilots.size(); i+=mRace.rounds_per_flight){
                 Pilot p = mArrPilots.get(i+r);
                 if (p.time > 0)
-                    p.points = (ftg[mArrGroups.get(i+r)] / p.time) * 1000;
+                    p.points = (ftg[mArrGroups.get(i+r)] / p.time) * 1000; /* calculate with exact points (no rounding or casting) */
 
                 if ((p.time==0 || Float.isNaN(p.time)) && p.flown) // Avoid division by 0
                     p.points = 0;
@@ -1109,7 +1101,7 @@ public class RaceActivity extends ListActivity {
 
                 TextView points = (TextView) row.findViewById(R.id.points);
                 if (p.flown || p.status==Pilot.STATUS_RETIRED){
-            		points.setText(String.format("%.2f", p.points));
+            		points.setText(String.format("%.2f", p.points).replace(",", "."));
                 } else {
             		points.setText("");
                 }
@@ -1387,51 +1379,16 @@ public class RaceActivity extends ListActivity {
                 if (data.equals("wind_illegal")) {
                 }
             } else if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
-                float windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
-                float windAngleRelative = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_relative");
-                float windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
-                boolean windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
-                int windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
-                setShowWindValues(mRace, windLegal, windAngleAbsolute, windAngleRelative, windSpeed, windSpeedCounter);
+			    if (mPrefWindMeasurement) {
+                    mWindReadings.setText(intent.getExtras().getString("com.marktreble.f3ftimer.value.wind_values"));
+                }
 			}
 		}
-        };
+    };
 
-    public static void setShowWindValues(Race r, boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
-        String title = "";
-        if (windLegal && windSpeedCounter == 20) {
-            title = Integer.toString(r.round) + " -"
-                    + String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
-                    + "   legal";
-        } else if (windLegal) {
-            title = Integer.toString(r.round) + " -"
-                    + String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
-                    + String.format(" legal (%d s)", windSpeedCounter);
-        } else {
-            title = Integer.toString(r.round) + " -"
-                    + String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
-                    + " illegal";
-        }
-        setRaceRoundTitle(title);
-    }
-
-    public static void setRaceTitle(String title) {
-        if (mInstance != null) {
-            mInstance.setTitle(title);
-        }
-    }
-
-    public static void setRaceRoundTitle(String title) {
-        if (mInstance != null) {
-            TextView tt = (TextView) mInstance.findViewById(R.id.race_title);
-            tt.setText(String.format("%s %s", mInstance.getString(R.string.race_round), title));
-        }
+    public void setRaceRoundTitle(String title) {
+        TextView tt = (TextView) findViewById(R.id.race_title);
+        tt.setText(String.format("%s %s", getString(R.string.race_round), title));
     }
 
     @Override
@@ -1472,7 +1429,6 @@ public class RaceActivity extends ListActivity {
         menu.getItem(7).setEnabled(mRace.status != Race.STATUS_COMPLETE);
 
         return super.onPrepareOptionsMenu(menu);
-
 	}
 
 	@Override
@@ -1494,7 +1450,7 @@ public class RaceActivity extends ListActivity {
                 return true;
             case R.id.menu_scrub_round:
                 mDlg = new AlertDialog.Builder(mContext)
-                        .setTitle(getString(R.string.scrub_round))
+                        .setTitle(getString(R.string.menu_scrub_round))
                         .setMessage(getString(R.string.menu_scrub_round_confirm))
                         .setNegativeButton(getString(android.R.string.cancel), null)
                         .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
@@ -1552,11 +1508,12 @@ public class RaceActivity extends ListActivity {
         datasource.open();
         mRace = datasource.finishRace(mRid);
         datasource.close();
+        finish();
     }
 
     @SuppressLint("SetTextI18n")
     private void nextRound(){
-        RaceData datasource2 = new RaceData(this);
+        RaceData datasource2 = new RaceData(mContext);
 		datasource2.open();
         mRace = datasource2.nextRound(mRid);
 		mRnd = mRace.round;
@@ -1666,7 +1623,6 @@ public class RaceActivity extends ListActivity {
 	
 	public void settings(){
 		Intent intent = new Intent(mContext, SettingsActivity.class);
-		intent.putExtra("caller", "raceactivity");
     	startActivityForResult(intent, DLG_SETTINGS);
 	}
 

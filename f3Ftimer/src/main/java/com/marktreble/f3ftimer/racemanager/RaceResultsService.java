@@ -236,12 +236,7 @@ public class RaceResultsService extends Service {
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 			String resultsServerStyle = sharedPref.getString("pref_results_server_style", getResources().getStringArray(R.array.options_results_server_style)[0]);
 			String resourcefile = "";
-			if (resultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[0])) {
-				resourcefile = "public_html";
-			} else if (resultsServerStyle.equals(getResources().getStringArray(R.array.options_results_server_style)[1])) {
-				resourcefile = "public_html_sh";
-			}
-			resourcefile += path;
+			resourcefile = "public_html_"+resultsServerStyle+path;
 			Log.i("HTTP REQUEST", resourcefile);
 			
 			AssetManager am = getAssets();
@@ -581,7 +576,7 @@ public class RaceResultsService extends Service {
 
 	public class JSPPages {
 		public byte[] _api_getracedata(String query){
-			
+
 			long unixTime = System.currentTimeMillis() / 1000L;
 
 			SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -692,7 +687,7 @@ public class RaceResultsService extends Service {
             header += "Expires: "+expiredate+"\n";
             header += "Cache-Control: max-age=30\n";
             header+= "\r\n";
-            
+
             return (header + data).getBytes();
 		}
 		

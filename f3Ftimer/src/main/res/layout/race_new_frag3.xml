@@ -113,7 +113,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toEndOf="@+id/button_rotate_wrapper"
             android:layout_toRightOf="@+id/button_rotate_wrapper"
             android:layout_marginLeft="12dp"
             android:orientation="vertical">

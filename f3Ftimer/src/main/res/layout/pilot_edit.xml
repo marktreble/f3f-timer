@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-				xmlns:tools="http://schemas.android.com/tools"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:background="@drawable/rounded_corners">
@@ -128,8 +127,7 @@
 				android:text="@string/pilot_team"
 				android:textAppearance="?android:attr/textAppearanceLarge"
 				android:textColor="@color/text3"
-				android:visibility="visible"
-				tools:text="Team" />
+				android:visibility="visible" />
 
 			<AutoCompleteTextView
 				android:id="@+id/editText8"

@@ -144,12 +144,12 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 				if ((p.time==0 || Float.isNaN(p.time)) && !p.flown){
                 	time.setText(getResources().getString(R.string.notime));
                 } else {
-                	time.setText(String.format("%.2f", p.time));
+                	time.setText(String.format("%.2f", p.time).replace(",", "."));
                 }
 
                 TextView points = (TextView) row.findViewById(R.id.points);
                 if (p.flown || p.status==Pilot.STATUS_RETIRED){
-            		points.setText(String.format("%.2f", p.points));
+            		points.setText(String.format("%.2f", p.points).replace(",", "."));
                 } else {
             		points.setText("");
                 }

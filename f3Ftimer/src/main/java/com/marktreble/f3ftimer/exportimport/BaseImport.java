@@ -2,11 +2,10 @@ package com.marktreble.f3ftimer.exportimport;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.data.CountryCodes;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -17,22 +16,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 
 /**
  * Created by marktreble on 09/12/2015.
  */
 public class BaseImport extends Activity {
-
-    // Defines mapping between ISO 3166-1 alpha-3 and Olympic IOC country codes
-    // Only mismatches are defined
-    // Taken from here:
-    // http://en.wikipedia.org/wiki/Comparison_of_IOC,_FIFA,_and_ISO_3166_country_codes
-    // https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste
-    // https://en.wikipedia.org/wiki/ISO_3166-1
-    // https://datahub.io/core/country-codes/datapackage.json
-    protected static JSONArray countryCodes;
 
     Context mContext;
     public Activity mActivity;
@@ -44,39 +33,9 @@ public class BaseImport extends Activity {
 
         mContext = this;
         mActivity = this;
-
-        initCountryData();
     }
 
-    protected void initCountryData() {
-        try {
-            Resources res = getResources();
-            InputStream in = res.openRawResource(R.raw.countrycodes);
-            byte[] ba = new byte[512000];
-            in.read(ba);
-            in.close();
-            String data = new String(ba);
-            countryCodes = new JSONArray(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String findIsoCountryCode(String iocCountryCode) {
-        try {
-            for (int i=0; i< countryCodes.length(); i++) {
-                JSONObject country = countryCodes.optJSONObject(i);
-                if (country.getString("IOC").equals(iocCountryCode)) {
-                    return country.getString("ISO3166-1-Alpha-2");
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    protected void importRace(String data){
+    protected void importRaceJSON(String data){
         // Parse json and add to database
         Log.i("IMPORT", "DATA: "+ data);
 
@@ -171,7 +130,7 @@ public class BaseImport extends Activity {
         }
     }
 
-    protected void importPilots(String data){
+    protected void importPilotsJSON(String data){
         try {
             JSONArray pilots = new JSONArray(data);
 
@@ -188,7 +147,7 @@ public class BaseImport extends Activity {
         }
     }
 
-    protected void importRaceJson(String data){
+    protected void importRaceJSON1(String data){ // TODO resolve conflicting use cases
         // Parse json and add to database
         Log.i("IMPORT", "JSON RACE DATA: "+ data);
 
@@ -261,12 +220,10 @@ public class BaseImport extends Activity {
         }
     }
 
-    protected void importPilotsJson(String data){
-        Log.i("IMPORT", "JSON PILOTS DATA: "+ data);
-        importPilots(data);
-    }
-
-    protected void importRaceCsv(String data) {
+    protected void importRaceCSV(String data) {
+        // TODO
+        // Should use openCSV for parsing, and is not currently compliant with the database structure
+        /*
         Log.i("IMPORT", "CSV RACE DATA: "+ data);
         try {
             String[] lines = data.split("\r\n|\n");
@@ -321,13 +278,19 @@ public class BaseImport extends Activity {
         } catch (Exception e){
             e.printStackTrace();
         }
+        */
     }
 
-    protected void importPilotsCsv(String data){
+    protected void importPilotsCSV(String data){
+        //TODO
+        // Should use openCSV for parsing
+
         Log.i("IMPORT", "CSV PILOTS DATA: "+ data);
         try {
             PilotData datasource = new PilotData(mContext);
             datasource.open();
+
+            CountryCodes countryCodes = CountryCodes.sharedCountryCodes(mContext);
 
             String[] lines = data.split("\r\n|\n");
             for (int i = 1; i < lines.length; i++) {
@@ -337,7 +300,7 @@ public class BaseImport extends Activity {
                 if (values.length>1) pilot.firstname = values[1];
                 if (values.length>2) pilot.lastname = values[2];
                 if (values.length>3) {
-                    pilot.nationality = findIsoCountryCode(values[3]);
+                    pilot.nationality = countryCodes.findIsoCountryCode(values[3]);
                 }
                 if (values.length>4) pilot.language = values[4];
                 if (values.length>5) pilot.team = values[5];

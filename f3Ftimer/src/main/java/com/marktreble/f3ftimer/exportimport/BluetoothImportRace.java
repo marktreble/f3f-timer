@@ -411,7 +411,7 @@ public class BluetoothImportRace extends BaseImport {
     };
     
     protected void importRace(String data){
-        super.importRace(data);
+        super.importRaceJSON(data);
 
         closeSocket();
         mActivity.setResult(RESULT_OK);

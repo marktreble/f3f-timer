@@ -160,13 +160,13 @@ public class FileImportRace extends BaseImport {
         if (extension.equals("json")) {
             String data = readFile(uri);
             if (!data.equals("")){
-                super.importRaceJson(data);
+                super.importRaceJSON1(data);
                 return true;
             }
         } else if (extension.equals("csv")) {
             String data = readFile(uri);
             if (!data.equals("")){
-                super.importRaceCsv(data);
+                super.importRaceCSV(data);
                 return true;
             }
         }

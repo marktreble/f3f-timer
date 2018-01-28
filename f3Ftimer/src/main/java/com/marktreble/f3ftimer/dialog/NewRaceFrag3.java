@@ -148,11 +148,14 @@ public class NewRaceFrag3 extends ListFragment {
 	        }
 	    });
 	    
-		// Listener for scramble button
+		// Listener for rotate button
 		Button rotate = (Button) v.findViewById(R.id.button_rotate);
 		rotate.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
+				//TODO
+				// This would be much better done with an AlertDialog rater than an activity
+				// Code would be simpler & shorter, and it would be visually better from a UI perspective.
 				Intent intent = new Intent(getContext(), RotateEditActivity.class);
 				startActivityForResult(intent, 1);
 			}
@@ -190,7 +193,6 @@ public class NewRaceFrag3 extends ListFragment {
 		}
 	}
 
-	
 	private void setList(){
     	   	mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_reorder, R.id.text1 , mArrNames){
             @Override

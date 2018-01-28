@@ -144,7 +144,7 @@ public class Results {
 
     /* getResultsForCompletedRound(context, race ID, round number)
      *
-     * Populates: mArrNames, mArrPilots, mArrNumbers
+     * Populates: mArrNames, mArrPilots, mArrNumbers, mArrGroups
      *
      */
     public void getResultsForCompletedRound(Context context, int mRid, int mRound){
@@ -188,6 +188,7 @@ public class Results {
         // Reinitialise
         mArrNames = new ArrayList<>();
         mArrNumbers = new ArrayList<>();
+        mArrGroups = new ArrayList<>();
 
         int pos=1;
         int c=1;
@@ -201,6 +202,7 @@ public class Results {
             previousscore = p.points;
             p.position = pos;
             mArrNumbers.add(String.format("%d", p.position));
+            mArrGroups.add(p.group);
             c++;
         }
 
@@ -211,6 +213,7 @@ public class Results {
      * Populates: mArrNames, mArrNumbers, mArrPilots, mArrScores, mArrTimes, mFTD, mFTDName, mFTDRound
      *
      */
+    @SuppressWarnings("unchecked")
     public void getResultsForRace(Context context, int mRid, boolean ordered){
 
         RaceData datasource = new RaceData(context);
@@ -279,6 +282,7 @@ public class Results {
 
                     ArrayList<RaceData.Time> arr_times;
                     Object o = map_pilots.get(p.id);
+
                     if (o != null) {
                         arr_times =(ArrayList<RaceData.Time>)o;
                     } else {
@@ -324,13 +328,13 @@ public class Results {
 
             // Tot up the points from each round ignoring the first {numdiscards} rounds
             Float tot = 0f;
-            for (int j=0; j<completed_rounds-numdiscards; j++) {
+            for (int j=numdiscards; j<completed_rounds; j++) {
                 tot += arr_times.get(j).raw_points;
                 Log.i("TOT", key+":"+tot+":"+arr_times.get(j).raw_points);
             }
 
             // Deduct penalties from all rounds from total
-            for (int j=0; j<completed_rounds-numdiscards; j++)
+            for (int j=0; j<completed_rounds; j++)
                 tot -= arr_times.get(j).penalty * 100;
 
             map_totals.put(key, round2FixedRounded(tot, 2));
@@ -544,7 +548,7 @@ public class Results {
                 mArrPilots.add(p);
                 first = false;
 
-                String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
+                String t_str = String.format("%.2f", p.time).replace(",", ".");
                 float time = Float.parseFloat(t_str);
 
                 ftg[g] = (time > 0) ? Math.min(ftg[g], time) : ftg[g];
@@ -570,7 +574,7 @@ public class Results {
             Pilot p = allPilots.get(i);
 
 
-            String t_str = String.format("%.2f", p.time).trim().replace(",", ".");
+            String t_str = String.format("%.2f", p.time).replace(",", ".");
             float time = Float.parseFloat(t_str);
 
             if (time>0)

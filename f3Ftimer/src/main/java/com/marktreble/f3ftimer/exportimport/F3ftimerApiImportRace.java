@@ -51,7 +51,6 @@ public class F3ftimerApiImportRace extends BaseImport
         Intent intent = new Intent(mActivity, F3fTimerAPILoginActivity.class);
         startActivityForResult(intent, DLG_LOGIN);
 
-        Log.i("ONACTIVITY", mActivity.toString());
 
     }
 
@@ -86,6 +85,8 @@ public class F3ftimerApiImportRace extends BaseImport
                 mAPITask.makeAPICall(this, mDataSource, API.httpmethod.POST, params);
 
             }
+        } else {
+            finish();
         }
     }
 
@@ -141,7 +142,7 @@ public class F3ftimerApiImportRace extends BaseImport
             }
 
             if (race_data != null) {
-                super.importRace(race_data.toString());
+                super.importRaceJSON(race_data.toString());
                 Log.i("ONACTIVITY", mActivity.toString());
                 Log.i("ONACTIVITY", "RETURNING "+RESULT_OK);
                 mActivity.setResult(RESULT_OK);

@@ -36,8 +36,8 @@ import java.util.Map;
  */
 
 
-// Get Race list: http://www.f3xvault.com/api.php?login=mjqtreble&password=makoshark9&function=searchEvents&event_type_code=f3f&show_future=1&date_from=2017-08-28
-// Get Pilots: http://www.f3xvault.com/api.php?login=mjqtreble&password=makoshark9&function=getEventPilots&event_id=?
+// Get Race list: http://www.f3xvault.com/api.php?login=#####e&password=#####&function=searchEvents&event_type_code=f3f&show_future=1&date_from=2017-08-28
+// Get Pilots: http://www.f3xvault.com/api.php?login=#####&password=#####&function=getEventPilots&event_id=?
 
 public class F3xvaultApiImportRace extends BaseImport
         implements API.APICallbackInterface {
@@ -104,6 +104,8 @@ public class F3xvaultApiImportRace extends BaseImport
                 mAPITask.makeAPICall(this, mDataSource, API.httpmethod.GET, params);
 
             }
+        } else {
+            finish();
         }
     }
 
@@ -233,14 +235,7 @@ public class F3xvaultApiImportRace extends BaseImport
                                 pilot.put("team", fields[7]);
                                 race_pilots.put(pilot);
                                 break;
-                            /*
-                            String id = fields[0];
-                            String name = fields[2];
-                            JSONObject race = new JSONObject();
-                            race.put("id", id);
-                            race.put("name", name);
-                            pilot_list.put(race);
-                            */
+
                         }
                     }
                     race_data.put("race", race);
@@ -259,7 +254,7 @@ public class F3xvaultApiImportRace extends BaseImport
 
 
             if (race_data != null) {
-                super.importRace(race_data.toString());
+                super.importRaceJSON(race_data.toString());
                 mActivity.setResult(RESULT_OK);
                 mActivity.finish();
 
@@ -301,9 +296,9 @@ public class F3xvaultApiImportRace extends BaseImport
             e.printStackTrace();
         }
 
-        if (message.equals("LOGIN_FAILED")){
+        if (message != null){
 
-            Intent intent = new Intent(mActivity, F3fTimerAPILoginActivity.class);
+            Intent intent = new Intent(mActivity, F3xvaultAPILoginActivity.class);
             startActivityForResult(intent, DLG_LOGIN);
         }
     }
