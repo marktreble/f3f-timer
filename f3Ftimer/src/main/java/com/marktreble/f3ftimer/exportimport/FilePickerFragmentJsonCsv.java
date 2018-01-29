@@ -8,6 +8,13 @@ import java.io.File;
 
 public class FilePickerFragmentJsonCsv extends FilePickerFragment {
 
+    public static final String EXTENSION = "extension";
+    private String mExtension;
+
+    public void setExtension() {
+        mExtension = getArguments().getString(EXTENSION, null);
+    }
+    
     /**
      *
      * @param file
@@ -26,9 +33,9 @@ public class FilePickerFragmentJsonCsv extends FilePickerFragment {
     @Override
     protected boolean isItemVisible(final File file) {
         boolean ret = super.isItemVisible(file);
-        if (ret && !isDir(file) && (mode == MODE_FILE || mode == MODE_FILE_AND_DIR)) {
+        if (ret && !isDir(file) && (mode == MODE_FILE || mode == MODE_FILE_AND_DIR) && mExtension != null) {
             String ext = getExtension(file);
-            return ext != null && (".json".equalsIgnoreCase(ext)||".csv".equalsIgnoreCase(ext));
+            return (ext != null && ext.matches(mExtension));
         }
         return ret;
     }

@@ -21,7 +21,10 @@ public class FilteredFilePickerActivity extends AbstractFilePickerActivity<File>
     @Override
     protected AbstractFilePickerFragment<File> getFragment(@Nullable final String startPath, final int mode, final boolean allowMultiple,
                                                            final boolean allowCreateDir) {
-        AbstractFilePickerFragment<File> fragment = new FilePickerFragmentJsonCsv();
+        FilePickerFragmentJsonCsv fp = new FilePickerFragmentJsonCsv();
+        fp.setArguments(getIntent().getExtras());
+        fp.setExtension();
+        AbstractFilePickerFragment<File> fragment = fp;
         // startPath is allowed to be null. In that case, default folder should be SD-card and not "/"
         fragment.setArgs(startPath != null ? startPath : Environment.getExternalStorageDirectory().getPath(),
                 mode, allowMultiple, allowCreateDir);

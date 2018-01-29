@@ -47,6 +47,7 @@ public class FileImportPilots extends BaseImport {
         // dangerous. Always use Android's API calls to get paths to the SD-card or
         // internal memory.
         i.putExtra(FilteredFilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+        i.putExtra(FilePickerFragmentJsonCsv.EXTENSION, ".json|.csv");
 
         startActivityForResult(i, ACTION_PICK_FILE);
 
