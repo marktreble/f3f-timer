@@ -10,8 +10,9 @@ public class FilePickerFragmentJsonCsv extends FilePickerFragment {
 
     public static final String EXTENSION = "extension";
     private String mExtension;
-
-    public void setExtension() {
+    
+    public void setArguments(android.os.Bundle args) {
+        super.setArguments(args);
         mExtension = getArguments().getString(EXTENSION, null);
     }
     

@@ -1,5 +1,6 @@
 package com.marktreble.f3ftimer.exportimport;
 
+import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 
@@ -21,13 +22,19 @@ public class FilteredFilePickerActivity extends AbstractFilePickerActivity<File>
     @Override
     protected AbstractFilePickerFragment<File> getFragment(@Nullable final String startPath, final int mode, final boolean allowMultiple,
                                                            final boolean allowCreateDir) {
-        FilePickerFragmentJsonCsv fp = new FilePickerFragmentJsonCsv();
-        fp.setArguments(getIntent().getExtras());
-        fp.setExtension();
-        AbstractFilePickerFragment<File> fragment = fp;
+        AbstractFilePickerFragment<File> fragment = new FilePickerFragmentJsonCsv();
         // startPath is allowed to be null. In that case, default folder should be SD-card and not "/"
         fragment.setArgs(startPath != null ? startPath : Environment.getExternalStorageDirectory().getPath(),
                 mode, allowMultiple, allowCreateDir);
+        Bundle extras = getIntent().getExtras();
+        Bundle args = fragment.getArguments();
+        if (null != extras) {
+            String extarg = extras.getString(FilePickerFragmentJsonCsv.EXTENSION);
+            if (null != extarg) {
+                args.putString(FilePickerFragmentJsonCsv.EXTENSION, extarg);
+                fragment.setArguments(args);
+            }
+        }
         return fragment;
     }
 }
