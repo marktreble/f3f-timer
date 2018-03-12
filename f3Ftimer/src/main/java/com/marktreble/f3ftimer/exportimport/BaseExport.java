@@ -148,7 +148,7 @@ public abstract class BaseExport extends Activity {
         RaceData datasource = new RaceData(mContext);
         datasource.open();
         Race race = datasource.getRace(race_id);
-        String racegroups = datasource.getGroupsSerialized(race_id, round);
+        RaceData.Group[] racegroups = datasource.getGroups(race_id, round);
         datasource.close();
 
         RacePilotData datasource2 = new RacePilotData(mContext);
@@ -174,7 +174,7 @@ public abstract class BaseExport extends Activity {
 
         for(Pilot p : racepilots) {
             String pilot_params = "";
-            pilot_params+= String.format("\"%d\",", p.pilot_id);
+            pilot_params+= String.format("%d,", p.pilot_id);
             pilot_params+= String.format("\"%s\",", p.number);
             pilot_params+= String.format("\"%s\",", p.firstname);
             pilot_params+= String.format("\"%s\",", p.lastname);
@@ -184,16 +184,30 @@ public abstract class BaseExport extends Activity {
             pilot_params+= ",";
             pilot_params+= String.format("\"%s\",", p.team);
             // Extra data not in f3xvault api
-            pilot_params+= String.format("\"%d\",", p.status);
+            pilot_params+= String.format("%d,", p.status);
             pilot_params+= String.format("\"%s\",", p.email);
             pilot_params+= String.format("\"%s\",", p.frequency);
             pilot_params+= String.format("\"%s\",", p.models);
             pilot_params+= String.format("\"%s\",", p.nationality);
-            pilot_params+= String.format("\"%s\",", p.language);
+            pilot_params+= String.format("\"%s\"\n", p.language);
             csvdata.append(pilot_params);
         }
 
-        // TODO add groups and times for full race data
+        csvdata.append("\n");
+
+        StringBuilder group_params = new StringBuilder();
+        StringBuilder start_params = new StringBuilder();
+        for (RaceData.Group group : racegroups){
+            if (group_params.length()>0) group_params.append(",");
+            group_params.append(String.format("%d", group.num_groups));
+
+            if (start_params.length()>0) start_params.append(",");
+            start_params.append(String.format("%d", group.start_pilot));
+        }
+
+        csvdata.append(group_params).append("\n");
+        csvdata.append(start_params).append("\n");
+        csvdata.append("\n");
 
 
         return  csvdata.toString();

@@ -1,7 +1,6 @@
 package com.marktreble.f3ftimer.data.results;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
 import android.util.SparseArray;
 
@@ -16,7 +15,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Created by marktreble on 11/06/2017.
@@ -54,7 +52,7 @@ public class Results {
         Race race = datasource.getRace(mRid);
 
         // Number of Groups
-        mGroupScoring = datasource.getGroups(mRid, race.round);
+        mGroupScoring = datasource.getGroup(mRid, race.round);
 
         datasource.close();
 
@@ -90,7 +88,7 @@ public class Results {
         Race race = datasource.getRace(mRid);
 
         // Number of Groups
-        mGroupScoring = datasource.getGroups(mRid, race.round);
+        mGroupScoring = datasource.getGroup(mRid, race.round);
 
         datasource.close();
 
@@ -155,7 +153,7 @@ public class Results {
         datasource.open();
         Race race = datasource.getRace(mRid);
 
-        mGroupScoring = datasource.getGroups(mRid, mRound);
+        mGroupScoring = datasource.getGroup(mRid, mRound);
 
         datasource.close();
 
@@ -249,7 +247,7 @@ public class Results {
         if (race.round>1) {
             // Loop through each round to find the winner, then populate the scores
             for (int rnd = 1; rnd < race.round; rnd++) {
-                mGroupScoring = datasource.getGroups(mRid, rnd);
+                mGroupScoring = datasource.getGroup(mRid, rnd);
                 Log.i("ROUND", "R="+rnd);
                 Log.i("GROUP SCORING", mGroupScoring.num_groups+":"+mGroupScoring.start_pilot);
 

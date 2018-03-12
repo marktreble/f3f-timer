@@ -5,17 +5,11 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.LabeledIntent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -24,8 +18,6 @@ import android.os.Bundle;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.os.Environment;
-import android.text.Html;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -444,7 +436,7 @@ public class ResultsRaceActivity extends ListActivity {
 				for (int rnd=0; rnd<race.round-1; rnd++){
 					ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd+1, 0, 0);
 
-					mGroupScoring = datasource.getGroups(mRid, rnd+1);
+					mGroupScoring = datasource.getGroup(mRid, rnd+1);
 
 					int g = 0; // Current group we are calculating
 

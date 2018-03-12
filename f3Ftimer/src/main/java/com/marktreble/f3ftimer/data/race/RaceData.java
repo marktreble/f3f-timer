@@ -1,7 +1,6 @@
 package com.marktreble.f3ftimer.data.race;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -105,7 +104,7 @@ public class RaceData {
 		database.execSQL(sql, data);
 	}
 
-    public Group getGroups(int race_id, int round_id){
+    public Group getGroup(int race_id, int round_id){
         String[] cols = {"groups", "start_pilot"};
 		Group group = new Group();
         Cursor cursor = database.query("racegroups", cols, "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round_id) + "'", null, null, null, null);
@@ -219,7 +218,7 @@ public class RaceData {
         jsonarray.append("[");
         for (int i=0;i<round; i++){
             if (i>0) 	jsonarray.append(",");
-			Group group = getGroups(id, i+1);
+			Group group = getGroup(id, i+1);
 			String str_group = String.format("{\"groups\":%d,\"start_pilot\":%d}", group.num_groups, group.start_pilot);
             jsonarray.append(str_group);
         }
@@ -227,6 +226,14 @@ public class RaceData {
         return jsonarray.toString();
     }
 
+	public Group[] getGroups(int id, int round){
+    	Group[] groups = new Group[round];
+		for (int i=0;i<round; i++){
+			groups[i] = getGroup(id, i+1);
+		}
+		return groups;
+	}
+	
 	public class Group {
 		public int num_groups = 1;
 		public int start_pilot = 1;

@@ -5,13 +5,10 @@
 package com.marktreble.f3ftimer.resultsmanager;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -19,7 +16,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -79,7 +75,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 		RaceData datasource = new RaceData(this);
   		datasource.open();
   		Race race = datasource.getRace(mRid);
-		RaceData.Group groups = datasource.getGroups(mRid, mRound);
+		RaceData.Group groups = datasource.getGroup(mRid, mRound);
   		datasource.close();
 
   		mNumGroups = groups.num_groups;

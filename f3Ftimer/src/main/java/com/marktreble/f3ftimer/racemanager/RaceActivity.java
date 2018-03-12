@@ -158,7 +158,7 @@ public class RaceActivity extends ListActivity {
 		RaceData datasource = new RaceData(this);
   		datasource.open();
   		Race race = datasource.getRace(mRid);
-        mGroupScoring = datasource.getGroups(race.id, race.round);
+        mGroupScoring = datasource.getGroup(race.id, race.round);
   		datasource.close();
   		mRace = race;
 
@@ -447,7 +447,7 @@ public class RaceActivity extends ListActivity {
 
         RaceData datasource2 = new RaceData(RaceActivity.this);
         datasource2.open();
-        mGroupScoring = datasource2.getGroups(mRid, mRnd);
+        mGroupScoring = datasource2.getGroup(mRid, mRnd);
         datasource2.close();
 
         TextView tt = (TextView) findViewById(R.id.race_title);
