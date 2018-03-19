@@ -162,10 +162,14 @@ public abstract class BaseExport extends Activity {
         String race_params = "";
         race_params+= String.format("\"%d\",", race.race_id);
         race_params+= String.format("\"%s\",", race.name);
+        race_params+= String.format("\"%s\",", ""); // F3XV Location
+        race_params+= String.format("\"%s\",", ""); // F3XV Start Date
+        race_params+= String.format("\"%s\",", ""); // F3XV End Date
+        race_params+= String.format("\"%s\",", ""); // F3XV Type
+        race_params+= String.format("\"%d\",", race.round);
         race_params+= String.format("\"%d\",", race.type);
         race_params+= String.format("\"%d\",", race.offset);
         race_params+= String.format("\"%d\",", race.status);
-        race_params+= String.format("\"%d\",", race.round);
         race_params+= String.format("\"%d\",", race.rounds_per_flight);
         race_params+= String.format("\"%d\"\n", race.start_number);
 
@@ -178,10 +182,10 @@ public abstract class BaseExport extends Activity {
             pilot_params+= String.format("\"%s\",", p.number);
             pilot_params+= String.format("\"%s\",", p.firstname);
             pilot_params+= String.format("\"%s\",", p.lastname);
-            // TODO f3xvault params Class (class=f3f), AMA (nac_number), FAI (fai_id)not yet in our database
-            pilot_params+= ",";
-            pilot_params+= ",";
-            pilot_params+= ",";
+            pilot_params+= ","; // F3XV Pilot Class - not required?
+            pilot_params+= String.format("\"%s\",", p.nac_no);
+            pilot_params+= String.format("\"%s\",", p.fai_id);
+            pilot_params+= ","; // F3XV FAI License?
             pilot_params+= String.format("\"%s\",", p.team);
             // Extra data not in f3xvault api
             pilot_params+= String.format("%d,", p.status);

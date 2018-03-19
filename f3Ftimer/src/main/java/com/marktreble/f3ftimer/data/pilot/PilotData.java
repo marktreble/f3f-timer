@@ -14,7 +14,7 @@ public class PilotData {
 	// Database fields
 	private SQLiteDatabase database;
 	private PilotDatabase db;
-	private String[] allColumns = { "id", "firstname", "lastname", "email", "frequency", "models", "nationality", "language" };
+	private String[] allColumns = { "id", "firstname", "lastname", "email", "frequency", "models", "nationality", "language", "nac_no", "fai_id" };
 
 	public PilotData(Context context) {
 		db = new PilotDatabase(context);
@@ -48,6 +48,8 @@ public class PilotData {
 		values.put("models", p.models);
 		values.put("nationality", p.nationality);
 		values.put("language", p.language);
+		values.put("nac_no", p.nac_no);
+		values.put("fai_id", p.fai_id);
 		database.insert("pilots", null, values);
 	}
 
@@ -60,6 +62,8 @@ public class PilotData {
 		values.put("models", p.models);
 		values.put("nationality", p.nationality);
 		values.put("language", p.language);
+		values.put("nac_no", p.nac_no);
+		values.put("fai_id", p.fai_id);
 		database.update("pilots", values, "id=" + Integer.toString(p.id), null);
 	}
 
@@ -91,6 +95,10 @@ public class PilotData {
 		p.models = cursor.getString(5);
 		p.nationality = cursor.getString(6);
 		p.language = cursor.getString(7);
+		p.nac_no = cursor.getString(8);
+		p.fai_id = cursor.getString(9);
+		if (p.nac_no == null) p.nac_no = "";
+		if (p.fai_id == null) p.fai_id = "";
 		return p;
 	}
 
@@ -124,7 +132,7 @@ public class PilotData {
 		for(int i=0;i<pilots.size(); i++){
 			if (i>0) array+=",";
 			Pilot p = pilots.get(i);
-			String str_pilot = String.format("{\"id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\"}", p.id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language);
+			String str_pilot = String.format("{\"id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"nac_no\":\"%s\", \"fai_id\":\"%s\"}", p.id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language, p.nac_no, p.fai_id);
 			array+= str_pilot;
 		}
 		array+= "]";
@@ -138,7 +146,7 @@ public class PilotData {
 		for(int i=0;i<pilots.size(); i++){
 			if (i>0) csv+="\r\n";
 			Pilot p = pilots.get(i);
-			String str_pilot = String.format("%s, %s, %s, %s, %s, %s, %s, %s", p.firstname, p.lastname, p.nationality, p.language,  p.team, p.frequency, p.models, p.email);
+			String str_pilot = String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s", p.firstname, p.lastname, p.nationality, p.language,  p.team, p.frequency, p.models, p.email, p.nac_no, p.fai_id);
 			csv+= str_pilot;
 		}
 

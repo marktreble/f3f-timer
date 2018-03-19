@@ -37,7 +37,7 @@ public class RacePilotData {
 	}
 
 	public Pilot getPilot(int id, int race){
-		String sql = "select id,pilot_id, race_id, status, firstname, lastname, email, frequency, models, nationality, language, team from racepilots where id=? and race_id=?";
+		String sql = "select id,pilot_id, race_id, status, firstname, lastname, email, frequency, models, nationality, language, team, nac_no, fai_id from racepilots where id=? and race_id=?";
 		String[] data = {Integer.toString(id), Integer.toString(race)};
 		Cursor cursor = database.rawQuery(sql, data);
 		if (cursor.getCount() == 0){
@@ -142,6 +142,8 @@ public class RacePilotData {
 		values.put("nationality", p.nationality);
 		values.put("language", p.language);
 		if (p.team != null) values.put("team", p.team);
+		if (p.nac_no != null) values.put("nac_no", p.nac_no);
+		if (p.fai_id != null) values.put("fai_id", p.fai_id);
 		long insert_id = database.insert("racepilots", null, values);
 
 		return insert_id;
@@ -157,6 +159,8 @@ public class RacePilotData {
 		values.put("nationality", p.nationality);
 		values.put("language", p.language);
 		if (p.team != null) values.put("team", p.team);
+		if (p.nac_no != null) values.put("nac_no", p.nac_no);
+		if (p.fai_id != null) values.put("fai_id", p.fai_id);
 		database.update("racepilots", values, "id="+Integer.toString(p.id), null);
 	}
 
@@ -190,14 +194,15 @@ public class RacePilotData {
 					 "(select count(id) from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as flown, " +
                      "(select penalty from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as penalty, " +
                      "(select reflight from racetimes rt where rt.pilot_id=p.id and rt.round=? and rt.race_id=?) as reflight, " +
-					 "team " +
+					 "team, nac_no, fai_id " +
 					 "from racepilots p  where p.race_id=? order by id";
 		String[] data = {Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(round), Integer.toString(race_id), Integer.toString(race_id)};
 		Cursor cursor = database.rawQuery(sql, data);
 		cursor.moveToFirst();
+		int n = 1;
 		while (!cursor.isAfterLast()) {
 			Pilot p = cursorToPilot(cursor, true);
-			Log.d("RACEPILOTDATA", "PILOT:"+p.toString());
+			p.number = Integer.toString(n++);
 			allPilots.add(p);
 			cursor.moveToNext();
 		}
@@ -272,9 +277,16 @@ public class RacePilotData {
                 p.flown = false;
             }
 			p.team = cursor.getString(15);
+			p.nac_no = cursor.getString(16);
+			p.fai_id = cursor.getString(17);
 		} else {
 			p.team = cursor.getString(11);
+			p.nac_no = cursor.getString(12);
+			p.fai_id = cursor.getString(13);
 		}
+		if (p.team == null) p.team = "";
+		if (p.nac_no == null) p.nac_no = "";
+		if (p.fai_id == null) p.fai_id = "";
 		return p;
 	}
 
@@ -285,7 +297,7 @@ public class RacePilotData {
         for(int i=0;i<pilots.size(); i++){
             if (i>0) jsonarray.append(",");
             Pilot p = pilots.get(i);
-            String str_pilot = String.format(Locale.ENGLISH, "{\"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", p.pilot_id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language, p.team);
+            String str_pilot = String.format(Locale.ENGLISH, "{\"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\", \"nac_no\":\"%s\", \"fai_id\":\"%s\"}", p.pilot_id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language, p.team, p.nac_no, p.fai_id);
             jsonarray.append(str_pilot);
         }
 		jsonarray.append("]");

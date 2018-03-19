@@ -270,10 +270,6 @@
         </activity>
 
         <activity
-            android:name=".exportimport.FileExportPilots" android:theme="@style/Theme.Overlay">
-        </activity>
-
-        <activity
             android:name=".exportimport.FilteredFilePickerActivity"
             android:label="@string/app_name"
             android:theme="@style/FilePickerTheme">

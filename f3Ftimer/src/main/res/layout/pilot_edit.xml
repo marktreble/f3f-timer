@@ -124,6 +124,38 @@
 				android:id="@+id/textView8"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
+				android:text="@string/pilot_nac_no"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:textColor="@color/text3"
+				/>
+
+			<EditText
+				android:id="@+id/editText6"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:ems="10"
+				android:inputType="textNoSuggestions" />
+
+			<TextView
+				android:id="@+id/textView9"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/pilot_fai_id"
+				android:textAppearance="?android:attr/textAppearanceLarge"
+				android:textColor="@color/text3"
+				/>
+
+			<EditText
+				android:id="@+id/editText7"
+				android:layout_width="match_parent"
+				android:layout_height="match_parent"
+				android:ems="10"
+				android:inputType="textNoSuggestions" />
+
+			<TextView
+				android:id="@+id/textView10"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
 				android:text="@string/pilot_team"
 				android:textAppearance="?android:attr/textAppearanceLarge"
 				android:textColor="@color/text3"

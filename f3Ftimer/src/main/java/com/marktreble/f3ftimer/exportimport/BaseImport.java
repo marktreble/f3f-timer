@@ -203,40 +203,43 @@ public abstract class BaseImport extends Activity {
                             // Race Data
                             race.put("race_id", fields[0]);
                             race.put("name", fields[1]);
-                            race.put("type", (fields.length<3) ? "1" : fields[2]);
-                            race.put("offset", (fields.length<4) ? "0" : fields[3]);
-                            race.put("status", (fields.length<5) ? "0" : fields[4]);
-                            race.put("round", (fields.length<6) ? "1" : fields[5]);
-                            race.put("rounds_per_flight", (fields.length<7) ? "1" : fields[6]);
-                            race.put("start_number", (fields.length<8) ? "1" : fields[7]);
+                            race.put("round", (fields.length<7) ? "1" : fields[6]);
+                            race.put("type", (fields.length<8) ? "1" : fields[7]);
+                            race.put("offset", (fields.length<9) ? "0" : fields[8]);
+                            race.put("status", (fields.length<10) ? "0" : fields[9]);
+                            race.put("rounds_per_flight", (fields.length<11) ? "1" : fields[12]);
+                            race.put("start_number", (fields.length<12) ? "1" : fields[13]);
                             break;
                         case 1:
                             // Pilot headers - ignore
                             break;
                         default:
-                            // Pilots
-                            int pilot_bib_number = Integer.parseInt(fields[1]);
-                            while (bib_no++<pilot_bib_number && bib_no<200){
-                                pilot = new JSONObject();
-                                race_pilots.put(pilot);
+                            if (fields.length>=7) {
+                                // Pilots
+                                int pilot_bib_number = Integer.parseInt(fields[1]);
+                                // Fill in gaps where bib numbers are missing
+                                while (bib_no++ < pilot_bib_number && bib_no < 200) {
+                                    pilot = new JSONObject();
+                                    race_pilots.put(pilot);
 
+                                }
+                                pilot = new JSONObject();
+                                pilot.put("pilot_id", fields[0]);
+                                pilot.put("firstname", fields[2]);
+                                pilot.put("lastname", fields[3]);
+                                //pilot.put("class", fields[4]); // Not required
+                                pilot.put("nac_no", fields[5]);
+                                //pilot.put("fai_designation", fields[6]);
+                                pilot.put("fai_id", fields[6]);
+                                pilot.put("team", fields[8]);
+                                pilot.put("status", (fields.length < 10) ? "1" : fields[9]);
+                                pilot.put("email", (fields.length < 11) ? "" : fields[10]);
+                                pilot.put("frequency", (fields.length < 12) ? "" : fields[11]);
+                                pilot.put("models", (fields.length < 13) ? "" : fields[12]);
+                                pilot.put("nationality", (fields.length < 14) ? "" : fields[13]);
+                                pilot.put("language", (fields.length < 15) ? "" : fields[14]);
+                                race_pilots.put(pilot);
                             }
-                            pilot = new JSONObject();
-                            pilot.put("pilot_id", fields[0]);
-                            pilot.put("firstname", fields[2]);
-                            pilot.put("lastname", fields[3]);
-                            // TODO add these fields adding to database
-                            //pilot.put("class", fields[4]);
-                            //pilot.put("nac_number", fields[5]);
-                            //pilot.put("fai_id", fields[6]);
-                            pilot.put("team", fields[7]);
-                            pilot.put("status", (fields.length<9) ? "1" : fields[8]);
-                            pilot.put("email", (fields.length<10) ? "" : fields[9]);
-                            pilot.put("frequency", (fields.length<11) ? "" : fields[10]);
-                            pilot.put("models", (fields.length<12) ? "" : fields[11]);
-                            pilot.put("nationality", (fields.length<13) ? "" : fields[12]);
-                            pilot.put("language", (fields.length<14) ? "" : fields[13]);
-                            race_pilots.put(pilot);
                             break;
 
                     }

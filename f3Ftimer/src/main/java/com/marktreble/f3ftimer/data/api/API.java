@@ -139,6 +139,7 @@ public class API {
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
+                    .cache(null)
                     .build();
 
             Log.d(TAG, url);
@@ -180,6 +181,7 @@ public class API {
                     .connectTimeout(30, TimeUnit.SECONDS)
                     .writeTimeout(30, TimeUnit.SECONDS)
                     .readTimeout(30, TimeUnit.SECONDS)
+                    .cache(null)
                     .build();
 
             Log.d(TAG, url);
@@ -193,6 +195,7 @@ public class API {
             try {
                 Response r = client.newCall(request).execute();
                 response = r.body().string();
+                Log.d("RAW", r.networkResponse().cacheControl().toString());
             } catch (IOException e){
                 e.printStackTrace();
             }

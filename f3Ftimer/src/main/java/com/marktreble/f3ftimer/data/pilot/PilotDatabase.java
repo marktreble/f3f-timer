@@ -8,7 +8,7 @@ import android.util.Log;
 public class PilotDatabase extends SQLiteOpenHelper {
 
 	private static final String DATABASE_NAME = "pilots.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 3;
     
 	private static final String PILOTS_TABLE_CREATE = "create table pilots " +
 			 "(id integer primary key," +
@@ -18,7 +18,9 @@ public class PilotDatabase extends SQLiteOpenHelper {
 			 " frequency tinytext," +
 			 " models tinytext," +
 			 " nationality tinytext," +
-			 " language tinytext);";
+			 " language tinytext, " +
+			 " nac_no tinytext, " +
+			 " fai_id tinytext);";
 
     public PilotDatabase(Context context){
     	super(context, DATABASE_NAME, null, DATABASE_VERSION);	
@@ -41,5 +43,13 @@ public class PilotDatabase extends SQLiteOpenHelper {
 			sql = "alter table pilots add language tinytext";
 			db.execSQL(sql);
 		}
-    }
+
+		if (newVersion>2 && oldVersion<=2){
+			sql = "alter table pilots add nac_no tinytext";
+			db.execSQL(sql);
+			sql = "alter table pilots add fai_id tinytext";
+			db.execSQL(sql);
+		}
+
+	}
 }

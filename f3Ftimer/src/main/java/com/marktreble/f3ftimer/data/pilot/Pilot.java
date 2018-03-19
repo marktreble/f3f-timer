@@ -33,6 +33,8 @@ public class Pilot {
 	public Integer round = 0;
 	public String number = "";
 	public String team = "";
+	public String nac_no = "";
+	public String fai_id = "";
 	public Integer group = 0;
 
     public Pilot(){
@@ -50,6 +52,8 @@ public class Pilot {
         nationality = o.optString("nationality");
 		language = o.optString("language");
 		team = o.optString("team");
+		nac_no = o.optString("nac_no", "");
+		fai_id = o.optString("fai_id", "");
     }
     
 	public String get(){
@@ -68,7 +72,7 @@ public class Pilot {
 	}
     
     public String toString(){
-        return String.format("{\"id\":\"%s\", \"race_id\":\"%s\", \"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"team\":\"%s\"}", id, race_id, pilot_id, status, firstname, lastname, nationality, language, team );
+        return String.format("{\"id\":\"%s\", \"race_id\":\"%s\", \"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"nac_no\":\"%s\", \"fai_id\":\"%s\", \"team\":\"%s\"}", id, race_id, pilot_id, status, firstname, lastname, nationality, language, nac_no, fai_id, team );
         
     }
 

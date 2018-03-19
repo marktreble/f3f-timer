@@ -21,6 +21,8 @@
     <string name="pilot_nationality">Nationality</string>
     <string name="pilot_language">Language</string>
     <string name="pilot_team">Team Name</string>
+    <string name="pilot_nac_no">NAC No.</string>
+    <string name="pilot_fai_id">FAI ID</string>
 
     <string name="race_name">Race Name</string>
     <string name="race_type">Race Type</string>

@@ -75,7 +75,9 @@ public class PilotsEditActivity extends Activity {
     	EditText models = (EditText) findViewById(R.id.editText5);
     	Spinner nationality = (Spinner) findViewById(R.id.spinner6);
         Spinner language = (Spinner) findViewById(R.id.spinner7);
-		TextView teamlabel = (TextView) findViewById(R.id.textView8);
+		EditText nac = (EditText) findViewById(R.id.editText6);
+		EditText fai = (EditText) findViewById(R.id.editText7);
+        TextView teamlabel = (TextView) findViewById(R.id.textView10);
 		AutoCompleteTextView team = (AutoCompleteTextView) findViewById(R.id.editText8);
         Button done_button = (Button) findViewById(R.id.button1);
 
@@ -189,6 +191,8 @@ public class PilotsEditActivity extends Activity {
         	frequency.setText(p.frequency);
 			models.setText(p.models);
 			team.setText(p.team);
+			nac.setText(p.nac_no);
+			fai.setText(p.fai_id);
 
         	int pos;
         	
@@ -267,8 +271,11 @@ public class PilotsEditActivity extends Activity {
         Spinner nationality = (Spinner) findViewById(R.id.spinner6);
         Spinner language = (Spinner) findViewById(R.id.spinner7);
 		EditText team = (EditText) findViewById(R.id.editText8);
+		EditText nac = (EditText) findViewById(R.id.editText6);
+		EditText fai = (EditText) findViewById(R.id.editText7);
 
-        Pilot p = new Pilot();
+
+		Pilot p = new Pilot();
         p.firstname = capitalise(firstname.getText().toString().trim());
         p.lastname = capitalise(lastname.getText().toString().trim());
         p.email = email.getText().toString().trim().toLowerCase();
@@ -278,6 +285,10 @@ public class PilotsEditActivity extends Activity {
         String[] languages = Languages.getAvailableLanguages(mContext);
         if (language.getSelectedItemPosition()>=0)
             p.language = languages[language.getSelectedItemPosition()];
+
+        p.nac_no = nac.getText().toString().trim().toUpperCase();
+        p.fai_id = fai.getText().toString().trim().toUpperCase();
+
 
         String regEx = "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}\\b";
 
