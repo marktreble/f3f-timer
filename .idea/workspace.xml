@@ -5263,7 +5263,7 @@
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="337" />
+    <option name="x" value="336" />
     <option name="y" value="23" />
     <option name="width" value="1761" />
     <option name="height" value="1122" />
@@ -5806,7 +5806,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1521463718318" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1521463883684" />
       </method>
     </configuration>
     <configuration default="true" type="AndroidTestRunConfigurationType" factoryName="Android Instrumented Tests">
@@ -5854,7 +5854,7 @@
       </Profilers>
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1521463718318" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1521463883685" />
       </method>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -6037,7 +6037,7 @@
       <option name="ACTIVITY_CLASS" value="" />
       <method>
         <option name="Android.Gradle.BeforeRunTask" enabled="true" />
-        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1521463718319" />
+        <option name="com.android.instantApps.provision.BeforeRunTask" enabled="true" clearCache="false" clearProvisionedDevices="false" myTimestamp="1521463883685" />
       </method>
     </configuration>
     <list size="1">
@@ -6174,13 +6174,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1440510397826</updated>
-    </task>
-    <task id="LOCAL-00026" summary="Added auto gen files">
-      <created>1496841826049</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1496841826049</updated>
     </task>
     <task id="LOCAL-00027" summary="Added minimise feature to race dialog window">
       <created>1496878962913</created>
@@ -6518,7 +6511,14 @@
       <option name="project" value="LOCAL" />
       <updated>1521463596476</updated>
     </task>
-    <option name="localTasksCounter" value="75" />
+    <task id="LOCAL-00075" summary="Added NAC No/FAI ID to pilots + Imp/Exp functions">
+      <created>1521463722712</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1521463722712</updated>
+    </task>
+    <option name="localTasksCounter" value="76" />
     <servers />
   </component>
   <component name="TodoView">
@@ -6531,7 +6531,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="337" y="23" width="1761" height="1122" extended-state="0" />
+    <frame x="336" y="23" width="1761" height="1122" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Android Profiler" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32902583" sideWeight="0.5" order="16" side_tool="false" content_ui="tabs" />
