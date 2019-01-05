@@ -183,7 +183,7 @@ public class USBOtherService extends Service implements DriverInterface {
                 break;
             case "8":
             default:
-                mStopBits =UsbSerialPort.DATABITS_8;
+                mDataBits =UsbSerialPort.DATABITS_8;
                 break;
         }
 

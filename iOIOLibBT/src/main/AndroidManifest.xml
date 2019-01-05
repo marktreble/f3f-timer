@@ -3,5 +3,4 @@
       package="ioio.lib.bluetooth"
       android:versionCode="1"
       android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="10" android:targetSdkVersion="10"/>
 </manifest>
