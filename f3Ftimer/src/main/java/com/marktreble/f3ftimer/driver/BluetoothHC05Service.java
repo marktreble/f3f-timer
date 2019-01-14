@@ -103,6 +103,8 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 		driverDisconnected();
 
 		mIsListening = false;
+		mHandler.removeCallbacksAndMessages(null);
+
 		try {
 			if (mmInStream != null) mmInStream.close();
 			if (mmOutStream != null) mmOutStream.close();
@@ -421,6 +423,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 		}
 
 		mBoardConnected = true;
+        mIsListening = true;
 		mDriver.start(mIntent);
 		driverConnected();
 
@@ -435,10 +438,11 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 	};
 
 	private void listen() {
+	    if (!mIsListening) return;
 		// Listen
 		byte[] buffer = new byte[1024];  // 1K buffer store for the stream
 		int bufferLength; // bytes returned from read()
-		mIsListening = true;
+
 
 		try {
 			if (mmInStream.available()>0) {

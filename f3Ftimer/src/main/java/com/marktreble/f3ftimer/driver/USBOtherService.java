@@ -353,6 +353,7 @@ public class USBOtherService extends Service implements DriverInterface {
             String str_in = mBuffer+sb.toString().trim();
             int len = str_in.length();
             if (len>0){
+
                 String lastchar = hexString.substring(hexString.length()-2, hexString.length());
                 if (lastchar.equals("0d") || lastchar.equals("0a")){
                     // Clear the buffer
