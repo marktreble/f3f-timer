@@ -2,16 +2,14 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.content.Intent;
 import android.os.Bundle;
-
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.View;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
-import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
 import java.util.ArrayList;
@@ -64,22 +62,22 @@ public class FlyingOrderEditActivity extends FragmentActivity {
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState){
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
     }
 
-    public void updateFlyingOrder(){
+    public void updateFlyingOrder() {
         ArrayList<Pilot> allPilots;
         RacePilotData datasource = new RacePilotData(this);
         datasource.open();
         allPilots = datasource.getAllPilotsForRace(mRid, 0, 0, 0);
 
         datasource.deleteAllPilots(mRid);
-        for (int i=0; i<this.pilots.size(); i++){
-            for (int j=0; j<allPilots.size(); j++) {
+        for (int i = 0; i < this.pilots.size(); i++) {
+            for (int j = 0; j < allPilots.size(); j++) {
                 Pilot p = allPilots.get(j);
                 if (p.id == this.pilots.get(i)) {
-                    if (p.pilot_id == 0) p.id=0;
+                    if (p.pilot_id == 0) p.id = 0;
                     datasource.addPilot(p, mRid);
                     Log.i("EDITRACE", p.toString());
 
@@ -91,13 +89,13 @@ public class FlyingOrderEditActivity extends FragmentActivity {
 
     public void moveUp(View v) {
         FragmentManager fm = getSupportFragmentManager();
-        NewRaceFrag3 f = (NewRaceFrag3)fm.findFragmentByTag("newracefrag3");
+        NewRaceFrag3 f = (NewRaceFrag3) fm.findFragmentByTag("newracefrag3");
         f.moveUp(v);
     }
 
     public void moveDown(View v) {
         FragmentManager fm = getSupportFragmentManager();
-        NewRaceFrag3 f = (NewRaceFrag3)fm.findFragmentByTag("newracefrag3");
+        NewRaceFrag3 f = (NewRaceFrag3) fm.findFragmentByTag("newracefrag3");
         f.moveDown(v);
     }
 }

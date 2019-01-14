@@ -49,7 +49,7 @@ public abstract class BaseExport extends Activity {
 
     }
 
-    protected void promptForSaveFolder(String folder){
+    protected void promptForSaveFolder(String folder) {
         if (folder == null) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             mSaveFolder = sharedPref.getString("export_save_folder", Environment.getExternalStorageDirectory().getPath());
@@ -115,9 +115,10 @@ public abstract class BaseExport extends Activity {
         }
     }
 
-    void beginExport(){}
+    void beginExport() {
+    }
 
-    protected String getSerialisedRaceData(int race_id, int round){
+    protected String getSerialisedRaceData(int race_id, int round) {
         RaceData datasource = new RaceData(mContext);
         datasource.open();
         String race = datasource.getSerialized(race_id);
@@ -133,7 +134,7 @@ public abstract class BaseExport extends Activity {
         return String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
     }
 
-    protected String getSerialisedPilotData(){
+    protected String getSerialisedPilotData() {
         PilotData datasource = new PilotData(mContext);
         datasource.open();
         String pilots = datasource.getSerialized();
@@ -143,7 +144,7 @@ public abstract class BaseExport extends Activity {
 
     }
 
-    protected String getCSVRaceData(int race_id, int round){
+    protected String getCSVRaceData(int race_id, int round) {
 
         RaceData datasource = new RaceData(mContext);
         datasource.open();
@@ -153,47 +154,47 @@ public abstract class BaseExport extends Activity {
 
         RacePilotData datasource2 = new RacePilotData(mContext);
         datasource2.open();
-        ArrayList<Pilot> racepilots = datasource2.getAllPilotsForRace(race_id,0,race.offset, 0);
+        ArrayList<Pilot> racepilots = datasource2.getAllPilotsForRace(race_id, 0, race.offset, 0);
         String racetimes = datasource2.getTimesSerialized(race_id, round);
         datasource2.close();
 
         StringBuilder csvdata = new StringBuilder();
 
         String race_params = "";
-        race_params+= String.format("\"%d\",", race.race_id);
-        race_params+= String.format("\"%s\",", race.name);
-        race_params+= String.format("\"%s\",", ""); // F3XV Location
-        race_params+= String.format("\"%s\",", ""); // F3XV Start Date
-        race_params+= String.format("\"%s\",", ""); // F3XV End Date
-        race_params+= String.format("\"%s\",", ""); // F3XV Type
-        race_params+= String.format("\"%d\",", race.round);
-        race_params+= String.format("\"%d\",", race.type);
-        race_params+= String.format("\"%d\",", race.offset);
-        race_params+= String.format("\"%d\",", race.status);
-        race_params+= String.format("\"%d\",", race.rounds_per_flight);
-        race_params+= String.format("\"%d\"\n", race.start_number);
+        race_params += String.format("\"%d\",", race.race_id);
+        race_params += String.format("\"%s\",", race.name);
+        race_params += String.format("\"%s\",", ""); // F3XV Location
+        race_params += String.format("\"%s\",", ""); // F3XV Start Date
+        race_params += String.format("\"%s\",", ""); // F3XV End Date
+        race_params += String.format("\"%s\",", ""); // F3XV Type
+        race_params += String.format("\"%d\",", race.round);
+        race_params += String.format("\"%d\",", race.type);
+        race_params += String.format("\"%d\",", race.offset);
+        race_params += String.format("\"%d\",", race.status);
+        race_params += String.format("\"%d\",", race.rounds_per_flight);
+        race_params += String.format("\"%d\"\n", race.start_number);
 
         csvdata.append(race_params);
         csvdata.append("\n");
 
-        for(Pilot p : racepilots) {
+        for (Pilot p : racepilots) {
             String pilot_params = "";
-            pilot_params+= String.format("%d,", p.pilot_id);
-            pilot_params+= String.format("\"%s\",", p.number);
-            pilot_params+= String.format("\"%s\",", p.firstname);
-            pilot_params+= String.format("\"%s\",", p.lastname);
-            pilot_params+= ","; // F3XV Pilot Class - not required?
-            pilot_params+= String.format("\"%s\",", p.nac_no);
-            pilot_params+= String.format("\"%s\",", p.fai_id);
-            pilot_params+= ","; // F3XV FAI License?
-            pilot_params+= String.format("\"%s\",", p.team);
+            pilot_params += String.format("%d,", p.pilot_id);
+            pilot_params += String.format("\"%s\",", p.number);
+            pilot_params += String.format("\"%s\",", p.firstname);
+            pilot_params += String.format("\"%s\",", p.lastname);
+            pilot_params += ","; // F3XV Pilot Class - not required?
+            pilot_params += String.format("\"%s\",", p.nac_no);
+            pilot_params += String.format("\"%s\",", p.fai_id);
+            pilot_params += ","; // F3XV FAI License?
+            pilot_params += String.format("\"%s\",", p.team);
             // Extra data not in f3xvault api
-            pilot_params+= String.format("%d,", p.status);
-            pilot_params+= String.format("\"%s\",", p.email);
-            pilot_params+= String.format("\"%s\",", p.frequency);
-            pilot_params+= String.format("\"%s\",", p.models);
-            pilot_params+= String.format("\"%s\",", p.nationality);
-            pilot_params+= String.format("\"%s\"\n", p.language);
+            pilot_params += String.format("%d,", p.status);
+            pilot_params += String.format("\"%s\",", p.email);
+            pilot_params += String.format("\"%s\",", p.frequency);
+            pilot_params += String.format("\"%s\",", p.models);
+            pilot_params += String.format("\"%s\",", p.nationality);
+            pilot_params += String.format("\"%s\"\n", p.language);
             csvdata.append(pilot_params);
         }
 
@@ -201,11 +202,11 @@ public abstract class BaseExport extends Activity {
 
         StringBuilder group_params = new StringBuilder();
         StringBuilder start_params = new StringBuilder();
-        for (RaceData.Group group : racegroups){
-            if (group_params.length()>0) group_params.append(",");
+        for (RaceData.Group group : racegroups) {
+            if (group_params.length() > 0) group_params.append(",");
             group_params.append(String.format("%d", group.num_groups));
 
-            if (start_params.length()>0) start_params.append(",");
+            if (start_params.length() > 0) start_params.append(",");
             start_params.append(String.format("%d", group.start_pilot));
         }
 
@@ -214,10 +215,10 @@ public abstract class BaseExport extends Activity {
         csvdata.append("\n");
 
 
-        return  csvdata.toString();
+        return csvdata.toString();
     }
 
-    protected String getCSVPilotData(){
+    protected String getCSVPilotData() {
         PilotData datasource = new PilotData(mContext);
         datasource.open();
         String pilots = datasource.getCSV();

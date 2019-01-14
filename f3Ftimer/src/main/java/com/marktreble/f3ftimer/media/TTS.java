@@ -21,20 +21,23 @@ public class TTS implements TextToSpeech.OnInitListener {
 
     public interface onInitListenerProxy {
         void onInit(int status);
+
         void onStart(String utteranceId);
+
         void onDone(String utteranceId);
+
         void onError(String utteranceId);
     }
 
-    private TTS(Context context){
+    private TTS(Context context) {
         Log.i(TAG, "STARTING TTS ENGINE");
         mttsengine = new TextToSpeech(context, this);
     }
 
 
-    public static TTS sharedTTS(Context context, TTS.onInitListenerProxy listener){
-        if (sharedTTS == null){ //if there is no instance available... create new one
-            sharedTTS =new TTS(context);
+    public static TTS sharedTTS(Context context, TTS.onInitListenerProxy listener) {
+        if (sharedTTS == null) { //if there is no instance available... create new one
+            sharedTTS = new TTS(context);
         }
 
         if (listener != null)
@@ -43,21 +46,21 @@ public class TTS implements TextToSpeech.OnInitListener {
         return sharedTTS;
     }
 
-    public void setListener(TTS.onInitListenerProxy listener){
+    public void setListener(TTS.onInitListenerProxy listener) {
         mInitListener = listener;
     }
 
-    public TextToSpeech ttsengine(){
+    public TextToSpeech ttsengine() {
         return mttsengine;
     }
 
-    public void release(){
+    public void release() {
         mttsengine.shutdown();
         mttsengine = null;
         sharedTTS = null;
     }
 
-    public void onInit(int status){
+    public void onInit(int status) {
         mTTSStatus = status;
 
         initUtteranceListenerForMinICS();
@@ -71,7 +74,7 @@ public class TTS implements TextToSpeech.OnInitListener {
     }
 
     @TargetApi(15)
-    private void initUtteranceListenerForMinICS(){
+    private void initUtteranceListenerForMinICS() {
         mttsengine.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
             public void onStart(String utteranceId) {

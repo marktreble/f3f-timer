@@ -3,14 +3,8 @@ package com.marktreble.f3ftimer.exportimport;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.marktreble.f3ftimer.data.race.Race;
-import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.filesystem.FileExport;
-import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
-
-import java.util.ArrayList;
 
 /**
  * Created by marktreble on 27/12/14.
@@ -25,41 +19,40 @@ public class FileExportPilots extends BaseExport {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDlg = new AlertDialog.Builder( this )
-                .setTitle( "Select file type" )
+        mDlg = new AlertDialog.Builder(this)
+                .setTitle("Select file type")
                 .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         mExportFileType = which;
                     }
                 })
-                .setPositiveButton( "OK", new DialogInterface.OnClickListener() {
-                    public void onClick( DialogInterface dialog, int clicked )
-                    {
-                        if (mExportFileType >=0) {
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int clicked) {
+                        if (mExportFileType >= 0) {
                             mDlg.dismiss();
                             promptForSaveFolder(null);
 
                         }
                     }
-                } )
+                })
                 .show();
     }
 
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         if (mDlg != null) mDlg = null;
     }
 
 
     @Override
-    protected void beginExport(){
+    protected void beginExport() {
         exportPilotData();
         finish();
     }
 
-    private void exportPilotData(){
+    private void exportPilotData() {
         // Serialize all race data, pilots, times + groups
 
         switch (mExportFileType) {

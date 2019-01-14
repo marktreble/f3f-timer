@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/menu_next_round"
-        android:title="@string/menu_next_round"/>
+        android:title="@string/menu_next_round" />
 
     <item
         android:id="@+id/menu_change_flying_order"
-        android:title="@string/menu_change_flying_order"/>
+        android:title="@string/menu_change_flying_order" />
 
     <item
         android:id="@+id/menu_change_start_number"
-        android:title="@string/menu_change_start_number"/>
+        android:title="@string/menu_change_start_number" />
 
     <item
         android:id="@+id/menu_scrub_round"
-        android:title="@string/menu_scrub_round"/>
+        android:title="@string/menu_scrub_round" />
 
     <item
         android:id="@+id/menu_show_time_remaining"
-        android:title="@string/menu_show_round_timeout"/>
+        android:title="@string/menu_show_round_timeout" />
 
     <item
         android:id="@+id/menu_group_score"
-        android:title="@string/menu_group_score"/>
-    
+        android:title="@string/menu_group_score" />
+
     <item
         android:id="@+id/menu_add_pilots"
-        android:title="@string/menu_add_pilots"/>
+        android:title="@string/menu_add_pilots" />
 
     <item
         android:id="@+id/menu_settings"
-        android:title="@string/menu_settings"/>
+        android:title="@string/menu_settings" />
 
     <item
         android:id="@+id/menu_pilot_manager"
-        android:title="@string/app_pilots"/>
+        android:title="@string/app_pilots" />
 
     <item
         android:id="@+id/menu_results_manager"
-        android:title="@string/app_results"/>
+        android:title="@string/app_results" />
 
     <item
         android:id="@+id/menu_help"
-        android:title="@string/menu_help"/>
-    
+        android:title="@string/menu_help" />
+
     <item
         android:id="@+id/menu_about"
-        android:title="@string/menu_about"/>
+        android:title="@string/menu_about" />
 </menu>

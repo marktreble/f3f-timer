@@ -15,20 +15,20 @@ import java.io.IOException;
 
 public class FileExport {
 
-    void writeExportFile(Context context, String output, String filename){
+    void writeExportFile(Context context, String output, String filename) {
         writeExportFile(context, output, filename, "");
     }
 
-    public void writeExportFile(Context context, String output, String filename, String path){
+    public void writeExportFile(Context context, String output, String filename, String path) {
         File file;
         if (path.equals("")) {
             file = this.getDataStorageDir(filename);
         } else {
-            file = new File(path+String.format("/%s", filename));
+            file = new File(path + String.format("/%s", filename));
         }
-        Log.d("EXPORT", "WRITING FILE TO: "+file.getPath());
+        Log.d("EXPORT", "WRITING FILE TO: " + file.getPath());
 
-        if (file != null){
+        if (file != null) {
             FileOutputStream stream = null;
             try {
                 stream = new FileOutputStream(file);
@@ -47,7 +47,7 @@ public class FileExport {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            if (stream != null){
+            if (stream != null) {
                 try {
                     stream.flush();
                     stream.close();
@@ -77,7 +77,7 @@ public class FileExport {
         return file;
     }
 
-    private String sanitise(String name){
+    private String sanitise(String name) {
         return name.replaceAll("[^a-zA-Z0-9\\.]", "-");
     }
 

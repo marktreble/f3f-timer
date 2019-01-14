@@ -87,7 +87,7 @@ public class FileImportPilots extends BaseImport {
                             (FilteredFilePickerActivity.EXTRA_PATHS);
 
                     if (paths != null) {
-                        for (String path: paths) {
+                        for (String path : paths) {
                             Uri uri = Uri.parse(path);
                             // Do something with the URI
                             boolean success = importFile(uri);
@@ -102,18 +102,18 @@ public class FileImportPilots extends BaseImport {
 
                 }
 
-                if (successes>0) setResult(RESULT_OK);
+                if (successes > 0) setResult(RESULT_OK);
 
                 if (failures.equals("")) {
                     finish();
                 } else {
-                    failures = failures.substring(0, failures.length()-2);
+                    failures = failures.substring(0, failures.length() - 2);
                     new AlertDialog.Builder(mContext, R.style.FilePickerAlertDialogTheme)
                             .setTitle("Wrong file types")
-                            .setMessage("Sorry, f3f timer can only import files in 'json' format. Some of your chosen files failed to import ("+failures+")")
+                            .setMessage("Sorry, f3f timer can only import files in 'json' format. Some of your chosen files failed to import (" + failures + ")")
                             .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                        finish();
+                                    finish();
 
                                 }
                             })
@@ -134,9 +134,9 @@ public class FileImportPilots extends BaseImport {
                 } else {
                     String filename = uri.toString();
                     String[] parts = filename.split("\\.");
-                    String extension = parts[parts.length-1];
+                    String extension = parts[parts.length - 1];
 
-                    new AlertDialog.Builder(mContext, R.style.AppTheme )
+                    new AlertDialog.Builder(mContext, R.style.AppTheme)
                             .setTitle("Wrong file type (." + extension + ")")
                             .setMessage("Sorry, f3f timer can only import files in 'json' format")
                             .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -152,15 +152,15 @@ public class FileImportPilots extends BaseImport {
         }
     }
 
-    private boolean importFile(Uri uri){
+    private boolean importFile(Uri uri) {
         String filename = uri.toString();
 
         String[] parts = filename.split("\\.");
-        String extension = parts[parts.length-1];
+        String extension = parts[parts.length - 1];
 
         if (extension.equals("json")) {
             String data = readFile(uri);
-            if (!data.equals("")){
+            if (!data.equals("")) {
                 super.importPilotsJSON(data);
                 return true;
             }
@@ -168,7 +168,7 @@ public class FileImportPilots extends BaseImport {
 
         if (extension.equals("csv")) {
             String data = readFile(uri);
-            if (!data.equals("")){
+            if (!data.equals("")) {
                 super.importPilotsCSV(data);
                 return true;
             }

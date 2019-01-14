@@ -25,7 +25,7 @@ import java.util.Map;
  */
 
 public class F3ftimerApiImportRace extends BaseImport
-    implements API.APICallbackInterface {
+        implements API.APICallbackInterface {
 
     private static final int DLG_LOGIN = 1;
 
@@ -69,9 +69,9 @@ public class F3ftimerApiImportRace extends BaseImport
                 showProgress("Connecting to Server..");
 
                 // Auto prepend the http if needed
-                if (!mDataSource.substring(0,7).equals("http://")
-                    && !mDataSource.substring(0,8).equals("https://")){
-                    mDataSource = "http://"+mDataSource;
+                if (!mDataSource.substring(0, 7).equals("http://")
+                        && !mDataSource.substring(0, 8).equals("https://")) {
+                    mDataSource = "http://" + mDataSource;
                 }
 
                 Map<String, String> params = new HashMap<>();
@@ -90,15 +90,15 @@ public class F3ftimerApiImportRace extends BaseImport
         }
     }
 
-    public void showProgress(String msg){
+    public void showProgress(String msg) {
         View progress = findViewById(R.id.progress);
-        TextView progressLabel = (TextView)findViewById(R.id.progressLabel);
+        TextView progressLabel = (TextView) findViewById(R.id.progressLabel);
 
         progressLabel.setText(msg);
         progress.setVisibility(View.VISIBLE);
     }
 
-    public void hideProgress(){
+    public void hideProgress() {
         View progress = findViewById(R.id.progress);
         progress.setVisibility(View.GONE);
     }
@@ -117,7 +117,7 @@ public class F3ftimerApiImportRace extends BaseImport
                 e.printStackTrace();
             }
 
-            if (race_list.length()>0) {
+            if (race_list.length() > 0) {
                 mToken = token;
                 showRaceNamesDialog(race_list);
             } else {
@@ -144,7 +144,7 @@ public class F3ftimerApiImportRace extends BaseImport
             if (race_data != null) {
                 super.importRaceJSON(race_data.toString());
                 Log.i("ONACTIVITY", mActivity.toString());
-                Log.i("ONACTIVITY", "RETURNING "+RESULT_OK);
+                Log.i("ONACTIVITY", "RETURNING " + RESULT_OK);
                 mActivity.setResult(RESULT_OK);
                 mActivity.finish();
 
@@ -167,7 +167,7 @@ public class F3ftimerApiImportRace extends BaseImport
         mAPITask = null;
         hideProgress();
 
-        if (data == null){
+        if (data == null) {
             new AlertDialog.Builder(mContext)
                     .setTitle("Network Error")
                     .setMessage("Sorry, no response from server.")
@@ -186,20 +186,20 @@ public class F3ftimerApiImportRace extends BaseImport
             e.printStackTrace();
         }
 
-        if (message.equals("LOGIN_FAILED")){
+        if (message.equals("LOGIN_FAILED")) {
 
             Intent intent = new Intent(mActivity, F3fTimerAPILoginActivity.class);
             startActivityForResult(intent, DLG_LOGIN);
         }
     }
 
-    private void showRaceNamesDialog(JSONArray racenames){
+    private void showRaceNamesDialog(JSONArray racenames) {
         mAvailableRaceIds = new ArrayList<>();
         ArrayList<String> racelist = new ArrayList<>();
         for (int i = 0; i < racenames.length(); i++) {
             JSONObject r = racenames.optJSONObject(i);
-            String id =r.optString("id");
-            String name =r.optString("name");
+            String id = r.optString("id");
+            String name = r.optString("name");
             mAvailableRaceIds.add(id);
             racelist.add(name);
         }
@@ -221,7 +221,7 @@ public class F3ftimerApiImportRace extends BaseImport
         mDlg.show();
     }
 
-    private final DialogInterface.OnClickListener raceClickListener = new DialogInterface.OnClickListener(){
+    private final DialogInterface.OnClickListener raceClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             downloadRace(mAvailableRaceIds.get(which));
@@ -229,7 +229,7 @@ public class F3ftimerApiImportRace extends BaseImport
         }
     };
 
-    public void downloadRace(String id){
+    public void downloadRace(String id) {
         Log.i("ONACTIVITY", "DOWNLOADING RACE");
 
         showProgress("Downloading Race..");

@@ -4,16 +4,15 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
-import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.os.Bundle;
 import android.widget.TextView;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class RaceTimerFrag5 extends RaceTimerFrag {
 
@@ -21,7 +20,8 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
 
     private boolean mClickedOnce = false;
     private boolean mStartPressed = false;
-    public RaceTimerFrag5(){
+
+    public RaceTimerFrag5() {
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
 
         super.setPilotName();
 
-        if (((RaceTimerActivity)getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
+        if (((RaceTimerActivity) getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
             setMinimized();
         }
 
@@ -68,14 +68,14 @@ public class RaceTimerFrag5 extends RaceTimerFrag {
         return mView;
     }
 
-    public void next(){
-        RaceTimerActivity a = (RaceTimerActivity)getActivity();
+    public void next() {
+        RaceTimerActivity a = (RaceTimerActivity) getActivity();
         a.sendCommand("abort");
         a.setResult(RaceActivity.RESULT_OK);
         a.finish();
     }
 
-    public void startPressed(){
+    public void startPressed() {
         mClickedOnce = true;
         if (!mStartPressed) {
             mStartPressed = true;

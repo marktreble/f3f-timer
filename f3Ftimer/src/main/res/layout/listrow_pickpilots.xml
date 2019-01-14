@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="fill_parent"
-	android:layout_height="wrap_content">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/number"
@@ -13,8 +13,7 @@
         android:layout_gravity="center"
         android:textColor="@color/text2"
         android:textSize="24sp"
-        android:textStyle="bold">
-    </TextView>
+        android:textStyle="bold"></TextView>
 
     <TextView
         android:id="@+id/text1"
@@ -32,10 +31,7 @@
         android:paddingTop="4dp"
         android:textColor="@color/text3"
         android:textSize="24sp"
-        android:textStyle="bold">
-	</TextView>
-	
-   
-        
-    
+        android:textStyle="bold"></TextView>
+
+
 </LinearLayout>

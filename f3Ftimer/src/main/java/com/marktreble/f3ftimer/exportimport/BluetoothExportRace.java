@@ -1,11 +1,9 @@
 package com.marktreble.f3ftimer.exportimport;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +11,6 @@ import android.util.Log;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +34,7 @@ public class BluetoothExportRace extends BaseExport {
     private BluetoothSocket mmSocket;
     private InputStream mmInStream;
     private OutputStream mmOutStream;
-    
+
     private boolean mIsListening = false;
 
     public static int REQUEST_ENABLE_BT = 100;
@@ -63,23 +60,23 @@ public class BluetoothExportRace extends BaseExport {
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         closeSocket();
         Log.i("BT", "CANCELLED");
         super.onBackPressed();
     }
-    
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
         if (mDlg != null) mDlg = null;
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == BluetoothExportRace.REQUEST_ENABLE_BT){
-            if(resultCode==RESULT_OK){
+        if (requestCode == BluetoothExportRace.REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_OK) {
                 startListening();
             } else {
                 mActivity.finish();
@@ -88,8 +85,8 @@ public class BluetoothExportRace extends BaseExport {
     }
 
     private void startListening() {
-        
-        
+
+
         BluetoothServerSocket tmp = null;
         UUID uuid = UUID.fromString(getResources().getString(R.string.app_uuid));
         try {
@@ -100,31 +97,29 @@ public class BluetoothExportRace extends BaseExport {
             e.printStackTrace();
         }
 
-        Thread acceptThread = new Thread(new Runnable()
-        {
-            public void run()
-            {
+        Thread acceptThread = new Thread(new Runnable() {
+            public void run() {
                 BluetoothSocket socket = null;
 
+                try {
+                    socket = mmServerSocket.accept();
+                } catch (IOException e) {
+                    Log.d("BLUETOOTH", e.getMessage());
+                }
+                // If a connection was accepted
+                if (socket != null) {
+                    // Do work to manage the connection (in a separate thread)
+                    manageConnectedSocket(socket);
                     try {
-                        socket = mmServerSocket.accept();
+                        mmServerSocket.close();
                     } catch (IOException e) {
-                        Log.d("BLUETOOTH", e.getMessage());
+                        e.printStackTrace();
                     }
-                    // If a connection was accepted
-                    if (socket != null) {
-                        // Do work to manage the connection (in a separate thread)
-                        manageConnectedSocket(socket);
-                        try {
-                            mmServerSocket.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                }
 
             }
         });
-        if (tmp!=null) {
+        if (tmp != null) {
             mmServerSocket = tmp;
 
             acceptThread.start();
@@ -134,9 +129,9 @@ public class BluetoothExportRace extends BaseExport {
 
     }
 
-    public void manageConnectedSocket(BluetoothSocket socket){
-        mmSocket = socket;      
-        
+    public void manageConnectedSocket(BluetoothSocket socket) {
+        mmSocket = socket;
+
         // member streams are final
         try {
             mmInStream = mmSocket.getInputStream();
@@ -160,12 +155,12 @@ public class BluetoothExportRace extends BaseExport {
                     Log.i("BT", "COMMAND = " + cmd);
 
                     // Respond to commands
-                    if (cmd.equals("LS")){
+                    if (cmd.equals("LS")) {
                         sendRaceList();
                     }
 
-                    Log.i("BT", "COMMAND = " + cmd.substring(0,2));
-                    if (cmd.length()>=3 && cmd.substring(0,3).equals("GET")){
+                    Log.i("BT", "COMMAND = " + cmd.substring(0, 2));
+                    if (cmd.length() >= 3 && cmd.substring(0, 3).equals("GET")) {
                         sendRaceData(cmd.substring(4));
                     }
 
@@ -182,11 +177,11 @@ public class BluetoothExportRace extends BaseExport {
         closeSocket();
         finish();
     }
-    
-    public void closeSocket(){
+
+    public void closeSocket() {
         Log.i("BT", "CLEANING UP");
         mIsListening = false;
-        
+
         if (mmInStream != null) {
             try {
                 mmInStream.close();
@@ -211,8 +206,8 @@ public class BluetoothExportRace extends BaseExport {
             }
         }
     }
-    
-    private void sendRaceList(){
+
+    private void sendRaceList() {
         String response = "[";
 
         RaceData datasource = new RaceData(this);
@@ -220,13 +215,13 @@ public class BluetoothExportRace extends BaseExport {
         ArrayList<Race> allRaces = datasource.getAllRaces();
         datasource.close();
 
-        for (Race r: allRaces){
-            if (response.length()>1) response+=",";
-            response+= String.format("{\"id\":\"%s\", \"name\":\"%s\"}", Integer.toString(r.id), r.name);
+        for (Race r : allRaces) {
+            if (response.length() > 1) response += ",";
+            response += String.format("{\"id\":\"%s\", \"name\":\"%s\"}", Integer.toString(r.id), r.name);
         }
-        
-        response+="]\n\n";
-        
+
+        response += "]\n\n";
+
         byte[] bytes = response.getBytes();
 
         try {
@@ -236,9 +231,9 @@ public class BluetoothExportRace extends BaseExport {
         }
 
     }
-    
-    
-    private void sendRaceData(String query){
+
+
+    private void sendRaceData(String query) {
         // Serialize all race data, pilots, times + groups
         int race_id = Integer.parseInt(query);
 
@@ -256,6 +251,6 @@ public class BluetoothExportRace extends BaseExport {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
     }
 }

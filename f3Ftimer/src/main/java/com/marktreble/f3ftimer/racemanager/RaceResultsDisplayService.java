@@ -12,13 +12,10 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.ParcelUuid;
 import android.util.Log;
 
-import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.dialog.RaceTimerActivity;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -66,7 +63,7 @@ public class RaceResultsDisplayService extends Service {
 
     static final long PING_INTERVAL = 10000000000L;
 
-    public static void startRDService(Context context, String prefExternalDisplay){
+    public static void startRDService(Context context, String prefExternalDisplay) {
         if (prefExternalDisplay == null || prefExternalDisplay.equals("")) return;
 
         Intent serviceIntent = new Intent(context, RaceResultsDisplayService.class);
@@ -99,10 +96,9 @@ public class RaceResultsDisplayService extends Service {
     }
 
 
-
     private final IBinder mBinder = new LocalBinder();
 
-    public static boolean stop(RaceActivity context){
+    public static boolean stop(RaceActivity context) {
         if (context.isServiceRunning("com.marktreble.f3ftimer.racemanager.RaceResultsDisplayService")) {
             Intent serviceIntent = new Intent(context, RaceResultsDisplayService.class);
             context.stopService(serviceIntent);
@@ -126,14 +122,14 @@ public class RaceResultsDisplayService extends Service {
                         device = d;
                 }
             }
-            if (device == null){
+            if (device == null) {
                 Log.d(TAG, "No device... stopping");
                 return START_NOT_STICKY;
             }
             deviceName = device.getName();
             mMacAddress = device.getAddress();
             if (mMacAddress != null && mMacAddress.length() > 0) {
-                Log.d(TAG, "Connecting to: "+deviceName);
+                Log.d(TAG, "Connecting to: " + deviceName);
                 connectToDevice(mMacAddress);
             } else {
                 Log.d(TAG, "No macAddress... stopping");
@@ -145,10 +141,10 @@ public class RaceResultsDisplayService extends Service {
         return START_STICKY;
     }
 
-    private void callbackToUI(String cmd, HashMap<String, String> params){
+    private void callbackToUI(String cmd, HashMap<String, String> params) {
         Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
         if (params != null) {
-            for (String key : params.keySet()){
+            for (String key : params.keySet()) {
                 i.putExtra(key, params.get(key));
             }
         }
@@ -158,13 +154,13 @@ public class RaceResultsDisplayService extends Service {
         this.sendBroadcast(i);
     }
 
-    public void displayConnected(){
+    public void displayConnected() {
         HashMap<String, String> params = new HashMap<>();
         params.put("icon", "on_display");
         callbackToUI("external_display_connected", params);
     }
 
-    public void displayDisconnected(){
+    public void displayDisconnected() {
         HashMap<String, String> params = new HashMap<>();
         params.put("icon", "off_display");
         callbackToUI("external_display_disconnected", params);
@@ -266,7 +262,7 @@ public class RaceResultsDisplayService extends Service {
         }
     };
 
-    public void reconnect(){
+    public void reconnect() {
         Log.d(TAG, "Reconnecting in 3 seconds...");
         mHandler.postDelayed(reconnect, 3000);
     }
@@ -323,7 +319,7 @@ public class RaceResultsDisplayService extends Service {
             try {
                 ParcelUuid uuids[] = this.mmDevice.getUuids();
 
-                if (uuids.length>0) {
+                if (uuids.length > 0) {
                     for (ParcelUuid test : uuids) {
                         if (test.equals(new ParcelUuid(hc05_uuid))) {
                             tmp = mmDevice.createRfcommSocketToServiceRecord(hc05_uuid);
@@ -344,7 +340,7 @@ public class RaceResultsDisplayService extends Service {
         @Override
         public void run() {
             setName("ConnectThread");
-            if (mmSocket == null){
+            if (mmSocket == null) {
                 connectionFailed();
                 return;
             }
@@ -376,7 +372,7 @@ public class RaceResultsDisplayService extends Service {
             }
         }
 
-        public void sendData(String data){
+        public void sendData(String data) {
             mConnectedThread.write(data.getBytes());
         }
     }
@@ -411,11 +407,11 @@ public class RaceResultsDisplayService extends Service {
         @Override
         public void run() {
 
-            while (mState==STATE_CONNECTED) {
+            while (mState == STATE_CONNECTED) {
 
 
                 long time = System.nanoTime();
-                if (time-last_time > PING_INTERVAL){
+                if (time - last_time > PING_INTERVAL) {
                     if (ping_sent) {
                         Log.d(TAG, "PING NOT RETURNED");
                         connectionLost();
@@ -430,20 +426,20 @@ public class RaceResultsDisplayService extends Service {
 
                 try {
                     String str_last_time = String.format("%d", last_time);
-                    if (mmInStream.available() == str_last_time.length()){
+                    if (mmInStream.available() == str_last_time.length()) {
                         bufferLength = mmInStream.read(buffer);
 
                         byte[] data = new byte[bufferLength];
                         System.arraycopy(buffer, 0, data, 0, bufferLength);
                         final String response = new String(data, "UTF-8");
-                        Log.d(TAG, "R:"+response);
+                        Log.d(TAG, "R:" + response);
                         if (response.equals(str_last_time)) {
                             ping_sent = false;
                             displayConnected();
                         }
                     }
 
-                } catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
@@ -455,7 +451,7 @@ public class RaceResultsDisplayService extends Service {
             try {
                 mmOutStream.write(buffer);
                 mmOutStream.flush();
-                Log.d(TAG, "Chars written to output: "+new String(buffer, ENCODING));
+                Log.d(TAG, "Chars written to output: " + new String(buffer, ENCODING));
             } catch (IOException e) {
                 Log.d(TAG, "Exception during write", e);
             }
@@ -471,7 +467,7 @@ public class RaceResultsDisplayService extends Service {
             }
         }
 
-        public void resetPing(){
+        public void resetPing() {
             last_time = System.nanoTime();
             ping_sent = false;
         }
@@ -494,23 +490,23 @@ public class RaceResultsDisplayService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if (intent.hasExtra("com.marktreble.f3ftimer.external_results_callback")){
+            if (intent.hasExtra("com.marktreble.f3ftimer.external_results_callback")) {
                 Log.i(TAG, "Callback received");
                 if (mState != STATE_CONNECTED) return;
 
                 Log.i(TAG, "Connected");
                 Bundle extras = intent.getExtras();
                 String data = extras.getString("com.marktreble.f3ftimer.external_results_callback");
-                if (data == null){
+                if (data == null) {
                     Log.i(TAG, "No data");
                     return;
                 }
 
-                Log.i(TAG, "Data: "+data);
-                if (data.equals("run_finalised")){
+                Log.i(TAG, "Data: " + data);
+                if (data.equals("run_finalised")) {
                     String name = extras.getString("com.marktreble.f3ftimer.pilot_name");
                     String nationality = extras.getString("com.marktreble.f3ftimer.pilot_nationality");
-                    nationality = (nationality!=null) ? nationality.toLowerCase() : "";
+                    nationality = (nationality != null) ? nationality.toLowerCase() : "";
                     String time = extras.getString("com.marktreble.f3ftimer.pilot_time");
 
                     String round = extras.getString("com.marktreble.f3ftimer.current_round");

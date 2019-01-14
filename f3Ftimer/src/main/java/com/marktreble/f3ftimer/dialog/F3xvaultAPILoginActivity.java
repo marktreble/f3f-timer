@@ -40,7 +40,6 @@ public class F3xvaultAPILoginActivity extends Activity {
         });
 
 
-
         password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -54,7 +53,7 @@ public class F3xvaultAPILoginActivity extends Activity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean api_remember = sharedPref.getBoolean("pref_f3xv_api_details_remember", true);
         remember.setChecked(api_remember);
-        if (api_remember){
+        if (api_remember) {
             String str_username = sharedPref.getString("pref_f3xv_api_username", "");
             String str_password = sharedPref.getString("pref_f3xv_api_password", "");
 
@@ -78,7 +77,7 @@ public class F3xvaultAPILoginActivity extends Activity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean("pref_f3xv_api_details_remember", api_remember);
 
-        if (api_remember){
+        if (api_remember) {
             // Save details to user Prefs
             editor.putString("pref_f3xv_api_username", str_username);
             editor.putString("pref_f3xv_api_password", str_password);
@@ -91,7 +90,7 @@ public class F3xvaultAPILoginActivity extends Activity {
         editor.apply();
 
         if (str_username.equals("")
-                || str_password.equals("")){
+                || str_password.equals("")) {
             return false;
         }
 

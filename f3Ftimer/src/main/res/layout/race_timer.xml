@@ -12,6 +12,5 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:visibility="gone"
-        android:contentDescription="@string/resize"
-        />
+        android:contentDescription="@string/resize" />
 </RelativeLayout>

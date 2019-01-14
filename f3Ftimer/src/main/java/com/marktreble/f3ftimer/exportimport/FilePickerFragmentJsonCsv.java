@@ -9,7 +9,6 @@ import java.io.File;
 public class FilePickerFragmentJsonCsv extends FilePickerFragment {
 
     /**
-     *
      * @param file
      * @return The file extension. If file has no extension, it returns null.
      */
@@ -28,7 +27,7 @@ public class FilePickerFragmentJsonCsv extends FilePickerFragment {
         boolean ret = super.isItemVisible(file);
         if (ret && !isDir(file) && (mode == MODE_FILE || mode == MODE_FILE_AND_DIR)) {
             String ext = getExtension(file);
-            return ext != null && (".json".equalsIgnoreCase(ext)||".csv".equalsIgnoreCase(ext));
+            return ext != null && (".json".equalsIgnoreCase(ext) || ".csv".equalsIgnoreCase(ext));
         }
         return ret;
     }

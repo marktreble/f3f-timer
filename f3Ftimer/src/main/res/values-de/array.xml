@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-	<string-array name="nationalities">
-            <item />
+    <string-array name="nationalities">
+        <item />
         <item>Australien</item>
         <item>Tschechien</item>
         <item>Dänemark</item>
@@ -11,12 +11,12 @@
         <item>Indien</item>
         <item>Niederlande</item>
         <item>Morwegen</item>
-   	    <item>Portugal</item>
+        <item>Portugal</item>
         <item>Spanien</item>
         <item>Schweiz</item>
         <item>Großbritannien</item>
         <item>Vereinigte Staaten</item>
     </string-array>
 
-	
+
 </resources>

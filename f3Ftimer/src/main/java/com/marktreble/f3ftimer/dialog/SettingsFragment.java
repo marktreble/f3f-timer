@@ -1,23 +1,10 @@
 package com.marktreble.f3ftimer.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.languages.Languages;
-import com.marktreble.f3ftimer.media.TTS;
-import com.marktreble.f3ftimer.wifi.Wifi;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.content.res.Configuration;
-import android.content.res.Resources;
-import android.content.res.Resources.NotFoundException;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
@@ -25,20 +12,29 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.speech.tts.TextToSpeech.OnInitListener;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.languages.Languages;
+import com.marktreble.f3ftimer.media.TTS;
+import com.marktreble.f3ftimer.wifi.Wifi;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
 public class SettingsFragment extends PreferenceFragment
         implements OnSharedPreferenceChangeListener, TTS.onInitListenerProxy {
-	
-	private TTS mTts;
-	@Override
+
+    private TTS mTts;
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -47,12 +43,12 @@ public class SettingsFragment extends PreferenceFragment
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);
 
-	}
-	
+    }
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        if (view!=null)
+        if (view != null)
             view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_dialog));
 
         // Set values
@@ -87,36 +83,36 @@ public class SettingsFragment extends PreferenceFragment
             pref_results_server.setSummary("Serve results over HTTP");
         }
 
-		return view;
-   
+        return view;
+
     }
-    
+
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-    	Intent i;
+        Intent i;
 
         setInputSourceActiveFields();
 
-    	// Update value of any list preference
-    	Preference pref = findPreference(key);
+        // Update value of any list preference
+        Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
             setLangSummary(key);
         }
 
         // Callbacks to input driver
-        
-    	if (key.equals("pref_buzzer") 
+
+        if (key.equals("pref_buzzer")
                 || key.equals("pref_voice")
                 || key.equals("pref_results_server")
                 || key.equals("pref_wind_measurement")
                 || key.equals("pref_usb_tether")
                 || key.equals("pref_audible_wind_warning")
-                || key.equals("pref_full_volume")){
-    		// Send to Service
+                || key.equals("pref_full_volume")) {
+            // Send to Service
             sendBooleanValueToService(key, sharedPreferences.getBoolean(key, false));
-    	}
+        }
 
         if (key.equals("pref_usb_baudrate")
-                || key.equals("pref_input_tcpio_ip")){
+                || key.equals("pref_input_tcpio_ip")) {
             setStringSummary(key);
             sendStringValueToService(key, sharedPreferences.getString(key, ""));
         }
@@ -131,8 +127,8 @@ public class SettingsFragment extends PreferenceFragment
         }
 
 
-    	if (key.equals("pref_voice_lang")){
-    		// Send to Service
+        if (key.equals("pref_voice_lang")) {
+            // Send to Service
             setLangSummary(key);
             String lang = sharedPreferences.getString(key, "");
             String[] l = lang.split("_");
@@ -143,9 +139,9 @@ public class SettingsFragment extends PreferenceFragment
                 sendStringValueToService(key, sharedPreferences.getString(key, ""));
                 Log.i("SETTINGS", "Changed speech language to " + lo.getDisplayName());
             }
-    	}
+        }
 
-        if (key.equals("pref_wind_angle_offset")){
+        if (key.equals("pref_wind_angle_offset")) {
             float angle = Float.parseFloat(sharedPreferences.getString(key, "0.0"));
             if (angle < 0) {
                 angle = -angle;
@@ -162,39 +158,39 @@ public class SettingsFragment extends PreferenceFragment
             sendStringValueToService(key, anglestr);
         }
     }
-    
+
     @Override
-	public void onResume() {
+    public void onResume() {
         super.onResume();
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
     }
 
     @Override
-	public void onPause() {
+    public void onPause() {
         super.onPause();
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
     private void sendStringValueToService(String key, String value) {
-        Intent i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
         i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
         i.putExtra("com.marktreble.f3ftimer.value", value);
         getActivity().sendBroadcast(i);
     }
 
     private void sendBooleanValueToService(String key, boolean value) {
-        Intent i  = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
         i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
         i.putExtra("com.marktreble.f3ftimer.value", value);
         getActivity().sendBroadcast(i);
     }
 
-    private void setInputSourceActiveFields(){
+    private void setInputSourceActiveFields() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String inputSource = sharedPref.getString("pref_input_src", "");
-        if (inputSource.equals(getString(R.string.BLUETOOTH_HC_05))){
+        if (inputSource.equals(getString(R.string.BLUETOOTH_HC_05))) {
             // BT - Hide baud rate etc.., and show device picker
             findPreference("pref_input_tcpio_ip").setEnabled(false);
             findPreference("pref_usb_baudrate").setEnabled(false);
@@ -231,25 +227,25 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
-    private void setLangSummary(String key){
-    	Preference pref = findPreference(key);
+    private void setLangSummary(String key) {
+        Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
             ListPreference listPref = (ListPreference) pref;
             String value = (String) listPref.getEntry();
-            if (value == null){
-            	SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            	Locale current = getResources().getConfiguration().locale;
-            	String p = sharedPref.getString("pref_voice_lang", "");
-            	String lang = (p.equals("")) ? current.getLanguage() : p.substring(0,2);
-            	String country = (p.equals("")) ? current.getCountry() : p.substring(3,5); 
-        		Locale l = new Locale(lang,country);
-        		value = l.getDisplayName();        		
+            if (value == null) {
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                Locale current = getResources().getConfiguration().locale;
+                String p = sharedPref.getString("pref_voice_lang", "");
+                String lang = (p.equals("")) ? current.getLanguage() : p.substring(0, 2);
+                String country = (p.equals("")) ? current.getCountry() : p.substring(3, 5);
+                Locale l = new Locale(lang, country);
+                value = l.getDisplayName();
             }
             pref.setSummary(value);
-        }	
+        }
     }
 
-    private void setBTDeviceSummary(String key){
+    private void setBTDeviceSummary(String key) {
         Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -273,7 +269,7 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
-    private void setStringSummary(String key){
+    private void setStringSummary(String key) {
         Preference pref = findPreference(key);
         if (pref instanceof EditTextPreference) {
             EditTextPreference textPref = (EditTextPreference) pref;
@@ -282,7 +278,7 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
-    private void setListSummary(String key, int list){
+    private void setListSummary(String key, int list) {
         Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
             ListPreference listPref = (ListPreference) pref;
@@ -292,7 +288,7 @@ public class SettingsFragment extends PreferenceFragment
     }
 
     @Override
-	public void onInit(int status) {
+    public void onInit(int status) {
         // Populate pref_input_src_device with paired devices
         populateInputSourceDevices();
 
@@ -304,11 +300,14 @@ public class SettingsFragment extends PreferenceFragment
 
     }
 
-    public void onStart(String utteranceId){ }
+    public void onStart(String utteranceId) {
+    }
 
-    public void onDone(String utteranceId){ }
+    public void onDone(String utteranceId) {
+    }
 
-    public void onError(String utteranceId){ }
+    public void onError(String utteranceId) {
+    }
 
     private void populateVoices() {
         String[] languages = Languages.getAvailableLanguages(getActivity());
@@ -323,7 +322,7 @@ public class SettingsFragment extends PreferenceFragment
             try {
                 ttsres = mTts.ttsengine().isLanguageAvailable(locale);
             } catch (IllegalArgumentException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
 
             boolean hasLang = false;
@@ -355,7 +354,7 @@ public class SettingsFragment extends PreferenceFragment
         populatePairedDevices(pref);
     }
 
-    private void populatePairedDevices(ListPreference pref){
+    private void populatePairedDevices(ListPreference pref) {
         CharSequence[] labels = {"No Devices Paired"};
         CharSequence[] values = {""};
 
@@ -384,11 +383,11 @@ public class SettingsFragment extends PreferenceFragment
     }
 
     @Override
-    public void onDestroy(){
-    	super.onDestroy();
-    	if (mTts != null){
-    	    mTts.release();
-    	    mTts = null;
+    public void onDestroy() {
+        super.onDestroy();
+        if (mTts != null) {
+            mTts.release();
+            mTts = null;
         }
     }
 }

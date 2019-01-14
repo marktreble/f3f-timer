@@ -2,7 +2,9 @@
 <project version="4">
   <component name="AndroidLayouts">
     <shared>
-      <config />
+      <config>
+        <device id="Nexus One" />
+      </config>
     </shared>
     <layouts>
       <layout url="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_pickpilots.xml">
@@ -50,8 +52,152 @@
   <component name="ChangeListManager">
     <list default="true" id="0fdffe9f-1db8-4115-a888-13fa91fc6576" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/assets/public_html/api/getRaceData.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/assets/public_html/api/getRaceData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/assets/public_html/api/getRaceLiveData.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/assets/public_html/api/getRaceLiveData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/assets/public_html/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/assets/public_html/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/F3FtimerApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/F3FtimerApplication.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/api/API.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/api/API.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/data/CountryCodes.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/data/CountryCodes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/pilot/Pilot.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/pilot/Pilot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/pilot/PilotData.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/pilot/PilotData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/pilot/PilotDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/pilot/PilotDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/race/Race.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/race/Race.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/race/RaceData.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/race/RaceData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/race/RaceDatabase.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/race/RaceDatabase.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/racepilot/RacePilotData.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/racepilot/RacePilotData.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/results/Results.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/results/Results.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/AboutActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/AboutActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/F3fTimerAPILoginActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/F3fTimerAPILoginActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/F3xvaultAPILoginActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/F3xvaultAPILoginActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/FlyingOrderEditActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/FlyingOrderEditActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/GroupScoreEditActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/GroupScoreEditActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/HelpActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/HelpActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag1.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag2.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag3.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NewRaceFrag3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NextRoundActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/NextRoundActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/PilotsEditActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/PilotsEditActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceRoundTimeoutActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceRoundTimeoutActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceRoundTimeoutCompleteFrag.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceRoundTimeoutCompleteFrag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceRoundTimeoutFrag.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceRoundTimeoutFrag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag1.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag1.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag2.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag3.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag3.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag4.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag4.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag5.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag5.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag6.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFrag6.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFragNextRound.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerFragNextRound.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/StartNumberEditActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/StartNumberEditActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/TimeEntryActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/TimeEntryActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/DriverInterface.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/DriverInterface.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/SoftBuzzerService.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/SoftBuzzerService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/TcpIoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/TcpIoService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/USBIOIOService.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/USBIOIOService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/USBOtherService.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/USBOtherService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/_DriverServiceTemplate.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/_DriverServiceTemplate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BaseExport.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BaseExport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BaseImport.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BaseImport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BluetoothExportRace.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BluetoothExportRace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BluetoothImportRace.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/BluetoothImportRace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3ftimerApiImportRace.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3ftimerApiImportRace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3xvaultApiImportRace.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3xvaultApiImportRace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileExportPilots.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileExportPilots.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileExportRace.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileExportRace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileImportPilots.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileImportPilots.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileImportRace.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileImportRace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FilePickerFragmentJsonCsv.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FilePickerFragmentJsonCsv.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/FileExport.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/FileExport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/SpreadsheetExport.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/filesystem/SpreadsheetExport.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/languages/Languages.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/languages/Languages.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/media/TTS.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/media/TTS.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/pilotmanager/PilotsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/pilotmanager/PilotsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsDisplayService.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsDisplayService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceResultsService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRaceActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRaceActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsTeamsActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsTeamsActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/wifi/Wifi.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/wifi/Wifi.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/wifi/WifiApControl.java" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/wifi/WifiApControl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable-mdpi/circle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable-mdpi/circle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/carbon_background.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/carbon_background.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/circle_group.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/circle_group.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/grey_box.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/grey_box.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/off.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/off.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/on.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/on.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/progress.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/progress.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/reflight_flag.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/reflight_flag.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/retired_flag.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/retired_flag.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/round_button.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/round_button.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/rounded_corners.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/rounded_corners.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/soft_buzzer.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/drawable/soft_buzzer.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/listrow_racepilots.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/listrow_racepilots.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/listrow_resultspilots.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/listrow_resultspilots.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag_next_round.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag_next_round.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/about.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/about.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/api.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/api.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/bt_export.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/bt_export.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/custom_toast.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/custom_toast.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/f3f_timer_api_login.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/f3f_timer_api_login.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/f3xvault_api_login.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/f3xvault_api_login.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/group_score.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/group_score.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/help.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/help.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/iconspinner.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/iconspinner.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_pickpilots.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_pickpilots.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_racepilots.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_racepilots.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_reorder.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_reorder.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_resultspilots.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/listrow_resultspilots.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/pilot_edit.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/pilot_edit.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/pilot_manager.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/pilot_manager.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_manager.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_manager.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag1.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag3.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_new_frag3.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_round_timeout_complete_frag.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_round_timeout_complete_frag.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_round_timeout_frag.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_round_timeout_frag.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag2.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag_next_round.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag_next_round.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/results_manager.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/results_manager.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/rotate_shuffle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/rotate_shuffle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/start_number.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/start_number.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/time_entry.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/time_entry.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/pilots.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/pilots.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/race.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/race.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/race_list.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/race_list.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/results.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/results.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/results_list.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/menu/results_list.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/raw/countrycodes.json" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/raw/countrycodes.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-de/array.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-de/array.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-en/array.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-en/array.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-es/array.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-es/array.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-fr/array.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-fr/array.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-nl/array.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values-nl/array.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/array.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/array.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/colours.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/colours.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/accessory_filter.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/accessory_filter.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/device_filter.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/device_filter.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/preferences.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/xml/preferences.xml" afterDir="false" />
     </list>
     <ignored path="f3f-timer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -82,81 +228,20 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Driver.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java">
+      <file leaf-file-name="DriverInterface.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/DriverInterface.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1860">
-              <caret line="162" column="17" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
+            <state relative-caret-position="60">
+              <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="USBOtherService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/USBOtherService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="250">
-              <caret line="355" selection-start-line="355" selection-end-line="355" />
-              <folding>
-                <element signature="e#3252#3289#0" expanded="true" />
-                <element signature="e#4232#4900#0" expanded="true" />
-                <element signature="e#4899#4900#0" expanded="true" />
-                <element signature="e#6881#7107#0" expanded="true" />
-                <element signature="e#7106#7107#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="BluetoothHC05Service.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="476" selection-start-line="476" selection-end-line="476" />
-              <folding>
-                <element signature="e#11709#11779#0" expanded="true" />
-                <element signature="e#11778#11779#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SoftBuzzerService.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="SoftBuzzerService.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/SoftBuzzerService.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="50" column="15" selection-start-line="50" selection-start-column="8" selection-end-line="50" selection-end-column="15" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RaceActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="11325">
-              <caret line="823" selection-start-line="823" selection-end-line="823" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="RaceTimerActivity.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1230">
-              <caret line="120" column="24" selection-start-line="120" selection-start-column="24" selection-end-line="120" selection-end-column="24" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="USBIOIOService.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/USBIOIOService.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2015">
-              <caret line="33" column="13" selection-start-line="33" selection-start-column="13" selection-end-line="33" selection-end-column="13" />
-              <folding>
-                <element signature="e#3185#3221#0" expanded="true" />
-                <element signature="e#4116#4782#0" expanded="true" />
-                <element signature="e#4781#4782#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="555">
+              <caret line="50" selection-start-line="50" selection-end-line="50" />
             </state>
           </provider>
         </entry>
@@ -6379,8 +6464,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundActivity.java" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsRoundInProgressActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsTeamsActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsCompletedRoundsActivity.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/resultsmanager/ResultsLeaderBoardActivity.java" />
@@ -6399,8 +6482,6 @@
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values-en/array.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values-de/array.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values/array.xml" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag_next_round.xml" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag_next_round.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileExportPilots.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileExportRace.java" />
         <option value="$PROJECT_DIR$/iOIOLibAndroid/src/main/java/ioio/lib/impl/Board.java" />
@@ -6408,8 +6489,6 @@
         <option value="$PROJECT_DIR$/iOIOLibAndroid/src/main/java/ioio/lib/api/PulseInput.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/f3f_timer_api_login.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/f3xvault_api_login.xml" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag2.xml" />
-        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag2.xml" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/data/race/RaceData.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/F3ftimerApiExportRace.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/racemanager/RaceListActivity.java" />
@@ -6430,6 +6509,12 @@
         <option value="$PROJECT_DIR$/iOIOLibBT/build.gradle" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/USBOtherService.java" />
         <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/values/colours.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag2.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag2.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag_next_round.xml" />
+        <option value="$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag_next_round.xml" />
       </list>
     </option>
   </component>
@@ -6516,6 +6601,23 @@
               <item name="java" type="edd41e36:AndroidSourceTypeNode" />
               <item name="f3ftimer" type="cbb59c9e:AndroidPsiDirectoryNode" />
               <item name="driver" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="f3f-timer" type="1abcf292:AndroidViewProjectNode" />
+              <item name="f3Ftimer" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+            </path>
+            <path>
+              <item name="f3f-timer" type="1abcf292:AndroidViewProjectNode" />
+              <item name="f3Ftimer" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="layout" type="ddeffd01:AndroidResFolderTypeNode" />
+            </path>
+            <path>
+              <item name="f3f-timer" type="1abcf292:AndroidViewProjectNode" />
+              <item name="f3Ftimer" type="feadf853:AndroidModuleNode" />
+              <item name="res" type="d4f16f75:AndroidResFolderNode" />
+              <item name="values" type="ddeffd01:AndroidResFolderTypeNode" />
             </path>
           </expand>
           <select />
@@ -6955,13 +7057,6 @@
       <option name="presentableId" value="Default" />
       <updated>1440510397826</updated>
     </task>
-    <task id="LOCAL-00028" summary="Tidy up on some code and dependency versions">
-      <created>1496879292548</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1496879292548</updated>
-    </task>
     <task id="LOCAL-00029" summary="Added team names to race pilots">
       <created>1496911418690</created>
       <option name="number" value="00029" />
@@ -7298,7 +7393,14 @@
       <option name="project" value="LOCAL" />
       <updated>1546700032419</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="Fixed Crash in HC-05 service">
+      <created>1547496705880</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1547496705880</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="TodoView">
@@ -7321,15 +7423,17 @@
       <window_info id="Build Variants" order="1" side_tool="true" />
       <window_info anchor="right" id="Capture Analysis" order="11" />
       <window_info anchor="bottom" id="Event Log" order="0" sideWeight="0.20535195" side_tool="true" weight="0.42644134" />
+      <window_info anchor="right" id="Preview" order="5" weight="0.28900445" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32711306" />
       <window_info anchor="bottom" id="Version Control" order="3" sideWeight="0.49217004" weight="0.250497" />
       <window_info anchor="bottom" id="Terminal" order="5" sideWeight="0.4927293" weight="0.32893" />
-      <window_info active="true" anchor="bottom" id="Logcat" order="18" sideWeight="0.79464805" visible="true" weight="0.23117569" />
+      <window_info anchor="bottom" id="Logcat" order="18" sideWeight="0.79464805" weight="0.20739762" />
       <window_info id="Captures" order="5" sideWeight="0.49473685" weight="0.32997763" />
       <window_info id="Capture Tool" order="4" />
       <window_info anchor="right" id="Designer" order="7" />
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.50526315" side_tool="true" visible="true" weight="0.2741456" />
-      <window_info anchor="bottom" id="Build" order="19" weight="0.32893" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.50526315" side_tool="true" visible="true" weight="0.2741456" />
+      <window_info anchor="bottom" id="Build" order="19" visible="true" weight="0.32893" />
+      <window_info anchor="bottom" id="Find" order="13" sideWeight="0.48283887" weight="0.23757455" />
       <window_info anchor="right" id="Gradle" order="3" weight="0.32996434" />
       <window_info anchor="right" id="Structure" order="1" sideWeight="0.4985294" side_tool="true" weight="0.13263525" />
       <window_info anchor="right" id="Device File Explorer" order="10" side_tool="true" />
@@ -7343,7 +7447,6 @@
       <window_info anchor="right" x="286" y="121" width="1660" height="922" id="Documentation" order="0" type="FLOATING" />
       <window_info anchor="right" id="Ant Build" order="8" weight="0.25" />
       <window_info anchor="bottom" id="Cvs" order="14" weight="0.25" />
-      <window_info anchor="right" id="Preview" order="5" weight="0.29008746" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="9" weight="0.25" />
       <window_info active="true" anchor="bottom" id="Android" order="10" visible="true" weight="0.24759872" />
       <window_info anchor="right" id="Maven Projects" order="6" weight="0.32996434" />
@@ -7351,7 +7454,6 @@
       <window_info anchor="right" id="Android Model" order="13" side_tool="true" />
       <window_info anchor="bottom" id="Application Servers" order="6" />
       <window_info anchor="bottom" id="Memory Monitor" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Find" order="13" sideWeight="0.48283887" weight="0.23757455" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="2" type="SLIDING" weight="0.4" />
       <window_info anchor="bottom" id="Android Monitor" order="17" sideWeight="0.60579515" weight="0.4438445" />
       <window_info anchor="bottom" id="Gradle Console" order="1" side_tool="true" />
@@ -7415,7 +7517,6 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Updated release version" />
     <MESSAGE value="Added Support for HC-05 Bluetooth External Display, Added status icons for specific drivers &amp; Ext Display" />
     <MESSAGE value="Added menu item to invoke the round timeout dialog on demand" />
     <MESSAGE value="Fixed issue where round timeout was not starting after an aborted flight" />
@@ -7440,51 +7541,10 @@
     <MESSAGE value="CSV import/export functions matched to f3xvault format" />
     <MESSAGE value="Added NAC No/FAI ID to pilots + Imp/Exp functions" />
     <MESSAGE value="Updated dependencies and bug fixes" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated dependencies and bug fixes" />
+    <MESSAGE value="Fixed Crash in HC-05 service" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed Crash in HC-05 service" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/exportimport/FileExportPilots.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="209">
-          <caret line="40" column="54" selection-start-line="40" selection-start-column="54" selection-end-line="40" selection-end-column="54" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/usbSerialForAndroid/src/main/java/com/hoho/android/usbserial/driver/chinese/CH340AndroidDriver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="751" column="32" selection-start-line="751" selection-start-column="32" selection-end-line="751" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/usbSerialForAndroid/src/main/java/com/hoho/android/usbserial/driver/CH340SerialDriver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="206" column="89" selection-start-line="206" selection-start-column="89" selection-end-line="206" selection-end-column="89" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/iOIOLibAndroid/src/main/java/ioio/lib/impl/Board.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="38" column="4" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/usbSerialForAndroid/src/main/java/com/hoho/android/usbserial/driver/FtdiSerialDriver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="102" column="12" selection-start-line="102" selection-start-column="12" selection-end-line="102" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/iOIOLibAndroid/src/main/java/ioio/lib/api/PulseInput.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="265" column="8" selection-start-line="265" selection-start-column="8" selection-end-line="265" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/f3f_timer_api_login.xml">
       <provider editor-type-id="android-designer2">
         <state />
@@ -7502,26 +7562,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1188">
           <caret line="66" column="42" selection-start-line="66" selection-start-column="42" selection-end-line="66" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag2.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1206">
-          <caret line="67" column="40" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag2.xml">
-      <provider editor-type-id="android-designer2">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1206">
-          <caret line="67" column="40" selection-start-line="67" selection-start-column="38" selection-end-line="67" selection-end-column="40" />
         </state>
       </provider>
     </entry>
@@ -7770,20 +7810,6 @@
         <state relative-caret-position="-304" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1860">
-          <caret line="162" column="17" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/SoftBuzzerService.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="50" column="15" selection-start-line="50" selection-start-column="8" selection-end-line="50" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/RaceTimerActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1230">
@@ -7810,6 +7836,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/dialog/SettingsFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="104">
+          <caret line="323" selection-start-line="323" selection-end-line="323" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="476" selection-start-line="476" selection-end-line="476" />
+          <folding>
+            <element signature="e#11709#11779#0" expanded="true" />
+            <element signature="e#11778#11779#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/USBOtherService.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="250">
@@ -7824,14 +7868,95 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/BluetoothHC05Service.java">
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/Driver.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="476" selection-start-line="476" selection-end-line="476" />
+        <state relative-caret-position="15">
+          <caret line="162" column="17" selection-start-line="162" selection-start-column="17" selection-end-line="162" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/values/colours.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="9" column="28" selection-start-line="9" selection-start-column="28" selection-end-line="9" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag2.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="314">
+          <caret line="198" column="40" selection-start-line="198" selection-start-column="40" selection-end-line="198" selection-end-column="40" />
           <folding>
-            <element signature="e#11709#11779#0" expanded="true" />
-            <element signature="e#11778#11779#0" expanded="true" />
+            <element signature="e#4546#4561#0" expanded="true" />
+            <element signature="e#5067#5095#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag_next_round.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="43" column="35" selection-start-line="43" selection-start-column="35" selection-end-line="43" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout-large/race_timer_frag_next_round.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="116" column="44" selection-start-line="116" selection-start-column="44" selection-end-line="116" selection-end-column="44" />
+          <folding>
+            <element signature="e#533#548#0" expanded="true" />
+            <element signature="e#915#930#0" expanded="true" />
+            <element signature="e#1232#1247#0" expanded="true" />
+            <element signature="e#1670#1692#0" expanded="true" />
+            <element signature="e#2207#2222#0" expanded="true" />
+            <element signature="e#2614#2629#0" expanded="true" />
+            <element signature="e#2961#2976#0" expanded="true" />
+            <element signature="e#3270#3285#0" expanded="true" />
+            <element signature="e#3686#3707#0" expanded="true" />
+            <element signature="e#4055#4075#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer_frag2.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="188" column="39" selection-start-line="187" selection-start-column="16" selection-end-line="188" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/res/layout/race_timer.xml">
+      <provider editor-type-id="android-designer2">
+        <state />
+      </provider>
+      <provider selected="true" editor-type-id="text-editor">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/DriverInterface.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="7" column="17" selection-start-line="7" selection-start-column="17" selection-end-line="7" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/f3Ftimer/src/main/java/com/marktreble/f3ftimer/driver/SoftBuzzerService.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="50" selection-start-line="50" selection-end-line="50" />
         </state>
       </provider>
     </entry>

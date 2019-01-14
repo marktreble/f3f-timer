@@ -1,7 +1,6 @@
 package com.marktreble.f3ftimer.exportimport;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.api.API;
-import com.marktreble.f3ftimer.dialog.F3fTimerAPILoginActivity;
 import com.marktreble.f3ftimer.dialog.F3xvaultAPILoginActivity;
 import com.opencsv.CSVReader;
 
@@ -109,15 +107,15 @@ public class F3xvaultApiImportRace extends BaseImport
         }
     }
 
-    public void showProgress(String msg){
+    public void showProgress(String msg) {
         View progress = findViewById(R.id.progress);
-        TextView progressLabel = (TextView)findViewById(R.id.progressLabel);
+        TextView progressLabel = (TextView) findViewById(R.id.progressLabel);
 
         progressLabel.setText(msg);
         progress.setVisibility(View.VISIBLE);
     }
 
-    public void hideProgress(){
+    public void hideProgress() {
         View progress = findViewById(R.id.progress);
         progress.setVisibility(View.GONE);
     }
@@ -126,7 +124,7 @@ public class F3xvaultApiImportRace extends BaseImport
         mAPITask = null;
         hideProgress();
 
-        Log.i("f3xv", request+" : "+API.F3XV_IMPORT);
+        Log.i("f3xv", request + " : " + API.F3XV_IMPORT);
         if (request.equals(API.F3XV_IMPORT)) {
             JSONArray race_list = new JSONArray();
 
@@ -142,7 +140,7 @@ public class F3xvaultApiImportRace extends BaseImport
                     outputStreamWriter.close();
 
                     CSVReader reader = new CSVReader(new FileReader(file.getAbsolutePath()));
-                    String [] fields;
+                    String[] fields;
                     while ((fields = reader.readNext()) != null) {
                         String id = fields[0];
                         String name = fields[2];
@@ -151,18 +149,17 @@ public class F3xvaultApiImportRace extends BaseImport
                         race.put("name", name);
                         race_list.put(race);
                     }
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                     Log.e("Exception", "File write failed: " + e.toString());
                 }
 
-            } catch (JSONException  e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
             Log.i("f3xv", race_list.toString());
 
-            if (race_list.length()>0) {
+            if (race_list.length() > 0) {
                 showRaceNamesDialog(race_list);
             } else {
                 new AlertDialog.Builder(mContext)
@@ -183,7 +180,7 @@ public class F3xvaultApiImportRace extends BaseImport
                 String csvdata = data.getString("data");
                 race_data = parseRaceCSV(csvdata);
 
-            } catch (JSONException  e) {
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -212,7 +209,7 @@ public class F3xvaultApiImportRace extends BaseImport
         mAPITask = null;
         hideProgress();
 
-        if (data == null){
+        if (data == null) {
             new AlertDialog.Builder(mContext)
                     .setTitle("Network Error")
                     .setMessage("Sorry, no response from server.")
@@ -231,20 +228,20 @@ public class F3xvaultApiImportRace extends BaseImport
             e.printStackTrace();
         }
 
-        if (message != null){
+        if (message != null) {
 
             Intent intent = new Intent(mActivity, F3xvaultAPILoginActivity.class);
             startActivityForResult(intent, DLG_LOGIN);
         }
     }
 
-    private void showRaceNamesDialog(JSONArray racenames){
+    private void showRaceNamesDialog(JSONArray racenames) {
         mAvailableRaceIds = new ArrayList<>();
         ArrayList<String> racelist = new ArrayList<>();
         for (int i = 0; i < racenames.length(); i++) {
             JSONObject r = racenames.optJSONObject(i);
-            String id =r.optString("id");
-            String name =r.optString("name");
+            String id = r.optString("id");
+            String name = r.optString("name");
             mAvailableRaceIds.add(id);
             racelist.add(name);
         }
@@ -266,7 +263,7 @@ public class F3xvaultApiImportRace extends BaseImport
         mDlg.show();
     }
 
-    private final DialogInterface.OnClickListener raceClickListener = new DialogInterface.OnClickListener(){
+    private final DialogInterface.OnClickListener raceClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             downloadRace(mAvailableRaceIds.get(which));
@@ -274,7 +271,7 @@ public class F3xvaultApiImportRace extends BaseImport
         }
     };
 
-    public void downloadRace(String id){
+    public void downloadRace(String id) {
         Log.i("ONACTIVITY", "DOWNLOADING RACE");
 
         showProgress("Downloading Race..");

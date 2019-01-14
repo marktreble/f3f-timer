@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/grey_box">
+
     <LinearLayout
         android:id="@+id/progress"
         android:layout_width="match_parent"
@@ -13,19 +14,21 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
         android:visibility="gone">
+
         <TextView
             android:id="@+id/progressLabel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/text2"/>
+            android:textColor="@color/text2" />
+
         <ProgressBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/progressBar"
             android:layout_gravity="center"
-            android:indeterminateDrawable="@drawable/progress"/>
-        
+            android:indeterminateDrawable="@drawable/progress" />
+
     </LinearLayout>
 </RelativeLayout>

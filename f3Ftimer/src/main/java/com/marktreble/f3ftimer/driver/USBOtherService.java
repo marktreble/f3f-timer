@@ -6,14 +6,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.hardware.usb.UsbDeviceConnection;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-
-import android.hardware.usb.UsbManager;
 import android.os.SystemClock;
 import android.util.Log;
-import android.util.Xml;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -23,18 +21,14 @@ import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import ioio.lib.api.Uart;
-
 public class USBOtherService extends Service implements DriverInterface {
-		
+
     private static final String TAG = "USBOtherService";
 
     // Commands from timer
@@ -60,9 +54,9 @@ public class USBOtherService extends Service implements DriverInterface {
     private Driver mDriver;
     private String mBuffer = "";
     public int mTimerStatus = 0;
-    
+
     public boolean mBoardConnected = false;
-    
+
     private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
     private SerialInputOutputManager mSerialIoManager = null;
@@ -76,26 +70,25 @@ public class USBOtherService extends Service implements DriverInterface {
     private int mVendorId = 0;
     private int mProductId = 0;
 
-	/*
-	 * General life-cycle function overrides
-	 */
+    /*
+     * General life-cycle function overrides
+     */
 
-	@Override
+    @Override
     public void onCreate() {
-		super.onCreate();
-		mDriver = new Driver(this);
+        super.onCreate();
+        mDriver = new Driver(this);
 
         this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
     }
-		
 
-    
-	@Override
-	public void onDestroy() {
+
+    @Override
+    public void onDestroy() {
         Log.i(TAG, "onDestroy");
-		super.onDestroy();  
-        if (mDriver!= null)
-		    mDriver.destroy();
+        super.onDestroy();
+        if (mDriver != null)
+            mDriver.destroy();
         mDriver = null;
 
         if (mSerialIoManager != null) {
@@ -105,13 +98,13 @@ public class USBOtherService extends Service implements DriverInterface {
 
         try {
             this.unregisterReceiver(onBroadcast);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
     }
 
-    public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
-        if (inputSource.equals(context.getString(R.string.USB_OTHER))){
+    public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params) {
+        if (inputSource.equals(context.getString(R.string.USB_OTHER))) {
             Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
             i.putExtra("icon", ICN_DISCONN);
             i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
@@ -124,7 +117,7 @@ public class USBOtherService extends Service implements DriverInterface {
         }
     }
 
-    public static boolean stop(RaceActivity context){
+    public static boolean stop(RaceActivity context) {
         if (context.isServiceRunning("com.marktreble.f3ftimer.driver.USBOtherService")) {
             Intent serviceIntent = new Intent(context, USBOtherService.class);
             context.stopService(serviceIntent);
@@ -132,7 +125,7 @@ public class USBOtherService extends Service implements DriverInterface {
         }
         return false;
     }
-    
+
     // Binding for UI->Service Communication
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
@@ -143,7 +136,7 @@ public class USBOtherService extends Service implements DriverInterface {
                 Log.i("USB SERVICE UI->Service", data);
 
                 if (data.equals("get_connection_status")) {
-                    if (mBoardConnected){
+                    if (mBoardConnected) {
                         driverConnected();
 
                     } else {
@@ -153,11 +146,10 @@ public class USBOtherService extends Service implements DriverInterface {
             }
         }
     };
-    
-	@Override
-    public int onStartCommand(final Intent intent, int flags, int startId){
-    	super.onStartCommand(intent, flags, startId);
 
+    @Override
+    public int onStartCommand(final Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
 
 
         Log.i(TAG, "onStartCommand");
@@ -167,11 +159,15 @@ public class USBOtherService extends Service implements DriverInterface {
         mBaudRate = 2400;
         String baudrate = extras.getString("pref_usb_baudrate");
         if (baudrate != null)
-            try { mBaudRate = Integer.parseInt(baudrate, 10); } catch (NumberFormatException e){ e.printStackTrace(); }
+            try {
+                mBaudRate = Integer.parseInt(baudrate, 10);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
 
         String databits = extras.getString("pref_usb_databits");
 
-        switch (databits){
+        switch (databits) {
             case "5":
                 mDataBits = UsbSerialPort.DATABITS_5;
                 break;
@@ -183,24 +179,24 @@ public class USBOtherService extends Service implements DriverInterface {
                 break;
             case "8":
             default:
-                mDataBits =UsbSerialPort.DATABITS_8;
+                mDataBits = UsbSerialPort.DATABITS_8;
                 break;
         }
 
         String stopbits = extras.getString("pref_usb_stopbits");
 
-        switch (stopbits){
+        switch (stopbits) {
             case "2":
                 mStopBits = UsbSerialPort.STOPBITS_2;
                 break;
             case "1":
             default:
-                mStopBits =UsbSerialPort.STOPBITS_1;
+                mStopBits = UsbSerialPort.STOPBITS_1;
                 break;
         }
 
         String parity = extras.getString("pref_usb_parity");
-        switch (parity){
+        switch (parity) {
             case "Odd":
                 mParity = UsbSerialPort.PARITY_ODD;
                 break;
@@ -215,14 +211,14 @@ public class USBOtherService extends Service implements DriverInterface {
                 break;
             case "None":
             default:
-                mParity =  UsbSerialPort.PARITY_NONE;
+                mParity = UsbSerialPort.PARITY_NONE;
                 break;
         }
 
-        final Runnable make_connection = new Runnable(){
+        final Runnable make_connection = new Runnable() {
             @Override
-            public void run(){
-                if (!connect(intent) && mDriver != null){
+            public void run() {
+                if (!connect(intent) && mDriver != null) {
                     new Handler().postDelayed(this, 100);
                 }
             }
@@ -230,10 +226,10 @@ public class USBOtherService extends Service implements DriverInterface {
 
         new Handler().postDelayed(make_connection, 100);
 
-    	return (START_STICKY);
+        return (START_STICKY);
     }
-    
-    public boolean connect(Intent intent){
+
+    public boolean connect(Intent intent) {
         UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
         UsbSerialProber prober = UsbSerialProber.getDefaultProber();
@@ -250,10 +246,10 @@ public class USBOtherService extends Service implements DriverInterface {
             Log.i(TAG, "Added driver: " + driver.getClass().toString());
         }
 
-        if (result.size() == 0){
-            if (prober.mVendorId>0 && prober.mProductId>0) {
+        if (result.size() == 0) {
+            if (prober.mVendorId > 0 && prober.mProductId > 0) {
                 if (mVendorId != prober.mVendorId
-                        && mProductId != prober.mProductId){
+                        && mProductId != prober.mProductId) {
                     mUnsupportedMessageSent = false;
                 }
                 if (!mUnsupportedMessageSent) {
@@ -312,15 +308,15 @@ public class USBOtherService extends Service implements DriverInterface {
         return false;
     }
 
-    
-	@Override
-	public IBinder onBind(Intent intent) {
+
+    @Override
+    public IBinder onBind(Intent intent) {
         Log.i(TAG, "BINDING");
-        
-		return null;
-	}
-	
-	// Input - Listener Loop
+
+        return null;
+    }
+
+    // Input - Listener Loop
     private final SerialInputOutputManager.Listener mListener = new SerialInputOutputManager.Listener() {
 
         @Override
@@ -334,7 +330,7 @@ public class USBOtherService extends Service implements DriverInterface {
         @Override
         public void onNewData(final byte[] data) {
 
-            char[] charArray = (new String(data, 0,data.length)).toCharArray();
+            char[] charArray = (new String(data, 0, data.length)).toCharArray();
 
             StringBuilder sb = new StringBuilder(charArray.length);
             StringBuilder hexString = new StringBuilder();
@@ -350,39 +346,31 @@ public class USBOtherService extends Service implements DriverInterface {
                 hexString.append(hex);
             }
 
-            String str_in = mBuffer+sb.toString().trim();
+            String str_in = mBuffer + sb.toString().trim();
             int len = str_in.length();
-            if (len>0){
+            if (len > 0) {
 
-                String lastchar = hexString.substring(hexString.length()-2, hexString.length());
-                if (lastchar.equals("0d") || lastchar.equals("0a")){
+                String lastchar = hexString.substring(hexString.length() - 2, hexString.length());
+                if (lastchar.equals("0d") || lastchar.equals("0a")) {
                     // Clear the buffer
                     mBuffer = "";
 
                     // Get code (first char)
                     String code = "";
-                    code=str_in.substring(0, 1);
+                    code = str_in.substring(0, 1);
 
                     // We have data/command from the timer, pass this on to the server
-                    if (code.equals(FT_START_BUTTON)){
+                    if (code.equals(FT_START_BUTTON)) {
                         mDriver.startPressed();
-                    } else
-
-                    if (code.equals(FT_WIND_LEGAL)){
+                    } else if (code.equals(FT_WIND_LEGAL)) {
                         mDriver.windLegal();
-                    } else
-
-                    if (code.equals(FT_WIND_ILLEGAL)){
+                    } else if (code.equals(FT_WIND_ILLEGAL)) {
                         mDriver.windIllegal();
-                    } else
-
-                    if (code.equals(FT_READY)){
+                    } else if (code.equals(FT_READY)) {
                         mTimerStatus = 0;
                         mDriver.ready();
-                    } else
-
-                    if (code.equals(FT_LEG_COMPLETE)){
-                        switch (mTimerStatus){
+                    } else if (code.equals(FT_LEG_COMPLETE)) {
+                        switch (mTimerStatus) {
                             case 0:
                                 mDriver.offCourse();
                                 break;
@@ -395,11 +383,9 @@ public class USBOtherService extends Service implements DriverInterface {
 
                         }
                         mTimerStatus++;
-                    } else
-
-                    if (code.equals(FT_RACE_COMPLETE)){
+                    } else if (code.equals(FT_RACE_COMPLETE)) {
                         // Make sure we get 9 bytes before proceeding
-                        if (str_in.length()<9){
+                        if (str_in.length() < 9) {
                             mBuffer = str_in;
                         } else {
                             // Any more than 8 chars should be passed on to the next loop
@@ -423,17 +409,17 @@ public class USBOtherService extends Service implements DriverInterface {
         }
     };
 
-    
+
     // Output - Send commands to hardware
-	private void sendCmd(String cmd){
+    private void sendCmd(String cmd) {
         byte[] bytes = cmd.getBytes(Charset.forName(ENCODING));
         int sz = bytes.length;
-        if (sz>0){
-            if (mSerialIoManager != null){
-                Log.i(TAG, "Sending Data: "+cmd);
+        if (sz > 0) {
+            if (mSerialIoManager != null) {
+                Log.i(TAG, "Sending Data: " + cmd);
                 try {
                     mSerialIoManager.writeAsync(bytes);
-                } catch (IOException e){
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
@@ -446,34 +432,40 @@ public class USBOtherService extends Service implements DriverInterface {
             }
         }
     }
-	
-	// Driver Interface implementations
-    public void driverConnected(){
+
+    // Driver Interface implementations
+    public void driverConnected() {
         mDriver.driverConnected(ICN_CONN);
     }
 
-    public void driverDisconnected(){
+    public void driverDisconnected() {
         mDriver.driverDisconnected(ICN_DISCONN);
     }
 
-    public void sendLaunch(){
+    public void sendLaunch() {
         this.sendCmd(TT_LAUNCH);
         mTimerStatus = 0;
     }
-    public void sendAbort(){
+
+    public void sendAbort() {
         this.sendCmd(TT_ABORT);
     }
 
-    public void sendAdditionalBuzzer(){
+    public void sendAdditionalBuzzer() {
         this.sendCmd(TT_ADDITIONAL_BUZZER);
     }
 
-    public void sendResendTime(){
+    public void sendResendTime() {
         this.sendCmd(TT_RESEND_TIME);
     }
 
-    public void baseA(){}
-    public void baseB(){}
-    public void finished(String time){}
+    public void baseA() {
+    }
+
+    public void baseB() {
+    }
+
+    public void finished(String time) {
+    }
 
 }

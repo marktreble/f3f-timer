@@ -4,12 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
-
-
-import com.marktreble.f3ftimer.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,6 +53,7 @@ public class API {
     public interface APICallbackInterface {
 
         void onAPISuccess(String request, JSONObject result);
+
         void onAPIError(String request, JSONObject result);
     }
 
@@ -67,12 +64,12 @@ public class API {
     public boolean mAppendEndpoint = true;
     public boolean mIsJSON = true;
 
-    public void makeAPICall(Context context, String base, int method, Map<String, String> params){
+    public void makeAPICall(Context context, String base, int method, Map<String, String> params) {
         api = new apiCall(context, base, method, mAppendEndpoint, mIsJSON, mCallback, request);
         api.execute(params);
     }
 
-    public void cancel(){
+    public void cancel() {
         api.cancel(true);
     }
 
@@ -107,7 +104,7 @@ public class API {
             String str_response = "";
 
             String url = base;
-            if (mAppendEndpoint) url+= endpoint;
+            if (mAppendEndpoint) url += endpoint;
 
             if (mMethod == API.httpmethod.GET) {
                 str_response = get(url, nvp);
@@ -118,19 +115,19 @@ public class API {
             return str_response;
         }
 
-        private String get(String url, Map<String, String> nvp){
+        private String get(String url, Map<String, String> nvp) {
 
-            if (nvp.size()>0){
-                url+= "?";
+            if (nvp.size() > 0) {
+                url += "?";
                 Iterator it = nvp.entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
-                    String key = (String)pair.getKey();
-                    String val = (String)pair.getValue();
-                    url+= key+"="+val;
+                    Map.Entry pair = (Map.Entry) it.next();
+                    String key = (String) pair.getKey();
+                    String val = (String) pair.getValue();
+                    url += key + "=" + val;
 
                     it.remove(); // avoids a ConcurrentModificationException
-                    if (it.hasNext()) url+="&";
+                    if (it.hasNext()) url += "&";
 
                 }
             }
@@ -152,23 +149,23 @@ public class API {
             try {
                 Response r = client.newCall(request).execute();
                 response = r.body().string();
-            } catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return response;
         }
 
-        private String post(String url, Map<String, String> nvp){
+        private String post(String url, Map<String, String> nvp) {
             RequestBody body;
             MultipartBody.Builder builder = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM);
 
-            if (nvp.size()>0){
+            if (nvp.size() > 0) {
                 Iterator it = nvp.entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry)it.next();
-                    String key = (String)pair.getKey();
-                    String val = (String)pair.getValue();
+                    Map.Entry pair = (Map.Entry) it.next();
+                    String key = (String) pair.getKey();
+                    String val = (String) pair.getValue();
                     builder.addFormDataPart(key, val);
 
                     it.remove(); // avoids a ConcurrentModificationException
@@ -196,7 +193,7 @@ public class API {
                 Response r = client.newCall(request).execute();
                 response = r.body().string();
                 Log.d("RAW", r.networkResponse().cacheControl().toString());
-            } catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             return response;
@@ -239,7 +236,7 @@ public class API {
                 String success = "";
                 JSONObject o = new JSONObject();
 
-                if (response != null && response.length()>0) {
+                if (response != null && response.length() > 0) {
                     success = response.substring(0, 1);
                     try {
                         o.put("data", response.substring(1).trim());
@@ -248,7 +245,7 @@ public class API {
                     }
                 }
 
-                if (success.equals("1")){
+                if (success.equals("1")) {
                     mCallback.onAPISuccess(mRequest, o);
                 } else {
                     mCallback.onAPIError(mRequest, o);
@@ -256,8 +253,8 @@ public class API {
                 return;
             }
 
-            if (response == null){
-                ((Activity)mContext.get()).runOnUiThread(new Runnable() {
+            if (response == null) {
+                ((Activity) mContext.get()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         new AlertDialog.Builder(mContext.get())

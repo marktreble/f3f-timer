@@ -1,13 +1,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="right"
-        android:background="@android:color/transparent"
-        android:orientation="vertical"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="right"
+    android:background="@android:color/transparent"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp">
 
     <ListView
         android:id="@android:id/list"
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_weight="0"
-        android:gravity="bottom" >
+        android:gravity="bottom">
 
         <LinearLayout
             android:id="@+id/button_add_wrapper"
@@ -33,6 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:orientation="vertical">
+
             <Button
                 android:id="@+id/button_add"
                 android:layout_width="48dp"
@@ -40,6 +41,7 @@
                 android:layout_gravity="left"
                 android:background="@drawable/add"
                 android:contentDescription="@string/button_add" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -47,9 +49,9 @@
                 android:textStyle="bold"
                 android:textColor="@color/text2"
                 android:text="@string/add_pilot"
-                android:gravity="center"
-                />
+                android:gravity="center" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/button_scramble_wrapper"
             android:layout_width="wrap_content"
@@ -58,12 +60,14 @@
             android:layout_toRightOf="@+id/button_add_wrapper"
             android:layout_marginLeft="12dp"
             android:orientation="vertical">
+
             <Button
                 android:id="@+id/button_scramble"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/random"
                 android:contentDescription="@string/button_scramble" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,8 +75,7 @@
                 android:textStyle="bold"
                 android:textColor="@color/text2"
                 android:text="@string/random_shuffle"
-                android:gravity="center"
-                />
+                android:gravity="center" />
         </LinearLayout>
 
         <LinearLayout
@@ -94,8 +97,7 @@
                 android:layout_toEndOf="@+id/button_manual_wrapper"
                 android:layout_toRightOf="@+id/button_manual_wrapper"
                 android:background="@drawable/rotate"
-                android:contentDescription="@string/button_rotate"
-                />
+                android:contentDescription="@string/button_rotate" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -104,7 +106,7 @@
                 android:text="@string/rotate_shuffle"
                 android:textColor="@color/text2"
                 android:textSize="12sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 
@@ -116,12 +118,14 @@
             android:layout_toRightOf="@+id/button_rotate_wrapper"
             android:layout_marginLeft="12dp"
             android:orientation="vertical">
+
             <Button
                 android:id="@+id/button_manual"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:background="@drawable/manual"
                 android:contentDescription="@string/button_manual" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,9 +133,9 @@
                 android:textStyle="bold"
                 android:textColor="@color/text2"
                 android:text="@string/manual_shuffle"
-                android:gravity="center"
-                />
+                android:gravity="center" />
         </LinearLayout>
+
         <Button
             android:id="@+id/button_next"
             android:layout_width="wrap_content"
@@ -150,4 +154,4 @@
 
     </RelativeLayout>
 
-    </LinearLayout>
+</LinearLayout>

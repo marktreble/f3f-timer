@@ -4,9 +4,7 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,7 +16,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
@@ -49,7 +46,7 @@ public class ResultsTeamsActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView)findViewById(android.R.id.home);
+        ImageView view = (ImageView) findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -59,7 +56,7 @@ public class ResultsTeamsActivity extends ListActivity {
         setContentView(R.layout.race);
 
         Intent intent = getIntent();
-        if (intent.hasExtra("race_id")){
+        if (intent.hasExtra("race_id")) {
             Bundle extras = intent.getExtras();
             mRid = extras.getInt("race_id");
         }
@@ -81,11 +78,11 @@ public class ResultsTeamsActivity extends ListActivity {
     }
 
 
-	/*
-	 * Get Pilots from database to populate the listview
-	 */
+    /*
+     * Get Pilots from database to populate the listview
+     */
 
-    private void getNamesArray(){
+    private void getNamesArray() {
 
         Results r = new Results();
         r.getTeamResultsForRace(ResultsTeamsActivity.this, mRid);
@@ -96,10 +93,10 @@ public class ResultsTeamsActivity extends ListActivity {
 
     }
 
-    private void setList(){
+    private void setList() {
         this.getNamesArray();
 
-        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots , R.id.text1, mArrNames){
+        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots, R.id.text1, mArrNames) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View row;
@@ -117,7 +114,7 @@ public class ResultsTeamsActivity extends ListActivity {
 
                 TextView p_name = (TextView) row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
-                p_name.setTextColor(getResources().getColor(R.color.text3 ));
+                p_name.setTextColor(getResources().getColor(R.color.text3));
 
                 row.setBackgroundColor(getResources().getColor(R.color.background));
 
@@ -180,26 +177,26 @@ public class ResultsTeamsActivity extends ListActivity {
         }
     }
 
-    public void share(){
+    public void share() {
 
     }
 
-    public void pilotManager(){
-        Intent intent = new Intent(mContext,PilotsActivity.class);
+    public void pilotManager() {
+        Intent intent = new Intent(mContext, PilotsActivity.class);
         startActivity(intent);
     }
 
-    public void raceManager(){
+    public void raceManager() {
         Intent intent = new Intent(mContext, RaceListActivity.class);
         startActivity(intent);
     }
 
-    public void help(){
+    public void help() {
         Intent intent = new Intent(mContext, HelpActivity.class);
         startActivity(intent);
     }
 
-    public void about(){
+    public void about() {
         Intent intent = new Intent(mContext, AboutActivity.class);
         startActivity(intent);
     }

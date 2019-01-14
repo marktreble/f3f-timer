@@ -16,7 +16,7 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
 
     private boolean mClickedOnce = false;
 
-    public RaceTimerFrag6(){
+    public RaceTimerFrag6() {
 
     }
 
@@ -52,7 +52,7 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
 
         super.setPilotName();
 
-        if (((RaceTimerActivity)getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
+        if (((RaceTimerActivity) getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
             setMinimized();
         }
 
@@ -63,14 +63,14 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
         return mView;
     }
 
-    public void reflight(){
-        RaceTimerActivity a = (RaceTimerActivity)getActivity();
+    public void reflight() {
+        RaceTimerActivity a = (RaceTimerActivity) getActivity();
         a.reflight();
 
     }
 
-    public void score_zero(){
-        RaceTimerActivity a = (RaceTimerActivity)getActivity();
+    public void score_zero() {
+        RaceTimerActivity a = (RaceTimerActivity) getActivity();
         a.scorePilotZero(a.mPilot);
         a.setResult(RaceActivity.RESULT_ABORTED, null);
         a.finish();

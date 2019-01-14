@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rotate xmlns:android="http://schemas.android.com/apk/res/android"
     android:pivotX="50%"
-    android:pivotY="50%" 
+    android:pivotY="50%"
     android:fromDegrees="0"
     android:toDegrees="1080">
-    <shape android:shape="ring"
+    <shape
+        android:shape="ring"
         android:innerRadiusRatio="4"
         android:thicknessRatio="16"
         android:useLevel="false">
 
-        <size 
+        <size
             android:width="64dp"
             android:height="64dp" />
         <gradient

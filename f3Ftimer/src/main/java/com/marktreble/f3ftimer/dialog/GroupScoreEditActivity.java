@@ -25,7 +25,7 @@ public class GroupScoreEditActivity extends Activity {
 
         EditText groups = (EditText) findViewById(R.id.editText1);
 
-        mIntent= getIntent(); // gets the previously created intent
+        mIntent = getIntent(); // gets the previously created intent
         groups.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {

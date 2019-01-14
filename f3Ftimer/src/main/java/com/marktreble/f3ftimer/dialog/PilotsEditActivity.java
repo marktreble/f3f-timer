@@ -11,21 +11,13 @@
 package com.marktreble.f3ftimer.dialog;
 
 
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
-import android.util.DisplayMetrics;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -33,7 +25,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -45,40 +36,45 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 import android.widget.Toast;
-import com.marktreble.f3ftimer.data.pilot.*;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.languages.Languages;
-import com.marktreble.f3ftimer.R;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PilotsEditActivity extends Activity {
 
-	private Integer mPid = 0;
+    private Integer mPid = 0;
     private Integer mRid = 0;
-	private String mCaller = "";
-	
-	private Context mContext;
-	
-	ArrayAdapter<String> mNationality_adapter;
-	ArrayAdapter<CharSequence> mLanguage_adapter;
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.pilot_edit);
-		
-		mContext = this;
-		
-    	EditText firstname = (EditText) findViewById(R.id.editText1);
-    	EditText lastname = (EditText) findViewById(R.id.editText2);
-    	EditText email = (EditText) findViewById(R.id.editText3);
-    	EditText frequency = (EditText) findViewById(R.id.editText4);
-    	EditText models = (EditText) findViewById(R.id.editText5);
-    	Spinner nationality = (Spinner) findViewById(R.id.spinner6);
+    private String mCaller = "";
+
+    private Context mContext;
+
+    ArrayAdapter<String> mNationality_adapter;
+    ArrayAdapter<CharSequence> mLanguage_adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.pilot_edit);
+
+        mContext = this;
+
+        EditText firstname = (EditText) findViewById(R.id.editText1);
+        EditText lastname = (EditText) findViewById(R.id.editText2);
+        EditText email = (EditText) findViewById(R.id.editText3);
+        EditText frequency = (EditText) findViewById(R.id.editText4);
+        EditText models = (EditText) findViewById(R.id.editText5);
+        Spinner nationality = (Spinner) findViewById(R.id.spinner6);
         Spinner language = (Spinner) findViewById(R.id.spinner7);
-		EditText nac = (EditText) findViewById(R.id.editText6);
-		EditText fai = (EditText) findViewById(R.id.editText7);
+        EditText nac = (EditText) findViewById(R.id.editText6);
+        EditText fai = (EditText) findViewById(R.id.editText7);
         TextView teamlabel = (TextView) findViewById(R.id.textView10);
-		AutoCompleteTextView team = (AutoCompleteTextView) findViewById(R.id.editText8);
+        AutoCompleteTextView team = (AutoCompleteTextView) findViewById(R.id.editText8);
         Button done_button = (Button) findViewById(R.id.button1);
 
         done_button.setOnClickListener(new View.OnClickListener() {
@@ -87,181 +83,181 @@ public class PilotsEditActivity extends Activity {
                 done();
             }
         });
-		CharSequence[] countries = getResources().getTextArray(R.array.nationalities);
-		String[] str_countries = new String[countries.length];
-		int i=0;
-		for (CharSequence country : countries){
-			str_countries[i++] = country.toString();
-		}
-		mNationality_adapter = new ArrayAdapter<String>(this, R.layout.iconspinner , R.id.ics_label, str_countries){
-   	   		@Override
-   	   		public View getView(int position, View convertView, ViewGroup parent) {
-   	   			View view = getCustomView(position, convertView, parent);
-   	   			ImageView icon = (ImageView)view.findViewById(R.id.ics_icon);
-   	   			LinearLayout.LayoutParams lp = (LayoutParams) icon.getLayoutParams();
-   	   			lp.leftMargin = 0;
-   	   			icon.setLayoutParams(lp);
-   	   			return view;
-   	   		}
-   	   		
-   	   		public View getDropDownView(int position, View convertView, ViewGroup parent) {
-	   			return getCustomView(position, convertView, parent);
-	   		}
-	   		
-   	   		public View getCustomView(int position, View convertView, ViewGroup parent) {
+        CharSequence[] countries = getResources().getTextArray(R.array.nationalities);
+        String[] str_countries = new String[countries.length];
+        int i = 0;
+        for (CharSequence country : countries) {
+            str_countries[i++] = country.toString();
+        }
+        mNationality_adapter = new ArrayAdapter<String>(this, R.layout.iconspinner, R.id.ics_label, str_countries) {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = getCustomView(position, convertView, parent);
+                ImageView icon = (ImageView) view.findViewById(R.id.ics_icon);
+                LinearLayout.LayoutParams lp = (LayoutParams) icon.getLayoutParams();
+                lp.leftMargin = 0;
+                icon.setLayoutParams(lp);
+                return view;
+            }
+
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                return getCustomView(position, convertView, parent);
+            }
+
+            public View getCustomView(int position, View convertView, ViewGroup parent) {
                 View row;
-                                
+
                 if (null == convertView) {
-                row = getLayoutInflater().inflate(R.layout.iconspinner, parent, false);
+                    row = getLayoutInflater().inflate(R.layout.iconspinner, parent, false);
                 } else {
-                row = convertView;
+                    row = convertView;
                 }
-                
-        		CharSequence[] codes = getResources().getTextArray(R.array.countrycodes);
 
-        		TextView label= (TextView) row.findViewById(R.id.ics_label);
-        	    label.setText(getItem(position));
+                CharSequence[] codes = getResources().getTextArray(R.array.countrycodes);
 
-        	    ImageView icon=(ImageView)row.findViewById(R.id.ics_icon);
+                TextView label = (TextView) row.findViewById(R.id.ics_label);
+                label.setText(getItem(position));
 
-        	    String code =  ((String) codes[position]).toLowerCase();
-        	    Drawable img = null;
-        	    if (!code.equals("")){
-	        	    String uri = "@drawable/" + code;
-	        	    int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-	        	    //icon.setImageResource(imageResource);
-	        	    img = getResources().getDrawable(imageResource);
-        	    }
-        	    icon.setImageDrawable(img);
-        	    
+                ImageView icon = (ImageView) row.findViewById(R.id.ics_icon);
+
+                String code = ((String) codes[position]).toLowerCase();
+                Drawable img = null;
+                if (!code.equals("")) {
+                    String uri = "@drawable/" + code;
+                    int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+                    //icon.setImageResource(imageResource);
+                    img = getResources().getDrawable(imageResource);
+                }
+                icon.setImageDrawable(img);
+
                 return row;
             }
-   	   	};
+        };
 
-    	nationality.setAdapter(mNationality_adapter);
-    	
+        nationality.setAdapter(mNationality_adapter);
+
         String[] languages = Languages.getAvailableLanguages(this);
 
-    	mLanguage_adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, languages){
+        mLanguage_adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, languages) {
 
             @Override
-            public CharSequence getItem(int position){
-                String code = (String)super.getItem(position);
-				CharSequence label = "";
-				try {
-					label = getResources().getString(getResources().getIdentifier(code, "string", getPackageName()));
-				} catch (NotFoundException ex){
-					Log.d("CODE", "Language code not found is resources: "+code);
-				}
+            public CharSequence getItem(int position) {
+                String code = (String) super.getItem(position);
+                CharSequence label = "";
+                try {
+                    label = getResources().getString(getResources().getIdentifier(code, "string", getPackageName()));
+                } catch (NotFoundException ex) {
+                    Log.d("CODE", "Language code not found is resources: " + code);
+                }
                 return label;
             }
         };
-        
-    	mLanguage_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    	language.setAdapter(mLanguage_adapter);
 
-		Intent intent= getIntent(); // gets the previously created intent
-		Bundle extras = intent.getExtras();
-		mCaller = extras.getString("caller");
-		if (intent.hasExtra("pilot_id")){
-			mPid = extras.getInt("pilot_id");
+        mLanguage_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        language.setAdapter(mLanguage_adapter);
+
+        Intent intent = getIntent(); // gets the previously created intent
+        Bundle extras = intent.getExtras();
+        mCaller = extras.getString("caller");
+        if (intent.hasExtra("pilot_id")) {
+            mPid = extras.getInt("pilot_id");
             mRid = extras.getInt("race_id");
-			
-			Pilot p = new Pilot();
-			if (mCaller.equals("pilotmanager")){
-				// Get pilot from database and populate fields
-	        	PilotData datasource = new PilotData(mContext);
-	    		datasource.open();
-	    		p = datasource.getPilot(mPid);
-	    		datasource.close();
-			}
-			
-			if (mCaller.equals("racemanager")){
-				// Get pilot from database and populate fields
-	        	RacePilotData datasource = new RacePilotData(mContext);
-	    		datasource.open();
-	    		p = datasource.getPilot(mPid, mRid);
-				Log.i("PPP", p.toString());
-	    		datasource.close();
-			}
-        	
-        	firstname.setText(p.firstname);
-        	lastname.setText(p.lastname);
-        	email.setText(p.email);
-        	frequency.setText(p.frequency);
-			models.setText(p.models);
-			team.setText(p.team);
-			nac.setText(p.nac_no);
-			fai.setText(p.fai_id);
 
-        	int pos;
-        	
-        	String[] countrycodes = getResources().getStringArray(R.array.countrycodes);
-        	pos = 0;
-        	for (i=0;i<countrycodes.length; i++){
-        		if (countrycodes[i].equals(p.nationality))
-        			pos = i;
-        	}
-        	nationality.setSelection(pos);
-        	
+            Pilot p = new Pilot();
+            if (mCaller.equals("pilotmanager")) {
+                // Get pilot from database and populate fields
+                PilotData datasource = new PilotData(mContext);
+                datasource.open();
+                p = datasource.getPilot(mPid);
+                datasource.close();
+            }
 
-        	pos = 0;
-        	for (i=0;i<languages.length; i++){
-        		if (languages[i].equals(p.language))
-        			pos = i;
-        	}
-        	language.setSelection(pos);
+            if (mCaller.equals("racemanager")) {
+                // Get pilot from database and populate fields
+                RacePilotData datasource = new RacePilotData(mContext);
+                datasource.open();
+                p = datasource.getPilot(mPid, mRid);
+                Log.i("PPP", p.toString());
+                datasource.close();
+            }
 
-		} else {
+            firstname.setText(p.firstname);
+            lastname.setText(p.lastname);
+            email.setText(p.email);
+            frequency.setText(p.frequency);
+            models.setText(p.models);
+            team.setText(p.team);
+            nac.setText(p.nac_no);
+            fai.setText(p.fai_id);
+
+            int pos;
+
+            String[] countrycodes = getResources().getStringArray(R.array.countrycodes);
+            pos = 0;
+            for (i = 0; i < countrycodes.length; i++) {
+                if (countrycodes[i].equals(p.nationality))
+                    pos = i;
+            }
+            nationality.setSelection(pos);
+
+
+            pos = 0;
+            for (i = 0; i < languages.length; i++) {
+                if (languages[i].equals(p.language))
+                    pos = i;
+            }
+            language.setSelection(pos);
+
+        } else {
             String[] countrycodes = getResources().getStringArray(R.array.countrycodes);
             int pos = 0;
             String dflt = "GB";
-            for (i=0;i<countrycodes.length; i++){
+            for (i = 0; i < countrycodes.length; i++) {
                 if (countrycodes[i].equals(dflt))
-                   pos = i;
+                    pos = i;
             }
             nationality.setSelection(pos);
 
 
             pos = 0;
             dflt = "en";
-            for (i=0;i<languages.length; i++){
+            for (i = 0; i < languages.length; i++) {
                 if (languages[i].equals(dflt))
                     pos = i;
             }
             language.setSelection(pos);
         }
-		
 
-		models.setOnEditorActionListener(new OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		        if (actionId == EditorInfo.IME_ACTION_DONE) {
-		            return done();
-		        }
-				return false;
-			}
-		});
 
-		if (mCaller.equals("racemanager")){
-			// Show team
-			teamlabel.setVisibility(View.VISIBLE);
-			team.setVisibility(View.VISIBLE);
+        models.setOnEditorActionListener(new OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    return done();
+                }
+                return false;
+            }
+        });
 
-			RacePilotData datasource = new RacePilotData(mContext);
-			datasource.open();
-			final String[] TEAMS = datasource.getTeams(mRid);
-			datasource.close();
+        if (mCaller.equals("racemanager")) {
+            // Show team
+            teamlabel.setVisibility(View.VISIBLE);
+            team.setVisibility(View.VISIBLE);
 
-			ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-					android.R.layout.simple_dropdown_item_1line, TEAMS);
+            RacePilotData datasource = new RacePilotData(mContext);
+            datasource.open();
+            final String[] TEAMS = datasource.getTeams(mRid);
+            datasource.close();
 
-			team.setAdapter(adapter);
-		}
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+                    android.R.layout.simple_dropdown_item_1line, TEAMS);
 
-	}
+            team.setAdapter(adapter);
+        }
 
-    private boolean done(){
+    }
+
+    private boolean done() {
         // Get entered data, and save to/update database
         EditText firstname = (EditText) findViewById(R.id.editText1);
         EditText lastname = (EditText) findViewById(R.id.editText2);
@@ -270,20 +266,20 @@ public class PilotsEditActivity extends Activity {
         EditText models = (EditText) findViewById(R.id.editText5);
         Spinner nationality = (Spinner) findViewById(R.id.spinner6);
         Spinner language = (Spinner) findViewById(R.id.spinner7);
-		EditText team = (EditText) findViewById(R.id.editText8);
-		EditText nac = (EditText) findViewById(R.id.editText6);
-		EditText fai = (EditText) findViewById(R.id.editText7);
+        EditText team = (EditText) findViewById(R.id.editText8);
+        EditText nac = (EditText) findViewById(R.id.editText6);
+        EditText fai = (EditText) findViewById(R.id.editText7);
 
 
-		Pilot p = new Pilot();
+        Pilot p = new Pilot();
         p.firstname = capitalise(firstname.getText().toString().trim());
         p.lastname = capitalise(lastname.getText().toString().trim());
         p.email = email.getText().toString().trim().toLowerCase();
         p.frequency = frequency.getText().toString().trim();
         p.models = capitalise(models.getText().toString().trim());
-        p.nationality =  getResources().getStringArray(R.array.countrycodes)[nationality.getSelectedItemPosition()];
+        p.nationality = getResources().getStringArray(R.array.countrycodes)[nationality.getSelectedItemPosition()];
         String[] languages = Languages.getAvailableLanguages(mContext);
-        if (language.getSelectedItemPosition()>=0)
+        if (language.getSelectedItemPosition() >= 0)
             p.language = languages[language.getSelectedItemPosition()];
 
         p.nac_no = nac.getText().toString().trim().toUpperCase();
@@ -295,11 +291,11 @@ public class PilotsEditActivity extends Activity {
         Pattern pattern = Pattern.compile(regEx);
         Matcher m = pattern.matcher(p.email);
 
-        if(m.find() || p.email.length() == 0){
-            if (mCaller.equals("pilotmanager")){
+        if (m.find() || p.email.length() == 0) {
+            if (mCaller.equals("pilotmanager")) {
                 PilotData datasource = new PilotData(mContext);
                 datasource.open();
-                if (mPid == 0){
+                if (mPid == 0) {
                     datasource.savePilot(p);
                 } else {
                     p.id = mPid;
@@ -308,11 +304,11 @@ public class PilotsEditActivity extends Activity {
                 datasource.close();
             }
 
-            if (mCaller.equals("racemanager")){
+            if (mCaller.equals("racemanager")) {
                 RacePilotData datasource = new RacePilotData(mContext);
                 datasource.open();
-				p.team = team.getText().toString().trim();
-				p.id = mPid;
+                p.team = team.getText().toString().trim();
+                p.id = mPid;
                 datasource.updatePilot(p);
                 datasource.close();
             }
@@ -337,10 +333,11 @@ public class PilotsEditActivity extends Activity {
         }
         return false;
     }
-	@SuppressLint("DefaultLocale")
-	private String capitalise(String str){
-		if (str.length() == 0) return "";
-		return str.substring(0, 1).toUpperCase() + str.substring(1);
-	}
+
+    @SuppressLint("DefaultLocale")
+    private String capitalise(String str) {
+        if (str.length() == 0) return "";
+        return str.substring(0, 1).toUpperCase() + str.substring(1);
+    }
 
 }

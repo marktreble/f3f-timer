@@ -8,19 +8,16 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
-import java.util.HashMap;
-
 public class SoftBuzzerService extends Service implements DriverInterface, Thread.UncaughtExceptionHandler {
 
     private static final String TAG = "SoftBuzzerService";
-    
-	private Driver mDriver;
+
+    private Driver mDriver;
 
     public int mTimerStatus = 0;
 
@@ -36,35 +33,35 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     int mWindSpeedCounter = 0;
     long mWindTimestamp;
 
-	/*
-	 * General life-cycle function overrides
-	 */
+    /*
+     * General life-cycle function overrides
+     */
 
     @Override
-    public void uncaughtException(Thread thread, Throwable ex){
+    public void uncaughtException(Thread thread, Throwable ex) {
         stopSelf();
     }
-    
-	@Override
+
+    @Override
     public void onCreate() {
-		super.onCreate();
-		mDriver = new Driver(this);
+        super.onCreate();
+        mDriver = new Driver(this);
 
         this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
 
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
 
-	@Override
-	public void onDestroy() {
+    @Override
+    public void onDestroy() {
         Log.i(TAG, "Destroyed");
-		super.onDestroy();
+        super.onDestroy();
         if (mDriver != null)
-		    mDriver.destroy();
+            mDriver.destroy();
 
         try {
             this.unregisterReceiver(onBroadcast);
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
         mBoardConnected = false;
@@ -74,8 +71,8 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
     }
 
-    public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params){
-        if (inputSource.equals(context.getString(R.string.Demo))){
+    public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params) {
+        if (inputSource.equals(context.getString(R.string.Demo))) {
             Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
             i.putExtra("icon", ICN_DISCONN);
             i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
@@ -88,7 +85,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         }
     }
 
-    public static boolean stop(RaceActivity context){
+    public static boolean stop(RaceActivity context) {
         if (context.isServiceRunning("com.marktreble.f3ftimer.driver.SoftBuzzerService")) {
             Log.d("SERVER STOPPED", Log.getStackTraceString(new Exception()));
             Intent serviceIntent = new Intent(context, SoftBuzzerService.class);
@@ -97,7 +94,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         }
         return false;
     }
-    
+
     // Binding for UI->Service Communication
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
@@ -111,7 +108,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
                 Log.i(TAG, data);
 
                 if (data.equals("get_connection_status")) {
-                    if (mBoardConnected){
+                    if (mBoardConnected) {
                         driverConnected();
                     } else {
                         driverDisconnected();
@@ -124,10 +121,10 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
             }
         }
     };
-    
-	@Override
-    public int onStartCommand(Intent intent, int flags, int startId){
-    	super.onStartCommand(intent, flags, startId);
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
         driverDisconnected();
 
         mBoardConnected = true;
@@ -147,12 +144,12 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
             @Override
             public void run() {
                 Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                float wind_angle_absolute = mSlopeOrientation + (float)(Math.random()*2) - 1.f;
+                float wind_angle_absolute = mSlopeOrientation + (float) (Math.random() * 2) - 1.f;
                 float wind_angle_relative = wind_angle_absolute - mSlopeOrientation;
                 if (wind_angle_absolute > 180 + mSlopeOrientation) {
                     wind_angle_relative -= 360;
                 }
-                float wind_speed = 6f + (float)(Math.random()*3) - 1.5f;
+                float wind_speed = 6f + (float) (Math.random() * 3) - 1.5f;
                 if (wind_speed < 3 || wind_speed > 25) {
                     mWindSpeedCounter++;
                 } else {
@@ -176,7 +173,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
                     windLegal = true;
                 }
 
-                String wind_data = formatWindValues(windLegal, wind_angle_absolute, wind_angle_relative, wind_speed, 20- mWindSpeedCounterSeconds);
+                String wind_data = formatWindValues(windLegal, wind_angle_absolute, wind_angle_relative, wind_speed, 20 - mWindSpeedCounterSeconds);
                 i.putExtra("com.marktreble.f3ftimer.value.wind_values", wind_data);
                 sendBroadcast(i);
 
@@ -188,14 +185,14 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         return (START_STICKY);
     }
 
-	@Override
-	public IBinder onBind(Intent intent) {
-		return null;
-	}
-	
-	// Input - Listener Loop
-	private void base(String base){
-        switch (mTimerStatus){
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    // Input - Listener Loop
+    private void base(String base) {
+        switch (mTimerStatus) {
             case 0:
                 mDriver.offCourse();
                 break;
@@ -208,47 +205,47 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
         }
         mTimerStatus++;
-        
+
     }
 
-	// Driver Interface implementations
-    public void driverConnected(){
+    // Driver Interface implementations
+    public void driverConnected() {
         mDriver.driverConnected(ICN_CONN);
     }
 
-    public void driverDisconnected(){
+    public void driverDisconnected() {
         mDriver.driverDisconnected(ICN_DISCONN);
     }
 
-    public void sendLaunch(){
+    public void sendLaunch() {
         mTimerStatus = 0;
-	}
+    }
 
-	public void sendAbort(){
-	}
-	
-	public void sendAdditionalBuzzer(){
-	}
-	
-	public void sendResendTime(){
-	}
-    
-    public void baseA(){
-        Log.i(TAG, "BASE A "+ Integer.toString(mTimerStatus % 2));
-        if ((mTimerStatus == 0) || (mTimerStatus%2 == 1))
+    public void sendAbort() {
+    }
+
+    public void sendAdditionalBuzzer() {
+    }
+
+    public void sendResendTime() {
+    }
+
+    public void baseA() {
+        Log.i(TAG, "BASE A " + Integer.toString(mTimerStatus % 2));
+        if ((mTimerStatus == 0) || (mTimerStatus % 2 == 1))
             base("A");
     }
-    
-    public void baseB(){
-        Log.i(TAG, "BASE B "+ Integer.toString(mTimerStatus % 2));
-        if ((mTimerStatus>0) && (mTimerStatus%2 == 0))
+
+    public void baseB() {
+        Log.i(TAG, "BASE B " + Integer.toString(mTimerStatus % 2));
+        if ((mTimerStatus > 0) && (mTimerStatus % 2 == 0))
             base("B");
     }
-    
-    public void finished(String time){
-        Log.d(TAG, "TIME "+ time.trim());
+
+    public void finished(String time) {
+        Log.d(TAG, "TIME " + time.trim());
         mDriver.mPilot_Time = Float.parseFloat(time.trim().replace(",", "."));
-        Log.d(TAG, "TIME "+ Float.toString(mDriver.mPilot_Time) );
+        Log.d(TAG, "TIME " + Float.toString(mDriver.mPilot_Time));
         mDriver.runComplete();
         mTimerStatus = 0;
         mDriver.ready();

@@ -4,9 +4,6 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,62 +14,64 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.R;
+
 public class RaceTimerFrag3 extends RaceTimerFrag {
 
-	private Handler mHandler = new Handler();
-	private long mStart;
+    private Handler mHandler = new Handler();
+    private long mStart;
 
-	public RaceTimerFrag3(){
-		
-	}
-	
-	@Override
+    public RaceTimerFrag3() {
+
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-	    } else {
-	    	mStart = System.currentTimeMillis();
-		    mHandler.postDelayed(updateClock, 10);
-	    }
+        } else {
+            mStart = System.currentTimeMillis();
+            mHandler.postDelayed(updateClock, 10);
+        }
 
     }
 
-	@Override
-	public void onDestroy(){
-		super.onDestroy();
-		mHandler.removeCallbacks(updateClock);
-	}
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mHandler.removeCallbacks(updateClock);
+    }
 
-	@Override
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
 
-		Button ab = (Button) mView.findViewById(R.id.button_abort);
-		ab.setVisibility(View.VISIBLE);
-	    ab.setOnClickListener(new View.OnClickListener() {
-	        @Override
-	        public void onClick(View v) {
-	        	mHandler.removeCallbacks(updateClock);
-	        	RaceTimerActivity a = (RaceTimerActivity)getActivity();
-	        	a.sendCommand("abort");
-				a.sendCommand("begin_timeout");
-				a.getFragment(new RaceTimerFrag6(), 6); // Abort submenu (reflight or score 0)
-	        }
-	    });
+        Button ab = (Button) mView.findViewById(R.id.button_abort);
+        ab.setVisibility(View.VISIBLE);
+        ab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHandler.removeCallbacks(updateClock);
+                RaceTimerActivity a = (RaceTimerActivity) getActivity();
+                a.sendCommand("abort");
+                a.sendCommand("begin_timeout");
+                a.getFragment(new RaceTimerFrag6(), 6); // Abort submenu (reflight or score 0)
+            }
+        });
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String soft_buttons = sharedPref.getString("pref_input_src", getString(R.string.Demo));
-        if (soft_buttons.equals(getString(R.string.Demo))){
+        if (soft_buttons.equals(getString(R.string.Demo))) {
             Button baseA = (Button) mView.findViewById(R.id.base_A);
             baseA.setVisibility(View.VISIBLE);
-            
-            baseA.setOnClickListener(new Button.OnClickListener(){
+
+            baseA.setOnClickListener(new Button.OnClickListener() {
                 @Override
-                public void onClick(View v){
-                    RaceTimerActivity a = (RaceTimerActivity)getActivity();
+                public void onClick(View v) {
+                    RaceTimerActivity a = (RaceTimerActivity) getActivity();
                     a.sendCommand("baseA");
                 }
             });
@@ -80,84 +79,84 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
             Button baseB = (Button) mView.findViewById(R.id.base_B);
             baseB.setVisibility(View.VISIBLE);
 
-            baseB.setOnClickListener(new Button.OnClickListener(){
+            baseB.setOnClickListener(new Button.OnClickListener() {
                 @Override
-                public void onClick(View v){
-                    RaceTimerActivity a = (RaceTimerActivity)getActivity();
+                public void onClick(View v) {
+                    RaceTimerActivity a = (RaceTimerActivity) getActivity();
                     a.sendCommand("baseB");
                 }
             });
 
         }
 
-		TextView status = (TextView) mView.findViewById(R.id.status);
-		status.setText(getString(R.string.model_launched));
+        TextView status = (TextView) mView.findViewById(R.id.status);
+        status.setText(getString(R.string.model_launched));
 
-		super.setPilotName();
+        super.setPilotName();
 
-		if (((RaceTimerActivity)getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED){
-			setMinimized();
-		}
+        if (((RaceTimerActivity) getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
+            setMinimized();
+        }
 
-		return mView;
-	}	
-	
-	private Runnable updateClock = new Runnable(){
-		public void run(){
-        	long elapsed = System.currentTimeMillis() - mStart;
-        	float seconds = (float)elapsed/1000;
-        	if (seconds>30) seconds = 30;
+        return mView;
+    }
 
-			TextView cd = (TextView) mView.findViewById(R.id.time);
-			String str_time = String.format("%.2f", 30-seconds);
-			cd.setText(str_time);
+    private Runnable updateClock = new Runnable() {
+        public void run() {
+            long elapsed = System.currentTimeMillis() - mStart;
+            float seconds = (float) elapsed / 1000;
+            if (seconds > 30) seconds = 30;
 
-			TextView min = (TextView) mView.findViewById(R.id.mintime);
-			min.setText(str_time);
+            TextView cd = (TextView) mView.findViewById(R.id.time);
+            String str_time = String.format("%.2f", 30 - seconds);
+            cd.setText(str_time);
 
-			int s = (int) Math.floor(seconds);
-			RaceTimerActivity a = (RaceTimerActivity)getActivity();
-			
-			
-			if (s==9) a.sendCommand("20");
-			if (s==14) a.sendCommand("15");
-			if (s==19) a.sendCommand("10");
-			if (s==20) a.sendCommand("9");
-			if (s==21) a.sendCommand("8");
-			if (s==22) a.sendCommand("7");
-			if (s==23) a.sendCommand("6");
-			if (s==24) a.sendCommand("5");
-			if (s==25) a.sendCommand("4");
-			if (s==26) a.sendCommand("3");
-			if (s==27) a.sendCommand("2");
-			if (s==28) a.sendCommand("1");
-			
-        	if (s==30){
-        		// Runout of climbout time
-        		// Force the server to start the clock
-				a.sendCommand("0"); // Informs the driver that this was a late entry
-        		next();
-        		
-        	} else {
-        		mHandler.postDelayed(updateClock, 10);
-        	}
+            TextView min = (TextView) mView.findViewById(R.id.mintime);
+            min.setText(str_time);
 
-		}
-	};
-	
-	public void setOffCourse(){
-		TextView status = (TextView) mView.findViewById(R.id.status);
-		status.setText(getString(R.string.off_course));
-	}
+            int s = (int) Math.floor(seconds);
+            RaceTimerActivity a = (RaceTimerActivity) getActivity();
 
-	public void next(){
-		mHandler.removeCallbacks(updateClock);
-    	RaceTimerActivity a = (RaceTimerActivity)getActivity();
-   		a.getFragment(new RaceTimerFrag4(), 4);
-	}
 
-	public void startPressed(){
-		// Ignore
-	}
-	
- }
+            if (s == 9) a.sendCommand("20");
+            if (s == 14) a.sendCommand("15");
+            if (s == 19) a.sendCommand("10");
+            if (s == 20) a.sendCommand("9");
+            if (s == 21) a.sendCommand("8");
+            if (s == 22) a.sendCommand("7");
+            if (s == 23) a.sendCommand("6");
+            if (s == 24) a.sendCommand("5");
+            if (s == 25) a.sendCommand("4");
+            if (s == 26) a.sendCommand("3");
+            if (s == 27) a.sendCommand("2");
+            if (s == 28) a.sendCommand("1");
+
+            if (s == 30) {
+                // Runout of climbout time
+                // Force the server to start the clock
+                a.sendCommand("0"); // Informs the driver that this was a late entry
+                next();
+
+            } else {
+                mHandler.postDelayed(updateClock, 10);
+            }
+
+        }
+    };
+
+    public void setOffCourse() {
+        TextView status = (TextView) mView.findViewById(R.id.status);
+        status.setText(getString(R.string.off_course));
+    }
+
+    public void next() {
+        mHandler.removeCallbacks(updateClock);
+        RaceTimerActivity a = (RaceTimerActivity) getActivity();
+        a.getFragment(new RaceTimerFrag4(), 4);
+    }
+
+    public void startPressed() {
+        // Ignore
+    }
+
+}

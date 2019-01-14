@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/menu_add_pilot"
-        android:title="@string/menu_add_pilot"/>
+        android:title="@string/menu_add_pilot" />
     <item
         android:id="@+id/menu_import_pilots"
-        android:title="@string/menu_import_pilots"/>
+        android:title="@string/menu_import_pilots" />
 
     <item
         android:id="@+id/menu_export_pilots"
-        android:title="@string/menu_export_pilots"/>
+        android:title="@string/menu_export_pilots" />
     <item
         android:id="@+id/menu_race_manager"
-        android:title="@string/app_race"/>
+        android:title="@string/app_race" />
     <item
         android:id="@+id/menu_results_manager"
-        android:title="@string/app_results"/>
+        android:title="@string/app_results" />
 
     <item
         android:id="@+id/menu_help"
-        android:title="@string/menu_help"/>
+        android:title="@string/menu_help" />
     <item
         android:id="@+id/menu_about"
-        android:title="@string/menu_about"/>
-    
+        android:title="@string/menu_about" />
+
 </menu>

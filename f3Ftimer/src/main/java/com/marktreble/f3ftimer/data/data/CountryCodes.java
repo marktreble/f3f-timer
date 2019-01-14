@@ -20,12 +20,12 @@ public class CountryCodes {
     private static CountryCodes sharedCountryCodes;
     private static JSONArray countryCodes;
 
-    private CountryCodes(Context context){
+    private CountryCodes(Context context) {
         initCountryData(context);
     }  //private constructor.
 
-    public static CountryCodes sharedCountryCodes(Context context){
-        if (sharedCountryCodes == null){ //if there is no instance available... create new one
+    public static CountryCodes sharedCountryCodes(Context context) {
+        if (sharedCountryCodes == null) { //if there is no instance available... create new one
             sharedCountryCodes = new CountryCodes(context);
         }
 
@@ -48,7 +48,7 @@ public class CountryCodes {
 
     public String findIsoCountryCode(String iocCountryCode) {
         try {
-            for (int i=0; i< countryCodes.length(); i++) {
+            for (int i = 0; i < countryCodes.length(); i++) {
                 JSONObject country = countryCodes.optJSONObject(i);
                 if (country.getString("IOC").equals(iocCountryCode)) {
                     return country.getString("ISO3166-1-Alpha-2");

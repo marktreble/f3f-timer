@@ -21,8 +21,8 @@
     <style name="carbonActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
         <item name="android:background">@drawable/gradient_background</item>
         <item name="android:titleTextStyle">@style/titleTextStyle</item>
-     	</style>
-    
+    </style>
+
     <style name="titleTextStyle" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/text</item>
         <item name="android:textSize">32sp</item>

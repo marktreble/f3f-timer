@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	
-	<string-array name="nationalities">
+
+    <string-array name="nationalities">
         <item />
         <item>Australia</item>
         <item>Republica checa</item>
@@ -11,12 +11,12 @@
         <item>India</item>
         <item>Holanda</item>
         <item>Noruega</item>
-   	    <item>Portugal</item>
+        <item>Portugal</item>
         <item>España</item>
         <item>Suiza</item>
-    	<item>Reino Unido</item>
-    	<item>Eestados Unidos</item>
+        <item>Reino Unido</item>
+        <item>Eestados Unidos</item>
     </string-array>
 
-	
+
 </resources>

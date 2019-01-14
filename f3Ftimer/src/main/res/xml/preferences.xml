@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:key="button_connection_settings"
         android:title="@string/connection_settings"
@@ -9,7 +9,7 @@
             android:title="Input Source"
             android:entries="@array/InputSources"
             android:entryValues="@array/InputSources"
-            android:defaultValue="@string/Demo"/>
+            android:defaultValue="@string/Demo" />
 
         <EditTextPreference
             android:key="pref_input_tcpio_ip"
@@ -29,20 +29,19 @@
             android:title="@string/usb_stopbits"
             android:entries="@array/options_stopbits"
             android:entryValues="@array/options_stopbits"
-            android:defaultValue="1"
-            />
+            android:defaultValue="1" />
         <ListPreference
             android:key="pref_usb_databits"
             android:title="@string/usb_databits"
             android:entries="@array/options_databits"
             android:entryValues="@array/options_databits"
-            android:defaultValue="8"/>
+            android:defaultValue="8" />
         <ListPreference
             android:key="pref_usb_parity"
             android:title="@string/usb_parity"
             android:entries="@array/options_parity"
             android:entryValues="@array/options_parity"
-            android:defaultValue="@string/none"/>
+            android:defaultValue="@string/none" />
 
     </PreferenceCategory>
 
@@ -117,7 +116,7 @@
             android:dependency="pref_buzzer"
             android:entries="@array/options_sounds"
             android:entryValues="@array/options_sounds"
-             android:defaultValue="@string/beep" />
+            android:defaultValue="@string/beep" />
 
 
     </PreferenceCategory>
@@ -131,7 +130,7 @@
             android:defaultValue="true"
             android:key="pref_wind_measurement"
             android:summary="Enable wind measurement"
-            android:title="@string/wind_measurement"/>
+            android:title="@string/wind_measurement" />
 
         <EditTextPreference
             android:id="@+id/wind_angle_offset"
@@ -139,14 +138,14 @@
             android:key="pref_wind_angle_offset"
             android:numeric="decimal"
             android:singleLine="true"
-            android:title="@string/wind_angle_offset"/>
+            android:title="@string/wind_angle_offset" />
 
         <CheckBoxPreference
             android:id="@+id/audible_wind_warning"
             android:defaultValue="false"
             android:key="pref_audible_wind_warning"
             android:summary="Enable audible wind warning"
-            android:title="@string/wind_warning_audible"/>
+            android:title="@string/wind_warning_audible" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -154,7 +153,7 @@
         android:title="@string/external_results_http"
         android:persistent="false">
 
-       <CheckBoxPreference
+        <CheckBoxPreference
             android:key="pref_results_server"
             android:title="Run Results Server"
             android:summary="Serve results over HTTP"
@@ -200,10 +199,11 @@
             android:title="Manual Entry"
             android:summary="Allow times to be entered manually"
             android:defaultValue="false" />
-        <CheckBoxPreference android:key="acra.enable"
+        <CheckBoxPreference
+            android:key="acra.enable"
             android:title="@string/pref_enable_acra"
             android:summaryOn="@string/pref_acra_enabled"
             android:summaryOff="@string/pref_acra_disabled"
-            android:defaultValue="true"/>
+            android:defaultValue="true" />
     </PreferenceCategory>
 </PreferenceScreen>

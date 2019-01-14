@@ -5,98 +5,97 @@
  */
 package com.marktreble.f3ftimer.dialog;
 
-import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
-
-import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.os.Bundle;
 import android.widget.TextView;
+
+import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class RaceTimerFrag1 extends RaceTimerFrag {
 
-	
-	public RaceTimerFrag1(){
-		
-	}
-	
-	@Override
+
+    public RaceTimerFrag1() {
+
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-	@Override
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
-        
-		Button swt = (Button) mView.findViewById(R.id.button_start_working_time);
-		swt.setVisibility(View.VISIBLE);
-	    swt.setOnClickListener(new View.OnClickListener() {
-	        @Override
-	        public void onClick(View v) {	        	
-	        	// Progress to the next UI
-	        	next();
-	            
-	        }
-	    });
 
-		Button ml = (Button) mView.findViewById(R.id.button_model_launched);
-		ml.setVisibility(View.VISIBLE);
-	    ml.setOnClickListener(new View.OnClickListener() {
-	        @Override
-	        public void onClick(View v){
-	        	model_launched();
-	            
-	        }
-	    });
-	    
+        Button swt = (Button) mView.findViewById(R.id.button_start_working_time);
+        swt.setVisibility(View.VISIBLE);
+        swt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Progress to the next UI
+                next();
+
+            }
+        });
+
+        Button ml = (Button) mView.findViewById(R.id.button_model_launched);
+        ml.setVisibility(View.VISIBLE);
+        ml.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                model_launched();
+
+            }
+        });
+
         Button ab = (Button) mView.findViewById(R.id.button_abort);
-		ab.setVisibility(View.VISIBLE);
-		ab.setOnClickListener(new View.OnClickListener() {
-	        @Override
-	        public void onClick(View v) {
-	        	RaceTimerActivity a = (RaceTimerActivity)getActivity();
-	        	a.sendCommand("abort");
+        ab.setVisibility(View.VISIBLE);
+        ab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RaceTimerActivity a = (RaceTimerActivity) getActivity();
+                a.sendCommand("abort");
 
-				a.setResult(RaceActivity.RESULT_ABORTED, null);
-	        	a.finish();
-	            
-	        }
-	    });
+                a.setResult(RaceActivity.RESULT_ABORTED, null);
+                a.finish();
 
-		TextView status = (TextView) mView.findViewById(R.id.status);
-		status.setVisibility(View.GONE);
+            }
+        });
 
-		super.setPilotName();
-		
-		return mView;
-	}
-	
-	public void next(){
-    	RaceTimerActivity a = (RaceTimerActivity)getActivity();
-    	    	
-    	a.sendCommand("working_time");
+        TextView status = (TextView) mView.findViewById(R.id.status);
+        status.setVisibility(View.GONE);
 
-    	a.getFragment(new RaceTimerFrag2(),2);
-	}
-	
-	public void model_launched(){
-    	RaceTimerActivity a = (RaceTimerActivity)getActivity();
-    	    	
-    	// Send model launched to server
-    	 a.sendCommand("launch");
-    	 		
-    	a.getFragment(new RaceTimerFrag3(),3);
+        super.setPilotName();
 
-	}
-	
-	public void startPressed(){
-		next();
-	}
+        return mView;
+    }
+
+    public void next() {
+        RaceTimerActivity a = (RaceTimerActivity) getActivity();
+
+        a.sendCommand("working_time");
+
+        a.getFragment(new RaceTimerFrag2(), 2);
+    }
+
+    public void model_launched() {
+        RaceTimerActivity a = (RaceTimerActivity) getActivity();
+
+        // Send model launched to server
+        a.sendCommand("launch");
+
+        a.getFragment(new RaceTimerFrag3(), 3);
+
+    }
+
+    public void startPressed() {
+        next();
+    }
 
 }

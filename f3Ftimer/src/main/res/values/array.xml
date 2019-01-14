@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string-array name="InputSources" translatable="false">
+    <string-array name="InputSources" translatable="false">
         <item>Demo Mode - On Screen Buzzers</item>
-	    <item>USB - IOIO</item>
+        <item>USB - IOIO</item>
         <item>USB - Other</item>
         <item>Bluetooth - HC-05</item>
         <item>TCP/IP Socket - f3ftimer-server:1234</item>
-	</string-array>
+    </string-array>
 
     <string-array name="options_stopbits" translatable="false">
         <item>1</item>
@@ -38,11 +38,11 @@
         <item>IN</item>
         <item>NL</item>
         <item>NO</item>
-   	    <item>PT</item>
+        <item>PT</item>
         <item>ES</item>
         <item>CH</item>
-    	<item>GB</item>
-    	<item>US</item>
+        <item>GB</item>
+        <item>US</item>
     </string-array>
 
     <string-array name="nationalities">

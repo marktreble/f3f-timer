@@ -51,7 +51,7 @@ public class BluetoothImportRace extends BaseImport {
     private OutputStream mmOutStream;
 
     private boolean mIsListening = false;
-    
+
     private String mCommandSent;
     private ArrayList<String> mAvailableRaceIds;
 
@@ -83,8 +83,8 @@ public class BluetoothImportRace extends BaseImport {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == BluetoothImportRace.REQUEST_ENABLE_BT){
-            if(resultCode==RESULT_OK){
+        if (requestCode == BluetoothImportRace.REQUEST_ENABLE_BT) {
+            if (resultCode == RESULT_OK) {
                 getBluetoothDevices();
             } else {
                 Log.i("BT", "FINISHING ACTIVITY");
@@ -94,34 +94,34 @@ public class BluetoothImportRace extends BaseImport {
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         closeSocket();
         Log.i("BT", "CANCELLED");
         super.onBackPressed();
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
         registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
     }
 
     @Override
-    public void onPause(){
+    public void onPause() {
         super.onPause();
         unregisterReceiver(mReceiver);
     }
 
-    public void getBluetoothDevices(){
+    public void getBluetoothDevices() {
         mDiscoveredDeviceNames = new ArrayList<>();
         mDiscoveredDevices = new ArrayList<>();
-        
+
         mPairedDeviceNames = new ArrayList<>();
         mPairedDevices = new ArrayList<>();
-        
+
         boolean discovery = mBluetoothAdapter.startDiscovery();
 
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices(); 
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
                 mPairedDeviceNames.add(device.getName());
@@ -136,19 +136,19 @@ public class BluetoothImportRace extends BaseImport {
         mPairedAndDiscoveredDevices.addAll(mPairedDevices);
 
         CharSequence[] devices = mPairedAndDiscoveredDeviceNames.toArray(new CharSequence[mPairedAndDiscoveredDeviceNames.size()]);
-        
+
         mDlgb = new AlertDialog.Builder(mContext)
                 .setTitle("Searching for Devices...")
                 .setCancelable(true)
                 .setItems(devices, deviceClickListener);
-        
+
         mDlg = mDlgb.create();
 
         mDlg.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
                 mBluetoothAdapter.cancelDiscovery();
-                if (mmSocket == null){
+                if (mmSocket == null) {
                     Log.i("BT", "FINISHING ACTIVITY IN ONDISMISS");
                     mActivity.finish();
                 }
@@ -196,7 +196,7 @@ public class BluetoothImportRace extends BaseImport {
         }
     };
 
-    private final DialogInterface.OnClickListener deviceClickListener = new DialogInterface.OnClickListener(){
+    private final DialogInterface.OnClickListener deviceClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             Log.i("BT", "DEVICE CLICKED");
@@ -208,15 +208,14 @@ public class BluetoothImportRace extends BaseImport {
             UUID uuid = UUID.fromString(getResources().getString(R.string.app_uuid));
             try {
                 tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
-                Log.i("BT", "connected to "+mmDevice.getName());
+                Log.i("BT", "connected to " + mmDevice.getName());
             } catch (IOException e) {
                 Log.i("BT", "Failed to connect to device");
                 return;
             }
             mmSocket = tmp;
 
-            Thread connectThread = new Thread(new Runnable()
-            {
+            Thread connectThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Log.i("BT", "Starting Runnable");
@@ -232,7 +231,7 @@ public class BluetoothImportRace extends BaseImport {
                         try {
                             mmSocket.close();
                         } catch (IOException closeException) {
-                        
+
                         }
                         return;
                     }
@@ -241,12 +240,12 @@ public class BluetoothImportRace extends BaseImport {
                     manageConnectedSocket();
                 }
             });
-            
+
             new Handler().postDelayed(connectThread, 100);
             dialog.dismiss();
         }
     };
-    
+
     private void manageConnectedSocket() {
         Log.i("BT", "GET IO STREAMS");
         try {
@@ -258,13 +257,13 @@ public class BluetoothImportRace extends BaseImport {
         sendRequest(CMD_LS);
         listen();
     }
-    
-    private void listen(){
+
+    private void listen() {
         // Listen
         byte[] buffer = new byte[1024];  // 32K buffer store for the stream
         int bufferLength; // bytes returned from read()
         mIsListening = true;
-        
+
         while (mIsListening) {
             try {
                 // Read from the InputStream
@@ -280,27 +279,27 @@ public class BluetoothImportRace extends BaseImport {
                 }
                 final String response = builder.toString();
 
-                if (mCommandSent.equals(CMD_LS)){
+                if (mCommandSent.equals(CMD_LS)) {
                     mIsListening = false;
-                    runOnUiThread(new Runnable(){
+                    runOnUiThread(new Runnable() {
                         @Override
-                        public void run(){
-                           
+                        public void run() {
+
                             showRaceNamesDialog(response);
                         }
                     });
                 }
 
-                if (mCommandSent.equals(CMD_GET)){
+                if (mCommandSent.equals(CMD_GET)) {
                     mIsListening = false;
-                    runOnUiThread(new Runnable(){
+                    runOnUiThread(new Runnable() {
                         @Override
-                        public void run(){
+                        public void run() {
                             importRace(response);
                         }
                     });
                 }
-                
+
             } catch (IOException e) {
                 e.printStackTrace();
                 mIsListening = false;
@@ -309,7 +308,7 @@ public class BluetoothImportRace extends BaseImport {
         }
     }
 
-    public void closeSocket(){
+    public void closeSocket() {
         Log.i("BT", "CLEANING UP");
         mIsListening = false;
 
@@ -338,11 +337,11 @@ public class BluetoothImportRace extends BaseImport {
         }
     }
 
-    private void sendRequest(String cmd){
+    private void sendRequest(String cmd) {
         sendRequest(cmd, "");
     }
-    
-    private void sendRequest(String cmd, String data){
+
+    private void sendRequest(String cmd, String data) {
         mCommandSent = cmd;
         cmd = (data.equals("")) ? cmd : cmd + " " + data;
         Log.i("BT", cmd);
@@ -353,9 +352,9 @@ public class BluetoothImportRace extends BaseImport {
             e.printStackTrace();
         }
     }
-    
-    private void showRaceNamesDialog(String response){
-        Log.i("BT", "RESPONSE: "+response);
+
+    private void showRaceNamesDialog(String response) {
+        Log.i("BT", "RESPONSE: " + response);
 
         JSONArray racenames;
         try {
@@ -365,8 +364,8 @@ public class BluetoothImportRace extends BaseImport {
             ArrayList<String> racelist = new ArrayList<>();
             for (int i = 0; i < racenames.length(); i++) {
                 JSONObject r = racenames.optJSONObject(i);
-                String id =r.optString("id");
-                String name =r.optString("name");
+                String id = r.optString("id");
+                String name = r.optString("name");
                 mAvailableRaceIds.add(id);
                 racelist.add(name);
             }
@@ -390,27 +389,27 @@ public class BluetoothImportRace extends BaseImport {
                 }
             });
             mDlg.show();
-        } catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
     }
 
-    private final DialogInterface.OnClickListener raceClickListener = new DialogInterface.OnClickListener(){
+    private final DialogInterface.OnClickListener raceClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             sendRequest(CMD_GET, mAvailableRaceIds.get(which));
-            new Handler().postDelayed(new Runnable(){
+            new Handler().postDelayed(new Runnable() {
                 @Override
-                public void run(){
+                public void run() {
                     listen();
                 }
             }, 100);
             dialog.dismiss();
         }
     };
-    
-    protected void importRace(String data){
+
+    protected void importRace(String data) {
         super.importRaceJSON(data);
 
         closeSocket();
