@@ -111,8 +111,8 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
             RaceTimerActivity a = (RaceTimerActivity) getActivity();
 
 
-            if (s == 9) a.sendCommand("20");
-            if (s == 14) a.sendCommand("15");
+            if (s == 9) a.sendCommand("working_time_20");
+            if (s == 14) a.sendCommand("working_time_15");
             if (s == 19) a.sendCommand("10");
             if (s == 20) a.sendCommand("9");
             if (s == 21) a.sendCommand("8");

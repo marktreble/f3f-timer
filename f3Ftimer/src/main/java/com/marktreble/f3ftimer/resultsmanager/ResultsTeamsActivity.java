@@ -37,6 +37,7 @@ public class ResultsTeamsActivity extends ListActivity {
     private ArrayList<String> mArrNames;
     private ArrayList<String> mArrNumbers;
     private ArrayList<Float> mArrScores;
+    private ArrayList<ArrayList<String>> mArrPilotNames;
 
     private Integer mRid;
 
@@ -90,13 +91,14 @@ public class ResultsTeamsActivity extends ListActivity {
         mArrNames = r.mArrNames;
         mArrNumbers = r.mArrNumbers;
         mArrScores = r.mArrScores;
+        mArrPilotNames = r.mArrPilotNames;
 
     }
 
     private void setList() {
         this.getNamesArray();
 
-        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots, R.id.text1, mArrNames) {
+        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultsteams, R.id.text1, mArrNames) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View row;
@@ -104,25 +106,30 @@ public class ResultsTeamsActivity extends ListActivity {
                 if (mArrNames.get(position) == null) return null;
 
                 if (null == convertView) {
-                    row = getLayoutInflater().inflate(R.layout.listrow_resultspilots, parent, false);
+                    row = getLayoutInflater().inflate(R.layout.listrow_resultsteams, parent, false);
                 } else {
                     row = convertView;
                 }
 
-                TextView p_number = (TextView) row.findViewById(R.id.number);
+                TextView p_number = row.findViewById(R.id.number);
                 p_number.setText(mArrNumbers.get(position));
 
-                TextView p_name = (TextView) row.findViewById(R.id.text1);
+                TextView p_name = row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
                 p_name.setTextColor(getResources().getColor(R.color.text3));
 
                 row.setBackgroundColor(getResources().getColor(R.color.background));
 
-                TextView time = (TextView) row.findViewById(R.id.time);
-                time.setText("");
-
                 TextView points = (TextView) row.findViewById(R.id.points);
                 points.setText(String.format("%.2f", mArrScores.get(position)));
+
+                TextView pilot_names = (TextView) row.findViewById(R.id.pilot_names);
+                String pilots = "";
+
+                for (String s : mArrPilotNames.get(position)) {
+                    pilots += s + "\n";
+                }
+                pilot_names.setText(pilots);
 
                 return row;
             }

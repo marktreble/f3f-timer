@@ -30,6 +30,7 @@ public class Results {
     public ArrayList<Boolean> mFirstInGroup; // Tells the UI to add the group header
     public ArrayList<Float> mArrScores;
     public ArrayList<ArrayList<RaceData.Time>> mArrTimes;
+    public ArrayList<ArrayList<String>> mArrPilotNames;
 
     public ArrayList<RaceData.Group> mArrGroupings; // Holds the number of groups + start pilot for each round
 
@@ -408,7 +409,9 @@ public class Results {
 
         mArrNames = new ArrayList<>();
         mArrNumbers = new ArrayList<>();
+        mArrPilotNames = new ArrayList<>();
         HashMap<String, Float> totals = new HashMap<>();
+        HashMap<String, ArrayList<String>> pilots = new HashMap<>();
 
         for (int i = 0; i < mArrPilots.size(); i++) {
             Pilot p = mArrPilots.get(i);
@@ -420,14 +423,22 @@ public class Results {
                     Float total = totals.get(p.team);
                     total += score;
                     totals.put(p.team, total);
+
+                    ArrayList<String> pilotsList = pilots.get(p.team);
+                    pilotsList.add(p.firstname + ' ' + p.lastname);
+                    pilots.put(p.team, pilotsList);
                 } else {
                     totals.put(p.team, score);
+
+                    ArrayList<String> pilotsList = new ArrayList<>();
+                    pilotsList.add(p.firstname + ' ' + p.lastname);
+                    pilots.put(p.team, pilotsList);
 
                 }
             }
         }
 
-        Float fTotals[] = new Float[totals.size()];
+        Float[] fTotals = new Float[totals.size()];
         Iterator<String> itr = totals.keySet().iterator();
         int i = 0;
         while (itr.hasNext()) {
@@ -450,6 +461,7 @@ public class Results {
                     mArrNumbers.add(Integer.toString(j + 1));
                     mArrScores.add(total);
                     mArrNames.add(name);
+                    mArrPilotNames.add(pilots.get(name));
                 }
             }
         }

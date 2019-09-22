@@ -50,11 +50,13 @@ import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.hardware.usb.UsbAccessory;
+import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
-import com.android.future.usb.UsbAccessory;
-import com.android.future.usb.UsbManager;
+//import com.android.future.usb.UsbAccessory;
+//import com.android.future.usb.UsbManager;
 
 public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 		ContextWrapperDependent, IOIOConnectionBootstrap, IOIOConnectionFactory {
@@ -80,7 +82,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 
 	public AccessoryConnectionBootstrap() throws NoRuntimeSupportException {
 		try {
-			Class.forName("com.android.future.usb.UsbManager");
+			Class.forName("android.hardware.usb.UsbManager");
 		} catch (ClassNotFoundException e) {
 			throw new NoRuntimeSupportException(
 					"Accessory is not supported on this device.");
@@ -90,7 +92,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 	@Override
 	public void onCreate(ContextWrapper wrapper) {
 		activity_ = wrapper;
-		usbManager_ = UsbManager.getInstance(wrapper);
+		usbManager_ = (UsbManager) wrapper.getSystemService(Context.USB_SERVICE);
 		registerReceiver();
 	}
 
@@ -172,7 +174,7 @@ public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 		try {
 			fileDescriptor_.close();
 		} catch (IOException e) {
-			Log.e(TAG, "Failed to proprly close accessory", e);
+			Log.e(TAG, "Failed to properly close accessory", e);
 		}
 	}
 

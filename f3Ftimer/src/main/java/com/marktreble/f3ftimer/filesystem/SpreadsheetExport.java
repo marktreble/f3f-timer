@@ -15,7 +15,7 @@ import java.util.ArrayList;
  */
 public class SpreadsheetExport extends FileExport {
 
-    public void writeResultsFile(Context context, Race race) {
+    public boolean writeResultsFile(Context context, Race race) {
 
         int MAX_ROUNDS = 10;
 
@@ -93,10 +93,10 @@ public class SpreadsheetExport extends FileExport {
 
             this.writeExportFile(context, output, race.name + ".txt");
 
+            return true;
         } else {
             // External storage is not writable
-            // Not sure how to handle this at the moment!
-
+            return false;
         }
 
     }

@@ -28,8 +28,10 @@ import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.filesystem.F3XVaultExport;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
@@ -55,8 +57,9 @@ public class ResultsRaceActivity extends ListActivity {
     private AlertDialog.Builder mDlgb;
 
     static final int EXPORT_EMAIL = 0;
-    static final int EXPORT_F3F_TIMER = 1;
-    static final int EXPORT_F3X_VAULT = 2;
+    static final int EXPORT_EMAIL_F3XV = 1;
+    static final int EXPORT_F3F_TIMER = 2;
+    static final int EXPORT_F3X_VAULT = 3;
 
 
     static final int SHARE_EMAIL = 0;
@@ -294,6 +297,9 @@ public class ResultsRaceActivity extends ListActivity {
                             case EXPORT_EMAIL:
                                 export_email();
                                 break;
+                            case EXPORT_EMAIL_F3XV:
+                                export_email_f3xv();
+                                break;
                             case EXPORT_F3F_TIMER:
                                 export_f3ftimer();
                                 break;
@@ -334,15 +340,51 @@ public class ResultsRaceActivity extends ListActivity {
         datasource.close();
 
         // re-write the results file just in case this has just been imported into this device.
-        new SpreadsheetExport().writeResultsFile(mContext, race);
+        SpreadsheetExport exp = new SpreadsheetExport();
 
+        if (!exp.writeResultsFile(mContext, race)) {
+            finish();
+            return;
+        }
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
         intent.putExtra(Intent.EXTRA_SUBJECT, race.name);
         intent.putExtra(Intent.EXTRA_TEXT, "Results file attached");
 
-        File file = new SpreadsheetExport().getDataStorageDir(race.name + ".txt");
+        File file = exp.getDataStorageDir(race.name + ".txt");
+        if (!file.exists() || !file.canRead()) {
+            Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+        Uri uri = Uri.fromFile(file);
+        intent.putExtra(Intent.EXTRA_STREAM, uri);
+
+        Intent openInChooser = Intent.createChooser(intent, "Email Results File");
+        startActivity(openInChooser);
+    }
+
+    private void export_email_f3xv() {
+        RaceData datasource = new RaceData(this);
+        datasource.open();
+        Race race = datasource.getRace(mRid);
+        datasource.close();
+
+        // write the results file in F3XVault format
+        F3XVaultExport exp = new F3XVaultExport();
+
+        if (!exp.writeResultsFile(mContext, race)) {
+            finish();
+            return;
+        }
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("message/rfc822");
+        intent.putExtra(Intent.EXTRA_SUBJECT, race.name);
+        intent.putExtra(Intent.EXTRA_TEXT, "Results file attached");
+
+        File file = exp.getDataStorageDir(race.name + ".f3xv.txt");
         if (!file.exists() || !file.canRead()) {
             Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
             finish();
@@ -390,199 +432,18 @@ public class ResultsRaceActivity extends ListActivity {
 
     private void getNamesArray() {
 
-        RaceData datasource = new RaceData(ResultsRaceActivity.this);
-        datasource.open();
-        Race race = datasource.getRace(mRid);
+        Results r = new Results();
+        r.getResultsForRace(ResultsRaceActivity.this, mRid, true);
 
-        RacePilotData datasource2 = new RacePilotData(ResultsRaceActivity.this);
-        datasource2.open();
-        ArrayList<Pilot> allPilots = datasource2.getAllPilotsForRace(mRid, 0, 0, 0);
-        ArrayList<String> p_names = new ArrayList<>();
-        ArrayList<String> p_emails = new ArrayList<>();
-        ArrayList<String> p_bib_numbers = new ArrayList<>();
-        ArrayList<String> p_nationalities = new ArrayList<>();
-        ArrayList<float[]> p_times = new ArrayList<>();
-        ArrayList<float[]> p_points = new ArrayList<>();
-        ArrayList<int[]> p_penalty = new ArrayList<>();
-        Float[] p_totals;
-        int[] p_positions;
+        mArrNames = r.mArrNames;
+        mArrPilots = r.mArrPilots;
+        mArrNumbers = r.mArrNumbers;
+        mArrScores = r.mArrScores;
 
-        mFTD = 9999;
+        mFTD = r.mFTD;
+        mFTDName = r.mFTDName;
+        mFTDRound = r.mFTDRound;
 
-        if (allPilots != null) {
-
-            // Get all times for pilots in all rounds
-            int c = 0; // Counter for bib numbers
-            for (Pilot p : allPilots) {
-                if (p.pilot_id > 0) {
-                    p_names.add(String.format("%s %s", p.firstname, p.lastname));
-                    p_emails.add(p.email);
-                    p_bib_numbers.add(Integer.toString(c + 1));
-                    p_nationalities.add(p.nationality);
-                    float[] sc = new float[race.round];
-                    for (int rnd = 0; rnd < race.round; rnd++) {
-                        sc[rnd] = datasource2.getPilotTimeInRound(mRid, p.id, rnd + 1);
-                    }
-                    p_times.add(sc);
-                    Log.d("LEADERBOARD", String.format("%s %s %d", p.firstname, p.lastname, c + 1));
-                }
-                c++;
-            }
-
-            p_totals = new Float[p_names.size()];
-            p_positions = new int[p_names.size()];
-
-            if (race.round > 1) {
-                // Loop through each round to find the winner, then populate the scores
-                for (int rnd = 0; rnd < race.round - 1; rnd++) {
-                    ArrayList<Pilot> pilots_in_round = datasource2.getAllPilotsForRace(mRid, rnd + 1, 0, 0);
-
-                    mGroupScoring = datasource.getGroup(mRid, rnd + 1);
-
-                    int g = 0; // Current group we are calculating
-
-                    float[] ftg = new float[mGroupScoring.num_groups + 1]; // Fastest time in group (used for calculating normalised scores)
-                    for (int i = 0; i < mGroupScoring.num_groups + 1; i++)
-                        ftg[i] = 9999;
-
-                    int group_size = (int) Math.floor(p_names.size() / mGroupScoring.num_groups);
-                    int remainder = p_names.size() - (mGroupScoring.num_groups * group_size);
-
-                    for (int i = 0; i < p_names.size(); i++) {
-                        if (g < remainder) {
-                            if (i >= (group_size + 1) * (g + 1)) {
-                                g++;
-                            }
-                        } else {
-                            if (i >= ((group_size + 1) * remainder) + (group_size * ((g + 1) - remainder))) {
-                                g++;
-                            }
-                        }
-
-                        String str_t = String.format("%.2f", p_times.get(i)[rnd]).trim().replace(",", ".");
-                        float t = Float.parseFloat(str_t);
-                        if (t > 0)
-                            ftg[g] = Math.min(t, ftg[g]);
-
-                        // Update the FTD here too
-                        mFTD = Math.min(mFTD, ftg[g]);
-                        if (mFTD == t) {
-                            mFTDRound = rnd + 1;
-                            mFTDName = p_names.get(i);
-                        }
-
-                    }
-
-                    g = 0; // Current group we are calculating
-
-                    float[] points = new float[p_names.size()];
-                    int[] penalty = new int[p_names.size()];
-                    for (int i = 0; i < p_names.size(); i++) {
-                        if (g < remainder) {
-                            if (i >= (group_size + 1) * (g + 1)) {
-                                g++;
-                            }
-                        } else {
-                            if (i >= ((group_size + 1) * remainder) + (group_size * ((g + 1) - remainder))) {
-                                g++;
-                            }
-                        }
-
-                        String str_t = String.format("%.2f", p_times.get(i)[rnd]).trim().replace(",", ".");
-                        float time = Float.parseFloat(str_t);
-                        float pnts = 0;
-                        if (time > 0)
-                            pnts = round2Fixed((ftg[g] / time) * 1000, 2);
-
-
-                        points[i] = pnts;
-                        penalty[i] = pilots_in_round.get(i).penalty;
-                    }
-                    p_points.add(points);
-                    p_penalty.add(penalty);
-                }
-
-                // Loop through each pilot to Find discards + calc totals
-                int numdiscards = (race.round > 4) ? ((race.round > 15) ? 2 : 1) : 0;
-                for (int i = 0; i < p_names.size(); i++) {
-                    Float[] totals = new Float[race.round - 1];
-
-                    float penalties = 0;
-                    for (int rnd = 0; rnd < race.round - 1; rnd++) {
-                        totals[rnd] = p_points.get(rnd)[i];
-                        penalties += p_penalty.get(rnd)[i] * 100;
-                    }
-
-                    // sort totals in order then lose the lowest according to numdiscards
-                    Arrays.sort(totals);
-                    float tot = 0;
-                    for (int j = numdiscards; j < race.round - 1; j++)
-                        tot += totals[j];
-
-                    // Now apply penalties
-                    p_totals[i] = tot - penalties;
-                }
-
-                // Now sort the pilots
-                Float[] p_sorted_totals = p_totals.clone();
-                Arrays.sort(p_sorted_totals, Collections.reverseOrder());
-
-                // Set the positions according to the sorted order
-                for (int i = 0; i < p_names.size(); i++) {
-                    for (int j = 0; j < p_names.size(); j++) {
-                        if (p_totals[i] == p_sorted_totals[j])
-                            p_positions[i] = j + 1;
-
-                    }
-                }
-
-                int sz = p_names.size();
-                mArrNames = new ArrayList<>(sz);
-                mArrNumbers = new ArrayList<>(sz);
-                mArrPilots = new ArrayList<>(sz);
-                mArrScores = new ArrayList<>(sz);
-
-                // Initialise
-                for (int i = 0; i < sz; i++) {
-                    mArrNames.add("");
-                    mArrNumbers.add("");
-                    mArrPilots.add(new Pilot());
-                    mArrScores.add(1000f);
-                }
-
-                for (int i = 0; i < sz; i++) {
-                    int pos = p_positions[i] - 1;
-                    mArrNames.set(pos, String.format("%s", p_names.get(i)));
-                    //mArrNumbers.set(pos, p_bib_numbers.get(i));
-                    mArrNumbers.set(pos, Integer.toString(p_positions[i]));
-                    Pilot p = new Pilot();
-                    p.points = round2Fixed(p_totals[i].floatValue(), 2);
-                    p.nationality = p_nationalities.get(i);
-                    p.email = p_emails.get(i);
-                    mArrPilots.set(pos, p);
-                }
-
-                float top_score = mArrPilots.get(0).points;
-                float previousscore = 1000.0f;
-
-                int pos = 1, lastpos = 1; // Last pos is for ties
-                for (int i = 1; i < sz; i++) {
-                    float pilot_points = mArrPilots.get(i).points;
-                    float normalised = round2Fixed(pilot_points / top_score * 1000, 2);
-
-                    previousscore = normalised;
-
-                    mArrScores.set(i, Float.valueOf(normalised));
-                }
-            } else {
-                // No rounds complete yet
-                mArrNames = new ArrayList<String>(0);
-                mArrPilots = new ArrayList<Pilot>(0);
-                mArrScores = new ArrayList<Float>(0);
-            }
-            datasource2.close();
-        }
-        datasource.close();
     }
 
     private float round2Fixed(float value, double places) {

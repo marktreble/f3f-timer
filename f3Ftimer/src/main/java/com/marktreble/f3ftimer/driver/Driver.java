@@ -335,6 +335,21 @@ public class Driver implements TTS.onInitListenerProxy {
                     return;
                 }
 
+                if (data.equals("working_time_20")) {
+                    if (!mCalled.equals("20")) {
+                        _count("20 seconds working time");
+                        mCalled = "20";
+                    }
+                    return;
+                }
+
+                if (data.equals("working_time_15")) {
+                    if (!mCalled.equals("15")) {
+                        _count("15 seconds working time");
+                        mCalled = "15";
+                    }
+                    return;
+                }
 
                 if (data.length() > 2) {
                     if (data.substring(0, 2).equals("::"))
@@ -350,16 +365,23 @@ public class Driver implements TTS.onInitListenerProxy {
                     nfe.printStackTrace();
                     // Ignore it
                 }
+
+                if (number == 12) {
+                    mOmitOffCourse = true;
+                    mCalled = data;
+                    return;
+                }
+
                 if (number > 0 && !data.equals(mCalled)) {
                     _count(data);
                     mCalled = data;
                 }
 
-                if (number <= 10)
-                    mOmitOffCourse = true;
 
-                if (number == 0)
+                if (number == 0) {
                     mLateEntry = true;
+                    timeExpired();
+                }
 
             }
         }
@@ -412,6 +434,7 @@ public class Driver implements TTS.onInitListenerProxy {
         mLateEntry = false;
         mLeg = 0;
         mPenalty = 0;
+        mTimeOnCourse = 0;
 
         if (mSpeechFXon && mTts.mTTSStatus == TextToSpeech.SUCCESS) {
             mHandler.postDelayed(new Runnable() {
@@ -528,9 +551,15 @@ public class Driver implements TTS.onInitListenerProxy {
         }
     }
 
+    public void timeExpired() {
+        mTimeOnCourse = System.currentTimeMillis();
+    }
+
     public void onCourse() {
         // Post to the UI that the model has entered the course and the timer starts
-        mTimeOnCourse = System.currentTimeMillis();
+        if (mTimeOnCourse == 0) {
+            mTimeOnCourse = System.currentTimeMillis();
+        }
         mLastLegTime = mTimeOnCourse;
         Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
         i.putExtra("com.marktreble.f3ftimer.service_callback", "on_course");
@@ -967,6 +996,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
     @TargetApi(21)
     private void speak(String text, int queueMode) {
+        if (mTts == null) return;
         setAudioVolume();
 
         if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.KITKAT) {

@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 'Google Inc.:Google APIs:23'
+    compileSdkVersion 26
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.marktreble.f3ftimer"
-        minSdkVersion 16
-        targetSdkVersion 23
+        minSdkVersion 19
+        targetSdkVersion 26
     }
 
     buildTypes {
@@ -24,9 +24,7 @@ android {
 }
 
 dependencies {
-
-    implementation 'com.android.support:support-v4:23.0.1'
-    implementation 'com.android.support:support-annotations:23.0.1'
+    implementation 'com.android.support:support-annotations:26.1.0'
 
     implementation project(':iOIOLibAccessory')
     implementation project(':iOIOLibAndroid')
@@ -40,6 +38,9 @@ dependencies {
     implementation 'com.opencsv:opencsv:4.1'
 
     api files('libs/acra-4.4.0.jar')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
 
 }
 

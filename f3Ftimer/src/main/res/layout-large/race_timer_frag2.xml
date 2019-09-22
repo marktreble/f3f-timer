@@ -201,12 +201,13 @@
 
             <Button
                 android:id="@+id/button_refly"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:textColor="@color/text2"
                 android:textSize="24sp"
                 android:visibility="gone"
+                android:text="@string/refly"
                 android:background="@color/orange" />
 
             <Button

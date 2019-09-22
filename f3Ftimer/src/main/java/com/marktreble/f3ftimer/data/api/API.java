@@ -66,14 +66,15 @@ public class API {
 
     public void makeAPICall(Context context, String base, int method, Map<String, String> params) {
         api = new apiCall(context, base, method, mAppendEndpoint, mIsJSON, mCallback, request);
-        api.execute(params);
+        api.execute(new JSONObject(params));
     }
 
     public void cancel() {
         api.cancel(true);
     }
 
-    public static class apiCall extends AsyncTask<Map<String, String>, Void, String> {
+
+    public static class apiCall extends AsyncTask<JSONObject, Void, String> {
         private WeakReference<Context> mContext;
         String mBase;
         int mMethod;
@@ -95,108 +96,120 @@ public class API {
         }
 
         @Override
-        protected String doInBackground(Map<String, String>... params) {
-            Map<String, String> nvp = params[0];
+        protected String doInBackground(JSONObject... params) {
+            JSONObject nvp = params[0];
             String base = mBase;
-            String endpoint = nvp.get(ENDPOINT_KEY);
-            nvp.remove(ENDPOINT_KEY);
-
-            String str_response = "";
-
-            String url = base;
-            if (mAppendEndpoint) url += endpoint;
-
-            if (mMethod == API.httpmethod.GET) {
-                str_response = get(url, nvp);
-            }
-            if (mMethod == API.httpmethod.POST) {
-                str_response = post(url, nvp);
-            }
-            return str_response;
-        }
-
-        private String get(String url, Map<String, String> nvp) {
-
-            if (nvp.size() > 0) {
-                url += "?";
-                Iterator it = nvp.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry) it.next();
-                    String key = (String) pair.getKey();
-                    String val = (String) pair.getValue();
-                    url += key + "=" + val;
-
-                    it.remove(); // avoids a ConcurrentModificationException
-                    if (it.hasNext()) url += "&";
-
-                }
-            }
-
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .cache(null)
-                    .build();
-
-            Log.d(TAG, url);
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-
-            String response = null;
-
             try {
-                Response r = client.newCall(request).execute();
-                response = r.body().string();
-            } catch (IOException e) {
+                String endpoint = nvp.getString(ENDPOINT_KEY);
+
+                nvp.remove(ENDPOINT_KEY);
+
+                String str_response = "";
+
+                String url = base;
+                if (mAppendEndpoint) url += endpoint;
+
+                if (mMethod == API.httpmethod.GET) {
+                    str_response = get(url, nvp);
+                }
+                if (mMethod == API.httpmethod.POST) {
+                    str_response = post(url, nvp);
+                }
+                return str_response;
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return response;
+            return "";
+         }
+
+        private String get(String url, JSONObject nvp) {
+            try {
+                if (nvp.length() > 0) {
+                    url += "?";
+                    Iterator<String> keys = nvp.keys();
+
+                    while(keys.hasNext()) {
+                        String key = keys.next();
+                        String val = nvp.getString(key);
+                        url += key + "=" + val;
+                        url += "&";
+                    }
+                    url = url.substring(0, url.length()-1);
+                }
+
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(30, TimeUnit.SECONDS)
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .cache(null)
+                        .build();
+
+                Log.d(TAG, url);
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
+
+                String response = null;
+
+                try {
+                    Response r = client.newCall(request).execute();
+                    response = r.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return response;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return "";
         }
 
-        private String post(String url, Map<String, String> nvp) {
+        private String post(String url, JSONObject nvp) {
             RequestBody body;
             MultipartBody.Builder builder = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM);
 
-            if (nvp.size() > 0) {
-                Iterator it = nvp.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry) it.next();
-                    String key = (String) pair.getKey();
-                    String val = (String) pair.getValue();
-                    builder.addFormDataPart(key, val);
-
-                    it.remove(); // avoids a ConcurrentModificationException
-
-                }
-            }
-            body = builder.build();
-
-            OkHttpClient client = new OkHttpClient.Builder()
-                    .connectTimeout(30, TimeUnit.SECONDS)
-                    .writeTimeout(30, TimeUnit.SECONDS)
-                    .readTimeout(30, TimeUnit.SECONDS)
-                    .cache(null)
-                    .build();
-
-            Log.d(TAG, url);
-            Request request = new Request.Builder()
-                    .post(body)
-                    .url(url)
-                    .build();
-
-            String response = null;
-
             try {
-                Response r = client.newCall(request).execute();
-                response = r.body().string();
-                Log.d("RAW", r.networkResponse().cacheControl().toString());
-            } catch (IOException e) {
+                if (nvp.length() > 0) {
+                    url += "?";
+                    Iterator<String> keys = nvp.keys();
+
+                    while(keys.hasNext()) {
+                        String key = keys.next();
+                        String val = nvp.getString(key);
+                        builder.addFormDataPart(key, val);
+                    }
+                }
+
+                body = builder.build();
+
+                OkHttpClient client = new OkHttpClient.Builder()
+                        .connectTimeout(30, TimeUnit.SECONDS)
+                        .writeTimeout(30, TimeUnit.SECONDS)
+                        .readTimeout(30, TimeUnit.SECONDS)
+                        .cache(null)
+                        .build();
+
+                Log.d(TAG, url);
+                Request request = new Request.Builder()
+                        .post(body)
+                        .url(url)
+                        .build();
+
+                String response = null;
+
+                try {
+                    Response r = client.newCall(request).execute();
+                    response = r.body().string();
+                    Log.d("RAW", r.networkResponse().cacheControl().toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return response;
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return response;
+            return "";
         }
 
         @Override

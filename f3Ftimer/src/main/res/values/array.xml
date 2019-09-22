@@ -76,6 +76,7 @@
 
     <string-array name="results_export_destinations" translatable="false">
         <item>Email CSV File</item>
+        <item>Email F3X Vault Upload File</item>
         <item>Upload to Web (f3ftimer api)</item>
         <item>Upload to Web (F3X Vault)</item>
     </string-array>

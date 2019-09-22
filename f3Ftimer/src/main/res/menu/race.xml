@@ -42,6 +42,10 @@
         android:title="@string/app_results" />
 
     <item
+        android:id="@+id/menu_print_pilots_list"
+        android:title="@string/menu_print_pilots_list" />
+
+    <item
         android:id="@+id/menu_help"
         android:title="@string/menu_help" />
 

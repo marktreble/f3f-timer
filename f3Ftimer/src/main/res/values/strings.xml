@@ -97,6 +97,7 @@
     <string name="menu_share">Share</string>
     <string name="menu_export">Export</string>
     <string name="menu_show_round_timeout">Show Round Expiring Timer</string>
+    <string name="menu_print_pilots_list">Print Pilot List</string>
     <string name="enter_time">Enter Time</string>
     <string name="audio">Audio Options</string>
     <string name="USB_IOIO" translatable="false">USB - IOIO</string>
@@ -129,7 +130,7 @@
     <string name="nl">Dutch</string>
     <string name="es">Spanish</string>
 
-    <string name="ftd_result">Fastest Time: %.2fs by %s in round %d</string>
+    <string name="ftd_result" formatted="false">Fastest Time: %.2fs by %s in round %d</string>
 
     <!-- Headings -->
     <string name="leader_board">Leader Board</string>

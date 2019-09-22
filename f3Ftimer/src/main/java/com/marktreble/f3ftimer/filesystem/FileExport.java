@@ -26,6 +26,10 @@ public class FileExport {
         } else {
             file = new File(path + String.format("/%s", filename));
         }
+        File dir = new File(file.getAbsolutePath()).getParentFile();
+        if (!dir.exists() || !dir.isDirectory()) {
+            dir.mkdirs();
+        }
         Log.d("EXPORT", "WRITING FILE TO: " + file.getPath());
 
         if (file != null) {

@@ -25,6 +25,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
+import android.print.PrintAttributes;
+import android.print.PrintManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -66,6 +68,7 @@ import com.marktreble.f3ftimer.driver.USBIOIOService;
 import com.marktreble.f3ftimer.driver.USBOtherService;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
+import com.marktreble.f3ftimer.printing.PilotListDocumentAdapter;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
 import com.marktreble.f3ftimer.usb.USB;
 import com.marktreble.f3ftimer.wifi.Wifi;
@@ -1418,7 +1421,8 @@ public class RaceActivity extends ListActivity {
         menu.getItem(3).setEnabled(!mGroupNotStarted);
 
         // Group scoring (disable when multiple flights are being used)
-        menu.getItem(4).setEnabled(mRace.rounds_per_flight < 2);
+        //menu.getItem(4).setEnabled(mRace.rounds_per_flight < 2);
+        menu.getItem(5).setEnabled(mRace.rounds_per_flight < 2);
 
         return super.onPrepareOptionsMenu(menu);
 
@@ -1469,6 +1473,9 @@ public class RaceActivity extends ListActivity {
                 return true;
             case R.id.menu_results_manager:
                 resultsManager();
+                return true;
+            case R.id.menu_print_pilots_list:
+                print_pilot_list();
                 return true;
             case R.id.menu_help:
                 help();
@@ -1584,6 +1591,9 @@ public class RaceActivity extends ListActivity {
 
     public void groupScore() {
         Intent intent = new Intent(mContext, GroupScoreEditActivity.class);
+        int max_groups = (int)Math.floor(mArrPilots.size() / 10f);
+        intent.putExtra("max_groups", max_groups);
+        intent.putExtra("current_groups", mArrGroups.size());
         startActivityForResult(intent, DLG_GROUP_SCORE_EDIT);
     }
 
@@ -1615,6 +1625,23 @@ public class RaceActivity extends ListActivity {
     public void resultsManager() {
         Intent intent = new Intent(mContext, ResultsActivity.class);
         startActivity(intent);
+    }
+
+    public void print_pilot_list() {
+        RacePilotData datasource = new RacePilotData(this);
+        datasource.open();
+        ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, 0, mRace.offset, 1);
+        datasource.close();
+
+        PrintManager printManager = (PrintManager) this
+                .getSystemService(Context.PRINT_SERVICE);
+
+        String jobName = getString(R.string.app_name) + " Pilot List";
+
+        PrintAttributes.Builder PAbuilder = new PrintAttributes.Builder();
+        PAbuilder.setMediaSize( PrintAttributes.MediaSize.ISO_A4);
+        printManager.print(jobName, new PilotListDocumentAdapter(this, allPilots, mRace.name),
+                PAbuilder.build());
     }
 
     public void help() {

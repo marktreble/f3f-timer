@@ -242,6 +242,11 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
             } catch (IOException e) {
                 Log.i(TAG, "EX: " + e.getMessage());
                 e.printStackTrace();
+                mIsListening = false;
+                mBoardConnected = false;
+                driverDisconnected();
+                mDriver.destroy();
+
             }
 
         }
@@ -442,13 +447,24 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
     private void listen() {
         if (!mIsListening) return;
+
+
+        if (!mmSocket.isConnected()) {
+            mIsListening = false;
+            mBoardConnected = false;
+            driverDisconnected();
+            mDriver.destroy();
+
+            mHandler.removeCallbacks(listener);
+        }
         // Listen
         byte[] buffer = new byte[1024];  // 1K buffer store for the stream
         int bufferLength; // bytes returned from read()
 
 
         try {
-            if (mmInStream.available() > 0) {
+            int available = mmInStream.available();
+            if (available > 0) {
                 // Read from the InputStream
                 bufferLength = mmInStream.read(buffer);
                 if (bufferLength > 0) {
@@ -541,7 +557,10 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
             e.printStackTrace();
             mIsListening = false;
+            mBoardConnected = false;
             driverDisconnected();
+            mDriver.destroy();
+
             mHandler.removeCallbacks(listener);
         }
 
