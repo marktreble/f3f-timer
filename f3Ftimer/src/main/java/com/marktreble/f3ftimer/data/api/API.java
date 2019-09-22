@@ -120,7 +120,7 @@ public class API {
                 e.printStackTrace();
             }
             return "";
-         }
+        }
 
         private String get(String url, JSONObject nvp) {
             try {
@@ -128,13 +128,13 @@ public class API {
                     url += "?";
                     Iterator<String> keys = nvp.keys();
 
-                    while(keys.hasNext()) {
+                    while (keys.hasNext()) {
                         String key = keys.next();
                         String val = nvp.getString(key);
                         url += key + "=" + val;
                         url += "&";
                     }
-                    url = url.substring(0, url.length()-1);
+                    url = url.substring(0, url.length() - 1);
                 }
 
                 OkHttpClient client = new OkHttpClient.Builder()
@@ -174,7 +174,7 @@ public class API {
                     url += "?";
                     Iterator<String> keys = nvp.keys();
 
-                    while(keys.hasNext()) {
+                    while (keys.hasNext()) {
                         String key = keys.next();
                         String val = nvp.getString(key);
                         builder.addFormDataPart(key, val);

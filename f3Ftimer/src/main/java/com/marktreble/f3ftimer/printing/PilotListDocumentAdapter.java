@@ -29,24 +29,22 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
     private PrintedPdfDocument pdfDocument;
     private ArrayList<Pilot> mPilots;
     private String mRaceName;
-    private boolean mPortrait;
     private float mPageHeight;
     private float mPageWidth;
     private int mNumPages;
     private PrintAttributes mAttributes;
 
-    final static int ROW_HEIGHT = 27; // 3/8 inch
-    final static int TOP_MARGIN = 72; // 1/2 Inch
-    final static int ATTEMPTED_BOTTOM_MARGIN = 36; // 1/2 Inch
-    final static int HORIZONTAL_MARGIN = 36; // 1/2 Inch
-    final static int COLUMN_PADDING = 8;
+    private final static int ROW_HEIGHT = 27; // 3/8 inch
+    private final static int TOP_MARGIN = 72; // 1/2 Inch
+    private final static int ATTEMPTED_BOTTOM_MARGIN = 36; // 1/2 Inch
+    private final static int HORIZONTAL_MARGIN = 36; // 1/2 Inch
+    private final static int COLUMN_PADDING = 8;
 
-    final static int NUM_TIME_COLUMNS = 8;
-    final static int NUM_NAME_COLUMNS = 3;
+    private final static int NUM_TIME_COLUMNS = 8;
+    private final static int NUM_NAME_COLUMNS = 3;
 
 
-
-    public PilotListDocumentAdapter (Context context, ArrayList<Pilot> pilots, String racename) {
+    public PilotListDocumentAdapter(Context context, ArrayList<Pilot> pilots, String racename) {
         mContext = context;
         mPilots = pilots;
         mRaceName = racename;
@@ -62,7 +60,7 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
         mAttributes = newAttributes;
 
         // Respond to cancellation request
-        if (cancellationSignal.isCanceled() ) {
+        if (cancellationSignal.isCanceled()) {
             callback.onLayoutCancelled();
             return;
         }
@@ -89,17 +87,16 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
     }
 
     private void getMetrics(PrintAttributes.MediaSize pageSize) {
-        mPortrait = pageSize.isPortrait();
-        mPageHeight = ((float)pageSize.getHeightMils() * 72) / 1000;
-        mPageWidth = ((float)pageSize.getWidthMils() * 72) / 1000;
+        mPageHeight = ((float) pageSize.getHeightMils() * 72) / 1000;
+        mPageWidth = ((float) pageSize.getWidthMils() * 72) / 1000;
     }
 
     private int computePageCount() {
         float listHeight = mPageHeight - (TOP_MARGIN + ATTEMPTED_BOTTOM_MARGIN);
-        double numRows = Math.floor(listHeight / (float)ROW_HEIGHT);
+        double numRows = Math.floor(listHeight / (float) ROW_HEIGHT);
         double numPilotRows = numRows - 1; // -1 to leave top row blank
 
-        return (int)Math.ceil((float)mPilots.size() / numPilotRows);
+        return (int) Math.ceil((float) mPilots.size() / numPilotRows);
     }
 
     @Override
@@ -149,25 +146,22 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
             pdfDocument = null;
         }
 
-        List<PageRange> pageRanges = new ArrayList<PageRange>();
-        int start = -1;
-        int end = -1;
+        List<PageRange> pageRanges = new ArrayList<>();
+        int start;
+        int end;
         final int writtenPageCount = writtenPagesArray.size();
         for (int i = 0; i < writtenPageCount; i++) {
-            if (start < 0) {
-                start = writtenPagesArray.valueAt(i);
-            }
+            start = writtenPagesArray.valueAt(i);
             int oldEnd = end = start;
             while (i < writtenPageCount && (end - oldEnd) <= 1) {
                 oldEnd = end;
                 end = writtenPagesArray.valueAt(i);
                 i++;
             }
-            if (start >= 0 && end >= 0) { // Make the compiler happy
+            if (start >= 0 && end >= 0) {
                 PageRange pageRange = new PageRange(start, end);
                 pageRanges.add(pageRange);
             }
-            start = end = -1;
         }
 
         // Signal the print framework the document is complete
@@ -191,10 +185,10 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
         Canvas canvas = page.getCanvas();
 
         float listHeight = mPageHeight - (TOP_MARGIN + ATTEMPTED_BOTTOM_MARGIN);
-        double numRows = Math.floor(listHeight / (float)ROW_HEIGHT);
+        double numRows = Math.floor(listHeight / (float) ROW_HEIGHT);
         double numPilotRows = numRows - 1;
 
-        int bottom = (int)(TOP_MARGIN + (numRows * ROW_HEIGHT));
+        int bottom = (int) (TOP_MARGIN + (numRows * ROW_HEIGHT));
 
         Paint paint = new Paint();
         paint.setColor(Color.LTGRAY);
@@ -210,7 +204,7 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
             drawVertical(
                     canvas,
                     paint,
-                    (int)(mPageWidth - HORIZONTAL_MARGIN - (int)(i * (((mPageWidth - (HORIZONTAL_MARGIN * 2)) / (NUM_TIME_COLUMNS + NUM_NAME_COLUMNS))))),
+                    (int) (mPageWidth - HORIZONTAL_MARGIN - (int) (i * (((mPageWidth - (HORIZONTAL_MARGIN * 2)) / (NUM_TIME_COLUMNS + NUM_NAME_COLUMNS))))),
                     bottom);
         }
 
@@ -225,12 +219,12 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
         paint.setTextSize(14);
         paint.setColor(Color.BLACK);
 
-        int start = (int)numPilotRows * pageNum;
-        int end = (int)Math.min(mPilots.size(), start + numPilotRows);
+        int start = (int) numPilotRows * pageNum;
+        int end = (int) Math.min(mPilots.size(), start + numPilotRows);
 
-        int maxTextWidth =  (int)(NUM_NAME_COLUMNS * (((mPageWidth - (HORIZONTAL_MARGIN * 2)) / (NUM_TIME_COLUMNS + NUM_NAME_COLUMNS)))) - (COLUMN_PADDING * 2);
+        int maxTextWidth = (int) (NUM_NAME_COLUMNS * (((mPageWidth - (HORIZONTAL_MARGIN * 2)) / (NUM_TIME_COLUMNS + NUM_NAME_COLUMNS)))) - (COLUMN_PADDING * 2);
 
-        for (int i = start; i< end; i++) {
+        for (int i = start; i < end; i++) {
             String name = String.format("%s. %s %s ", mPilots.get(i).number, mPilots.get(i).firstname, mPilots.get(i).lastname);
             int text_width = maxTextWidth + 1;
             int text_height = 0;
@@ -260,11 +254,11 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
     }
 
     private void drawVertical(Canvas canvas, Paint paint, int x, int b) {
-        canvas.drawLine(x, TOP_MARGIN,x, b, paint);
+        canvas.drawLine(x, TOP_MARGIN, x, b, paint);
     }
 
     private void drawHorizontal(Canvas canvas, Paint paint, int y) {
-        canvas.drawLine(HORIZONTAL_MARGIN, y,mPageWidth - HORIZONTAL_MARGIN, y, paint);
+        canvas.drawLine(HORIZONTAL_MARGIN, y, mPageWidth - HORIZONTAL_MARGIN, y, paint);
     }
 
 }

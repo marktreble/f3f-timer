@@ -26,7 +26,7 @@ public class F3XVaultExport extends FileExport {
 
                 // Start new row (pilot name, frequency)
                 StringBuilder row = new StringBuilder();
-               row.append(String.format("0,%s %s,Open,%s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency));
+                row.append(String.format("0,%s %s,Open,%s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency));
 
                 for (int rnd = 0; rnd < race.round - 1; rnd++) {
                     RaceData.Group grouping = r.mArrGroupings.get(rnd);
@@ -37,7 +37,7 @@ public class F3XVaultExport extends FileExport {
                     int pen = times.get(rnd).penalty;
 
                     String s_penalty = (pen > 0) ? String.format("%d", pen * 100) : "";
-                    String s_group = Character.toString((char)(times.get(rnd).group + 48));
+                    String s_group = Character.toString((char) (times.get(rnd).group + 48));
                     String s_time = String.format("%.2f", times.get(rnd).time).replace(",", ".");
 
                     row.append(String.format(",%s,%s,%s", s_penalty, s_group, s_time));

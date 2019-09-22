@@ -15,7 +15,7 @@
         android:text="@string/empty"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/text3"
-        android:textAppearance="?android:attr/textAppearanceLarge"></TextView>
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/countdown"
@@ -35,14 +35,14 @@
         android:text="@string/minutes_remaining"
         android:layout_gravity="center_horizontal"
         android:textColor="@color/text3"
-        android:textAppearance="?android:attr/textAppearanceLarge"></TextView>
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
     <LinearLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="80dp"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/twenty"
+        android:layout_marginTop="@dimen/twenty">
         style="?android:attr/buttonBarButtonStyle">
 
         <Button
@@ -50,7 +50,10 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="80dp"
+            android:textColor="@color/text2"
+            android:textSize="20sp"
             android:text="@string/resume"
-            style="?android:attr/buttonBarButtonStyle"></Button>
+            android:background="@color/green" />
+
     </LinearLayout>
 </LinearLayout>

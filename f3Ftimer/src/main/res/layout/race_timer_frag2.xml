@@ -189,7 +189,7 @@
                 android:textSize="20sp"
                 android:text="@string/model_launch"
                 android:visibility="gone"
-                android:background="@color/green"></Button>
+                android:background="@color/green" />
 
             <Button
                 android:id="@+id/button_abort"
@@ -200,7 +200,7 @@
                 android:textSize="20sp"
                 android:text="@string/abort"
                 android:visibility="gone"
-                android:background="@color/red"></Button>
+                android:background="@color/red" />
 
             <Button
                 android:id="@+id/button_refly"
@@ -244,6 +244,17 @@
                 android:text="@string/B"
                 android:visibility="gone"
                 android:background="@drawable/soft_buzzer" />
+
+            <Button
+                android:id="@+id/button_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:textColor="@color/text2"
+                android:textSize="20sp"
+                android:layout_weight="1"
+                android:text="@string/button_cancel"
+                android:visibility="gone"
+                android:background="@color/orange" />
 
             <Button
                 android:id="@+id/button_next_pilot"

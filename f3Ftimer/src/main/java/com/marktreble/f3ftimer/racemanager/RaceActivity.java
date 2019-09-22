@@ -21,6 +21,7 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -127,6 +128,7 @@ public class RaceActivity extends ListActivity {
 
     private boolean mPilotDialogShown = false; // Used to determine the action when the start button is pressed
     private boolean mTimeoutDialogShown = false;
+    private boolean mTimeoutCompleteDialogShown = false;
     private boolean mMenuShown = false;
 
     private Context mContext;
@@ -417,7 +419,7 @@ public class RaceActivity extends ListActivity {
                 || sPrefResultsDisplay != mPrefResultsDisplay             // External Display server toggled
                 || !sInputSourceDevice.equals(mInputSourceDevice)   // Input Source device changed
                 || !sPrefExternalDisplay.equals(mPrefExternalDisplay) // Extrenal Display device changed
-                ) {
+        ) {
             stopServers();
             startServers();
         }
@@ -558,6 +560,9 @@ public class RaceActivity extends ListActivity {
 
         if (requestCode == RaceActivity.DLG_TIMEOUT)
             mTimeoutDialogShown = false;
+
+        if (requestCode == RaceActivity.DLG_TIMEOUT)
+            mTimeoutCompleteDialogShown = false;
 
 
         if (resultCode == RaceActivity.RESULT_OK) {
@@ -1185,6 +1190,8 @@ public class RaceActivity extends ListActivity {
         if (mPilotDialogShown) return true;
         if (mTimeoutDialogShown) return false;
         if (mMenuShown) return false;
+        if (mTimeoutCompleteDialogShown) return false;
+
         Intent intent = new Intent(this, RaceTimerActivity.class);
         intent.putExtra("pilot_id", pilot_id);
         intent.putExtra("race_id", mRid);
@@ -1198,6 +1205,7 @@ public class RaceActivity extends ListActivity {
     private void showNextPilot() {
         if (mPilotDialogShown) return;
         if (mTimeoutDialogShown) return;
+        if (mTimeoutCompleteDialogShown) return;
         if (mMenuShown) return;
 
         if (mNextPilot.position != null) {
@@ -1211,6 +1219,7 @@ public class RaceActivity extends ListActivity {
     private void showNextRound() {
         if (mPilotDialogShown) return;
         if (mTimeoutDialogShown) return;
+        if (mTimeoutCompleteDialogShown) return;
         if (mMenuShown) return;
 
         invalidateOptionsMenu(); // Refresh menu so that next round becomes active
@@ -1230,6 +1239,7 @@ public class RaceActivity extends ListActivity {
         if (mPilotDialogShown) return;
         if (mMenuShown) return;
         if (mTimeoutDialogShown) return;
+        if (mTimeoutCompleteDialogShown) return;
 
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", start);
@@ -1242,12 +1252,13 @@ public class RaceActivity extends ListActivity {
         if (mPilotDialogShown) return;
         if (mMenuShown) return;
         if (mTimeoutDialogShown) return;
+        if (mTimeoutCompleteDialogShown) return;
 
         Intent intent = new Intent(mContext, RaceRoundTimeoutActivity.class);
         intent.putExtra("start", 0L);
         intent.putExtra("group_scored", (mGroupScoring.num_groups > 1));
         startActivityForResult(intent, DLG_TIMEOUT);
-        mTimeoutDialogShown = true;
+        mTimeoutCompleteDialogShown = true;
     }
 
     private void showTimeoutNotStarted() {
@@ -1294,16 +1305,17 @@ public class RaceActivity extends ListActivity {
                 }
 
                 if (data.equals("start_pressed")) {
-                    if (!mPilotDialogShown) {
-                        if (mNextPilot != null) {
-                            Intent intent2 = new Intent(mContext, RaceTimerActivity.class);
-                            intent2.putExtra("pilot_id", mNextPilot.id);
-                            intent2.putExtra("race_id", mRid);
-                            intent2.putExtra("round", mNextPilot.round);
-                            intent2.putExtra("bib_no", mNextPilot.number);
-                            startActivityForResult(intent2, DLG_TIMER);
-                            mPilotDialogShown = true;
-                        }
+                    if (mPilotDialogShown) return;
+                    if (mTimeoutCompleteDialogShown) return;
+
+                    if (mNextPilot != null) {
+                        Intent intent2 = new Intent(mContext, RaceTimerActivity.class);
+                        intent2.putExtra("pilot_id", mNextPilot.id);
+                        intent2.putExtra("race_id", mRid);
+                        intent2.putExtra("round", mNextPilot.round);
+                        intent2.putExtra("bib_no", mNextPilot.number);
+                        startActivityForResult(intent2, DLG_TIMER);
+                        mPilotDialogShown = true;
                     }
                 }
 
@@ -1374,23 +1386,15 @@ public class RaceActivity extends ListActivity {
 
                 if (data.equals("wind_illegal")) {
                 }
-            } else if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
-			    /*
-                float windAngleAbsolute = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_absolute");
-                float windAngleRelative = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_angle_relative");
-                float windSpeed = intent.getExtras().getFloat("com.marktreble.f3ftimer.value.wind_speed");
-                boolean windLegal = intent.getExtras().getBoolean("com.marktreble.f3ftimer.value.wind_legal");
-                int windSpeedCounter = intent.getExtras().getInt("com.marktreble.f3ftimer.value.wind_speed_counter");
-                setShowWindValues(mRace, windLegal, windAngleAbsolute, windAngleRelative, windSpeed, windSpeedCounter);
-                */
+            }
+
+            if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
                 if (mPrefWindMeasurement) {
                     Bundle extras = intent.getExtras();
                     if (extras != null) {
                         mWindReadings.setText(extras.getString("com.marktreble.f3ftimer.value.wind_values"));
                     }
                 }
-
-
             }
         }
     };
@@ -1591,7 +1595,7 @@ public class RaceActivity extends ListActivity {
 
     public void groupScore() {
         Intent intent = new Intent(mContext, GroupScoreEditActivity.class);
-        int max_groups = (int)Math.floor(mArrPilots.size() / 10f);
+        int max_groups = (int) Math.floor(mArrPilots.size() / 10f);
         intent.putExtra("max_groups", max_groups);
         intent.putExtra("current_groups", mArrGroups.size());
         startActivityForResult(intent, DLG_GROUP_SCORE_EDIT);
@@ -1639,7 +1643,11 @@ public class RaceActivity extends ListActivity {
         String jobName = getString(R.string.app_name) + " Pilot List";
 
         PrintAttributes.Builder PAbuilder = new PrintAttributes.Builder();
-        PAbuilder.setMediaSize( PrintAttributes.MediaSize.ISO_A4);
+        PAbuilder.setMediaSize(PrintAttributes.MediaSize.ISO_A4);
+        PAbuilder.setColorMode(PrintAttributes.COLOR_MODE_MONOCHROME);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PAbuilder.setDuplexMode(PrintAttributes.DUPLEX_MODE_SHORT_EDGE);
+        }
         printManager.print(jobName, new PilotListDocumentAdapter(this, allPilots, mRace.name),
                 PAbuilder.build());
     }

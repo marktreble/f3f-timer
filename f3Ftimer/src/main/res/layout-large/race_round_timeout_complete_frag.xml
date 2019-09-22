@@ -79,7 +79,7 @@
             android:layout_weight="1"
             android:layout_height="80dp"
             android:textColor="@color/text2"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:text="@string/scrub_round"
             android:background="@color/red" />
 
@@ -89,7 +89,7 @@
             android:layout_weight="1"
             android:layout_height="80dp"
             android:textColor="@color/text2"
-            android:textSize="20sp"
+            android:textSize="24sp"
             android:text="@string/ignore"
             android:background="@color/green" />
 

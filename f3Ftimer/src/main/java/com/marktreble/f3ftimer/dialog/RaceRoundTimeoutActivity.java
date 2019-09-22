@@ -47,15 +47,19 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
             mCurrentFragment = fm.findFragmentByTag(tag);
         } else {
             if (mStart == 0) {
-                f = new RaceRoundTimeoutCompleteFrag();
+                getFragment(new RaceRoundTimeoutCompleteFrag(), 2);
+                //f = new RaceRoundTimeoutCompleteFrag();
             } else {
-                f = new RaceRoundTimeoutFrag();
+                getFragment(new RaceRoundTimeoutFrag(), 1);
+                //f = new RaceRoundTimeoutFrag();
             }
+            /*
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.dialog1, f, "raceroundtimeoutfrag");
             ft.commit();
             mCurrentFragment = f;
+             */
         }
 
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -127,8 +131,11 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
                 }
 
                 if (data.equals("start_pressed")) {
-                    //((RaceTimerFrag)mCurrentFragment).startPressed();
-                    // TODO
+                    // Dismiss the activity if the timer is still counting down
+                    // If the timeout has completed force the user to interact with the screen
+                    if (mCurrentFragmentId == 1) {
+                        finish();
+                    }
                 }
             }
         }
