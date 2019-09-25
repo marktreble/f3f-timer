@@ -202,7 +202,8 @@ public class NewRaceFrag3 extends ListFragment {
     private void setList() {
         mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_reorder, R.id.text1, mArrNames) {
             @Override
-            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            public @NonNull
+            View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
                 if (null == convertView) {

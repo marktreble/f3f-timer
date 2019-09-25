@@ -44,7 +44,7 @@ public class StartNumberEditFrag1 extends Fragment {
 
         mIntent = getActivity().getIntent(); // gets the previously created intent
         mHandler = new Handler();
-        mSz = ((StartNumberEditActivity)getActivity()).mArrPilots.size();
+        mSz = ((StartNumberEditActivity) getActivity()).mArrPilots.size();
     }
 
     @Override
@@ -88,11 +88,11 @@ public class StartNumberEditFrag1 extends Fragment {
         public void run() {
             int random = 0;
             while (!setPilotPreview(String.format("%d", random))) {
-                random = (int)Math.floor(Math.random() * mSz) + 1;
+                random = (int) Math.floor(Math.random() * mSz) + 1;
             }
             mAnimationDelay *= 1.1;
             if (mAnimationDelay < 500) {
-                mHandler.postDelayed(animate, (long)mAnimationDelay);
+                mHandler.postDelayed(animate, (long) mAnimationDelay);
             } else {
                 Button done = mView.findViewById(R.id.button_done);
                 done.setEnabled(true);
@@ -109,7 +109,7 @@ public class StartNumberEditFrag1 extends Fragment {
         int n = Integer.parseInt(start, 10);
         if (n == 0) return false;
 
-        for (Pilot p: ((StartNumberEditActivity)getActivity()).mArrPilots) {
+        for (Pilot p : ((StartNumberEditActivity) getActivity()).mArrPilots) {
             if (p.number.equals(start)) {
                 name = String.format("%s %s", p.firstname, p.lastname);
             }

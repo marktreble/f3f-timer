@@ -98,7 +98,8 @@ public class NewRaceFrag2 extends ListFragment {
     private void setList() {
         ArrayAdapter<String> mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_pickpilots, R.id.text1, mArrNames) {
             @Override
-            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            public @NonNull
+            View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
                 if (null == convertView) {

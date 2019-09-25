@@ -95,7 +95,7 @@
         android:textColor="@color/text4"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:visibility="gone"></TextView>
+        android:visibility="gone" />
 
     <ListView
         android:id="@android:id/list"

@@ -61,7 +61,7 @@
             android:textColor="@color/text2"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:visibility="gone"></TextView>
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/text1"
@@ -94,7 +94,7 @@
             android:text="@string/empty"
             android:textColor="@color/red"
             android:textSize="24sp"
-            android:textStyle="bold"></TextView>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/time"

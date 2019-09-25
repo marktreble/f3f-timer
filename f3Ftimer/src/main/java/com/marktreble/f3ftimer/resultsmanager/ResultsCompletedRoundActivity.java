@@ -114,7 +114,8 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots, R.id.text1, mArrNames) {
             @Override
-            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            public @NonNull
+            View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
                 if (null == convertView) {

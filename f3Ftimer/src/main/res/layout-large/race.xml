@@ -95,7 +95,7 @@
         android:background="@color/text2"
         android:textColor="@color/text4"
         android:textSize="24sp"
-        android:textStyle="bold"></TextView>
+        android:textStyle="bold" />
 
     <ListView
         android:id="@android:id/list"

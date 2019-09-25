@@ -87,7 +87,7 @@
                 android:layout_gravity="center_vertical"
                 android:text="@string/empty"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3"></TextView>
+                android:textColor="@color/text3" />
         </LinearLayout>
 
         <TextView
@@ -108,7 +108,7 @@
             android:text=""
             android:layout_gravity="center_horizontal"
             android:textColor="@color/text3"
-            android:textAppearance="?android:attr/textAppearanceLarge"></TextView>
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
             android:id="@+id/wind_warning"

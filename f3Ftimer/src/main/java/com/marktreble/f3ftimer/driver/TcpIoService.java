@@ -452,7 +452,6 @@ public class TcpIoService extends Service implements DriverInterface {
         float wind_speed;
         mWindTimestamp = System.currentTimeMillis();
 
-        //noinspection InfiniteLoopStatement
         while (true) {
             try {
                 // Read from the InputStream

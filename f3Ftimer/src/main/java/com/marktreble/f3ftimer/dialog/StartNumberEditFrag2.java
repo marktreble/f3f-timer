@@ -13,7 +13,6 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.print.PrintAttributes;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -110,7 +109,7 @@ public class StartNumberEditFrag2 extends Fragment {
         int n = Integer.parseInt(start, 10);
         if (n == 0) return false;
 
-        for (Pilot p: ((StartNumberEditActivity)getActivity()).mArrPilots) {
+        for (Pilot p : ((StartNumberEditActivity) getActivity()).mArrPilots) {
             if (p.number.equals(start)) {
                 name = String.format("%s %s", p.firstname, p.lastname);
             }

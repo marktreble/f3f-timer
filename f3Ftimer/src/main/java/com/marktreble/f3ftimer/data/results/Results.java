@@ -469,7 +469,7 @@ public class Results {
         for (int j = 0; j < fTotals.length; j++) {
             float sorted_total = fTotals[j];
 
-            for (String name: totals.keySet()) {
+            for (String name : totals.keySet()) {
                 float total = totals.get(name);
 
                 if (total == sorted_total) {

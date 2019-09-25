@@ -110,7 +110,7 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
         f.setRetainInstance(true);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        String tag = RACE_ROUND_TIMEOUT_FRAG_TAG +id;
+        String tag = RACE_ROUND_TIMEOUT_FRAG_TAG + id;
         ft.replace(R.id.dialog1, f, tag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commit();

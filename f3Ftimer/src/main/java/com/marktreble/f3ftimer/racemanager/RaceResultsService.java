@@ -76,7 +76,7 @@ public class RaceResultsService extends Service {
     public void onCreate() {
         HTTP_HEADER_DATE_FORMAT.setTimeZone(new SimpleTimeZone(0, "GMT"));
         this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_LIVE_UPDATE));
-        this.registerReceiver(onBroadcast1, new IntentFilter(IComm.RCV_UPDATE ));
+        this.registerReceiver(onBroadcast1, new IntentFilter(IComm.RCV_UPDATE));
     }
 
     @Override

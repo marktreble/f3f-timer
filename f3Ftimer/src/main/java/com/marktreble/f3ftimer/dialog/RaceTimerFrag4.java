@@ -207,20 +207,20 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
     public void setFinal(Float time, float fastestFlightTime, String fastestFlightPilot) {
         mHandler.removeCallbacks(updateClock);
-        TextView cd =  mView.findViewById(R.id.time);
+        TextView cd = mView.findViewById(R.id.time);
         String str_time = String.format("%.2f", time);
         cd.setText(str_time);
 
-        TextView min =  mView.findViewById(R.id.mintime);
+        TextView min = mView.findViewById(R.id.mintime);
         min.setText(str_time);
 
-        TextView lap =  mView.findViewById(R.id.lap);
+        TextView lap = mView.findViewById(R.id.lap);
         lap.setText("");
 
-        TextView est =  mView.findViewById(R.id.estimated);
+        TextView est = mView.findViewById(R.id.estimated);
         est.setText("");
 
-        TextView status =  mView.findViewById(R.id.status);
+        TextView status = mView.findViewById(R.id.status);
         status.setText(getString(R.string.run_complete));
 
         Button abort = mView.findViewById(R.id.button_abort);
@@ -244,7 +244,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         a.sendCommand("begin_timeout");
 
         /* send to ResultsServer Live Listener */
-        Intent i = new Intent(IComm.RCV_LIVE_UPDATE );
+        Intent i = new Intent(IComm.RCV_LIVE_UPDATE);
         i.putExtra("com.marktreble.f3ftimer.value.fastestFlightTime", fastestFlightTime);
         i.putExtra("com.marktreble.f3ftimer.value.fastestFlightPilot", fastestFlightPilot);
         // TODO

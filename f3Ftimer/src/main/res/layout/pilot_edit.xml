@@ -51,7 +51,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textCapSentences"></EditText>
+                android:inputType="textCapSentences" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -92,7 +92,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textEmailAddress"></EditText>
+                android:inputType="textEmailAddress" />
 
             <TextView
                 android:id="@+id/textView4"

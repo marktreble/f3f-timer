@@ -139,7 +139,7 @@ public class RaceListActivity extends ListActivity {
                 builder.create().show();
             }
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-       }
+        }
     }
 
     private void setList() {

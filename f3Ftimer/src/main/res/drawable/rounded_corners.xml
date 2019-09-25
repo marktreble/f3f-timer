@@ -7,12 +7,12 @@
         android:angle="270" />
     <stroke
         android:width="3dp"
-        android:color="@color/border"></stroke>
+        android:color="@color/border" />
     <padding
         android:left="10dp"
         android:top="10dp"
         android:right="10dp"
-        android:bottom="10dp"></padding>
-    <corners android:radius="20dp"></corners>
+        android:bottom="10dp" />
+    <corners android:radius="20dp" />
 
 </shape>

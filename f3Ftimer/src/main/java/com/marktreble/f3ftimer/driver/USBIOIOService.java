@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.speech.tts.TextToSpeech;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
@@ -299,7 +298,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                                 mBuffer = "";
 
                                 // Get code (first char)
-                                String code =  str_in.substring(0, 1);
+                                String code = str_in.substring(0, 1);
 
                                 // We have data/command from the timer, pass this on to the server
                                 if (code.equals(FT_WIND_LEGAL)) {

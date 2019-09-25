@@ -25,6 +25,6 @@
         android:background="@color/transparent"
         android:gravity="center_vertical"
         android:textColor="@color/text4"
-        android:textSize="16sp"></TextView>
+        android:textSize="16sp" />
 
 </LinearLayout>

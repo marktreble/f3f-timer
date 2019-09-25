@@ -13,7 +13,7 @@
         android:layout_gravity="center"
         android:textColor="@color/text2"
         android:textSize="24sp"
-        android:textStyle="bold"></TextView>
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/text1"
@@ -31,7 +31,7 @@
         android:paddingTop="4dp"
         android:textColor="@color/text3"
         android:textSize="24sp"
-        android:textStyle="bold"></TextView>
+        android:textStyle="bold" />
 
 
 </LinearLayout>

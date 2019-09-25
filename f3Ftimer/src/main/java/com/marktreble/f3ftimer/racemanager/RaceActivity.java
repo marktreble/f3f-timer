@@ -83,7 +83,6 @@ import com.marktreble.f3ftimer.wifi.Wifi;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -1035,7 +1034,8 @@ public class RaceActivity extends ListActivity {
 
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_racepilots, R.id.text1, mArrNames) {
             @Override
-            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            public @NonNull
+            View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
                 //if (mArrNames.get(position) == null) return null;
