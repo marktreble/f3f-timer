@@ -1,9 +1,14 @@
 /*
- * NewRaceFrag2
- * Page 2 for New Race form
- * Pilot Picker
- * with Random/Manual Order Shuffling
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.app.Activity;
@@ -11,6 +16,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +34,7 @@ import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 
@@ -73,7 +80,9 @@ public class NewRaceFrag3 extends ListFragment {
 
             _names = savedInstanceState.getStringArray("names");
             ArrayList<Integer> ids = savedInstanceState.getIntegerArrayList("ids");
-            _ids = ids.toArray(new Integer[ids.size()]);
+            if (ids != null) {
+                _ids = ids.toArray(new Integer[0]);
+            }
             _selections = savedInstanceState.getBooleanArray("selections");
 
         } else {
@@ -95,7 +104,7 @@ public class NewRaceFrag3 extends ListFragment {
         View v = inflater.inflate(R.layout.race_new_frag3, container, false);
 
         // Listener for next button
-        Button next = (Button) v.findViewById(R.id.button_next);
+        Button next = v.findViewById(R.id.button_next);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,7 +131,7 @@ public class NewRaceFrag3 extends ListFragment {
 
 
         // Listener for add button
-        Button add = (Button) v.findViewById(R.id.button_add);
+        Button add = v.findViewById(R.id.button_add);
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -131,7 +140,7 @@ public class NewRaceFrag3 extends ListFragment {
         });
 
         // Listener for scramble button
-        Button scramble = (Button) v.findViewById(R.id.button_scramble);
+        Button scramble = v.findViewById(R.id.button_scramble);
         scramble.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,7 +155,7 @@ public class NewRaceFrag3 extends ListFragment {
         });
 
         // Listener for rotate button
-        Button rotate = (Button) v.findViewById(R.id.button_rotate);
+        Button rotate = v.findViewById(R.id.button_rotate);
         rotate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,7 +168,7 @@ public class NewRaceFrag3 extends ListFragment {
         });
 
         // Listener for manual re-order button
-        Button manual = (Button) v.findViewById(R.id.button_manual);
+        Button manual = v.findViewById(R.id.button_manual);
         manual.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -193,7 +202,7 @@ public class NewRaceFrag3 extends ListFragment {
     private void setList() {
         mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_reorder, R.id.text1, mArrNames) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
                 if (null == convertView) {
@@ -202,20 +211,20 @@ public class NewRaceFrag3 extends ListFragment {
                     row = convertView;
                 }
 
-                TextView tv = (TextView) row.findViewById(R.id.text1);
+                TextView tv = row.findViewById(R.id.text1);
                 tv.setText(mArrNames.get(position));
 
-                TextView bib_no = (TextView) row.findViewById(R.id.number);
+                TextView bib_no = row.findViewById(R.id.number);
                 bib_no.setText(String.format("%d", mArrNumbers.get(position)));
 
-                Button btnup = (Button) row.findViewById(R.id.button_up);
+                Button btnup = row.findViewById(R.id.button_up);
                 if (position == 0 || !manualScramble) {
                     btnup.setVisibility(View.INVISIBLE);
                 } else {
                     btnup.setVisibility(View.VISIBLE);
                 }
 
-                Button btndn = (Button) row.findViewById(R.id.button_down);
+                Button btndn = row.findViewById(R.id.button_down);
                 if (position == mArrSelectedIds.size() - 1 || !manualScramble) {
                     btndn.setVisibility(View.INVISIBLE);
                 } else {
@@ -274,8 +283,7 @@ public class NewRaceFrag3 extends ListFragment {
     public void onSaveInstanceState(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putStringArray("names", _names);
-        ArrayList<Integer> ids = new ArrayList<>();
-        for (Integer id : _ids) ids.add(id);
+        ArrayList<Integer> ids = new ArrayList<>(Arrays.asList(_ids));
         savedInstanceState.putIntegerArrayList("ids", ids);
         savedInstanceState.putBooleanArray("selections", _selections);
     }
@@ -444,7 +452,7 @@ public class NewRaceFrag3 extends ListFragment {
                 case DialogInterface.BUTTON_POSITIVE:
                     // Dismiss picker, so update the listview!
                     for (int i = 0; i < _selections.length; i++) {
-                        if (_selections[i] == true) {
+                        if (_selections[i]) {
                             mArrNames.add(_names[i]);
                             mArrIds.add(_ids[i]);
                             mArrSelectedIds.add(_ids[i]);
@@ -458,6 +466,9 @@ public class NewRaceFrag3 extends ListFragment {
                     mArrAdapter.notifyDataSetChanged();
                     mDlg = null;
                     break;
+                case DialogInterface.BUTTON_NEGATIVE:
+                    break;
+
             }
         }
     }

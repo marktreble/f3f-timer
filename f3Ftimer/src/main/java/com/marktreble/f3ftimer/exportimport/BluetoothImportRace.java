@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.exportimport;
 
 import android.app.AlertDialog;
@@ -12,6 +23,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import com.marktreble.f3ftimer.R;
 
@@ -22,6 +34,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
@@ -45,8 +58,9 @@ public class BluetoothImportRace extends BaseImport {
     ArrayList<String> mPairedAndDiscoveredDeviceNames;
     ArrayList<BluetoothDevice> mPairedAndDiscoveredDevices;
 
+    CharSequence[] mDevices;
+
     private BluetoothSocket mmSocket;
-    private BluetoothDevice mmDevice;
     private InputStream mmInStream;
     private OutputStream mmOutStream;
 
@@ -119,7 +133,7 @@ public class BluetoothImportRace extends BaseImport {
         mPairedDeviceNames = new ArrayList<>();
         mPairedDevices = new ArrayList<>();
 
-        boolean discovery = mBluetoothAdapter.startDiscovery();
+        mBluetoothAdapter.startDiscovery();
 
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
         if (pairedDevices.size() > 0) {
@@ -135,12 +149,12 @@ public class BluetoothImportRace extends BaseImport {
         mPairedAndDiscoveredDevices = new ArrayList<>();
         mPairedAndDiscoveredDevices.addAll(mPairedDevices);
 
-        CharSequence[] devices = mPairedAndDiscoveredDeviceNames.toArray(new CharSequence[mPairedAndDiscoveredDeviceNames.size()]);
+        mDevices = mPairedAndDiscoveredDeviceNames.toArray(new CharSequence[0]);
 
         mDlgb = new AlertDialog.Builder(mContext)
                 .setTitle("Searching for Devices...")
                 .setCancelable(true)
-                .setItems(devices, deviceClickListener);
+                .setItems(mDevices, deviceClickListener);
 
         mDlg = mDlgb.create();
 
@@ -179,19 +193,12 @@ public class BluetoothImportRace extends BaseImport {
                 mPairedAndDiscoveredDevices.addAll(mPairedDevices);
                 mPairedAndDiscoveredDevices.addAll(mDiscoveredDevices);
 
-                CharSequence[] devices = mPairedAndDiscoveredDeviceNames.toArray(new CharSequence[mPairedAndDiscoveredDeviceNames.size()]);
+                String[] devices = mPairedAndDiscoveredDeviceNames.toArray(new String[0]);
 
-                mDlg.cancel();
-                mDlg = null;
-                mDlgb.setItems(devices, deviceClickListener);
-                mDlg = mDlgb.create();
-                mDlg.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        mBluetoothAdapter.cancelDiscovery();
-                    }
-                });
-                mDlg.show();
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(BluetoothImportRace.this, android.R.layout.select_dialog_item, devices);
+
+                mDlg.getListView().setAdapter(adapter);
+
             }
         }
     };
@@ -201,9 +208,11 @@ public class BluetoothImportRace extends BaseImport {
         public void onClick(DialogInterface dialog, int which) {
             Log.i("BT", "DEVICE CLICKED");
             mBluetoothAdapter.cancelDiscovery();
+            BluetoothDevice mmDevice;
             mmDevice = mPairedAndDiscoveredDevices.get(which);
+            final String deviceName = mPairedAndDiscoveredDeviceNames.get(which);
 
-            BluetoothSocket tmp = null;
+            BluetoothSocket tmp;
             // uuid is the app's UUID string, also used by the server code
             UUID uuid = UUID.fromString(getResources().getString(R.string.app_uuid));
             try {
@@ -228,10 +237,24 @@ public class BluetoothImportRace extends BaseImport {
                     } catch (IOException connectException) {
                         // Unable to connect; close the socket and get out
                         connectException.printStackTrace();
+                        mDlgb = new AlertDialog.Builder(mContext)
+                                .setTitle("Connection Denied")
+                                .setCancelable(true)
+                                .setMessage("Failed to connect to " + deviceName)
+                                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        finish();
+                                    }
+                                });
+
+                        mDlg = mDlgb.create();
+                        mDlg.show();
+
                         try {
                             mmSocket.close();
                         } catch (IOException closeException) {
-
+                            closeException.printStackTrace();
                         }
                         return;
                     }
@@ -252,6 +275,7 @@ public class BluetoothImportRace extends BaseImport {
             mmInStream = mmSocket.getInputStream();
             mmOutStream = mmSocket.getOutputStream();
         } catch (IOException e) {
+            e.printStackTrace();
         }
 
         sendRequest(CMD_LS);
@@ -274,7 +298,7 @@ public class BluetoothImportRace extends BaseImport {
 
                     byte[] data = new byte[bufferLength];
                     System.arraycopy(buffer, 0, data, 0, bufferLength);
-                    builder.append(new String(data, "UTF-8"));
+                    builder.append(new String(data, StandardCharsets.UTF_8));
                     if (builder.toString().contains("\n\n")) eof = true;
                 }
                 final String response = builder.toString();
@@ -370,7 +394,7 @@ public class BluetoothImportRace extends BaseImport {
                 racelist.add(name);
             }
 
-            CharSequence[] list = racelist.toArray(new CharSequence[racelist.size()]);
+            CharSequence[] list = racelist.toArray(new CharSequence[0]);
             mDlgb = new AlertDialog.Builder(mContext)
                     .setTitle("Races Available for Import")
                     .setCancelable(true)

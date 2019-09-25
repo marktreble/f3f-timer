@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.graphics.drawable.Drawable;
@@ -16,11 +27,12 @@ public class RaceTimerFrag extends Fragment {
         RaceTimerActivity a = (RaceTimerActivity) getActivity();
         String name = String.format("%s %s", a.mPilot.firstname, a.mPilot.lastname);
 
-        if (name.trim().equals(""))
+        if (name.trim().equals("")) {
             name = "noname! " + a.mPilot.id;
+        }
 
-        TextView pilot_name = (TextView) mView.findViewById(R.id.current_pilot);
-        TextView min_name = (TextView) mView.findViewById(R.id.minpilot);
+        TextView pilot_name = mView.findViewById(R.id.current_pilot);
+        TextView min_name = mView.findViewById(R.id.minpilot);
         pilot_name.setText(name);
         min_name.setText(name);
 
@@ -33,15 +45,15 @@ public class RaceTimerFrag extends Fragment {
             min_name.setCompoundDrawablePadding(padding);
         }
 
-        TextView pilot_number = (TextView) mView.findViewById(R.id.number);
-        TextView min_number = (TextView) mView.findViewById(R.id.minnumber);
+        TextView pilot_number = mView.findViewById(R.id.number);
+        TextView min_number = mView.findViewById(R.id.minnumber);
         pilot_number.setText(a.mNumber);
         min_number.setText(a.mNumber);
     }
 
     public void setWindWarning(boolean on) {
-        TextView warning = (TextView) mView.findViewById(R.id.wind_warning);
-        warning.setVisibility((on == true) ? View.VISIBLE : View.INVISIBLE);
+        TextView warning = mView.findViewById(R.id.wind_warning);
+        warning.setVisibility((on) ? View.VISIBLE : View.INVISIBLE);
     }
 
     public void startPressed() {

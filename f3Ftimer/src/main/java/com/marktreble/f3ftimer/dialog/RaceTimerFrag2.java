@@ -1,7 +1,14 @@
 /*
- * RaceTimerFrag2
- * Working time
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
@@ -30,8 +37,7 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
         super.onCreate(savedInstanceState);
         RaceTimerActivity a = (RaceTimerActivity) getActivity();
 
-        if (savedInstanceState != null) {
-        } else {
+        if (savedInstanceState == null) {
             mStart = System.currentTimeMillis();
             mHandler.postDelayed(updateClock, 10);
         }
@@ -55,7 +61,7 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
         mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
 
 
-        Button ml = (Button) mView.findViewById(R.id.button_model_launched);
+        Button ml = mView.findViewById(R.id.button_model_launched);
         ml.setVisibility(View.VISIBLE);
         ml.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +72,7 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
             }
         });
 
-        Button ab = (Button) mView.findViewById(R.id.button_abort);
+        Button ab = mView.findViewById(R.id.button_abort);
         ab.setVisibility(View.VISIBLE);
         ab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +87,7 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
             }
         });
 
-        TextView status = (TextView) mView.findViewById(R.id.status);
+        TextView status = mView.findViewById(R.id.status);
         status.setText(getString(R.string.working_time));
 
         super.setPilotName();
@@ -99,11 +105,11 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
             float seconds = (float) elapsed / 1000;
             if (seconds > 30) seconds = 30;
 
-            TextView cd = (TextView) mView.findViewById(R.id.time);
+            TextView cd = mView.findViewById(R.id.time);
             String str_time = String.format("%.2f", 30 - seconds);
             cd.setText(str_time);
 
-            TextView min = (TextView) mView.findViewById(R.id.mintime);
+            TextView min = mView.findViewById(R.id.mintime);
             min.setText(str_time);
 
 

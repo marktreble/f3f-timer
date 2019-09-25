@@ -1,7 +1,12 @@
 /*
- * Driver
- * Common functions for all driver HID drivers
- * Handles sounds + UI communications
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
 
 package com.marktreble.f3ftimer.driver;
@@ -24,6 +29,7 @@ import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
@@ -47,17 +53,17 @@ public class Driver implements TTS.onInitListenerProxy {
     private Context mContext;
 
 
-    public Integer mPid;
-    public Integer mRid;
-    public Integer mRnd;
-    public Race mRace;
-    public Float mPilot_Time = .0f;
-    public long mTimeOnCourse;
-    public long mLastLegTime;
-    public long[] mLegTimes = new long[10];
-    public Integer mLeg = 0;
-    public boolean mWindLegal = true;
-    private long mFastestLegTime[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    Integer mPid;
+    private Integer mRid;
+    private Integer mRnd;
+    private Race mRace;
+    Float mPilot_Time = .0f;
+    private long mTimeOnCourse;
+    private long mLastLegTime;
+    private long[] mLegTimes = new long[10];
+    private Integer mLeg = 0;
+    private boolean mWindLegal = true;
+    private long[] mFastestLegTime = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private float mFastestFlightTime = 0.0f;
     private String mFastestFlightPilot = "";
 
@@ -121,7 +127,7 @@ public class Driver implements TTS.onInitListenerProxy {
         }
 
         // Listen for inputs from the UI
-        mContext.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
+        mContext.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
 
         // TODO
         // Sound Pool should be placed in it's own class under .media.SoftBuzzer
@@ -191,8 +197,8 @@ public class Driver implements TTS.onInitListenerProxy {
     }
 
     public void onDone(String utteranceId) {
-        Intent i2 = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i2.putExtra("com.marktreble.f3ftimer.service_callback", "hide_progress");
+        Intent i2 = new Intent(IComm.RCV_UPDATE);
+        i2.putExtra(IComm.MSG_SERVICE_CALLBACK, "hide_progress");
         mContext.sendBroadcast(i2);
     }
 
@@ -388,14 +394,14 @@ public class Driver implements TTS.onInitListenerProxy {
     };
 
     private void callbackToUI(String cmd, HashMap<String, String> params) {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+        Intent i = new Intent(IComm.RCV_UPDATE);
         if (params != null) {
             for (String key : params.keySet()) {
                 i.putExtra(key, params.get(key));
             }
         }
 
-        i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, cmd);
         Log.d("CallBackToUI", cmd);
         mContext.sendBroadcast(i);
     }
@@ -441,8 +447,8 @@ public class Driver implements TTS.onInitListenerProxy {
                 @Override
                 public void run() {
                     Log.i(TAG, "SHOWING TTS PROGRESS");
-                    Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                    i.putExtra("com.marktreble.f3ftimer.service_callback", "show_progress");
+                    Intent i = new Intent(IComm.RCV_UPDATE);
+                    i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_progress");
                     mContext.sendBroadcast(i);
                 }
             }, 100);
@@ -527,8 +533,8 @@ public class Driver implements TTS.onInitListenerProxy {
 
     public void offCourse() {
         // Post to the UI that the model has exited the course
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "off_course");
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "off_course");
         mContext.sendBroadcast(i);
 
         // Buzzer Sound
@@ -561,8 +567,8 @@ public class Driver implements TTS.onInitListenerProxy {
             mTimeOnCourse = System.currentTimeMillis();
         }
         mLastLegTime = mTimeOnCourse;
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "on_course");
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "on_course");
         mContext.sendBroadcast(i);
 
         // Buzzer Sound
@@ -614,8 +620,8 @@ public class Driver implements TTS.onInitListenerProxy {
         // Estimate is current time + (mean*laps remaining)
         long estimate = (now - mTimeOnCourse) + (mean * (10 - mLeg));
 
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "leg_complete");
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "leg_complete");
         i.putExtra("com.marktreble.f3ftimer.estimate", estimate);
         i.putExtra("com.marktreble.f3ftimer.number", mLeg);
         i.putExtra("com.marktreble.f3ftimer.legTime", time);
@@ -659,15 +665,15 @@ public class Driver implements TTS.onInitListenerProxy {
             SoftBuzzSound.soundPenalty(soundPool, soundArray);
         }
 
-        Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+        Intent i = new Intent(IComm.RCV_LIVE_UPDATE);
         i.putExtra("com.marktreble.f3ftimer.value.penalty", mPenalty);
         mContext.sendBroadcast(i);
     }
 
     public void runComplete() {
         // Update the UI
-        Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
-        intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_complete");
+        Intent intent = new Intent(IComm.RCV_UPDATE);
+        intent.putExtra(IComm.MSG_SERVICE_CALLBACK, "run_complete");
         intent.putExtra("com.marktreble.f3ftimer.time", mPilot_Time);
         if (mFastestFlightTime == 0) {
             intent.putExtra("com.marktreble.f3ftimer.fastestFlightTime", mPilot_Time);
@@ -719,8 +725,8 @@ public class Driver implements TTS.onInitListenerProxy {
 
                 if (mPenalty > 0) {
                     // Post to the UI that the currently active pilot got a penalty
-                    Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                    i.putExtra("com.marktreble.f3ftimer.service_callback", "incPenalty");
+                    Intent i = new Intent(IComm.RCV_UPDATE);
+                    i.putExtra(IComm.MSG_SERVICE_CALLBACK, "incPenalty");
                     i.putExtra("com.marktreble.f3ftimer.pilot_id", mPid);
                     i.putExtra("com.marktreble.f3ftimer.penalty", mPenalty);
                     mContext.sendOrderedBroadcast(i, null);
@@ -775,8 +781,8 @@ public class Driver implements TTS.onInitListenerProxy {
                     public void run() {
                         if (!alreadyfinalised) {
                             alreadyfinalised = true;
-                            Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
-                            intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
+                            Intent intent = new Intent(IComm.RCV_UPDATE);
+                            intent.putExtra(IComm.MSG_SERVICE_CALLBACK, "run_finalised");
                             mContext.sendOrderedBroadcast(intent, null);
                             Log.d(TAG, "POST BACK TO UI");
                         }
@@ -785,8 +791,8 @@ public class Driver implements TTS.onInitListenerProxy {
             } else {
                 // Post back to the UI (RaceTimerActivity), when the user clicks the button before the timeout runs out;
                 alreadyfinalised = true;
-                Intent intent = new Intent("com.marktreble.f3ftimer.onUpdate");
-                intent.putExtra("com.marktreble.f3ftimer.service_callback", "run_finalised");
+                Intent intent = new Intent(IComm.RCV_UPDATE);
+                intent.putExtra(IComm.MSG_SERVICE_CALLBACK, "run_finalised");
                 mContext.sendOrderedBroadcast(intent, null);
                 Log.d(TAG, "POST BACK TO UI");
             }
@@ -798,8 +804,8 @@ public class Driver implements TTS.onInitListenerProxy {
         if (mWindMeasurement) {
             if (!mWindLegal) {
                 mWindLegal = true;
-                Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                i.putExtra("com.marktreble.f3ftimer.service_callback", "wind_legal");
+                Intent i = new Intent(IComm.RCV_UPDATE);
+                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "wind_legal");
                 mContext.sendBroadcast(i);
             }
         }
@@ -809,8 +815,8 @@ public class Driver implements TTS.onInitListenerProxy {
         if (mWindMeasurement) {
             if (mWindLegal) {
                 mWindLegal = false;
-                Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                i.putExtra("com.marktreble.f3ftimer.service_callback", "wind_illegal");
+                Intent i = new Intent(IComm.RCV_UPDATE);
+                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "wind_illegal");
                 mContext.sendBroadcast(i);
 
                 if (mSpeechFXon) {
@@ -826,8 +832,8 @@ public class Driver implements TTS.onInitListenerProxy {
     }
 
     public void startPressed() {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "start_pressed");
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "start_pressed");
         mContext.sendBroadcast(i);
 
     }
@@ -880,8 +886,8 @@ public class Driver implements TTS.onInitListenerProxy {
 
     private void cancelDialog() {
 
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "cancel");
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "cancel");
         mContext.sendBroadcast(i);
     }
 
@@ -901,8 +907,8 @@ public class Driver implements TTS.onInitListenerProxy {
                     // Invoke the scrub round dialog
                     mHandler.postDelayed(new Runnable() {
                         public void run() {
-                            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                            i.putExtra("com.marktreble.f3ftimer.service_callback", "show_timeout_complete");
+                            Intent i = new Intent(IComm.RCV_UPDATE);
+                            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout_complete");
                             mContext.sendBroadcast(i);
                         }
                     }, 500);
@@ -914,8 +920,8 @@ public class Driver implements TTS.onInitListenerProxy {
                     // Invoke the round timeout countdown dialog
                     mHandler.postDelayed(new Runnable() {
                         public void run() {
-                            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                            i.putExtra("com.marktreble.f3ftimer.service_callback", "show_timeout");
+                            Intent i = new Intent(IComm.RCV_UPDATE);
+                            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout");
                             i.putExtra("start", start);
                             mContext.sendBroadcast(i);
                         }
@@ -943,8 +949,8 @@ public class Driver implements TTS.onInitListenerProxy {
                 // Invoke the scrub round dialog
                 mHandler.postDelayed(new Runnable() {
                     public void run() {
-                        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                        i.putExtra("com.marktreble.f3ftimer.service_callback", "show_timeout_complete");
+                        Intent i = new Intent(IComm.RCV_UPDATE);
+                        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout_complete");
                         mContext.sendBroadcast(i);
                     }
                 }, 500);
@@ -956,16 +962,16 @@ public class Driver implements TTS.onInitListenerProxy {
                 // Invoke the round timeout countdown dialog
                 mHandler.postDelayed(new Runnable() {
                     public void run() {
-                        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                        i.putExtra("com.marktreble.f3ftimer.service_callback", "show_timeout");
+                        Intent i = new Intent(IComm.RCV_UPDATE);
+                        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout");
                         i.putExtra("start", start);
                         mContext.sendBroadcast(i);
                     }
                 }, 500);
             }
         } else {
-            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-            i.putExtra("com.marktreble.f3ftimer.service_callback", "show_timeout_not_started");
+            Intent i = new Intent(IComm.RCV_UPDATE);
+            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout_not_started");
             mContext.sendBroadcast(i);
         }
     }
@@ -995,7 +1001,7 @@ public class Driver implements TTS.onInitListenerProxy {
     }
 
     @TargetApi(21)
-    private void speak(String text, int queueMode) {
+    public void speak(String text, int queueMode) {
         if (mTts == null) return;
         setAudioVolume();
 
@@ -1011,28 +1017,30 @@ public class Driver implements TTS.onInitListenerProxy {
     private void setAudioVolume() {
         if (mSetFullVolume) {
             AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
+            if (audioManager != null) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
+            }
         }
     }
 
     public static class SoftBuzzSound {
-        public static void soundOffCourse(SoundPool player, int[] ref) {
+        static void soundOffCourse(SoundPool player, int[] ref) {
             player.play(ref[0], 1, 1, 1, 0, 1f);
         }
 
-        public static void soundOnCourse(SoundPool player, int[] ref) {
+        static void soundOnCourse(SoundPool player, int[] ref) {
             player.play(ref[1], 1, 1, 1, 0, 1f);
         }
 
-        public static void soundTurn(SoundPool player, int[] ref) {
+        static void soundTurn(SoundPool player, int[] ref) {
             player.play(ref[2], 1, 1, 1, 0, 1f);
         }
 
-        public static void soundTurn9(SoundPool player, int[] ref) {
+        static void soundTurn9(SoundPool player, int[] ref) {
             player.play(ref[3], 1, 1, 1, 0, 1f);
         }
 
-        public static void soundPenalty(SoundPool player, int[] ref) {
+        static void soundPenalty(SoundPool player, int[] ref) {
             player.play(ref[4], 1, 1, 1, 0, 1f);
         }
 

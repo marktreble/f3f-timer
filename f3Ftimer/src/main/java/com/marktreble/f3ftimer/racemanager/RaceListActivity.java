@@ -1,9 +1,14 @@
 /*
- * RaceListActivity
- * Entry Point for Race Manager App
- * Provides a list of races stored on the device along with add/delete controls
- * Races cannot be edited once initialised
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.racemanager;
 
 import android.Manifest;
@@ -17,9 +22,9 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -64,10 +69,7 @@ public class RaceListActivity extends ListActivity {
 
     public Intent mIntent;
 
-    static final boolean DEBUG = true;
-
     private Context mContext;
-    private ListActivity mActivity;
 
     private AlertDialog mDlg;
     private AlertDialog.Builder mDlgb;
@@ -82,12 +84,11 @@ public class RaceListActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("ONACTIVITYRESULT", "ONCREATE");
         super.onCreate(savedInstanceState);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -95,7 +96,6 @@ public class RaceListActivity extends ListActivity {
         mIntent = getIntent();
 
         mContext = this;
-        mActivity = this;
 
         setContentView(R.layout.race_manager);
 
@@ -114,11 +114,7 @@ public class RaceListActivity extends ListActivity {
 
     private boolean checkIfAlreadyhavePermission() {
         int result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        if (result == PackageManager.PERMISSION_GRANTED) {
-            return true;
-        } else {
-            return false;
-        }
+        return (result == PackageManager.PERMISSION_GRANTED);
     }
 
     private void requestForSpecificPermission() {
@@ -128,18 +124,22 @@ public class RaceListActivity extends ListActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSIONS_REQUEST:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    //granted
-                } else {
-                    //not granted
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST) {
+            if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                //not granted
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("Permission Denied")
+                        .setMessage("You will not be able to export files")
+                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        });
+                builder.create().show();
+            }
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+       }
     }
 
     private void setList() {
@@ -172,10 +172,8 @@ public class RaceListActivity extends ListActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Log.i("ONACTIVITYRESULT", "REQUEST = " + Integer.toString(requestCode) + " RESULT = " + Integer.toString(resultCode));
         if (resultCode == RESULT_OK) {
             if (requestCode == RaceListActivity.DLG_NEW_RACE) {
-                Log.i("ONACTIVITYRESULT", "NOTIFYCHANGED");
                 getNamesArray();
                 mArrAdapter.notifyDataSetChanged();
 

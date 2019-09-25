@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.filesystem;
 
 import android.content.Context;
@@ -9,11 +20,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * Created by marktreble on 09/01/2018.
- */
-
 public class FileExport {
+
+    final private static String TAG = "FileExport";
 
     void writeExportFile(Context context, String output, String filename) {
         writeExportFile(context, output, filename, "");
@@ -28,30 +37,28 @@ public class FileExport {
         }
         File dir = new File(file.getAbsolutePath()).getParentFile();
         if (!dir.exists() || !dir.isDirectory()) {
-            dir.mkdirs();
+            if (!dir.mkdirs()) {
+                Log.d(TAG, "DIR CREATED");
+            }
         }
-        Log.d("EXPORT", "WRITING FILE TO: " + file.getPath());
+        Log.d(TAG, "WRITING FILE TO: " + file.getPath());
 
-        if (file != null) {
-            FileOutputStream stream = null;
+        FileOutputStream stream;
+        try {
+            stream = new FileOutputStream(file);
             try {
-                stream = new FileOutputStream(file);
+                stream.write(output.getBytes());
+
                 try {
-                    stream.write(output.getBytes());
+                    stream.flush();
+                    stream.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                } finally {
-                    try {
-                        stream.flush();
-                        stream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                 }
-            } catch (FileNotFoundException e) {
+
+            } catch (IOException e) {
                 e.printStackTrace();
-            }
-            if (stream != null) {
+            } finally {
                 try {
                     stream.flush();
                     stream.close();
@@ -59,30 +66,28 @@ public class FileExport {
                     e.printStackTrace();
                 }
             }
-
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
     boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return (Environment.MEDIA_MOUNTED.equals(state));
     }
 
     public File getDataStorageDir(String name) {
         // Get the directory for the user's public pictures directory.
         File base = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         base = new File(base, "F3F");
-        base.mkdirs();
-        File file = new File(base.getAbsolutePath() + String.format("/%s", this.sanitise(name)));
-
-        return file;
+        if (!base.mkdirs()) {
+            Log.d(TAG, "DIR CREATED");
+        }
+        return new File(base.getAbsolutePath() + String.format("/%s", this.sanitise(name)));
     }
 
     private String sanitise(String name) {
-        return name.replaceAll("[^a-zA-Z0-9\\.]", "-");
+        return name.replaceAll("[^a-zA-Z0-9.]", "-");
     }
 
 }

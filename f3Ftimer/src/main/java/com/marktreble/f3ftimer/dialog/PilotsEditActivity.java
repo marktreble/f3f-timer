@@ -1,13 +1,14 @@
 /*
- * PilotsEditActivity
- * Called by PilotsActivity when + button is pressed or pilot is edited
- * Presented in single page popup
- * >firstname
- * >lastname
- * >email
- * >frequency
- * >models
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 
@@ -18,6 +19,7 @@ import android.content.Intent;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -64,18 +66,18 @@ public class PilotsEditActivity extends Activity {
 
         mContext = this;
 
-        EditText firstname = (EditText) findViewById(R.id.editText1);
-        EditText lastname = (EditText) findViewById(R.id.editText2);
-        EditText email = (EditText) findViewById(R.id.editText3);
-        EditText frequency = (EditText) findViewById(R.id.editText4);
-        EditText models = (EditText) findViewById(R.id.editText5);
-        Spinner nationality = (Spinner) findViewById(R.id.spinner6);
-        Spinner language = (Spinner) findViewById(R.id.spinner7);
-        EditText nac = (EditText) findViewById(R.id.editText6);
-        EditText fai = (EditText) findViewById(R.id.editText7);
-        TextView teamlabel = (TextView) findViewById(R.id.textView10);
-        AutoCompleteTextView team = (AutoCompleteTextView) findViewById(R.id.editText8);
-        Button done_button = (Button) findViewById(R.id.button1);
+        EditText firstname =  findViewById(R.id.editText1);
+        EditText lastname =  findViewById(R.id.editText2);
+        EditText email =  findViewById(R.id.editText3);
+        EditText frequency =  findViewById(R.id.editText4);
+        EditText models =  findViewById(R.id.editText5);
+        Spinner nationality =  findViewById(R.id.spinner6);
+        Spinner language =  findViewById(R.id.spinner7);
+        EditText nac =  findViewById(R.id.editText6);
+        EditText fai =  findViewById(R.id.editText7);
+        TextView teamlabel =  findViewById(R.id.textView10);
+        AutoCompleteTextView team = findViewById(R.id.editText8);
+        Button done_button = findViewById(R.id.button1);
 
         done_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,20 +93,20 @@ public class PilotsEditActivity extends Activity {
         }
         mNationality_adapter = new ArrayAdapter<String>(this, R.layout.iconspinner, R.id.ics_label, str_countries) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View view = getCustomView(position, convertView, parent);
-                ImageView icon = (ImageView) view.findViewById(R.id.ics_icon);
+                ImageView icon =  view.findViewById(R.id.ics_icon);
                 LinearLayout.LayoutParams lp = (LayoutParams) icon.getLayoutParams();
                 lp.leftMargin = 0;
                 icon.setLayoutParams(lp);
                 return view;
             }
 
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            public View getDropDownView(int position, View convertView, @NonNull ViewGroup parent) {
                 return getCustomView(position, convertView, parent);
             }
 
-            public View getCustomView(int position, View convertView, ViewGroup parent) {
+            View getCustomView(int position, View convertView, ViewGroup parent) {
                 View row;
 
                 if (null == convertView) {
@@ -115,10 +117,10 @@ public class PilotsEditActivity extends Activity {
 
                 CharSequence[] codes = getResources().getTextArray(R.array.countrycodes);
 
-                TextView label = (TextView) row.findViewById(R.id.ics_label);
+                TextView label =  row.findViewById(R.id.ics_label);
                 label.setText(getItem(position));
 
-                ImageView icon = (ImageView) row.findViewById(R.id.ics_icon);
+                ImageView icon = row.findViewById(R.id.ics_icon);
 
                 String code = ((String) codes[position]).toLowerCase();
                 Drawable img = null;
@@ -158,7 +160,12 @@ public class PilotsEditActivity extends Activity {
 
         Intent intent = getIntent(); // gets the previously created intent
         Bundle extras = intent.getExtras();
+        if (extras == null) {
+            return;
+        }
+
         mCaller = extras.getString("caller");
+
         if (intent.hasExtra("pilot_id")) {
             mPid = extras.getInt("pilot_id");
             mRid = extras.getInt("race_id");
@@ -259,16 +266,16 @@ public class PilotsEditActivity extends Activity {
 
     private boolean done() {
         // Get entered data, and save to/update database
-        EditText firstname = (EditText) findViewById(R.id.editText1);
-        EditText lastname = (EditText) findViewById(R.id.editText2);
-        EditText email = (EditText) findViewById(R.id.editText3);
-        EditText frequency = (EditText) findViewById(R.id.editText4);
-        EditText models = (EditText) findViewById(R.id.editText5);
-        Spinner nationality = (Spinner) findViewById(R.id.spinner6);
-        Spinner language = (Spinner) findViewById(R.id.spinner7);
-        EditText team = (EditText) findViewById(R.id.editText8);
-        EditText nac = (EditText) findViewById(R.id.editText6);
-        EditText fai = (EditText) findViewById(R.id.editText7);
+        EditText firstname =  findViewById(R.id.editText1);
+        EditText lastname =  findViewById(R.id.editText2);
+        EditText email =  findViewById(R.id.editText3);
+        EditText frequency =  findViewById(R.id.editText4);
+        EditText models =  findViewById(R.id.editText5);
+        Spinner nationality =  findViewById(R.id.spinner6);
+        Spinner language =  findViewById(R.id.spinner7);
+        EditText team =  findViewById(R.id.editText8);
+        EditText nac =  findViewById(R.id.editText6);
+        EditText fai =  findViewById(R.id.editText7);
 
 
         Pilot p = new Pilot();
@@ -322,7 +329,7 @@ public class PilotsEditActivity extends Activity {
             View layout = inflater.inflate(R.layout.custom_toast,
                     (ViewGroup) findViewById(R.id.toast_layout_root));
 
-            TextView text = (TextView) layout.findViewById(R.id.text);
+            TextView text =  layout.findViewById(R.id.text);
             text.setText(getString(R.string.invalid_email));
 
             Toast toast = new Toast(getApplicationContext());

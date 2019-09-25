@@ -1,6 +1,12 @@
 /*
- * Languages
- * Utility functions for language settings
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
 
 package com.marktreble.f3ftimer.languages;
@@ -39,10 +45,10 @@ public class Languages {
                 try {
                     // check if the app_name key exists. If it does, the language is available
                     String name = res.getString(R.string.locale);
-                    if (name != null && !al_languages.contains(name))
+                    if (!al_languages.contains(name))
                         al_languages.add(name);
                 } catch (NotFoundException e) {
-
+                    e.printStackTrace();
                 }
             } else {
 
@@ -52,11 +58,11 @@ public class Languages {
                 try {
                     // check if the app_name key exists. If it does, the language is available
                     String name = res.getString(R.string.locale);
-                    if (name != null && !al_languages.contains(name))
+                    if (!al_languages.contains(name))
                         al_languages.add(name);
 
                 } catch (NotFoundException e) {
-
+                    e.printStackTrace();
                 }
             }
         }
@@ -65,7 +71,7 @@ public class Languages {
             Log.i("LANG", language);
         }
         Collections.sort(al_languages);
-        return al_languages.toArray(new String[al_languages.size()]);
+        return al_languages.toArray(new String[0]);
     }
 
     public static Resources useLanguage(Context a, String lang) {

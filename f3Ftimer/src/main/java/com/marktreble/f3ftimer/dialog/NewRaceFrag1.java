@@ -1,10 +1,14 @@
 /*
- * NewRaceFrag1
- * Entry Point for New Race form
- * >Race Name
- * >Race Type (Race/Practice)
- * >Flying order Offset
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.content.Context;
@@ -42,10 +46,10 @@ public class NewRaceFrag1 extends Fragment {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_new_frag1, container, false);
 
-        EditText name = (EditText) mView.findViewById(R.id.new_race_name);
-        EditText rpf = (EditText) mView.findViewById(R.id.new_race_rounds_per_flight);
+        EditText name = mView.findViewById(R.id.new_race_name);
+        EditText rpf = mView.findViewById(R.id.new_race_rounds_per_flight);
 
-        EditText offset = (EditText) mView.findViewById(R.id.new_race_offset);
+        EditText offset = mView.findViewById(R.id.new_race_offset);
         offset.setOnEditorActionListener(new OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -57,7 +61,7 @@ public class NewRaceFrag1 extends Fragment {
             }
         });
 
-        Button ib = (Button) mView.findViewById(R.id.button1);
+        Button ib = mView.findViewById(R.id.button1);
         ib.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,13 +83,15 @@ public class NewRaceFrag1 extends Fragment {
     public void next() {
         NewRaceActivity a = (NewRaceActivity) getActivity();
 
-        EditText name = (EditText) mView.findViewById(R.id.new_race_name);
-        EditText rpf = (EditText) mView.findViewById(R.id.new_race_rounds_per_flight);
-        EditText offset = (EditText) mView.findViewById(R.id.new_race_offset);
+        EditText name = mView.findViewById(R.id.new_race_name);
+        EditText rpf = mView.findViewById(R.id.new_race_rounds_per_flight);
+        EditText offset = mView.findViewById(R.id.new_race_offset);
 
         // Hide the keyboard
         InputMethodManager imm = (InputMethodManager) a.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(offset.getWindowToken(), 0);
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(offset.getWindowToken(), 0);
+        }
 
         a.name = name.getText().toString();
         a.rpf = Integer.parseInt("0" + rpf.getText().toString());

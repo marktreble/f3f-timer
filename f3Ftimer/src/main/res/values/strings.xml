@@ -41,6 +41,7 @@
     <string name="button_down">v</string>
     <string name="button_next_pilot">Next Pilot</string>
     <string name="button_cancel">Cancel</string>
+    <string name="button_accept">Accept</string>
     <string name="skip_number">Skip number</string>
     <string name="add_pilot">Add Pilot</string>
     <string name="random_shuffle">Random Shuffle</string>
@@ -120,6 +121,7 @@
     <string name="none">None</string>
     <string name="enter_num_groups">Enter Number of Groups</string>
     <string name="enter_start_number">Enter Start Number</string>
+    <string name="generate_start_number">Generate Start Number</string>
     <string name="enter_rotate_offset">Enter number of shifted positions</string>
     <string name="wifi">Wifi Buzzers</string>
     <string name="pref_enable_acra">Enable ACRA Crash Reports</string>

@@ -1,7 +1,14 @@
 /*
- * USBJEService
- * HID driver for John Edison timer box
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.driver;
 
 import android.content.BroadcastReceiver;
@@ -10,9 +17,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
+import android.speech.tts.TextToSpeech;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
@@ -30,8 +38,6 @@ import ioio.lib.util.IOIOLooper;
 import ioio.lib.util.android.IOIOService;
 
 public class USBIOIOService extends IOIOService implements DriverInterface {
-
-    private static final String TAG = "USBIOIOService";
 
     private Intent mIntent;
 
@@ -83,16 +89,16 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
         super.onCreate();
         mDriver = new Driver(this);
 
-        this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         // Call this natively in case driver has gone!
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+        Intent i = new Intent(IComm.RCV_UPDATE);
         i.putExtra("icon", ICN_DISCONN);
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "driver_stopped");
         sendBroadcast(i);
 
         if (mBoardConnected) {
@@ -119,9 +125,9 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params) {
         if (inputSource.equals(context.getString(R.string.USB_IOIO))) {
-            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+            Intent i = new Intent(IComm.RCV_UPDATE);
             i.putExtra("icon", ICN_DISCONN);
-            i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "driver_stopped");
             context.sendBroadcast(i);
 
             Intent serviceIntent = new Intent(context, USBIOIOService.class);
@@ -146,8 +152,11 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
                 Bundle extras = intent.getExtras();
-                String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
-                Log.i(TAG, data);
+                if (extras == null) {
+                    return;
+                }
+                String data = extras.getString("com.marktreble.f3ftimer.ui_callback", "");
+
 
                 if (data.equals("get_connection_status")) {
                     if (mBoardConnected) {
@@ -168,9 +177,12 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
         mIntent = intent;
 
         Bundle extras = intent.getExtras();
+        if (extras == null) {
+            return START_REDELIVER_INTENT;
+        }
 
         mBaudRate = 2400;
-        String baudrate = extras.getString("pref_usb_baudrate");
+        String baudrate = extras.getString("pref_usb_baudrate", "2400");
         if (baudrate != null)
             try {
                 mBaudRate = Integer.parseInt(baudrate, 10);
@@ -178,7 +190,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                 e.printStackTrace();
             }
 
-        String stopbits = extras.getString("pref_usb_stopbits");
+        String stopbits = extras.getString("pref_usb_stopbits", "1");
 
         switch (stopbits) {
             case "2":
@@ -190,7 +202,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                 break;
         }
 
-        String parity = extras.getString("pref_usb_parity");
+        String parity = extras.getString("pref_usb_parity", "None");
         switch (parity) {
             case "Odd":
                 mParity = Uart.Parity.ODD;
@@ -220,7 +232,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 
 
             @Override
-            protected void setup() throws ConnectionLostException, InterruptedException {
+            protected void setup() throws ConnectionLostException {
                 // Light the green LED
                 led_ = ioio_.openDigitalOutput(IOIO.LED_PIN);
 
@@ -268,8 +280,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                         StringBuilder sb = new StringBuilder(charArray.length);
                         StringBuilder hexString = new StringBuilder();
                         for (char c : charArray) {
-                            if (c < 0) throw new IllegalArgumentException();
-                            sb.append(Character.toString(c));
+                            sb.append(c);
 
                             String hex = Integer.toHexString(0xFF & c);
                             if (hex.length() == 1) {
@@ -282,14 +293,13 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                         String str_in = mBuffer + sb.toString().trim();
                         int len = str_in.length();
                         if (len > 0) {
-                            String lastchar = hexString.substring(hexString.length() - 2, hexString.length());
-                            if (lastchar.equals("0d")) {
+                            String lastChar = hexString.substring(hexString.length() - 2, hexString.length());
+                            if (lastChar.equals("0d")) {
                                 // Clear the buffer
                                 mBuffer = "";
 
                                 // Get code (first char)
-                                String code = "";
-                                code = str_in.substring(0, 1);
+                                String code =  str_in.substring(0, 1);
 
                                 // We have data/command from the timer, pass this on to the server
                                 if (code.equals(FT_WIND_LEGAL)) {
@@ -371,8 +381,8 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                 }
             } else {
                 // Call alert dialog on UI Thread "No Output Stream Available"
-                Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                i.putExtra("com.marktreble.f3ftimer.service_callback", "no_out_stream");
+                Intent i = new Intent(IComm.RCV_UPDATE);
+                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "no_out_stream");
                 sendBroadcast(i);
 
 

@@ -1,9 +1,14 @@
 /*
- * Time Entry Activity
- * Called by RaceActivity when manual entry is selected from context menu
- * Presented in single page popup
- * >time
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.app.Activity;
@@ -32,10 +37,14 @@ public class TimeEntryActivity extends Activity {
         mIntent = getIntent(); // gets the previously created intent
         if (mIntent.hasExtra("pilot_id")) {
             Bundle extras = mIntent.getExtras();
+            if (extras == null) {
+                return;
+            }
+
             mPid = extras.getInt("pilot_id");
             mRound = extras.getInt("round");
 
-            EditText time = (EditText) findViewById(R.id.editText1);
+            EditText time = findViewById(R.id.editText1);
 
 
             time.setOnEditorActionListener(new OnEditorActionListener() {
@@ -43,7 +52,7 @@ public class TimeEntryActivity extends Activity {
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         // Get entered data, and save to/update database
-                        EditText time = (EditText) findViewById(R.id.editText1);
+                        EditText time = findViewById(R.id.editText1);
 
                         mIntent.putExtra("time", time.getText().toString());
                         mIntent.putExtra("pilot", mPid);

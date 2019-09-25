@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.data.racepilot;
 
 import android.content.ContentValues;
@@ -47,9 +58,9 @@ public class RacePilotData {
         return p;
     }
 
-
+    /*
     public float getPilotTimeInRound(int race_id, int pilot_id, int round) {
-        String where = "pilot_id=" + Integer.toString(pilot_id) + " and race_id=" + Integer.toString(race_id) + " and round=" + Integer.toString(round) + " and reflight is null or reflight=0";
+        String where = "pilot_id=" + pilot_id + " and race_id=" + race_id + " and round=" + round + " and reflight is null or reflight=0";
         String[] cols = {"time"};
         Cursor cursor = database.query("racetimes", cols, where, null, null, null, null);
         if (cursor.getCount() == 0) {
@@ -62,9 +73,10 @@ public class RacePilotData {
         cursor.close();
         return time;
     }
+    */
 
     public void setPilotTimeInRound(int race_id, int pilot_id, int round, float time) {
-        database.delete("racetimes", "race_id = '" + Integer.toString(race_id) + "' and pilot_id='" + Integer.toString(pilot_id) + "' and round='" + Integer.toString(round) + "'", null);
+        database.delete("racetimes", "race_id = '" + race_id + "' and pilot_id='" + pilot_id + "' and round='" + round + "'", null);
 
         String sql;
 
@@ -141,9 +153,7 @@ public class RacePilotData {
         if (p.team != null) values.put("team", p.team);
         if (p.nac_no != null) values.put("nac_no", p.nac_no);
         if (p.fai_id != null) values.put("fai_id", p.fai_id);
-        long insert_id = database.insert("racepilots", null, values);
-
-        return insert_id;
+        return database.insert("racepilots", null, values);
     }
 
     public void updatePilot(Pilot p) {
@@ -158,19 +168,21 @@ public class RacePilotData {
         if (p.team != null) values.put("team", p.team);
         if (p.nac_no != null) values.put("nac_no", p.nac_no);
         if (p.fai_id != null) values.put("fai_id", p.fai_id);
-        database.update("racepilots", values, "id=" + Integer.toString(p.id), null);
+        database.update("racepilots", values, "id=" + p.id, null);
     }
 
+    /*
     public void deletePilot(int id) {
-        database.delete("racepilots", "id = '" + Integer.toString(id) + "'", null);
+        database.delete("racepilots", "id = '" + id + "'", null);
     }
+    */
 
     public void deleteAllPilots(int race_id) {
-        database.delete("racepilots", "race_id = '" + Integer.toString(race_id) + "'", null);
+        database.delete("racepilots", "race_id = '" + race_id + "'", null);
     }
 
     public void deleteRound(int race_id, int round) {
-        database.delete("racetimes", "race_id = '" + Integer.toString(race_id) + "' and round='" + Integer.toString(round) + "'", null);
+        database.delete("racetimes", "race_id = '" + race_id + "' and round='" + round + "'", null);
     }
 
     public void deleteGroup(int race_id, int round, int position, ArrayList<Integer> groups, ArrayList<Pilot> pilots) {
@@ -178,7 +190,7 @@ public class RacePilotData {
             int group = groups.get(position);
             while (position >= 0 && group == groups.get(position)) {
                 int pilot_id = pilots.get(position).id;
-                database.delete("racetimes", "race_id = '" + Integer.toString(race_id) + "' and round='" + Integer.toString(round) + "' and pilot_id='" + Integer.toString(pilot_id) + "'", null);
+                database.delete("racetimes", "race_id = '" + race_id + "' and round='" + round + "' and pilot_id='" + pilot_id + "'", null);
                 position--;
             }
         }

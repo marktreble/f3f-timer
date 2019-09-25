@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.data.results;
 
 import android.content.Context;
@@ -40,6 +51,8 @@ public class Results {
 
     public RaceData.Group mGroupScoring;
 
+    private final static int SCORES_PRECISION = 2;
+
     /* getRoundInProgress(context, race ID)
      *
      * Populates: mArrNames, mArrPilots, mArrNumbers, mArrBibNumbers, mArrGroups, mFirstInGroup & mGroupScoring
@@ -73,7 +86,7 @@ public class Results {
         mFirstInGroup = new ArrayList<>();
 
         // Just calculate the scores. Results are shown in flying order
-        calcScores(race, allPilots);
+        calcScores(allPilots);
     }
 
     /* getOrderedRoundInProgress(context, race ID)
@@ -109,13 +122,14 @@ public class Results {
         mFirstInGroup = new ArrayList<>();
 
         // Just calculate the scores. Results are shown in flying order
-        calcScores(race, allPilots);
+        calcScores(allPilots);
 
         // Now sort in order of points
         Collections.sort(mArrPilots, new Comparator<Pilot>() {
             @Override
             public int compare(Pilot p1, Pilot p2) {
-                return (p1.points < p2.points) ? 1 : ((p1.points > p2.points) ? -1 : 0);
+                //return (p1.points < p2.points) ? 1 : ((p1.points > p2.points) ? -1 : 0);
+                return Float.compare(p2.points, p1.points);
             }
         });
 
@@ -176,13 +190,14 @@ public class Results {
         mFirstInGroup = new ArrayList<>();
 
         // Calculate the scores
-        calcScores(race, allPilots);
+        calcScores(allPilots);
 
         // Now sort in order of points
         Collections.sort(mArrPilots, new Comparator<Pilot>() {
             @Override
             public int compare(Pilot p1, Pilot p2) {
-                return (p1.points < p2.points) ? 1 : ((p1.points > p2.points) ? -1 : 0);
+                //return (p1.points < p2.points) ? 1 : ((p1.points > p2.points) ? -1 : 0);
+                return Float.compare(p2.points, p1.points);
             }
         });
 
@@ -214,7 +229,6 @@ public class Results {
      * Populates: mArrNames, mArrNumbers, mArrPilots, mArrScores, mArrTimes, mFTD, mFTDName, mFTDRound
      *
      */
-    @SuppressWarnings("unchecked")
     public void getResultsForRace(Context context, int mRid, boolean ordered) {
 
         RaceData datasource = new RaceData(context);
@@ -266,7 +280,7 @@ public class Results {
                 mFirstInGroup = new ArrayList<>();
 
                 // Calculate the scores
-                calcScores(race, allPilots);
+                calcScores(allPilots);
 
                 for (Pilot p : mArrPilots) {
                     RaceData.Time pilot_time = new RaceData(null).new Time();
@@ -278,10 +292,10 @@ public class Results {
                     pilot_time.group = p.group;
 
                     ArrayList<RaceData.Time> arr_times;
-                    Object o = map_pilots.get(p.id);
+                    ArrayList<RaceData.Time> o = map_pilots.get(p.id);
 
                     if (o != null) {
-                        arr_times = (ArrayList<RaceData.Time>) o;
+                        arr_times = o;
                     } else {
                         arr_times = new ArrayList<>();
                     }
@@ -310,8 +324,8 @@ public class Results {
             int key = map_pilots.keyAt(i);
 
             // The times list
-            Object o = map_pilots.get(key);
-            ArrayList<RaceData.Time> arr_times = new ArrayList<>((ArrayList<RaceData.Time>) o);
+            ArrayList<RaceData.Time> o = map_pilots.get(key);
+            ArrayList<RaceData.Time> arr_times = new ArrayList<>(o);
 
             // Sort the times by points in the round
             Collections.sort(arr_times, new Comparator<RaceData.Time>() {
@@ -335,7 +349,7 @@ public class Results {
             for (int j = 0; j < completed_rounds; j++)
                 tot -= arr_times.get(j).penalty * 100;
 
-            map_totals.put(key, round2FixedRounded(tot, 2));
+            map_totals.put(key, round2FixedRounded(tot));
         }
 
         // Make an array from the totals and sort them in ascending order
@@ -371,7 +385,8 @@ public class Results {
             Collections.sort(mArrPilots, new Comparator<Pilot>() {
                 @Override
                 public int compare(Pilot p1, Pilot p2) {
-                    return p1.id < p2.id ? -1 : p1.id == p2.id ? 0 : 1;
+                    //return p1.id < p2.id ? -1 : p1.id == p2.id ? 0 : 1;
+                    return Integer.compare(p2.id, p1.id);
                 }
             });
         }
@@ -381,7 +396,8 @@ public class Results {
         mArrScores = new ArrayList<>();
         mArrTimes = new ArrayList<>();
 
-        float score = 0, best = 0;
+        float score;
+        float best = 0;
         for (int i = 0; i < mArrPilots.size(); i++) {
             Pilot p = mArrPilots.get(i);
 
@@ -389,7 +405,7 @@ public class Results {
             if (best == 0) best = map_totals.get(p.id);
             score = map_totals.get(p.id);
 
-            p.points = round2Fixed((score / best) * 1000, 2);
+            p.points = round2Fixed((score / best) * 1000);
 
             mArrNames.add(String.format("%s %s", p.firstname, p.lastname));
             mArrNumbers.add(Integer.toString(p.position));
@@ -452,9 +468,8 @@ public class Results {
         // Set the positions according to the sorted order
         for (int j = 0; j < fTotals.length; j++) {
             float sorted_total = fTotals[j];
-            Iterator<String> itr2 = totals.keySet().iterator();
-            while (itr2.hasNext()) {
-                String name = itr2.next();
+
+            for (String name: totals.keySet()) {
                 float total = totals.get(name);
 
                 if (total == sorted_total) {
@@ -467,28 +482,29 @@ public class Results {
         }
     }
 
-    private float round2Fixed(float value, double places) {
+    private float round2Fixed(float value) {
 
-        double multiplier = Math.pow(10, places);
+        double multiplier = Math.pow(10, SCORES_PRECISION);
         double integer = Math.floor(value);
         double precision = Math.floor((value - integer) * multiplier);
 
         return (float) (integer + (precision / multiplier));
     }
 
-    private float round2FixedRounded(float value, double places) {
+    private float round2FixedRounded(float value) {
 
-        double multiplier = Math.pow(10, places);
+        double multiplier = Math.pow(10, SCORES_PRECISION);
         double integer = Math.floor(value);
         double precision = Math.floor((value - integer) * multiplier);
 
         double rounded = (integer + (precision / multiplier));
         double remainder = (value - rounded) * multiplier;
-        if (remainder > 0.5) rounded += Math.pow(10, -places);
+        if (remainder > 0.5) rounded += Math.pow(10, -SCORES_PRECISION);
 
         return (float) rounded;
     }
 
+    /*
     private int getStartPilot(ArrayList<Pilot> allPilots, Race race) {
 
         // Deprecated - see (RaceData.Group)mGroupScoring.start_pilot
@@ -502,6 +518,7 @@ public class Results {
         }
         return start;
     }
+    */
 
     private float[] initFTG() {
         float[] ftg = new float[mGroupScoring.num_groups + 1]; // Fastest time in group (used for calculating normalised scores)
@@ -522,7 +539,7 @@ public class Results {
         return num_pilots;
     }
 
-    private void calcScores(Race race, ArrayList<Pilot> allPilots) {
+    private void calcScores(ArrayList<Pilot> allPilots) {
         int g = 0; // Current group we are calculating
 
         // The start pilot number
@@ -598,7 +615,7 @@ public class Results {
             float time = Float.parseFloat(t_str);
 
             if (time > 0)
-                p.points = round2Fixed((ftg[g] / time) * 1000, 2);
+                p.points = round2Fixed((ftg[g] / time) * 1000);
 
             if (time == 0 && p.flown) // Avoid division by 0
                 p.points = 0f;

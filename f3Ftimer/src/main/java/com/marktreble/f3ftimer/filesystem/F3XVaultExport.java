@@ -1,7 +1,17 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.filesystem;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -29,9 +39,6 @@ public class F3XVaultExport extends FileExport {
                 row.append(String.format("0,%s %s,Open,%s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency));
 
                 for (int rnd = 0; rnd < race.round - 1; rnd++) {
-                    RaceData.Group grouping = r.mArrGroupings.get(rnd);
-                    //int numgroups = grouping.num_groups;
-
                     ArrayList<RaceData.Time> times = r.mArrTimes.get(i);
 
                     int pen = times.get(rnd).penalty;

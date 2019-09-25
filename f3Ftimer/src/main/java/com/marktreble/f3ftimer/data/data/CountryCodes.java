@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.data.data;
 
 import android.content.Context;
@@ -10,10 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-
-/**
- * Created by marktreble on 09/01/2018.
- */
 
 public class CountryCodes {
 
@@ -32,15 +39,17 @@ public class CountryCodes {
         return sharedCountryCodes;
     }
 
-    protected void initCountryData(Context context) {
+    private void initCountryData(Context context) {
         try {
             Resources res = context.getResources();
             InputStream in = res.openRawResource(R.raw.countrycodes);
             byte[] ba = new byte[512000];
-            in.read(ba);
+            int bytesRead = in.read(ba);
             in.close();
-            String data = new String(ba);
-            countryCodes = new JSONArray(data);
+            if (bytesRead > 0) {
+                String data = new String(ba);
+                countryCodes = new JSONArray(data);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

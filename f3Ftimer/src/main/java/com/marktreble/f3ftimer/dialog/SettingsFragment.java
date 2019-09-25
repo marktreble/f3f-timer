@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.bluetooth.BluetoothAdapter;
@@ -20,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.languages.Languages;
 import com.marktreble.f3ftimer.media.TTS;
 import com.marktreble.f3ftimer.wifi.Wifi;
@@ -58,19 +70,19 @@ public class SettingsFragment extends PreferenceFragment
         setLangSummary("pref_input_src");
         setStringSummary("pref_usb_baudrate");
         setStringSummary("pref_input_tcpio_ip");
-        setListSummary("pref_usb_stopbits", R.array.options_stopbits);
-        setListSummary("pref_usb_databits", R.array.options_databits);
-        setListSummary("pref_usb_parity", R.array.options_parity);
+        setListSummary("pref_usb_stopbits");
+        setListSummary("pref_usb_databits");
+        setListSummary("pref_usb_parity");
         setBTDeviceSummary("pref_external_display");
 
         setStringSummary("pref_wind_angle_offset");
         setStringSummary("pref_wind_measurement");
 
-        setListSummary("pref_buzz_off_course", R.array.options_sounds);
-        setListSummary("pref_buzz_on_course", R.array.options_sounds);
-        setListSummary("pref_buzz_turn", R.array.options_sounds);
-        setListSummary("pref_buzz_turn9", R.array.options_sounds);
-        setListSummary("pref_buzz_penalty", R.array.options_sounds);
+        setListSummary("pref_buzz_off_course");
+        setListSummary("pref_buzz_on_course");
+        setListSummary("pref_buzz_turn");
+        setListSummary("pref_buzz_turn9");
+        setListSummary("pref_buzz_penalty");
 
 
         Preference pref_results_server = findPreference("pref_results_server");
@@ -88,7 +100,6 @@ public class SettingsFragment extends PreferenceFragment
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Intent i;
 
         setInputSourceActiveFields();
 
@@ -174,14 +185,14 @@ public class SettingsFragment extends PreferenceFragment
     }
 
     private void sendStringValueToService(String key, String value) {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
         i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
         i.putExtra("com.marktreble.f3ftimer.value", value);
         getActivity().sendBroadcast(i);
     }
 
     private void sendBooleanValueToService(String key, boolean value) {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
         i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
         i.putExtra("com.marktreble.f3ftimer.value", value);
         getActivity().sendBroadcast(i);
@@ -278,7 +289,7 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
-    private void setListSummary(String key, int list) {
+    private void setListSummary(String key) {
         Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
             ListPreference listPref = (ListPreference) pref;
@@ -337,8 +348,8 @@ public class SettingsFragment extends PreferenceFragment
         }
 
         ListPreference pref = (ListPreference) findPreference("pref_voice_lang");
-        CharSequence[] labels = list_labels.toArray(new CharSequence[list_labels.size()]);
-        CharSequence[] values = list_values.toArray(new CharSequence[list_values.size()]);
+        CharSequence[] labels = list_labels.toArray(new CharSequence[0]);
+        CharSequence[] values = list_values.toArray(new CharSequence[0]);
         pref.setEntries(labels);
         pref.setEntryValues(values);
 
@@ -370,8 +381,8 @@ public class SettingsFragment extends PreferenceFragment
                         list_values.add(device.getAddress());
                     }
 
-                    labels = list_labels.toArray(new CharSequence[list_labels.size()]);
-                    values = list_values.toArray(new CharSequence[list_values.size()]);
+                    labels = list_labels.toArray(new CharSequence[0]);
+                    values = list_values.toArray(new CharSequence[0]);
                 }
             }
         }

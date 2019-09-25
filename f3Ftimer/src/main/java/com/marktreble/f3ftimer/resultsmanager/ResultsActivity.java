@@ -1,8 +1,14 @@
 /*
- * ResultsActivity
- * Entry Point for Results Manager App
- * Provides a list of races stored on the device
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.resultsmanager;
 
 import android.app.ListActivity;
@@ -36,13 +42,11 @@ public class ResultsActivity extends ListActivity {
 
     private Context mContext;
 
-    static final boolean DEBUG = true;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -89,8 +93,13 @@ public class ResultsActivity extends ListActivity {
         ArrayList<Race> allRaces = datasource.getAllRaces();
         datasource.close();
 
-        mArrNames.removeAll(mArrNames);
-        mArrIds.removeAll(mArrIds);
+        @SuppressWarnings("unchecked")
+        ArrayList<String> clonedNames = (ArrayList<String>) mArrNames.clone();
+        mArrNames.removeAll(clonedNames);
+
+        @SuppressWarnings("unchecked")
+        ArrayList<Integer> clonedIds = (ArrayList<Integer>) mArrIds.clone();
+        mArrIds.removeAll(clonedIds);
 
 
         for (Race r : allRaces) {

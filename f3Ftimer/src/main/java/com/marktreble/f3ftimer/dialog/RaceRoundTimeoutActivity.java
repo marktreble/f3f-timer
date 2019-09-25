@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.content.BroadcastReceiver;
@@ -13,53 +24,50 @@ import android.view.KeyEvent;
 import android.view.WindowManager.LayoutParams;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 
 public class RaceRoundTimeoutActivity extends FragmentActivity {
 
     private Fragment mCurrentFragment;
     private int mCurrentFragmentId;
-    private Context mContext;
     public Intent mIntent;
 
     public long mStart;
     public boolean mGroupScored;
+
+    final private static String RACE_ROUND_TIMEOUT_FRAG_TAG = "raceroundtimeoutfrag";
+
+    final private static String K_START = "start";
+    final private static String K_CUR_FRAG_ID = "current_fragment_id";
+    final private static String K_GROUP_SCORED = "group_scored";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.race_timer);
 
-        mContext = this;
-
         mIntent = getIntent();
         Bundle extras = mIntent.getExtras();
-        mStart = extras.getLong("start");
-        mGroupScored = extras.getBoolean("group_scored");
+        if (extras != null) {
+            mStart = extras.getLong(K_START);
+            mGroupScored = extras.getBoolean(K_GROUP_SCORED);
+        }
 
 
-        Fragment f;
         if (savedInstanceState != null) {
-            mCurrentFragmentId = savedInstanceState.getInt("mCurrentFragmentId");
+            mCurrentFragmentId = savedInstanceState.getInt(K_CUR_FRAG_ID);
+            mStart = savedInstanceState.getLong(K_START);
 
             FragmentManager fm = getSupportFragmentManager();
-            String tag = "raceroundtimeoutfrag" + Integer.toString(mCurrentFragmentId);
+            String tag = RACE_ROUND_TIMEOUT_FRAG_TAG + mCurrentFragmentId;
 
             mCurrentFragment = fm.findFragmentByTag(tag);
         } else {
             if (mStart == 0) {
                 getFragment(new RaceRoundTimeoutCompleteFrag(), 2);
-                //f = new RaceRoundTimeoutCompleteFrag();
             } else {
                 getFragment(new RaceRoundTimeoutFrag(), 1);
-                //f = new RaceRoundTimeoutFrag();
             }
-            /*
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            ft.add(R.id.dialog1, f, "raceroundtimeoutfrag");
-            ft.commit();
-            mCurrentFragment = f;
-             */
         }
 
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -78,18 +86,13 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putLong("start", mStart);
-
-    }
-
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        mStart = savedInstanceState.getLong("start");
+        outState.putLong(K_START, mStart);
+        outState.putInt(K_CUR_FRAG_ID, mCurrentFragmentId);
     }
 
     public void onResume() {
         super.onResume();
-        registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
+        registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE));
     }
 
     public void onPause() {
@@ -107,7 +110,7 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
         f.setRetainInstance(true);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        String tag = "raceroundtimeoutfrag" + Integer.toString(id);
+        String tag = RACE_ROUND_TIMEOUT_FRAG_TAG +id;
         ft.replace(R.id.dialog1, f, tag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commit();
@@ -119,9 +122,11 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.service_callback")) {
+            if (intent.hasExtra(IComm.MSG_SERVICE_CALLBACK)) {
                 Bundle extras = intent.getExtras();
-                String data = extras.getString("com.marktreble.f3ftimer.service_callback");
+                if (extras == null) return;
+
+                String data = extras.getString(IComm.MSG_SERVICE_CALLBACK, "");
                 if (data == null) {
                     return;
                 }

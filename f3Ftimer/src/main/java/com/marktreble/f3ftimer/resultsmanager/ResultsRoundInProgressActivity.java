@@ -1,7 +1,14 @@
 /*
- * ResultsRaceActivity
- * Shows List of contestants, along with total points and normalised score
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.resultsmanager;
 
 import android.app.ListActivity;
@@ -10,6 +17,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,9 +41,6 @@ import java.util.ArrayList;
 
 public class ResultsRoundInProgressActivity extends ListActivity {
 
-    static boolean DEBUG = true;
-    static int RESULT_ABORTED = 1;
-
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
     private ArrayList<String> mArrBibNumbers;
@@ -44,7 +49,6 @@ public class ResultsRoundInProgressActivity extends ListActivity {
     private ArrayList<Boolean> mFirstInGroup;
 
     private Integer mRid;
-    private Race mRace;
 
     private Context mContext;
 
@@ -54,7 +58,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -66,17 +70,18 @@ public class ResultsRoundInProgressActivity extends ListActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("race_id")) {
             Bundle extras = intent.getExtras();
-            mRid = extras.getInt("race_id");
+            if (extras != null) {
+                mRid = extras.getInt("race_id");
+            }
         }
 
         RaceData datasource = new RaceData(this);
         datasource.open();
         Race race = datasource.getRace(mRid);
         datasource.close();
-        mRace = race;
 
-        TextView tt = (TextView) findViewById(R.id.race_title);
-        tt.setText(mRace.name);
+        TextView tt = findViewById(R.id.race_title);
+        tt.setText(race.name);
 
         setList();
         setListAdapter(mArrAdapter);
@@ -104,10 +109,8 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_racepilots, R.id.text1, mArrNames) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
-
-                if (mArrNames.get(position) == null) return null;
 
                 if (null == convertView) {
                     row = getLayoutInflater().inflate(R.layout.listrow_racepilots, parent, false);
@@ -117,10 +120,10 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
                 Pilot p = mArrPilots.get(position);
 
-                TextView p_number = (TextView) row.findViewById(R.id.number);
+                TextView p_number = row.findViewById(R.id.number);
                 p_number.setText(mArrBibNumbers.get(position));
 
-                TextView p_name = (TextView) row.findViewById(R.id.text1);
+                TextView p_name = row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
                 p_name.setTextColor(getResources().getColor(R.color.text3));
 
@@ -132,7 +135,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
                 }
 
                 View group_header = row.findViewById(R.id.group_header);
-                TextView group_header_label = (TextView) row.findViewById(R.id.group_header_label);
+                TextView group_header_label = row.findViewById(R.id.group_header_label);
                 if (mGroupScoring.num_groups > 1 && mFirstInGroup.get(position)) {
                     group_header.setVisibility(View.VISIBLE);
                     group_header_label.setText(String.format(getString(R.string.group_heading), mArrGroups.get(position) + 1));
@@ -140,21 +143,21 @@ public class ResultsRoundInProgressActivity extends ListActivity {
                     group_header.setVisibility(View.GONE);
                 }
 
-                TextView time = (TextView) row.findViewById(R.id.time);
+                TextView time = row.findViewById(R.id.time);
                 if (p.time == 0 && !p.flown) {
                     time.setText(getResources().getString(R.string.notime));
                 } else {
                     time.setText(String.format("%.2f", p.time));
                 }
 
-                TextView points = (TextView) row.findViewById(R.id.points);
+                TextView points = row.findViewById(R.id.points);
                 if (p.flown || p.status == Pilot.STATUS_RETIRED) {
                     points.setText(String.format("%.2f", p.points));
                 } else {
                     points.setText("");
                 }
 
-                TextView penalty = (TextView) row.findViewById(R.id.penalty);
+                TextView penalty = row.findViewById(R.id.penalty);
                 if (p.penalty > 0) {
                     penalty.setText(String.format(getResources().getString(R.string.penalty), p.penalty));
                 } else {

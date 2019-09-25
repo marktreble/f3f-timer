@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.data.api;
 
 import android.app.Activity;
@@ -22,28 +33,22 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-
-/**
- * Created by marktreble on 04/01/2016.
- */
-
-
 public class API {
 
     private static final String TAG = "APIDEBUG";
 
-    public static final String STATUS_KEY = "status";
-    public static final String STATUS_OK = "ok";
+    private static final String STATUS_KEY = "status";
+    private static final String STATUS_OK = "ok";
 
     public static final String ENDPOINT_KEY = "endpoint";
 
     public static final String API_IMPORT = "/import";
     public static final String API_IMPORT_RACE = "/import_race";
-    public static final String API_UPLOAD = "/upload_race";
+    // public static final String API_UPLOAD = "/upload_race";
 
     public static final String F3XV_IMPORT = "searchEvents";
     public static final String F3XV_IMPORT_RACE = "getEventInfo";
-    public static final String F3XV_UPLOAD = "";
+    // public static final String F3XV_UPLOAD = "";
 
     public class httpmethod {
         public static final int GET = 1;
@@ -125,15 +130,19 @@ public class API {
         private String get(String url, JSONObject nvp) {
             try {
                 if (nvp.length() > 0) {
-                    url += "?";
+                    StringBuilder urlbuilder = new StringBuilder(url);
+                    urlbuilder.append("?");
                     Iterator<String> keys = nvp.keys();
 
                     while (keys.hasNext()) {
                         String key = keys.next();
                         String val = nvp.getString(key);
-                        url += key + "=" + val;
-                        url += "&";
+                        urlbuilder.append(key);
+                        urlbuilder.append("=");
+                        urlbuilder.append(val);
+                        urlbuilder.append("&");
                     }
+                    url = urlbuilder.toString();
                     url = url.substring(0, url.length() - 1);
                 }
 
@@ -153,7 +162,9 @@ public class API {
 
                 try {
                     Response r = client.newCall(request).execute();
-                    response = r.body().string();
+                    if (r.body() != null) {
+                        response = r.body().string();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -200,8 +211,9 @@ public class API {
 
                 try {
                     Response r = client.newCall(request).execute();
-                    response = r.body().string();
-                    Log.d("RAW", r.networkResponse().cacheControl().toString());
+                    if (r.body() != null) {
+                        response = r.body().string();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

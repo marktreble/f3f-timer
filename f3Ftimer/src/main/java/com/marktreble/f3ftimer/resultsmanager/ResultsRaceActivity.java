@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.resultsmanager;
 
 import android.app.AlertDialog;
@@ -12,7 +23,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +37,6 @@ import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
@@ -39,17 +48,10 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-
 
 public class ResultsRaceActivity extends ListActivity {
 
-    private ArrayAdapter<String> mArrAdapter;
-
     private Integer mRid;
-
-    static final boolean DEBUG = true;
 
     private Context mContext;
 
@@ -75,7 +77,6 @@ public class ResultsRaceActivity extends ListActivity {
     private float mFTD;
     private String mFTDName;
     private int mFTDRound;
-    private RaceData.Group mGroupScoring;
     /* END */
 
 
@@ -83,7 +84,9 @@ public class ResultsRaceActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ArrayAdapter<String> mArrAdapter;
+
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -95,7 +98,9 @@ public class ResultsRaceActivity extends ListActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("race_id")) {
             Bundle extras = intent.getExtras();
-            mRid = extras.getInt("race_id");
+            if (extras != null) {
+                mRid = extras.getInt("race_id");
+            }
         }
 
         RaceData datasource = new RaceData(this);
@@ -103,16 +108,16 @@ public class ResultsRaceActivity extends ListActivity {
         Race race = datasource.getRace(mRid);
         datasource.close();
 
-        TextView tt = (TextView) findViewById(R.id.race_title);
+        TextView tt = findViewById(R.id.race_title);
         tt.setText(race.name);
 
-        ArrayList<String> arrOptions = new ArrayList<String>();
+        ArrayList<String> arrOptions = new ArrayList<>();
         arrOptions.add(String.format("Round in Progress (R%d)", race.round));
         arrOptions.add("Completed Rounds");
         arrOptions.add("Leader Board");
         arrOptions.add("Team Results");
 
-        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow, arrOptions);
+        mArrAdapter = new ArrayAdapter<>(this, R.layout.listrow, arrOptions);
         setListAdapter(mArrAdapter);
     }
 
@@ -133,8 +138,10 @@ public class ResultsRaceActivity extends ListActivity {
                 intent = new Intent(this, ResultsTeamsActivity.class);
                 break;
         }
-        intent.putExtra("race_id", mRid);
-        startActivityForResult(intent, mRid);
+        if (intent != null) {
+            intent.putExtra("race_id", mRid);
+            startActivityForResult(intent, mRid);
+        }
     }
 
     @Override
@@ -201,11 +208,11 @@ public class ResultsRaceActivity extends ListActivity {
 
         this.getNamesArray();
 
-        String results = "";
+        StringBuilder results = new StringBuilder();
         String[] email_list = new String[mArrNames.size()];
 
         for (int i = 0; i < mArrNames.size(); i++) {
-            results += String.format("%s %s %s\n", mArrNumbers.get(i), mArrNames.get(i), Float.toString(mArrScores.get(i)));
+            results.append(String.format("%s %s %s\n", mArrNumbers.get(i), mArrNames.get(i), Float.toString(mArrScores.get(i))));
 
             // Generate list of email addresses to send to
             Pilot p = mArrPilots.get(i);
@@ -215,22 +222,28 @@ public class ResultsRaceActivity extends ListActivity {
 
         }
 
-        results += "\n";
-        results += "Fastest time: " + mFTD + " by " + mFTDName + " in round " + mFTDRound + "\n";
-        results += "\n";
-        results += "\n\n";
-        results += "Result from f3ftimer (https://github.com/marktreble/f3f-timer)\n";
+        results.append("\n");
+        results.append("Fastest time: ");
+        results.append(mFTD);
+        results.append(" by ");
+        results.append(mFTDName);
+        results.append(" in round ");
+        results.append(mFTDRound);
+        results.append("\n\n");
+        results.append("\n\n");
+        results.append("Result from f3ftimer (https://github.com/marktreble/f3f-timer)\n");
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
         intent.putExtra(Intent.EXTRA_EMAIL, email_list);
         intent.putExtra(Intent.EXTRA_SUBJECT, race.name);
-        intent.putExtra(Intent.EXTRA_TEXT, results);
+        intent.putExtra(Intent.EXTRA_TEXT, results.toString());
 
         Intent openInChooser = Intent.createChooser(intent, "Share Leaderboard");
         startActivityForResult(openInChooser, 0);
     }
 
+    @SuppressWarnings("SetWorldReadable")
     private void share_social_media() {
         RaceData datasource = new RaceData(this);
         datasource.open();
@@ -274,18 +287,21 @@ public class ResultsRaceActivity extends ListActivity {
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fOut);
             fOut.flush();
             fOut.close();
-            file.setReadable(true, false);
-            intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
-            intent.putExtra(Intent.EXTRA_TEXT, "Result from f3ftimer (https://github.com/marktreble/f3f-timer)");
 
-            intent.setType("image/png");
+            boolean success = file.setReadable(true, false);
+            if (success) {
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+                intent.putExtra(Intent.EXTRA_TEXT, "Result from f3ftimer (https://github.com/marktreble/f3f-timer)");
+                intent.setType("image/png");
+
+                Intent openInChooser = Intent.createChooser(intent, "Share Leaderboard");
+
+                startActivity(openInChooser);
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        Intent openInChooser = Intent.createChooser(intent, "Share Leaderboard");
-
-        startActivity(openInChooser);
     }
 
     private void export() {
@@ -444,18 +460,6 @@ public class ResultsRaceActivity extends ListActivity {
         mFTDName = r.mFTDName;
         mFTDRound = r.mFTDRound;
 
-    }
-
-    private float round2Fixed(float value, double places) {
-
-        double multiplier = Math.pow(10, places);
-        //Log.i("MULTIPLIER", Double.toString(multiplier));
-        double integer = Math.floor(value);
-        //Log.i("INTEGER", Double.toString(integer));
-        double precision = Math.floor((value - integer) * multiplier);
-        //Log.i("PRECISION", Double.toString(precision));
-
-        return (float) (integer + (precision / multiplier));
     }
 
 }

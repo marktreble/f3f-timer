@@ -1,46 +1,95 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.dialog;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Window;
 
 import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
+import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
-/**
- * Created by marktreble on 22/12/14.
- */
-public class StartNumberEditActivity extends Activity {
-    Integer mPid = 0;
-    private Intent mIntent;
+import java.util.ArrayList;
+import java.util.List;
+
+public class StartNumberEditActivity extends AppCompatActivity {
+
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+
+    ArrayList<Pilot> mArrPilots;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.start_number);
 
-        EditText startnumber = (EditText) findViewById(R.id.editText1);
+        viewPager = findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
 
-        mIntent = getIntent(); // gets the previously created intent
-        startnumber.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
+        tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
 
-                    EditText startnumber = (EditText) findViewById(R.id.editText1);
+        int race_id = getIntent().getIntExtra("race_id", 0);
 
-                    mIntent.putExtra("start_number", startnumber.getText().toString());
-                    setResult(RaceActivity.RESULT_OK, mIntent);
-                    finish();
-                    return true;
-                }
-                return false;
-            }
-        });
 
+        RacePilotData datasource = new RacePilotData(this);
+        datasource.open();
+        mArrPilots = datasource.getAllPilotsForRace(race_id, 0, 0, 0);
+        datasource.close();
+
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new StartNumberEditFrag2(), "Set");
+        adapter.addFragment(new StartNumberEditFrag1(), "Random");
+        viewPager.setAdapter(adapter);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 }

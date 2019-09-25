@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.media;
 
 import android.annotation.TargetApi;
@@ -5,10 +16,6 @@ import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
-
-/**
- * Created by marktreble on 10/01/2018.
- */
 
 public class TTS implements TextToSpeech.OnInitListener {
 
@@ -64,12 +71,6 @@ public class TTS implements TextToSpeech.OnInitListener {
         mTTSStatus = status;
 
         initUtteranceListenerForMinICS();
-        /* DEPRECATED
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-            initUtteranceListenerForMinICS();
-        } else {
-            initUtteranceListenerForOtherThanICS();
-        }*/
         mInitListener.onInit(status);
     }
 
@@ -93,21 +94,4 @@ public class TTS implements TextToSpeech.OnInitListener {
             }
         });
     }
-
-    /* DEPRECATED
-    @TargetApi(11)
-    private void initUtteranceListenerForOtherThanICS(){
-        Log.i(TAG, "SETTING UP UTTERANCE PROGRESS FOR <ICS");
-        mTts.setOnUtteranceCompletedListener(new TextToSpeech.OnUtteranceCompletedListener() {
-            @Override
-            public void onUtteranceCompleted(String utteranceId) {
-                Intent i2 = new Intent("com.marktreble.f3ftimer.onUpdate");
-                i2.putExtra("com.marktreble.f3ftimer.service_callback", "hide_progress");
-                mContext.sendBroadcast(i2);
-            }
-        });
-
-    }*/
-
-
 }

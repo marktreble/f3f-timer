@@ -1,7 +1,14 @@
 /*
- * RaceTimerFrag1
- * Entry Point for Timer UI
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
@@ -32,7 +39,7 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_timer_frag_next_round, container, false);
 
-        Button ab = (Button) mView.findViewById(R.id.button_abort);
+        Button ab = mView.findViewById(R.id.button_abort);
         ab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -41,7 +48,7 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
             }
         });
 
-        Button fin = (Button) mView.findViewById(R.id.button_finish_race);
+        Button fin = mView.findViewById(R.id.button_finish_race);
         fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -49,7 +56,7 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
             }
         });
 
-        Button next = (Button) mView.findViewById(R.id.button_next_round);
+        Button next = mView.findViewById(R.id.button_next_round);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,10 +67,10 @@ public class RaceTimerFragNextRound extends RaceTimerFrag {
 
         NextRoundActivity a = (NextRoundActivity) getActivity();
 
-        TextView current_round = (TextView) mView.findViewById(R.id.current_round);
+        TextView current_round = mView.findViewById(R.id.current_round);
         current_round.setText(String.format("%s %d", getString(R.string.end_of_round), a.round_id));
 
-        TextView next_round = (TextView) mView.findViewById(R.id.next_round);
+        TextView next_round = mView.findViewById(R.id.next_round);
         next_round.setText(getString(R.string.next_round));
 
         return mView;

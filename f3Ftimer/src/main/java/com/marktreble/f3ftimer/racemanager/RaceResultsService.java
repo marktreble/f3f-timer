@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.racemanager;
 
 import android.app.Service;
@@ -11,6 +22,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
@@ -63,8 +75,8 @@ public class RaceResultsService extends Service {
     @Override
     public void onCreate() {
         HTTP_HEADER_DATE_FORMAT.setTimeZone(new SimpleTimeZone(0, "GMT"));
-        this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onLiveUpdate"));
-        this.registerReceiver(onBroadcast1, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_LIVE_UPDATE));
+        this.registerReceiver(onBroadcast1, new IntentFilter(IComm.RCV_UPDATE ));
     }
 
     @Override

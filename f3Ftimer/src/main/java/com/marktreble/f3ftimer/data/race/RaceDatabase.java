@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.data.race;
 
 import android.content.Context;
@@ -14,7 +25,7 @@ public class RaceDatabase extends SQLiteOpenHelper {
             "(id integer primary key," +
             " name tinytext," +
             " type integer," +
-            " offset integer," +
+            " `offset` integer," +
             " status integer," +
             " round integer," +
             " rounds_per_flight integer," +

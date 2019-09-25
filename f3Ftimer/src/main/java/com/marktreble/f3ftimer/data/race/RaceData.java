@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.data.race;
 
 import android.content.ContentValues;
@@ -30,7 +41,7 @@ public class RaceData {
     }
 
     public Race getRace(int id) {
-        Cursor cursor = database.query("races", null, "id = '" + Integer.toString(id) + "'", null, null, null, null);
+        Cursor cursor = database.query("races", null, "id = '" + id + "'", null, null, null, null);
         if (cursor.getCount() == 0) {
             cursor.close();
             return new Race(); // Return a blank object if not found
@@ -70,14 +81,14 @@ public class RaceData {
     }
 
     public void deleteRace(int id) {
-        database.delete("races", "id = '" + Integer.toString(id) + "'", null);
-        database.delete("racepilots", "race_id = '" + Integer.toString(id) + "'", null);
-        database.delete("racetimes", "race_id = '" + Integer.toString(id) + "'", null);
-        database.delete("racegroups", "race_id = '" + Integer.toString(id) + "'", null);
+        database.delete("races", "id = '" + id + "'", null);
+        database.delete("racepilots", "race_id = '" + id + "'", null);
+        database.delete("racetimes", "race_id = '" + id + "'", null);
+        database.delete("racegroups", "race_id = '" + id + "'", null);
     }
 
     public void deleteRound(int race_id, int round_id) {
-        database.delete("racegroups", "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round_id) + "'", null);
+        database.delete("racegroups", "race_id = '" + race_id + "' and round = '" + round_id + "'", null);
     }
 
     public Group setGroups(int race_id, int round_id, int num_groups, int start_pilot) {
@@ -107,7 +118,7 @@ public class RaceData {
     public Group getGroup(int race_id, int round_id) {
         String[] cols = {"groups", "start_pilot"};
         Group group = new Group();
-        Cursor cursor = database.query("racegroups", cols, "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round_id) + "'", null, null, null, null);
+        Cursor cursor = database.query("racegroups", cols, "race_id = '" + race_id + "' and round = '" + round_id + "'", null, null, null, null);
 
         if (cursor.getCount() == 0) {
             cursor.close();
@@ -145,20 +156,21 @@ public class RaceData {
     }
 
     public void setFastestLegTimes(Integer race_id, Integer round, Integer pilot_id, long[] fastestLegTimes) {
-        database.delete("fastestLegTimes", "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round) + "'", null);
+        database.delete("fastestLegTimes", "race_id = '" + race_id + "' and round = '" + round + "'", null);
 
         ContentValues values = new ContentValues();
         values.put("race_id", race_id);
         values.put("round", round);
         values.put("pilot_id", pilot_id);
         for (int i = 0; i < fastestLegTimes.length; i++) {
-            values.put("leg" + String.valueOf(i), fastestLegTimes[i]);
+            values.put("leg" + i, fastestLegTimes[i]);
         }
         database.insert("fastestLegTimes", null, values);
     }
 
+    /*
     public void getFastestLegTimes(Integer race_id, Integer round, Integer[] pilot_id, long[] fastestLegTimes) {
-        Cursor cursor = database.query("fastestLegTimes", null, "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round) + "'", null, null, null, null);
+        Cursor cursor = database.query("fastestLegTimes", null, "race_id = '" + race_id + "' and round = '" + round + "'", null, null, null, null);
         cursor.moveToFirst();
         if (!cursor.isAfterLast()) {
             pilot_id[0] = cursor.getInt(2);
@@ -172,9 +184,10 @@ public class RaceData {
         }
         cursor.close();
     }
+    */
 
     public void setFastestFlightTime(Integer race_id, Integer round, Integer pilot_id, Float time) {
-        database.delete("fastestFlightTime", "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round) + "'", null);
+        database.delete("fastestFlightTime", "race_id = '" + race_id + "' and round = '" + round + "'", null);
 
         ContentValues values = new ContentValues();
         values.put("race_id", race_id);
@@ -184,8 +197,9 @@ public class RaceData {
         database.insert("fastestFlightTime", null, values);
     }
 
+    /*
     public void getFastestFlightTime(Integer race_id, Integer round, Integer[] pilot_id, float[] time) {
-        Cursor cursor = database.query("fastestFlightTime", null, "race_id = '" + Integer.toString(race_id) + "' and round = '" + Integer.toString(round) + "'", null, null, null, null);
+        Cursor cursor = database.query("fastestFlightTime", null, "race_id = '" + race_id + "' and round = '" + round + "'", null, null, null, null);
         cursor.moveToFirst();
         if (!cursor.isAfterLast()) {
             pilot_id[0] = cursor.getInt(2);
@@ -193,6 +207,7 @@ public class RaceData {
         }
         cursor.close();
     }
+     */
 
     private Race cursorToRace(Cursor cursor) {
         Race r = new Race();
@@ -246,7 +261,6 @@ public class RaceData {
         public Float points;     // Actual points (after penalties)
         public Integer penalty;
         public Integer group;
-        public boolean isDiscarded = false;
     }
 
 }

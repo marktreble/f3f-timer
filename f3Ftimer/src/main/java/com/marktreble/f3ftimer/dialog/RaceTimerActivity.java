@@ -1,7 +1,12 @@
 /*
- * RaceTimerActivity
- * Main Timer UI
- * Presented in 3 fragments
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
 
 package com.marktreble.f3ftimer.dialog;
@@ -32,6 +37,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
@@ -83,6 +89,10 @@ public class RaceTimerActivity extends FragmentActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("pilot_id")) {
             Bundle extras = intent.getExtras();
+            if (extras == null) {
+                return;
+            }
+
             pid = extras.getInt("pilot_id");
             rid = extras.getInt("race_id");
             mRound = extras.getInt("round");
@@ -108,17 +118,13 @@ public class RaceTimerActivity extends FragmentActivity {
             mWindowState = savedInstanceState.getInt("mWindowState");
 
             FragmentManager fm = getSupportFragmentManager();
-            String tag = "racetimerfrag" + Integer.toString(mCurrentFragmentId);
+            String tag = "racetimerfrag" + mCurrentFragmentId;
 
             mCurrentFragment = (RaceTimerFrag) fm.findFragmentByTag(tag);
 
         } else {
             // Pass the race/pilot details to the service
-            Log.d("startPilot:", "Race ID = " + Integer.toString(mRace.id));
-            Log.d("startPilot:", "Pilot ID = " + Integer.toString(mPilot.id));
-            Log.d("startPilot:", "Round ID = " + Integer.toString(mRound));
-
-            Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+            Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
             i.putExtra("com.marktreble.f3ftimer.ui_callback", "start_pilot");
             i.putExtra("com.marktreble.f3ftimer.pilot_id", mPilot.id);
             i.putExtra("com.marktreble.f3ftimer.race_id", mRace.id);
@@ -145,7 +151,7 @@ public class RaceTimerActivity extends FragmentActivity {
 
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        mResize = (ImageView) findViewById(R.id.window_resize);
+        mResize = findViewById(R.id.window_resize);
         mResize.setVisibility(View.VISIBLE);
         mResize.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -215,7 +221,7 @@ public class RaceTimerActivity extends FragmentActivity {
     public void onResume() {
 
         super.onResume();
-        registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
+        registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE));
 
         FrameLayout layout = (FrameLayout) findViewById(R.id.dialog1).getRootView();
         layout.post(new Runnable() {
@@ -255,7 +261,7 @@ public class RaceTimerActivity extends FragmentActivity {
         f.setRetainInstance(true);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        String tag = "racetimerfrag" + Integer.toString(id);
+        String tag = "racetimerfrag" + id;
         ft.replace(R.id.dialog1, f, tag);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
         ft.commit();
@@ -263,10 +269,12 @@ public class RaceTimerActivity extends FragmentActivity {
         mCurrentFragmentId = id;
     }
 
+    /*
     public void stopTimerService() {
         Intent serviceIntent = new Intent("com.marktreble.f3ftimer.RaceTimerService");
         stopService(serviceIntent);
     }
+    */
 
 
     public void scorePilotZero(Pilot p) {
@@ -289,7 +297,7 @@ public class RaceTimerActivity extends FragmentActivity {
 
     // Binding for UI->Service Communication
     public void sendCommand(String cmd) {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
         i.putExtra("com.marktreble.f3ftimer.ui_callback", cmd);
         Log.d("SEND COMMAND", cmd);
         sendBroadcast(i);
@@ -297,7 +305,7 @@ public class RaceTimerActivity extends FragmentActivity {
 
     // Binding for UI->Service Communication
     public void sendOrderedCommand(String cmd) {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
         i.putExtra("com.marktreble.f3ftimer.ui_callback", cmd);
         i.putExtra("com.marktreble.f3ftimer.round", mRound);
         sendOrderedBroadcast(i, null);
@@ -307,9 +315,13 @@ public class RaceTimerActivity extends FragmentActivity {
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.service_callback")) {
+            if (intent.hasExtra(IComm.MSG_SERVICE_CALLBACK)) {
                 Bundle extras = intent.getExtras();
-                String data = extras.getString("com.marktreble.f3ftimer.service_callback");
+                if (extras == null) {
+                    return;
+                }
+
+                String data = extras.getString(IComm.MSG_SERVICE_CALLBACK);
                 if (data == null) {
                     return;
                 }
@@ -355,8 +367,8 @@ public class RaceTimerActivity extends FragmentActivity {
                 }
 
                 if (data.equals("run_complete")) {
-                    Float time = extras.getFloat("com.marktreble.f3ftimer.time");
-                    Float fastestFlightTime = extras.getFloat("com.marktreble.f3ftimer.fastestFlightTime");
+                    float time = extras.getFloat("com.marktreble.f3ftimer.time");
+                    float fastestFlightTime = extras.getFloat("com.marktreble.f3ftimer.fastestFlightTime");
                     String fastestFlightPilot = extras.getString("com.marktreble.f3ftimer.fastestFlightPilot");
 
                     if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {

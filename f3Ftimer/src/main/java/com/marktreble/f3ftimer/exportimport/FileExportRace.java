@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.exportimport;
 
 import android.app.AlertDialog;
@@ -16,7 +27,7 @@ import java.util.ArrayList;
  */
 public class FileExportRace extends BaseExport {
 
-    final static String TAG = "FileExportRace";
+    // final static String TAG = "FileExportRace";
 
     ArrayList<String> mArrNames;
     ArrayList<Race> mArrRaces;

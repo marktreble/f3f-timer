@@ -1,4 +1,14 @@
 package com.marktreble.f3ftimer.exportimport;
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -109,7 +119,7 @@ public class F3xvaultApiImportRace extends BaseImport
 
     public void showProgress(String msg) {
         View progress = findViewById(R.id.progress);
-        TextView progressLabel = (TextView) findViewById(R.id.progressLabel);
+        TextView progressLabel = findViewById(R.id.progressLabel);
 
         progressLabel.setText(msg);
         progress.setVisibility(View.VISIBLE);
@@ -246,7 +256,7 @@ public class F3xvaultApiImportRace extends BaseImport
             racelist.add(name);
         }
 
-        CharSequence[] list = racelist.toArray(new CharSequence[racelist.size()]);
+        CharSequence[] list = racelist.toArray(new CharSequence[0]);
         mDlgb = new AlertDialog.Builder(mContext)
                 .setTitle("Races Available for Import")
                 .setCancelable(true)

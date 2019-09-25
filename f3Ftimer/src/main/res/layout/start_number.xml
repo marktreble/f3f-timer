@@ -1,11 +1,13 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/rounded_corners">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="320dp"
         android:orientation="vertical"
         android:background="@android:color/transparent"
         android:paddingLeft="10dp"
@@ -13,23 +15,24 @@
         android:paddingTop="10dp"
         android:paddingBottom="10dp">
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/enter_start_number"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/text3" />
+            android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-        <EditText
-            android:id="@+id/editText1"
-            android:layout_width="fill_parent"
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:tabMode="fixed"
+                app:tabGravity="fill"/>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:inputType="number|numberDecimal">
-
-            <requestFocus />
-        </EditText>
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
 
     </LinearLayout>
 </RelativeLayout>

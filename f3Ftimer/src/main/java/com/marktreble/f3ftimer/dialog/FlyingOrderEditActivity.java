@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.content.Intent;
@@ -28,7 +39,6 @@ public class FlyingOrderEditActivity extends FragmentActivity {
         setContentView(R.layout.race_new);
 
         Intent i = getIntent();
-        Integer race_id;
         mRid = i.getIntExtra("race_id", 0);
 
         NewRaceFrag3 f;

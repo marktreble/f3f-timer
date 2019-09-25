@@ -1,7 +1,12 @@
 /*
- * RaceTimerActivity
- * Main Timer UI
- * Presented in 3 fragments
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
 
 package com.marktreble.f3ftimer.dialog;
@@ -20,6 +25,7 @@ import android.view.KeyEvent;
 import android.view.WindowManager.LayoutParams;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 
 
 public class NextRoundActivity extends FragmentActivity {
@@ -36,7 +42,9 @@ public class NextRoundActivity extends FragmentActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("round_id")) {
             Bundle extras = intent.getExtras();
-            round_id = extras.getInt("round_id");
+            if (extras != null) {
+                round_id = extras.getInt("round_id");
+            }
         }
 
         RaceTimerFragNextRound f = new RaceTimerFragNextRound();
@@ -61,7 +69,7 @@ public class NextRoundActivity extends FragmentActivity {
 
     public void onResume() {
         super.onResume();
-        registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
+        registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE));
     }
 
     public void onPause() {
@@ -75,9 +83,14 @@ public class NextRoundActivity extends FragmentActivity {
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.service_callback")) {
+            if (intent.hasExtra(IComm.MSG_SERVICE_CALLBACK)) {
                 Bundle extras = intent.getExtras();
-                String data = extras.getString("com.marktreble.f3ftimer.service_callback");
+                if (extras == null) {
+                    return;
+                }
+
+                String data = extras.getString(IComm.MSG_SERVICE_CALLBACK);
+
                 if (data == null) {
                     return;
                 }

@@ -1,13 +1,14 @@
 /*
- * PilotsEditActivity
- * Called by PilotsActivity when + button is pressed or pilot is edited
- * Presented in single page popup
- * >firstname
- * >lastname
- * >email
- * >frequency
- * >models
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 
@@ -34,12 +35,12 @@ public class F3fTimerAPILoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.f3f_timer_api_login);
 
-        EditText datasource = (EditText) findViewById(R.id.datasource);
-        EditText username = (EditText) findViewById(R.id.username);
-        EditText password = (EditText) findViewById(R.id.password);
-        CheckBox remember = (CheckBox) findViewById(R.id.remember);
+        EditText datasource = findViewById(R.id.datasource);
+        EditText username = findViewById(R.id.username);
+        EditText password = findViewById(R.id.password);
+        CheckBox remember = findViewById(R.id.remember);
 
-        Button login = (Button) findViewById(R.id.login);
+        Button login = findViewById(R.id.login);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,10 +77,10 @@ public class F3fTimerAPILoginActivity extends Activity {
 
     private boolean login() {
         // Get entered data, and save to/update database
-        EditText datasource = (EditText) findViewById(R.id.datasource);
-        EditText username = (EditText) findViewById(R.id.username);
-        EditText password = (EditText) findViewById(R.id.password);
-        CheckBox remember = (CheckBox) findViewById(R.id.remember);
+        EditText datasource = findViewById(R.id.datasource);
+        EditText username = findViewById(R.id.username);
+        EditText password = findViewById(R.id.password);
+        CheckBox remember = findViewById(R.id.remember);
 
         String str_datasource = datasource.getText().toString();
         String str_username = username.getText().toString();

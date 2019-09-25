@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.resultsmanager;
 
 import android.app.ListActivity;
@@ -5,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
@@ -24,14 +35,7 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 import java.util.ArrayList;
 
-/**
- * Created by marktreble on 16/08/2017.
- */
-
 public class ResultsTeamsActivity extends ListActivity {
-
-    static boolean DEBUG = true;
-    static int RESULT_ABORTED = 1;
 
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
@@ -47,7 +51,7 @@ public class ResultsTeamsActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -59,25 +63,17 @@ public class ResultsTeamsActivity extends ListActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("race_id")) {
             Bundle extras = intent.getExtras();
-            mRid = extras.getInt("race_id");
+            if (extras != null) {
+                mRid = extras.getInt("race_id");
+            }
         }
 
-        TextView tt = (TextView) findViewById(R.id.race_title);
+        TextView tt = findViewById(R.id.race_title);
         tt.setText(getString(R.string.team_results));
 
         setList();
         setListAdapter(mArrAdapter);
     }
-
-    /*
-     * Show pilot breakdown
-     */
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        // Pilot has been clicked, so show breakdown of rounds
-
-    }
-
 
     /*
      * Get Pilots from database to populate the listview
@@ -100,10 +96,8 @@ public class ResultsTeamsActivity extends ListActivity {
 
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultsteams, R.id.text1, mArrNames) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
-
-                if (mArrNames.get(position) == null) return null;
 
                 if (null == convertView) {
                     row = getLayoutInflater().inflate(R.layout.listrow_resultsteams, parent, false);
@@ -120,16 +114,17 @@ public class ResultsTeamsActivity extends ListActivity {
 
                 row.setBackgroundColor(getResources().getColor(R.color.background));
 
-                TextView points = (TextView) row.findViewById(R.id.points);
+                TextView points = row.findViewById(R.id.points);
                 points.setText(String.format("%.2f", mArrScores.get(position)));
 
-                TextView pilot_names = (TextView) row.findViewById(R.id.pilot_names);
-                String pilots = "";
+                TextView pilot_names = row.findViewById(R.id.pilot_names);
+                StringBuilder pilots = new StringBuilder();
 
                 for (String s : mArrPilotNames.get(position)) {
-                    pilots += s + "\n";
+                    pilots.append(s);
+                    pilots.append("\n");
                 }
-                pilot_names.setText(pilots);
+                pilot_names.setText(pilots.toString());
 
                 return row;
             }

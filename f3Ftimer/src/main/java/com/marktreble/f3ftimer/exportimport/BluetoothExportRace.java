@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.exportimport;
 
 import android.app.AlertDialog;
@@ -16,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -24,7 +36,7 @@ import java.util.UUID;
  */
 public class BluetoothExportRace extends BaseExport {
 
-    private static String TAG = "BlueToothExportRace";
+    //private static String TAG = "BlueToothExportRace";
 
     private AlertDialog mDlg;
 
@@ -150,7 +162,7 @@ public class BluetoothExportRace extends BaseExport {
 
                     byte[] data = new byte[bufferLength];
                     System.arraycopy(buffer, 0, data, 0, bufferLength);
-                    String cmd = new String(data, "UTF-8");
+                    String cmd = new String(data, StandardCharsets.UTF_8);
 
                     Log.i("BT", "COMMAND = " + cmd);
 
@@ -208,21 +220,21 @@ public class BluetoothExportRace extends BaseExport {
     }
 
     private void sendRaceList() {
-        String response = "[";
 
         RaceData datasource = new RaceData(this);
         datasource.open();
         ArrayList<Race> allRaces = datasource.getAllRaces();
         datasource.close();
 
+        StringBuilder response = new StringBuilder("[");
         for (Race r : allRaces) {
-            if (response.length() > 1) response += ",";
-            response += String.format("{\"id\":\"%s\", \"name\":\"%s\"}", Integer.toString(r.id), r.name);
+            if (response.length() > 1) response.append(",");
+            response.append(String.format("{\"id\":\"%s\", \"name\":\"%s\"}", Integer.toString(r.id), r.name));
         }
 
-        response += "]\n\n";
+        response.append("]\n\n");
 
-        byte[] bytes = response.getBytes();
+        byte[] bytes = response.toString().getBytes();
 
         try {
             mmOutStream.write(bytes);

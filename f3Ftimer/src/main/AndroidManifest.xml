@@ -32,6 +32,7 @@
             android:launchMode="singleTask"
             android:clearTaskOnLaunch="true">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -54,7 +55,7 @@
             android:name=".racemanager.RaceActivity"
             android:theme="@style/AppTheme"
             android:label="@string/app_race"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
         <!-- Human Input Drivers -->
         <service
@@ -143,32 +144,32 @@
         <activity
             android:name=".resultsmanager.ResultsRaceActivity"
             android:theme="@style/AppTheme"
-            android:label="@string/app_results"></activity>
+            android:label="@string/app_results" />
 
         <activity
             android:name=".resultsmanager.ResultsRoundInProgressActivity"
             android:theme="@style/AppTheme"
-            android:label="@string/app_results"></activity>
+            android:label="@string/app_results" />
 
         <activity
             android:name=".resultsmanager.ResultsCompletedRoundsActivity"
             android:theme="@style/AppTheme"
-            android:label="@string/app_results"></activity>
+            android:label="@string/app_results" />
 
         <activity
             android:name=".resultsmanager.ResultsCompletedRoundActivity"
             android:theme="@style/AppTheme"
-            android:label="@string/app_results"></activity>
+            android:label="@string/app_results" />
 
         <activity
             android:name=".resultsmanager.ResultsLeaderBoardActivity"
             android:theme="@style/AppTheme"
-            android:label="@string/app_results"></activity>
+            android:label="@string/app_results" />
 
         <activity
             android:name=".resultsmanager.ResultsTeamsActivity"
             android:theme="@style/AppTheme"
-            android:label="@string/app_results"></activity>
+            android:label="@string/app_results" />
 
 
         <!-- Pilot Manager App -->
@@ -188,94 +189,99 @@
         <activity
             android:name=".dialog.NewRaceActivity"
             android:theme="@style/Theme.Transparent"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"></activity>
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 
         <activity
             android:name=".dialog.PilotsEditActivity"
             android:theme="@style/Theme.Transparent"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"></activity>
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 
         <activity
             android:name=".dialog.AboutActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".dialog.HelpActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".dialog.RaceTimerActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".dialog.NextRoundActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".dialog.SettingsActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".dialog.TimeEntryActivity"
             android:theme="@style/Theme.Transparent"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"></activity>
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 
         <activity
             android:name=".dialog.RaceRoundTimeoutActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".dialog.GroupScoreEditActivity"
             android:theme="@style/Theme.Transparent"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustResize"></activity>
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity
             android:name=".dialog.FlyingOrderEditActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".dialog.StartNumberEditActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent"
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity
             android:name=".dialog.RotateEditActivity"
-            android:theme="@style/Theme.Transparent"></activity>
+            android:theme="@style/Theme.Transparent" />
 
         <activity
             android:name=".exportimport.BluetoothImportRace"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".exportimport.FileImportRace"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".exportimport.F3ftimerApiImportRace"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".dialog.F3fTimerAPILoginActivity"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".exportimport.F3xvaultApiImportRace"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".dialog.F3xvaultAPILoginActivity"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".exportimport.FileImportPilots"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".exportimport.BluetoothExportRace"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".exportimport.FileExportRace"
-            android:theme="@style/Theme.Overlay"></activity>
+            android:theme="@style/Theme.Overlay" />
+
+        <activity
+            android:name=".exportimport.FileExportPilots"
+            android:theme="@style/Theme.Overlay" />
 
         <activity
             android:name=".exportimport.FilteredFilePickerActivity"

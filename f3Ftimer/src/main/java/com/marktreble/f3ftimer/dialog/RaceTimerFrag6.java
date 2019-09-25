@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
@@ -9,9 +20,6 @@ import android.widget.Button;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
-/**
- * Created by marktreble on 28/08/2016.
- */
 public class RaceTimerFrag6 extends RaceTimerFrag {
 
     private boolean mClickedOnce = false;
@@ -26,7 +34,7 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
 
-        Button zero = (Button) mView.findViewById(R.id.button_zero);
+        Button zero = mView.findViewById(R.id.button_zero);
         zero.setVisibility(View.VISIBLE);
         zero.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,7 +46,7 @@ public class RaceTimerFrag6 extends RaceTimerFrag {
             }
         });
 
-        Button refly = (Button) mView.findViewById(R.id.button_refly);
+        Button refly = mView.findViewById(R.id.button_refly);
         refly.setVisibility(View.VISIBLE);
         refly.setOnClickListener(new View.OnClickListener() {
             @Override

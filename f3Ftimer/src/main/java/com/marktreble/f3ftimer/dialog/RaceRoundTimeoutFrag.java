@@ -1,7 +1,14 @@
 /*
- * RaceTimerFrag1
- * Entry Point for Timer UI
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
@@ -47,7 +54,7 @@ public class RaceRoundTimeoutFrag extends Fragment {
         mView = inflater.inflate(R.layout.race_round_timeout_frag, container, false);
 
 
-        Button resume = (Button) mView.findViewById(R.id.button_resume);
+        Button resume = mView.findViewById(R.id.button_resume);
         resume.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,7 +81,7 @@ public class RaceRoundTimeoutFrag extends Fragment {
             int minutes = (int) Math.floor(fseconds / 60);
             int seconds = (int) (fseconds - (minutes * 60));
 
-            TextView cd = (TextView) mView.findViewById(R.id.countdown);
+            TextView cd = mView.findViewById(R.id.countdown);
             String str_time = String.format("%d:%02d", minutes, seconds);
             cd.setText(str_time);
 

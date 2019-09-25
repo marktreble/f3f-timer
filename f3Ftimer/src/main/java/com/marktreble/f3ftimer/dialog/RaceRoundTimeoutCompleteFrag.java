@@ -1,7 +1,14 @@
 /*
- * RaceTimerFrag1
- * Entry Point for Timer UI
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
@@ -31,7 +38,7 @@ public class RaceRoundTimeoutCompleteFrag extends Fragment {
         mView = inflater.inflate(R.layout.race_round_timeout_complete_frag, container, false);
 
 
-        Button scrub = (Button) mView.findViewById(R.id.button_scrub);
+        Button scrub = mView.findViewById(R.id.button_scrub);
 
         RaceRoundTimeoutActivity a = (RaceRoundTimeoutActivity) getActivity();
         if (a.mGroupScored)
@@ -47,7 +54,7 @@ public class RaceRoundTimeoutCompleteFrag extends Fragment {
             }
         });
 
-        Button ignore = (Button) mView.findViewById(R.id.button_ignore);
+        Button ignore = mView.findViewById(R.id.button_ignore);
         ignore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,7 +65,7 @@ public class RaceRoundTimeoutCompleteFrag extends Fragment {
             }
         });
 
-        TextView cd = (TextView) mView.findViewById(R.id.countdown);
+        TextView cd = mView.findViewById(R.id.countdown);
         String str_time = String.format("%d:%02d", 0, 0);
         cd.setText(str_time);
 

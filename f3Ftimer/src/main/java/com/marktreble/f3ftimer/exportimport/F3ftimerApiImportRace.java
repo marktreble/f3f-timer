@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.exportimport;
 
 import android.app.AlertDialog;
@@ -92,7 +103,7 @@ public class F3ftimerApiImportRace extends BaseImport
 
     public void showProgress(String msg) {
         View progress = findViewById(R.id.progress);
-        TextView progressLabel = (TextView) findViewById(R.id.progressLabel);
+        TextView progressLabel = findViewById(R.id.progressLabel);
 
         progressLabel.setText(msg);
         progress.setVisibility(View.VISIBLE);
@@ -179,17 +190,17 @@ public class F3ftimerApiImportRace extends BaseImport
                     .show();
             return;
         }
-        String message = null;
+        String message;
         try {
             message = data.getString("data");
+
+            if (message.equals("LOGIN_FAILED")) {
+
+                Intent intent = new Intent(mActivity, F3fTimerAPILoginActivity.class);
+                startActivityForResult(intent, DLG_LOGIN);
+            }
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-
-        if (message.equals("LOGIN_FAILED")) {
-
-            Intent intent = new Intent(mActivity, F3fTimerAPILoginActivity.class);
-            startActivityForResult(intent, DLG_LOGIN);
         }
     }
 
@@ -204,7 +215,7 @@ public class F3ftimerApiImportRace extends BaseImport
             racelist.add(name);
         }
 
-        CharSequence[] list = racelist.toArray(new CharSequence[racelist.size()]);
+        CharSequence[] list = racelist.toArray(new CharSequence[0]);
         mDlgb = new AlertDialog.Builder(mContext)
                 .setTitle("Races Available for Import")
                 .setCancelable(true)

@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.resultsmanager;
 
 import android.app.ListActivity;
@@ -26,8 +37,6 @@ import java.util.ArrayList;
 
 public class ResultsCompletedRoundsActivity extends ListActivity {
 
-    private ArrayAdapter<String> mArrAdapter;
-
     private Integer mRid;
 
     private Context mContext;
@@ -36,7 +45,9 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ArrayAdapter<String> mArrAdapter;
+
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -48,7 +59,9 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("race_id")) {
             Bundle extras = intent.getExtras();
-            mRid = extras.getInt("race_id");
+            if (extras != null) {
+                mRid = extras.getInt("race_id");
+            }
         }
 
         RaceData datasource = new RaceData(this);
@@ -56,15 +69,15 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
         Race race = datasource.getRace(mRid);
         datasource.close();
 
-        TextView tt = (TextView) findViewById(R.id.race_title);
+        TextView tt = findViewById(R.id.race_title);
         tt.setText(race.name);
 
-        ArrayList<String> arrOptions = new ArrayList<String>();
+        ArrayList<String> arrOptions = new ArrayList<>();
         for (int i = 1; i < race.round; i++) {
             arrOptions.add(String.format("Round %d", i));
         }
 
-        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow, arrOptions);
+        mArrAdapter = new ArrayAdapter<>(this, R.layout.listrow, arrOptions);
         if (race.round <= 1) {
             TextView noneView = new TextView(this);
             noneView.setText(getString(R.string.no_rounds));

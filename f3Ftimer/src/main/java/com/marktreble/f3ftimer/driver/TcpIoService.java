@@ -1,3 +1,4 @@
+
 package com.marktreble.f3ftimer.driver;
 
 import android.annotation.SuppressLint;
@@ -15,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
@@ -90,7 +92,7 @@ public class TcpIoService extends Service implements DriverInterface {
         mF3ftimerServerIp = PreferenceManager.getDefaultSharedPreferences(this).getString("pref_input_tcpio_ip", DEFAULT_F3FTIMER_SERVER_IP);
         mSlopeOrientation = Float.parseFloat(PreferenceManager.getDefaultSharedPreferences(this).getString("pref_wind_angle_offset", "0.0"));
 
-        this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
     }
 
     @Override
@@ -231,8 +233,8 @@ public class TcpIoService extends Service implements DriverInterface {
     }
 
     private void callbackToUI(String cmd) {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, cmd);
         this.sendBroadcast(i);
     }
 
@@ -572,7 +574,7 @@ public class TcpIoService extends Service implements DriverInterface {
                                                 mDriver.windLegal();
                                                 windLegal = true;
                                             }
-                                            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+                                            Intent i = new Intent(IComm.RCV_UPDATE);
                                             String wind_data = formatWindValues(windLegal, wind_angle_absolute, wind_angle_relative, wind_speed, 20 - mWindSpeedCounterSeconds);
                                             i.putExtra("com.marktreble.f3ftimer.value.wind_values", wind_data);
                                             sendBroadcast(i);
@@ -629,16 +631,16 @@ public class TcpIoService extends Service implements DriverInterface {
 
     private void cancelDialog() {
         mDriver.cancelWorkingTime();
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "cancel");
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "cancel");
         i.putExtra("com.marktreble.f3ftimer.pilot_id", mDriver.mPid);
         sendBroadcast(i);
     }
 
     private void scoreZeroAndCancelDialogAndNextPilot() {
         mDriver.cancelWorkingTime();
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-        i.putExtra("com.marktreble.f3ftimer.service_callback", "score_zero_and_cancel");
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "score_zero_and_cancel");
         i.putExtra("com.marktreble.f3ftimer.pilot_id", mDriver.mPid);
         sendBroadcast(i);
     }

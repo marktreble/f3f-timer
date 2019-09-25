@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.filesystem;
 
 import android.content.Context;
@@ -10,9 +21,6 @@ import com.marktreble.f3ftimer.data.results.Results;
 
 import java.util.ArrayList;
 
-/**
- * Created by marktreble on 08/02/15.
- */
 public class SpreadsheetExport extends FileExport {
 
     public boolean writeResultsFile(Context context, Race race) {
@@ -25,7 +33,7 @@ public class SpreadsheetExport extends FileExport {
         // Update the race (.f3f) file
         if (this.isExternalStorageWritable()) {
             Log.i("ROW", "WRITING SPREADSHEET FILE");
-            String data = "";
+            StringBuilder data = new StringBuilder();
 
             Results r = new Results();
             r.getResultsForRace(context, race.id, false);
@@ -44,10 +52,10 @@ public class SpreadsheetExport extends FileExport {
                 Pilot p = r.mArrPilots.get(i);
 
                 int penalties_total = 0;
-                String penalties_rounds = "";
+                StringBuilder penalties_rounds = new StringBuilder();
 
                 // Start new row (pilot name, frequency)
-                String row = String.format("%s %s , %s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency);
+                StringBuilder row = new StringBuilder(String.format("%s %s , %s", p.firstname, p.lastname, (p.frequency.equals("")) ? 0 : p.frequency));
 
                 int rnd_in_spreadsheet = 1;
                 for (int rnd = 0; rnd < MAX_ROUNDS - extra_discards; rnd++) {
@@ -60,36 +68,30 @@ public class SpreadsheetExport extends FileExport {
                             ArrayList<RaceData.Time> times = r.mArrTimes.get(i);
                             if (g == times.get(rnd).group) {
                                 String s_time = String.format("%.2f", times.get(rnd).time);
-                                row += String.format(" , %s", s_time.replace(",", "."));
+                                row.append(String.format(" , %s", s_time.replace(",", ".")));
 
                                 int pen = times.get(rnd).penalty;
                                 if (pen > 0) {
                                     penalties_total += pen * 100;
-                                    penalties_rounds += String.format("%02d", rnd_in_spreadsheet);
+                                    penalties_rounds.append(String.format("%02d", rnd_in_spreadsheet));
                                 }
                             } else {
-                                row += " , 0";
+                                row.append(" , 0");
                             }
                         }
                         rnd_in_spreadsheet += numgroups;
                     } else {
-                        row += " , 0";
+                        row.append(" , 0");
                     }
                 }
 
-                row += String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds);
-
-                Log.i("ROW", row);
-
-                data += row;
+                row.append(String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds.toString()));
+                data.append(row.toString());
             }
 
 
             String meta_data = String.format("%d , \"%s\", 0, %d, %d\r\n", race.round + extra_discards, race.name, MAX_ROUNDS, extra_discards);
-
-            Log.i("ROW", meta_data);
-            Log.i("ROW", "-----");
-            String output = meta_data + data;
+            String output = meta_data + data.toString();
 
             this.writeExportFile(context, output, race.name + ".txt");
 

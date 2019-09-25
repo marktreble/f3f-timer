@@ -1,7 +1,14 @@
 /*
- * RaceTimerFrag4
- * Clock has started
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.content.Intent;
@@ -16,6 +23,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 
 public class RaceTimerFrag4 extends RaceTimerFrag {
 
@@ -36,8 +44,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-        } else {
+        if (savedInstanceState == null) {
             mStart = System.currentTimeMillis();
             mHandler.postDelayed(updateClock, 10);
         }
@@ -55,7 +62,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
 
-        Button ab = (Button) mView.findViewById(R.id.button_abort);
+        Button ab = mView.findViewById(R.id.button_abort);
         ab.setVisibility(View.VISIBLE);
         ab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,7 +75,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
             }
         });
 
-        Button refly = (Button) mView.findViewById(R.id.button_refly);
+        Button refly = mView.findViewById(R.id.button_refly);
         refly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,7 +87,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
             }
         });
 
-        Button fin = (Button) mView.findViewById(R.id.button_finish);
+        Button fin = mView.findViewById(R.id.button_finish);
         fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,7 +102,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String soft_buttons = sharedPref.getString("pref_input_src", getString(R.string.Demo));
         if (soft_buttons.equals(getString(R.string.Demo))) {
-            Button baseA = (Button) mView.findViewById(R.id.base_A);
+            Button baseA = mView.findViewById(R.id.base_A);
             baseA.setVisibility(View.VISIBLE);
 
             baseA.setOnClickListener(new Button.OnClickListener() {
@@ -106,7 +113,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
                 }
             });
 
-            Button baseB = (Button) mView.findViewById(R.id.base_B);
+            Button baseB = mView.findViewById(R.id.base_B);
             baseB.setVisibility(View.VISIBLE);
 
             baseB.setOnClickListener(new Button.OnClickListener() {
@@ -120,7 +127,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
         }
 
-        TextView status = (TextView) mView.findViewById(R.id.status);
+        TextView status = mView.findViewById(R.id.status);
         status.setText(getString(R.string.on_course));
 
         setLeg(mLap, mEstimate, 0, 0, 0, "");
@@ -141,14 +148,14 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
             long elapsed = System.currentTimeMillis() - mStart;
             float seconds = (float) elapsed / 1000;
 
-            TextView cd = (TextView) mView.findViewById(R.id.time);
+            TextView cd = mView.findViewById(R.id.time);
             String str_time = String.format("%.2f", seconds);
             if (mLap > 0) {
                 str_time += String.format(" T%d", mLap);
             }
             cd.setText(str_time);
 
-            TextView min = (TextView) mView.findViewById(R.id.mintime);
+            TextView min = mView.findViewById(R.id.mintime);
             min.setText(str_time);
 
             mHandler.postDelayed(updateClock, 10);
@@ -163,10 +170,10 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         if (number == 10 && mFinalTime < 0) {
             long elapsed = System.currentTimeMillis() - mStart;
             mHandler.removeCallbacks(updateClock);
-            TextView cd = (TextView) mView.findViewById(R.id.time);
+            TextView cd = mView.findViewById(R.id.time);
             cd.setText("");
 
-            TextView min = (TextView) mView.findViewById(R.id.mintime);
+            TextView min = mView.findViewById(R.id.mintime);
             min.setText("");
 
             a.sendCommand(String.format("::%.2f", (float) elapsed / 1000));
@@ -176,7 +183,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         mEstimate = estimated;
 
         if (number > 0) {
-            Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+            Intent i = new Intent(IComm.RCV_LIVE_UPDATE);
             i.putExtra("com.marktreble.f3ftimer.value.turnNumber", number);
             i.putExtra("com.marktreble.f3ftimer.value.legTime", legTime / 1000.0f);
             i.putExtra("com.marktreble.f3ftimer.value.fastestLegTime", fastestLegTime / 1000.0f);
@@ -185,13 +192,13 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
             i.putExtra("com.marktreble.f3ftimer.value.estimatedTime", estimated / 1000.0f);
             a.sendBroadcast(i);
 
-            TextView lap = (TextView) mView.findViewById(R.id.lap);
+            TextView lap = mView.findViewById(R.id.lap);
             String str_lap = String.format("Turn: %d", number);
             lap.setText(str_lap);
         }
 
         if (estimated > 0) {
-            TextView est = (TextView) mView.findViewById(R.id.estimated);
+            TextView est = mView.findViewById(R.id.estimated);
             String str_est = String.format("Est: %.2f", (float) estimated / 1000);
             est.setText(str_est);
         }
@@ -200,34 +207,34 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
     public void setFinal(Float time, float fastestFlightTime, String fastestFlightPilot) {
         mHandler.removeCallbacks(updateClock);
-        TextView cd = (TextView) mView.findViewById(R.id.time);
+        TextView cd =  mView.findViewById(R.id.time);
         String str_time = String.format("%.2f", time);
         cd.setText(str_time);
 
-        TextView min = (TextView) mView.findViewById(R.id.mintime);
+        TextView min =  mView.findViewById(R.id.mintime);
         min.setText(str_time);
 
-        TextView lap = (TextView) mView.findViewById(R.id.lap);
+        TextView lap =  mView.findViewById(R.id.lap);
         lap.setText("");
 
-        TextView est = (TextView) mView.findViewById(R.id.estimated);
+        TextView est =  mView.findViewById(R.id.estimated);
         est.setText("");
 
-        TextView status = (TextView) mView.findViewById(R.id.status);
+        TextView status =  mView.findViewById(R.id.status);
         status.setText(getString(R.string.run_complete));
 
-        Button abort = (Button) mView.findViewById(R.id.button_abort);
+        Button abort = mView.findViewById(R.id.button_abort);
         abort.setVisibility(View.GONE);
 
-        Button baseA = (Button) mView.findViewById(R.id.base_A);
-        Button baseB = (Button) mView.findViewById(R.id.base_B);
+        Button baseA = mView.findViewById(R.id.base_A);
+        Button baseB = mView.findViewById(R.id.base_B);
         baseA.setVisibility(View.GONE);
         baseB.setVisibility(View.GONE);
 
-        Button f = (Button) mView.findViewById(R.id.button_finish);
+        Button f = mView.findViewById(R.id.button_finish);
         f.setVisibility(View.VISIBLE);
 
-        Button r = (Button) mView.findViewById(R.id.button_refly);
+        Button r = mView.findViewById(R.id.button_refly);
         r.setVisibility(View.VISIBLE);
 
         mFinalTime = time;
@@ -237,7 +244,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
         a.sendCommand("begin_timeout");
 
         /* send to ResultsServer Live Listener */
-        Intent i = new Intent("com.marktreble.f3ftimer.onLiveUpdate");
+        Intent i = new Intent(IComm.RCV_LIVE_UPDATE );
         i.putExtra("com.marktreble.f3ftimer.value.fastestFlightTime", fastestFlightTime);
         i.putExtra("com.marktreble.f3ftimer.value.fastestFlightPilot", fastestFlightPilot);
         // TODO

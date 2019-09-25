@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.exportimport;
 
 import android.annotation.TargetApi;
@@ -19,14 +30,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Created by marktreble on 27/12/14.
  */
 public class FileImportPilots extends BaseImport {
 
-    final static String TAG = "FileImportPilots";
+    // final static String TAG = "FileImportPilots";
 
     private static final int ACTION_PICK_FILE = 1;
 
@@ -60,57 +70,37 @@ public class FileImportPilots extends BaseImport {
         if (requestCode == ACTION_PICK_FILE && resultCode == Activity.RESULT_OK) {
             if (data.getBooleanExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, false)) {
                 // Multiple files import
-                String failures = "";
+                StringBuilder failures = new StringBuilder();
                 int successes = 0;
-                // For JellyBean and above
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                    ClipData clip = data.getClipData();
+                ClipData clip = data.getClipData();
 
-                    if (clip != null) {
-                        for (int i = 0; i < clip.getItemCount(); i++) {
-                            Uri uri = clip.getItemAt(i).getUri();
-                            // Do something with the URI
-                            boolean success = importFile(uri);
+                if (clip != null) {
+                    for (int i = 0; i < clip.getItemCount(); i++) {
+                        Uri uri = clip.getItemAt(i).getUri();
+                        // Do something with the URI
+                        boolean success = importFile(uri);
 
-                            if (!success) {
-                                String filename = uri.toString();
-                                filename = filename.substring(filename.lastIndexOf("/"), filename.length());
-                                failures += filename + ", ";
-                            } else {
-                                successes++;
-                            }
+                        if (!success) {
+                            String filename = uri.toString();
+                            filename = filename.substring(filename.lastIndexOf("/"));
+                            failures.append(filename);
+                            failures.append(", ");
+                        } else {
+                            successes++;
                         }
                     }
-                    // For Ice Cream Sandwich
-                } else {
-                    ArrayList<String> paths = data.getStringArrayListExtra
-                            (FilteredFilePickerActivity.EXTRA_PATHS);
-
-                    if (paths != null) {
-                        for (String path : paths) {
-                            Uri uri = Uri.parse(path);
-                            // Do something with the URI
-                            boolean success = importFile(uri);
-
-                            if (!success) {
-                                String filename = uri.toString();
-                                filename = filename.substring(filename.lastIndexOf("/"), filename.length());
-                                failures += filename + ", ";
-                            }
-                        }
-                    }
-
                 }
 
                 if (successes > 0) setResult(RESULT_OK);
 
-                if (failures.equals("")) {
+                String strFailures = failures.toString();
+                if (strFailures.equals("")) {
                     finish();
                 } else {
-                    failures = failures.substring(0, failures.length() - 2);
+                    strFailures = strFailures.substring(0, strFailures.length() - 2);
                     new AlertDialog.Builder(mContext, R.style.FilePickerAlertDialogTheme)
                             .setTitle("Wrong file types")
-                            .setMessage("Sorry, f3f timer can only import files in 'json' format. Some of your chosen files failed to import (" + failures + ")")
+                            .setMessage("Sorry, f3f timer can only import files in 'json' format. Some of your chosen files failed to import (" + strFailures + ")")
                             .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     finish();
@@ -124,6 +114,9 @@ public class FileImportPilots extends BaseImport {
             } else {
                 Log.d("FILEIMPORT", "SINGLE");
                 Uri uri = data.getData();
+
+                if (uri == null) return;
+
                 // Do something with the URI
                 boolean success = importFile(uri);
 
@@ -178,8 +171,11 @@ public class FileImportPilots extends BaseImport {
     }
 
     private String readFile(Uri uri) {
-        File f = new File(uri.getPath());
-        FileInputStream inputStream = null;
+        String path = uri.getPath();
+        if (path == null) return "";
+
+        File f = new File(path);
+        FileInputStream inputStream;
         try {
             inputStream = new FileInputStream(f);
         } catch (FileNotFoundException e) {

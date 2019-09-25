@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.printing;
 
 import android.content.Context;
@@ -26,7 +37,6 @@ import java.util.List;
 public class PilotListDocumentAdapter extends PrintDocumentAdapter {
 
     private Context mContext;
-    private PrintedPdfDocument pdfDocument;
     private ArrayList<Pilot> mPilots;
     private String mRaceName;
     private float mPageHeight;
@@ -66,7 +76,13 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
         }
 
         // Get the page width/height and orientation
-        getMetrics(newAttributes.getMediaSize());
+        PrintAttributes.MediaSize pageSize = newAttributes.getMediaSize();
+        if (pageSize == null) {
+            callback.onLayoutFailed("Page count calculation failed.");
+            return;
+        }
+        getMetrics(pageSize);
+
 
         // Compute the expected number of printed pages
         mNumPages = computePageCount();
@@ -106,7 +122,7 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
                         final WriteResultCallback callback) {
 
         // Create a new PdfDocument with the requested page attributes
-        pdfDocument = new PrintedPdfDocument(mContext, mAttributes);
+        PrintedPdfDocument pdfDocument = new PrintedPdfDocument(mContext, mAttributes);
         final SparseIntArray writtenPagesArray = new SparseIntArray();
         // Iterate over each page of the document,
         // check if it's in the output range.
@@ -122,7 +138,6 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
                 if (cancellationSignal.isCanceled()) {
                     callback.onWriteCancelled();
                     pdfDocument.close();
-                    pdfDocument = null;
                     return;
                 }
 
@@ -143,7 +158,6 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
             return;
         } finally {
             pdfDocument.close();
-            pdfDocument = null;
         }
 
         List<PageRange> pageRanges = new ArrayList<>();
@@ -171,10 +185,9 @@ public class PilotListDocumentAdapter extends PrintDocumentAdapter {
     }
 
     private boolean containsPage(PageRange[] pageRanges, int page) {
-        final int pageRangeCount = pageRanges.length;
-        for (int i = 0; i < pageRangeCount; i++) {
-            if (pageRanges[i].getStart() <= page
-                    && page <= pageRanges[i].getEnd()) {
+        for (PageRange pr : pageRanges) {
+            if (pr.getStart() <= page
+                    && page <= pr.getEnd()) {
                 return true;
             }
         }

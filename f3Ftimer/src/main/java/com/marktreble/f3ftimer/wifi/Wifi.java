@@ -1,6 +1,12 @@
 /*
- * Languages
- * Utility functions for language settings
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
 
 package com.marktreble.f3ftimer.wifi;
@@ -18,7 +24,7 @@ import java.util.List;
 
 public class Wifi {
 
-    static String TAG = "WIFIMANAGER";
+    final private static String TAG = "WIFIMANAGER";
 
     public static boolean canEnableWifiHotspot(Activity context) {
         WifiManager wifiManager = (WifiManager) context.getBaseContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -32,7 +38,7 @@ public class Wifi {
         WifiManager wifiManager = (WifiManager) context.getBaseContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         WifiApControl apControl = WifiApControl.getApControl(wifiManager);
-        if (apControl != null) {
+        if (apControl != null && wifiManager != null) {
 
             if (wifiManager.isWifiEnabled()) {
                 wifiManager.setWifiEnabled(false);
@@ -61,7 +67,7 @@ public class Wifi {
             apControl.setWifiApEnabled(apControl.getWifiApConfiguration(), false);
             Log.i(TAG, "Wifi Hotspot Disabled");
 
-            if (enablewifi)
+            if (enablewifi && wifiManager != null)
                 wifiManager.setWifiEnabled(true);
 
             Log.i(TAG, "Wifi Restored to " + ((enablewifi) ? "On" : "Off"));

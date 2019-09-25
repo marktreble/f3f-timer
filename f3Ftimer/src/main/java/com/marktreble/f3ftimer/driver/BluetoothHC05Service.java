@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.driver;
 
 import android.app.Service;
@@ -15,6 +26,7 @@ import android.os.ParcelUuid;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
@@ -71,7 +83,6 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     private String mInputSourceDevice;
 
     private BluetoothSocket mmSocket;
-    private BluetoothDevice mmDevice;
     private InputStream mmInStream;
     private OutputStream mmOutStream;
 
@@ -86,7 +97,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
         super.onCreate();
         mDriver = new Driver(this);
 
-        this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
         registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 
         mHandler = new Handler();
@@ -126,9 +137,9 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params) {
         if (inputSource.equals(context.getString(R.string.BLUETOOTH_HC_05))) {
-            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+            Intent i = new Intent(IComm.RCV_UPDATE);
             i.putExtra("icon", ICN_DISCONN);
-            i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "driver_stopped");
             context.sendBroadcast(i);
 
             Intent serviceIntent = new Intent(context, BluetoothHC05Service.class);
@@ -191,9 +202,9 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
         }
 
         Log.i("DRIVER", "SENDING UPDATE: " + ICN_DISCONN);
-        Intent icn = new Intent("com.marktreble.f3ftimer.onUpdate");
+        Intent icn = new Intent(IComm.RCV_UPDATE);
         icn.putExtra("icon", ICN_DISCONN);
-        icn.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+        icn.putExtra(IComm.MSG_SERVICE_CALLBACK, "driver_stopped");
         sendBroadcast(icn);
 
         Log.d(TAG, "onStartCommand");
@@ -209,8 +220,8 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
         if (!mBluetoothAdapter.isEnabled()) {
 
             // Need to post Message to UI to show enable BT dialog
-            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-            i.putExtra("com.marktreble.f3ftimer.service_callback", "no_bluetooth");
+            Intent i = new Intent(IComm.RCV_UPDATE);
+            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "no_bluetooth");
             sendBroadcast(i);
 
             Log.d(TAG, "NOT ENABLED");
@@ -253,8 +264,8 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
         if (!sent) {
             // Call alert dialog on UI Thread "No Output Stream Available"
-            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-            i.putExtra("com.marktreble.f3ftimer.service_callback", "no_out_stream");
+            Intent i = new Intent(IComm.RCV_UPDATE);
+            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "no_out_stream");
             sendBroadcast(i);
         }
 
@@ -343,7 +354,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
                 mPairedAndDiscoveredDevices.addAll(mDiscoveredDevices);
 
                 // See if any paired or discovered devices accept the UUID
-                if (!attemptDeviceConnection()) {
+                if (attemptDeviceConnection()) {
                     mBluetoothAdapter.startDiscovery();
                 }
             }
@@ -353,7 +364,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     private boolean attemptDeviceConnection() {
 
         for (int i = 0; i < mPairedAndDiscoveredDevices.size(); i++) {
-            mmDevice = mPairedAndDiscoveredDevices.get(i);
+            BluetoothDevice mmDevice = mPairedAndDiscoveredDevices.get(i);
             Log.i(TAG, "CHECKING: " + mmDevice.getAddress() + ":" + mmDevice.getName());
 
             BluetoothSocket tmp = null;
@@ -362,9 +373,9 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
 
             try {
-                ParcelUuid uuids[] = mmDevice.getUuids();
+                ParcelUuid[] Uuids = mmDevice.getUuids();
 
-                for (ParcelUuid test : uuids) {
+                for (ParcelUuid test : Uuids) {
                     Log.i(TAG, "Supported " + test.toString() + " ? " + uuid.toString());
                     if (test.equals(new ParcelUuid(uuid))) {
                         if (mmDevice.getAddress().equals(mInputSourceDevice)) {
@@ -381,13 +392,13 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
                 mmSocket = tmp;
                 Log.i(TAG, "connected to " + mmDevice.getName());
                 startConnectThread();
-                return true;
+                return false;
             } else {
                 Log.i(TAG, mInputSourceDevice + " is not available");
             }
         }
 
-        return false;
+        return true;
     }
 
     private void startConnectThread() {
@@ -470,16 +481,16 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
                 if (bufferLength > 0) {
                     byte[] data = new byte[bufferLength];
 
-                    StringBuilder builder = new StringBuilder();
+                    //StringBuilder builder = new StringBuilder();
                     System.arraycopy(buffer, 0, data, 0, bufferLength);
-                    builder.append(new String(data, "UTF-8"));
+                    //builder.append(new String(data, StandardCharsets.UTF_8));
 
                     char[] charArray = (new String(data, 0, data.length)).toCharArray();
 
                     StringBuilder sb = new StringBuilder(charArray.length);
                     StringBuilder hexString = new StringBuilder();
                     for (char c : charArray) {
-                        sb.append(Character.toString(c));
+                        sb.append(c);
 
                         String hex = Integer.toHexString(0xFF & c);
                         if (hex.length() == 1) {
@@ -492,57 +503,66 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
                     String str_in = mBuffer + sb.toString().trim();
                     int len = str_in.length();
                     if (len > 0) {
-                        Log.i("NEWDATA", str_in);
                         String lastchar = hexString.substring(hexString.length() - 2, hexString.length());
                         if (lastchar.equals("0d") || lastchar.equals("0a")) {
                             // Clear the buffer
                             mBuffer = "";
 
                             // Get code (first char)
-                            String code = "";
-                            code = str_in.substring(0, 1);
+                            String code = str_in.substring(0, 1);
 
                             // We have data/command from the timer, pass this on to the server
-                            if (code.equals(FT_START_BUTTON)) {
-                                mDriver.startPressed();
-                            } else if (code.equals(FT_WIND_LEGAL)) {
-                                mDriver.windLegal();
-                            } else if (code.equals(FT_WIND_ILLEGAL)) {
-                                mDriver.windIllegal();
-                            } else if (code.equals(FT_READY)) {
-                                mTimerStatus = 0;
-                                mDriver.ready();
-                            } else if (code.equals(FT_LEG_COMPLETE)) {
-                                switch (mTimerStatus) {
-                                    case 0:
-                                        mDriver.offCourse();
-                                        break;
-                                    case 1:
-                                        mDriver.onCourse();
-                                        break;
-                                    default:
-                                        mDriver.legComplete();
-                                        break;
+                            switch (code) {
+                                case FT_START_BUTTON:
+                                    mDriver.startPressed();
+                                    break;
 
-                                }
-                                mTimerStatus++;
-                            } else if (code.equals(FT_RACE_COMPLETE)) {
-                                // Make sure we get 9 bytes before proceeding
-                                Log.d("BYTES RECEIVED", str_in.length() + "::" + str_in);
-                                if (str_in.length() < 9) {
-                                    mBuffer = str_in;
-                                } else {
-                                    // Any more than 8 chars should be passed on to the next loop
-                                    mBuffer = str_in.substring(8);
-                                    // Don't take more than 8 or parseFloat will cause an exception + reflight!
-                                    str_in = str_in.substring(0, 8);
-                                    mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim());
-                                    mDriver.runComplete();
-                                    // Reset these here, as sometimes READY is not received!?
+                                case FT_WIND_LEGAL:
+                                    mDriver.windLegal();
+                                    break;
+
+                                case FT_WIND_ILLEGAL:
+                                    mDriver.windIllegal();
+                                    break;
+
+                                case FT_READY:
                                     mTimerStatus = 0;
                                     mDriver.ready();
-                                    mBuffer = "";
-                                }
+                                    break;
+
+                                case FT_LEG_COMPLETE:
+                                    switch (mTimerStatus) {
+                                        case 0:
+                                            mDriver.offCourse();
+                                            break;
+                                        case 1:
+                                            mDriver.onCourse();
+                                            break;
+                                        default:
+                                            mDriver.legComplete();
+                                            break;
+
+                                    }
+                                    mTimerStatus++;
+                                    break;
+                                case FT_RACE_COMPLETE:
+                                    // Make sure we get 9 bytes before proceeding
+                                    Log.d("BYTES RECEIVED", str_in.length() + "::" + str_in);
+                                    if (str_in.length() < 9) {
+                                        mBuffer = str_in;
+                                    } else {
+                                        // Any more than 8 chars should be passed on to the next loop
+                                        mBuffer = str_in.substring(8);
+                                        // Don't take more than 8 or parseFloat will cause an exception + reflight!
+                                        str_in = str_in.substring(0, 8);
+                                        mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim());
+                                        mDriver.runComplete();
+                                        // Reset these here, as sometimes READY is not received!?
+                                        mTimerStatus = 0;
+                                        mDriver.ready();
+                                        mBuffer = "";
+                                    }
+                                    break;
                             }
 
                         } else {

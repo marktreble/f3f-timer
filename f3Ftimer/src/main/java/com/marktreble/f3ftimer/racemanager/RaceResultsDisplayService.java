@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.racemanager;
 
 import android.app.Service;
@@ -16,6 +27,7 @@ import android.os.ParcelUuid;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -25,10 +37,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Vector;
 
 /**
  * Created by marktreble on 04/08/15.
@@ -40,7 +52,6 @@ public class RaceResultsDisplayService extends Service {
     private BluetoothAdapter mBluetoothAdapter;
     public static final String BT_DEVICE = "btdevice";
     public static final int STATE_NONE = 0; // we're doing nothing
-    public static final int STATE_LISTEN = 1; // now listening for incoming
     // connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing
     // connection
@@ -52,12 +63,9 @@ public class RaceResultsDisplayService extends Service {
     public static Handler mHandler = null;
     public static int mState = STATE_NONE;
     public static String deviceName;
-    public Vector<Byte> packdata = new Vector<>(2048);
     public static BluetoothDevice device = null;
 
     private String mMacAddress;
-
-    private Context mContext;
 
     static final String ENCODING = "US-ASCII";
 
@@ -76,7 +84,6 @@ public class RaceResultsDisplayService extends Service {
         Log.i(TAG, "Service started");
         this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onExternalUpdate"));
 
-        mContext = this;
         mHandler = new Handler();
 
         super.onCreate();
@@ -142,14 +149,14 @@ public class RaceResultsDisplayService extends Service {
     }
 
     private void callbackToUI(String cmd, HashMap<String, String> params) {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+        Intent i = new Intent(IComm.RCV_UPDATE);
         if (params != null) {
             for (String key : params.keySet()) {
                 i.putExtra(key, params.get(key));
             }
         }
 
-        i.putExtra("com.marktreble.f3ftimer.service_callback", cmd);
+        i.putExtra(IComm.MSG_SERVICE_CALLBACK, cmd);
         Log.d("CallBackToUI", cmd);
         this.sendBroadcast(i);
     }
@@ -282,7 +289,7 @@ public class RaceResultsDisplayService extends Service {
         r.write(out);
     }
 
-    private synchronized void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice) {
+    private synchronized void connected(BluetoothSocket mmSocket) {
         Log.d(TAG, "Connected");
         // Cancel the thread that completed the connection
         if (mConnectThread != null) {
@@ -299,38 +306,33 @@ public class RaceResultsDisplayService extends Service {
         mConnectedThread = new ConnectedThread(mmSocket);
         mConnectedThread.start();
 
-        setState(STATE_CONNECTED);
-
         // Post to UI that connection is on!
-
-
+        setState(STATE_CONNECTED);
     }
 
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
 
-        public ConnectThread(BluetoothDevice device) {
-            this.mmDevice = device;
+        ConnectThread(BluetoothDevice device) {
             BluetoothSocket tmp = null;
 
             UUID hc05_uuid = UUID.fromString(getString(R.string.HC05_uuid));
             UUID app_uuid = UUID.fromString(getString(R.string.external_display_uuid));
             try {
-                ParcelUuid uuids[] = this.mmDevice.getUuids();
+                ParcelUuid[] Uuids = device.getUuids();
 
-                if (uuids.length > 0) {
-                    for (ParcelUuid test : uuids) {
+                if (Uuids.length > 0) {
+                    for (ParcelUuid test : Uuids) {
                         if (test.equals(new ParcelUuid(hc05_uuid))) {
-                            tmp = mmDevice.createRfcommSocketToServiceRecord(hc05_uuid);
+                            tmp = device.createRfcommSocketToServiceRecord(hc05_uuid);
                         }
                         if (test.equals(new ParcelUuid(app_uuid))) {
-                            tmp = mmDevice.createRfcommSocketToServiceRecord(app_uuid);
+                            tmp = device.createRfcommSocketToServiceRecord(app_uuid);
                         }
                     }
                 }
             } catch (IOException e) {
-                Log.i(TAG, "Failed to connect to device " + mmDevice.getName());
+                Log.i(TAG, "Failed to connect to device " + device.getName());
             }
 
 
@@ -360,7 +362,7 @@ public class RaceResultsDisplayService extends Service {
             synchronized (RaceResultsDisplayService.this) {
                 mConnectThread = null;
             }
-            connected(mmSocket, mmDevice);
+            connected(mmSocket);
         }
 
         public void cancel() {
@@ -370,10 +372,6 @@ public class RaceResultsDisplayService extends Service {
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);
             }
-        }
-
-        public void sendData(String data) {
-            mConnectedThread.write(data.getBytes());
         }
     }
 
@@ -388,7 +386,7 @@ public class RaceResultsDisplayService extends Service {
         private long last_time = 0;
         private boolean ping_sent = false;
 
-        public ConnectedThread(BluetoothSocket socket) {
+        ConnectedThread(BluetoothSocket socket) {
             displayConnected();
 
             mmSocket = socket;
@@ -431,7 +429,7 @@ public class RaceResultsDisplayService extends Service {
 
                         byte[] data = new byte[bufferLength];
                         System.arraycopy(buffer, 0, data, 0, bufferLength);
-                        final String response = new String(data, "UTF-8");
+                        final String response = new String(data, StandardCharsets.UTF_8);
                         Log.d(TAG, "R:" + response);
                         if (response.equals(str_last_time)) {
                             ping_sent = false;
@@ -466,12 +464,6 @@ public class RaceResultsDisplayService extends Service {
                 e.printStackTrace();
             }
         }
-
-        public void resetPing() {
-            last_time = System.nanoTime();
-            ping_sent = false;
-        }
-
     }
 
     @Override
@@ -496,6 +488,8 @@ public class RaceResultsDisplayService extends Service {
 
                 Log.i(TAG, "Connected");
                 Bundle extras = intent.getExtras();
+                if (extras == null) return;
+
                 String data = extras.getString("com.marktreble.f3ftimer.external_results_callback");
                 if (data == null) {
                     Log.i(TAG, "No data");

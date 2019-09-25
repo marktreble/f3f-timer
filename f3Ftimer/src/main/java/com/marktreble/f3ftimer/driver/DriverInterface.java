@@ -1,26 +1,32 @@
 /*
- * DriverInterface
- * Interface declaration which all HID drivers must implement
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
 
 package com.marktreble.f3ftimer.driver;
 
 public interface DriverInterface {
-    public void driverConnected();
+    void driverConnected();
 
-    public void driverDisconnected();
+    void driverDisconnected();
 
-    public void sendLaunch();
+    void sendLaunch();
 
-    public void sendAbort();
+    void sendAbort();
 
-    public void sendAdditionalBuzzer();
+    void sendAdditionalBuzzer();
 
-    public void sendResendTime();
+    void sendResendTime();
 
-    public void baseA();
+    void baseA();
 
-    public void baseB();
+    void baseB();
 
-    public void finished(String time);
+    void finished(String time);
 }

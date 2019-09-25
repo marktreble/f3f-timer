@@ -1,7 +1,14 @@
 /*
- * ResultsRaceActivity
- * Shows List of contestants, along with total points and normalised score
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.resultsmanager;
 
 import android.app.ListActivity;
@@ -10,6 +17,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -33,9 +41,6 @@ import java.util.ArrayList;
 
 public class ResultsLeaderBoardActivity extends ListActivity {
 
-    static boolean DEBUG = true;
-    static int RESULT_ABORTED = 1;
-
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
     private ArrayList<String> mArrNumbers;
@@ -54,7 +59,7 @@ public class ResultsLeaderBoardActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -66,10 +71,12 @@ public class ResultsLeaderBoardActivity extends ListActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("race_id")) {
             Bundle extras = intent.getExtras();
-            mRid = extras.getInt("race_id");
+            if (extras != null) {
+                mRid = extras.getInt("race_id");
+            }
         }
 
-        TextView tt = (TextView) findViewById(R.id.race_title);
+        TextView tt = findViewById(R.id.race_title);
         tt.setText(getString(R.string.leader_board));
 
         setList();
@@ -110,10 +117,9 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots, R.id.text1, mArrNames) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
-                if (mArrNames.get(position) == null) return null;
 
                 if (null == convertView) {
                     row = getLayoutInflater().inflate(R.layout.listrow_resultspilots, parent, false);
@@ -123,10 +129,10 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 
                 Pilot p = mArrPilots.get(position);
 
-                TextView p_number = (TextView) row.findViewById(R.id.number);
+                TextView p_number = row.findViewById(R.id.number);
                 p_number.setText(mArrNumbers.get(position));
 
-                TextView p_name = (TextView) row.findViewById(R.id.text1);
+                TextView p_name = row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
                 p_name.setTextColor(getResources().getColor(R.color.text3));
 
@@ -148,10 +154,10 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 
                 row.setBackgroundColor(getResources().getColor(R.color.background));
 
-                TextView time = (TextView) row.findViewById(R.id.time);
+                TextView time = row.findViewById(R.id.time);
                 time.setText(String.format("%.2f", p.points));
 
-                TextView points = (TextView) row.findViewById(R.id.points);
+                TextView points = row.findViewById(R.id.points);
                 points.setText(String.format("%.2f", mArrScores.get(position)));
 
                 return row;

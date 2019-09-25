@@ -1,12 +1,18 @@
 /*
- * NewRaceFrag2
- * Page 2 for New Race form
- * Pilot Picker
- * with Random/Manual Order Shuffling
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +30,6 @@ import java.util.ArrayList;
 
 public class NewRaceFrag2 extends ListFragment {
 
-    private ArrayAdapter<String> mArrAdapter;
     private LayoutInflater mInflater;
 
     private ArrayList<Integer> mArrSelectedIds;    // ArrayList of selected pilot ids is same order as mArrSelected
@@ -42,7 +47,7 @@ public class NewRaceFrag2 extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mArrSelectedIds = new ArrayList<Integer>();
+        mArrSelectedIds = new ArrayList<>();
 
         NewRaceActivity a = (NewRaceActivity) getActivity();
         if (a.pilots != null)
@@ -60,7 +65,7 @@ public class NewRaceFrag2 extends ListFragment {
         View v = inflater.inflate(R.layout.race_new_frag2, container, false);
 
         // Listener for next button
-        Button next = (Button) v.findViewById(R.id.button_next);
+        Button next = v.findViewById(R.id.button_next);
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,7 +77,7 @@ public class NewRaceFrag2 extends ListFragment {
         });
 
         // Listener for skip button
-        Button skip = (Button) v.findViewById(R.id.button_skip);
+        Button skip = v.findViewById(R.id.button_skip);
         skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -82,7 +87,7 @@ public class NewRaceFrag2 extends ListFragment {
             }
         });
 
-        next_number = (TextView) v.findViewById(R.id.next_number);
+        next_number = v.findViewById(R.id.next_number);
 
         setNextNumber();
 
@@ -91,9 +96,9 @@ public class NewRaceFrag2 extends ListFragment {
 
 
     private void setList() {
-        mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_pickpilots, R.id.text1, mArrNames) {
+        ArrayAdapter<String> mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_pickpilots, R.id.text1, mArrNames) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
                 if (null == convertView) {
@@ -102,8 +107,8 @@ public class NewRaceFrag2 extends ListFragment {
                     row = convertView;
                 }
 
-                TextView tv = (TextView) row.findViewById(R.id.text1);
-                TextView nm = (TextView) row.findViewById(R.id.number);
+                TextView tv = row.findViewById(R.id.text1);
+                TextView nm = row.findViewById(R.id.number);
 
 
                 String name = getItem(position);
@@ -123,8 +128,6 @@ public class NewRaceFrag2 extends ListFragment {
                 return row;
             }
         };
-        //mArrAdapter.notifyDataSetChanged();
-        //getListView().invalidateViews();
         setListAdapter(mArrAdapter);
     }
 
@@ -133,9 +136,7 @@ public class NewRaceFrag2 extends ListFragment {
         // Add the race id to this bundle
         Integer pid = mArrIds.get(position);
 
-        if (mArrSelectedIds.contains(pid)) {
-            // Already selected   
-        } else {
+        if (!mArrSelectedIds.contains(pid)) {
             mArrSelectedIds.add(pid);
         }
         getListView().invalidateViews();

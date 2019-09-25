@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.driver;
 
 import android.app.Service;
@@ -18,6 +29,7 @@ import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
@@ -79,7 +91,7 @@ public class USBOtherService extends Service implements DriverInterface {
         super.onCreate();
         mDriver = new Driver(this);
 
-        this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
     }
 
 
@@ -105,9 +117,9 @@ public class USBOtherService extends Service implements DriverInterface {
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params) {
         if (inputSource.equals(context.getString(R.string.USB_OTHER))) {
-            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+            Intent i = new Intent(IComm.RCV_UPDATE);
             i.putExtra("icon", ICN_DISCONN);
-            i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "driver_stopped");
             context.sendBroadcast(i);
 
             Intent serviceIntent = new Intent(context, USBOtherService.class);
@@ -132,7 +144,11 @@ public class USBOtherService extends Service implements DriverInterface {
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
                 Bundle extras = intent.getExtras();
-                String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
+                if (extras == null) {
+                    return;
+                }
+
+                String data = extras.getString("com.marktreble.f3ftimer.ui_callback", "");
                 Log.i("USB SERVICE UI->Service", data);
 
                 if (data.equals("get_connection_status")) {
@@ -155,17 +171,19 @@ public class USBOtherService extends Service implements DriverInterface {
         Log.i(TAG, "onStartCommand");
 
         Bundle extras = intent.getExtras();
+        if (extras == null) {
+            return START_REDELIVER_INTENT;
+        }
 
         mBaudRate = 2400;
-        String baudrate = extras.getString("pref_usb_baudrate");
-        if (baudrate != null)
-            try {
-                mBaudRate = Integer.parseInt(baudrate, 10);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
-            }
+        String baudrate = extras.getString("pref_usb_baudrate", "2400");
+        try {
+            mBaudRate = Integer.parseInt(baudrate, 10);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
 
-        String databits = extras.getString("pref_usb_databits");
+        String databits = extras.getString("pref_usb_databits", "8");
 
         switch (databits) {
             case "5":
@@ -183,7 +201,7 @@ public class USBOtherService extends Service implements DriverInterface {
                 break;
         }
 
-        String stopbits = extras.getString("pref_usb_stopbits");
+        String stopbits = extras.getString("pref_usb_stopbits", "1");
 
         switch (stopbits) {
             case "2":
@@ -195,7 +213,7 @@ public class USBOtherService extends Service implements DriverInterface {
                 break;
         }
 
-        String parity = extras.getString("pref_usb_parity");
+        String parity = extras.getString("pref_usb_parity", "None");
         switch (parity) {
             case "Odd":
                 mParity = UsbSerialPort.PARITY_ODD;
@@ -232,6 +250,10 @@ public class USBOtherService extends Service implements DriverInterface {
     public boolean connect(Intent intent) {
         UsbManager usbManager = (UsbManager) getSystemService(Context.USB_SERVICE);
 
+        if (usbManager == null) {
+            return false;
+        }
+
         UsbSerialProber prober = UsbSerialProber.getDefaultProber();
         final List<UsbSerialDriver> drivers = prober.findAllDrivers(usbManager);
 
@@ -255,8 +277,8 @@ public class USBOtherService extends Service implements DriverInterface {
                 if (!mUnsupportedMessageSent) {
                     Log.i(TAG, "Devices found");
                     // Notify user of the vendor/productId
-                    Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                    i.putExtra("com.marktreble.f3ftimer.service_callback", "unsupported");
+                    Intent i = new Intent(IComm.RCV_UPDATE);
+                    i.putExtra(IComm.MSG_SERVICE_CALLBACK, "unsupported");
                     i.putExtra("vendorId", String.format("0x%04X", prober.mVendorId));
                     i.putExtra("productId", String.format("0x%04X", prober.mProductId));
                     sendBroadcast(i);
@@ -335,8 +357,7 @@ public class USBOtherService extends Service implements DriverInterface {
             StringBuilder sb = new StringBuilder(charArray.length);
             StringBuilder hexString = new StringBuilder();
             for (char c : charArray) {
-                if (c < 0) throw new IllegalArgumentException();
-                sb.append(Character.toString(c));
+                sb.append(c);
 
                 String hex = Integer.toHexString(0xFF & c);
                 if (hex.length() == 1) {
@@ -356,8 +377,7 @@ public class USBOtherService extends Service implements DriverInterface {
                     mBuffer = "";
 
                     // Get code (first char)
-                    String code = "";
-                    code = str_in.substring(0, 1);
+                    String code = str_in.substring(0, 1);
 
                     // We have data/command from the timer, pass this on to the server
                     if (code.equals(FT_START_BUTTON)) {
@@ -424,8 +444,8 @@ public class USBOtherService extends Service implements DriverInterface {
                 }
             } else {
                 // Call alert dialog on UI Thread "No Output Stream Available"
-                Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
-                i.putExtra("com.marktreble.f3ftimer.service_callback", "no_out_stream");
+                Intent i = new Intent(IComm.RCV_UPDATE);
+                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "no_out_stream");
                 sendBroadcast(i);
 
 

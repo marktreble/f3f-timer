@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.data.pilot;
 
 import android.content.Context;
@@ -59,7 +70,7 @@ public class Pilot {
     public String get() {
         String str = "";
         str += firstname + " ";
-        str += Integer.toString(penalty) + " ";
+        str += penalty + " ";
         return str;
     }
 
@@ -73,11 +84,6 @@ public class Pilot {
 
     public String toString() {
         return String.format("{\"id\":\"%s\", \"race_id\":\"%s\", \"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"nac_no\":\"%s\", \"fai_id\":\"%s\", \"team\":\"%s\"}", id, race_id, pilot_id, status, firstname, lastname, nationality, language, nac_no, fai_id, team);
-
-    }
-
-    public String toExtendedString() {
-        return String.format("{\"id\":\"%s\", \"pilot_id\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"time\":\"%s\", \"points\":\"%s\", \"penalty\":\"%s\"}", id, pilot_id, firstname, lastname, time, points, penalty);
 
     }
 

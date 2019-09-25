@@ -1,8 +1,14 @@
 /*
- * RaceActivity
- * Shows List of contestants, along with status of race
- * Also allows new pilots to be added (always appended to end of list)
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.racemanager;
 
 import android.app.ActionBar;
@@ -46,6 +52,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -76,6 +83,7 @@ import com.marktreble.f3ftimer.wifi.Wifi;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +132,6 @@ public class RaceActivity extends ListActivity {
     private boolean mRoundNotStarted;
     private boolean mGroupNotStarted;
     private Pilot mNextPilot;
-    private Pilot mNextReflightPilot;
 
     private boolean mPilotDialogShown = false; // Used to determine the action when the start button is pressed
     private boolean mTimeoutDialogShown = false;
@@ -161,7 +168,7 @@ public class RaceActivity extends ListActivity {
         Log.i("RACEACTIVITY", "ONCREATE");
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -173,7 +180,9 @@ public class RaceActivity extends ListActivity {
         Intent intent = getIntent();
         if (intent.hasExtra("race_id")) {
             Bundle extras = intent.getExtras();
-            mRid = extras.getInt("race_id");
+            if (extras != null) {
+                mRid = extras.getInt("race_id");
+            }
         }
 
         RaceData datasource = new RaceData(this);
@@ -188,19 +197,19 @@ public class RaceActivity extends ListActivity {
 
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        mExternalDisplayStatus = (ImageView) findViewById(R.id.external_display_connection_status);
+        mExternalDisplayStatus = findViewById(R.id.external_display_connection_status);
         mExternalDisplayStatusIcon = "off_display";
 
-        mPower = (TextView) findViewById(R.id.battery_level);
+        mPower = findViewById(R.id.battery_level);
 
-        mStatus = (ImageView) findViewById(R.id.connection_status);
+        mStatus = findViewById(R.id.connection_status);
         mStatusIcon = "off";
 
-        mWindReadings = (TextView) findViewById(R.id.wind_readings);
+        mWindReadings = findViewById(R.id.wind_readings);
 
 
         // Register for notifications
-        registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdate"));
+        registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE));
         registerReceiver(mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         getPreferences();
@@ -227,6 +236,7 @@ public class RaceActivity extends ListActivity {
         getNamesArray();
         setList();
 
+        if (getActionBar() == null) return;
         getActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
             @Override
             public void onMenuVisibilityChanged(boolean isVisible) {
@@ -295,8 +305,6 @@ public class RaceActivity extends ListActivity {
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
         TcpIoService.stop(this);
-
-        Intent serviceIntent = null;
 
         // Start Timer Driver
         Bundle extras = getIntent().getExtras();
@@ -471,7 +479,7 @@ public class RaceActivity extends ListActivity {
         mGroupScoring = datasource2.getGroup(mRid, mRnd);
         datasource2.close();
 
-        TextView tt = (TextView) findViewById(R.id.race_title);
+        TextView tt = findViewById(R.id.race_title);
 
         String title = String.format("R%d - %s", mRnd, mRace.name);
         tt.setText(title);
@@ -479,7 +487,7 @@ public class RaceActivity extends ListActivity {
     }
 
     private void setResultsIP() {
-        TextView results = (TextView) findViewById(R.id.results_ip);
+        TextView results = findViewById(R.id.results_ip);
         if (mPrefResults) {
             results.setVisibility(View.VISIBLE);
             new fetchIPAsyncTask(results).execute();
@@ -642,14 +650,6 @@ public class RaceActivity extends ListActivity {
                         }
                     }, 600);
                 }
-            }
-
-            if (requestCode == RaceActivity.DLG_PILOT_EDIT) {
-                // Response from editing the pilot - refresh the pilot list
-            }
-
-            if (requestCode == RaceActivity.DLG_FLYING_ORDER_EDIT) {
-                // Response from editing the flying order
             }
 
             if (requestCode == RaceActivity.DLG_GROUP_SCORE_EDIT) {
@@ -871,7 +871,7 @@ public class RaceActivity extends ListActivity {
         mRoundNotStarted = true;
         mGroupNotStarted = true;
         mNextPilot = null;
-        mNextReflightPilot = null;
+        Pilot mNextReflightPilot = null;
 
         // No. of bib numbers skipped
         // (used to close up the gaps in the list, and pop the unused ends off the arrays at the end)
@@ -1035,7 +1035,7 @@ public class RaceActivity extends ListActivity {
 
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_racepilots, R.id.text1, mArrNames) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
                 //if (mArrNames.get(position) == null) return null;
@@ -1050,7 +1050,7 @@ public class RaceActivity extends ListActivity {
 
                 Pilot p = mArrPilots.get(position);
 
-                TextView p_number = (TextView) row.findViewById(R.id.number);
+                TextView p_number = row.findViewById(R.id.number);
                 String bib_no = mArrNumbers.get(position);
                 if (!bib_no.equals("")) {
                     p_number.setVisibility(View.VISIBLE);
@@ -1059,13 +1059,13 @@ public class RaceActivity extends ListActivity {
                     p_number.setVisibility(View.INVISIBLE);
                 }
 
-                TextView p_name = (TextView) row.findViewById(R.id.text1);
+                TextView p_name = row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
                 p_name.setPaintFlags(p_name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 p_name.setTextColor(ContextCompat.getColor(mContext, R.color.text3));
 
                 View group_header = row.findViewById(R.id.group_header);
-                TextView group_header_label = (TextView) row.findViewById(R.id.group_header_label);
+                TextView group_header_label = row.findViewById(R.id.group_header_label);
                 if (mGroupScoring.num_groups > 1 && mFirstInGroup.get(position)) {
                     group_header.setVisibility(View.VISIBLE);
                     group_header_label.setText(String.format(getString(R.string.group_heading), mArrGroups.get(position) + 1));
@@ -1092,14 +1092,14 @@ public class RaceActivity extends ListActivity {
                     row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.med_grey));
                 }
 
-                TextView penalty = (TextView) row.findViewById(R.id.penalty);
+                TextView penalty = row.findViewById(R.id.penalty);
                 if (p.penalty > 0) {
                     penalty.setText(String.format(getString(R.string.penalty), p.penalty));
                 } else {
                     penalty.setText(getResources().getString(R.string.empty));
                 }
 
-                TextView time = (TextView) row.findViewById(R.id.time);
+                TextView time = row.findViewById(R.id.time);
                 if (p.time == 0 && !p.flown) {
                     time.setText(getResources().getString(R.string.notime));
                     if (mNextPilot != null && mNextPilot.pilot_id == p.pilot_id && mNextPilot.position == position)
@@ -1110,7 +1110,7 @@ public class RaceActivity extends ListActivity {
                     row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.dk_grey));
                 }
 
-                TextView points = (TextView) row.findViewById(R.id.points);
+                TextView points = row.findViewById(R.id.points);
                 if (p.flown || p.status == Pilot.STATUS_RETIRED) {
                     points.setText(String.format("%.2f", p.points));
                 } else {
@@ -1167,21 +1167,19 @@ public class RaceActivity extends ListActivity {
 
     public class DialogButtonClickHandler implements DialogInterface.OnClickListener {
         public void onClick(DialogInterface dialog, int clicked) {
-            switch (clicked) {
-                case DialogInterface.BUTTON_POSITIVE:
-                    // Update the list
-                    for (int i = 0; i < _options.length; i++) {
-                        if (_selections[i]) {
-                            addPilot(mArrRemainingPilots.get(i));
-                        }
-
+            if (clicked == DialogInterface.BUTTON_POSITIVE) {
+                // Update the list
+                for (int i = 0; i < _options.length; i++) {
+                    if (_selections[i]) {
+                        addPilot(mArrRemainingPilots.get(i));
                     }
-                    // Dismiss picker, so update the listview!
 
-                    getNamesArray();
-                    mArrAdapter.notifyDataSetChanged();
-                    mDlg = null;
-                    break;
+                }
+                // Dismiss picker, so update the listview!
+
+                getNamesArray();
+                mArrAdapter.notifyDataSetChanged();
+                mDlg = null;
             }
         }
     }
@@ -1285,7 +1283,7 @@ public class RaceActivity extends ListActivity {
 
     // Binding for UI->Service Communication
     public void sendCommand(String cmd) {
-        Intent i = new Intent("com.marktreble.f3ftimer.onUpdateFromUI");
+        Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
         i.putExtra("com.marktreble.f3ftimer.ui_callback", cmd);
         sendBroadcast(i);
     }
@@ -1294,11 +1292,11 @@ public class RaceActivity extends ListActivity {
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.service_callback")) {
+            if (intent.hasExtra(IComm.MSG_SERVICE_CALLBACK)) {
                 Bundle extras = intent.getExtras();
                 String data = null;
                 if (extras != null) {
-                    data = extras.getString("com.marktreble.f3ftimer.service_callback");
+                    data = extras.getString(IComm.MSG_SERVICE_CALLBACK);
                 }
                 if (data == null) {
                     return;
@@ -1380,12 +1378,14 @@ public class RaceActivity extends ListActivity {
                 if (data.equals("finishRace")) {
                     finishRace();
                 }
-
+/*
                 if (data.equals("wind_legal")) {
+
                 }
 
                 if (data.equals("wind_illegal")) {
                 }
+ */
             }
 
             if (intent.hasExtra("com.marktreble.f3ftimer.value.wind_values")) {
@@ -1639,6 +1639,7 @@ public class RaceActivity extends ListActivity {
 
         PrintManager printManager = (PrintManager) this
                 .getSystemService(Context.PRINT_SERVICE);
+        if (printManager == null) return;
 
         String jobName = getString(R.string.app_name) + " Pilot List";
 

@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.driver;
 
 import android.app.Service;
@@ -11,6 +22,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class SoftBuzzerService extends Service implements DriverInterface, Thread.UncaughtExceptionHandler {
@@ -47,7 +59,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         super.onCreate();
         mDriver = new Driver(this);
 
-        this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onUpdateFromUI"));
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
 
         Thread.setDefaultUncaughtExceptionHandler(this);
     }
@@ -73,9 +85,9 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
     public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params) {
         if (inputSource.equals(context.getString(R.string.Demo))) {
-            Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+            Intent i = new Intent(IComm.RCV_UPDATE);
             i.putExtra("icon", ICN_DISCONN);
-            i.putExtra("com.marktreble.f3ftimer.service_callback", "driver_stopped");
+            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "driver_stopped");
             context.sendBroadcast(i);
 
             Intent serviceIntent = new Intent(context, SoftBuzzerService.class);
@@ -143,7 +155,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
             @Override
             public void run() {
-                Intent i = new Intent("com.marktreble.f3ftimer.onUpdate");
+                Intent i = new Intent(IComm.RCV_UPDATE);
                 float wind_angle_absolute = mSlopeOrientation + (float) (Math.random() * 2) - 1.f;
                 float wind_angle_relative = wind_angle_absolute - mSlopeOrientation;
                 if (wind_angle_absolute > 180 + mSlopeOrientation) {
@@ -194,10 +206,14 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     private void base(String base) {
         switch (mTimerStatus) {
             case 0:
-                mDriver.offCourse();
+                if (base.equals("A")) {
+                    mDriver.offCourse();
+                }
                 break;
             case 1:
-                mDriver.onCourse();
+                if (base.equals("A")) {
+                    mDriver.onCourse();
+                }
                 break;
             default:
                 mDriver.legComplete();
@@ -231,21 +247,17 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     }
 
     public void baseA() {
-        Log.i(TAG, "BASE A " + Integer.toString(mTimerStatus % 2));
         if ((mTimerStatus == 0) || (mTimerStatus % 2 == 1))
             base("A");
     }
 
     public void baseB() {
-        Log.i(TAG, "BASE B " + Integer.toString(mTimerStatus % 2));
         if ((mTimerStatus > 0) && (mTimerStatus % 2 == 0))
             base("B");
     }
 
     public void finished(String time) {
-        Log.d(TAG, "TIME " + time.trim());
         mDriver.mPilot_Time = Float.parseFloat(time.trim().replace(",", "."));
-        Log.d(TAG, "TIME " + Float.toString(mDriver.mPilot_Time));
         mDriver.runComplete();
         mTimerStatus = 0;
         mDriver.ready();
@@ -253,7 +265,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     }
 
     public String formatWindValues(boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
-        String str = "";
+        String str;
         if (windLegal && windSpeedCounter == 20) {
             str = String.format(" a: %.2f°", windAngleAbsolute)
                     + String.format(" r: %.2f°", windAngleRelative)

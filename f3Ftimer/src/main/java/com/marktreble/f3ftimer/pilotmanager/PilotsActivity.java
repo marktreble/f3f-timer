@@ -1,9 +1,14 @@
 /*
- * PilotsActivity
- * Entry point for Pilot Manager App
- * Provide a list of Pilots in the database
- * Pilots can be added/edited or deleted
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
  */
+
 package com.marktreble.f3ftimer.pilotmanager;
 
 import android.app.Activity;
@@ -13,6 +18,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -58,7 +64,7 @@ public class PilotsActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageView view = (ImageView) findViewById(android.R.id.home);
+        ImageView view = findViewById(android.R.id.home);
         Resources r = getResources();
         int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         view.setPadding(0, 0, px, 0);
@@ -77,7 +83,7 @@ public class PilotsActivity extends ListActivity {
 
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow, R.id.text1, mArrNames) {
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public @NonNull View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 View row;
 
                 if (null == convertView) {
@@ -88,7 +94,7 @@ public class PilotsActivity extends ListActivity {
 
                 Pilot p = mArrPilots.get(position);
 
-                TextView p_name = (TextView) row.findViewById(R.id.text1);
+                TextView p_name = row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
 
                 Drawable flag = p.getFlag(mContext);

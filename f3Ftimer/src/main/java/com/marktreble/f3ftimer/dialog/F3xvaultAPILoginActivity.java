@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.dialog;
 
 import android.app.Activity;
@@ -26,11 +37,11 @@ public class F3xvaultAPILoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.f3xvault_api_login);
 
-        EditText username = (EditText) findViewById(R.id.username);
-        EditText password = (EditText) findViewById(R.id.password);
-        CheckBox remember = (CheckBox) findViewById(R.id.remember);
+        EditText username = findViewById(R.id.username);
+        EditText password = findViewById(R.id.password);
+        CheckBox remember = findViewById(R.id.remember);
 
-        Button login = (Button) findViewById(R.id.login);
+        Button login = findViewById(R.id.login);
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,9 +76,9 @@ public class F3xvaultAPILoginActivity extends Activity {
 
     private boolean login() {
         // Get entered data, and save to/update database
-        EditText username = (EditText) findViewById(R.id.username);
-        EditText password = (EditText) findViewById(R.id.password);
-        CheckBox remember = (CheckBox) findViewById(R.id.remember);
+        EditText username = findViewById(R.id.username);
+        EditText password = findViewById(R.id.password);
+        CheckBox remember = findViewById(R.id.remember);
 
         String str_username = username.getText().toString();
         String str_password = password.getText().toString();

@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.data.pilot;
 
 import android.content.ContentValues;
@@ -28,7 +39,7 @@ public class PilotData {
     }
 
     public Pilot getPilot(int id) {
-        Cursor cursor = database.query("pilots", allColumns, "id = '" + Integer.toString(id) + "'", null, null, null, null);
+        Cursor cursor = database.query("pilots", allColumns, "id = '" + id + "'", null, null, null, null);
         if (cursor.getCount() == 0) return new Pilot(); // Return a blank object if not found
         cursor.moveToFirst();
         Pilot p = cursorToPilot(cursor);
@@ -63,11 +74,11 @@ public class PilotData {
         values.put("language", p.language);
         values.put("nac_no", p.nac_no);
         values.put("fai_id", p.fai_id);
-        database.update("pilots", values, "id=" + Integer.toString(p.id), null);
+        database.update("pilots", values, "id=" + p.id, null);
     }
 
     public void deletePilot(int id) {
-        database.delete("pilots", "id = '" + Integer.toString(id) + "'", null);
+        database.delete("pilots", "id = '" + id + "'", null);
     }
 
     public ArrayList<Pilot> getAllPilots() {
@@ -126,30 +137,30 @@ public class PilotData {
     }
 
     public String getSerialized() {
-        String array = "[";
+        StringBuilder array = new StringBuilder("[");
         ArrayList<Pilot> pilots = getAllPilots();
         for (int i = 0; i < pilots.size(); i++) {
-            if (i > 0) array += ",";
+            if (i > 0) array.append(",");
             Pilot p = pilots.get(i);
             String str_pilot = String.format("{\"id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"email\":\"%s\", \"frequency\":\"%s\", \"models\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"nac_no\":\"%s\", \"fai_id\":\"%s\"}", p.id, p.status, p.firstname, p.lastname, p.email, p.frequency, p.models, p.nationality, p.language, p.nac_no, p.fai_id);
-            array += str_pilot;
+            array.append(str_pilot);
         }
-        array += "]";
+        array.append("]");
 
-        return array;
+        return array.toString();
     }
 
     public String getCSV() {
-        String csv = "";
+        StringBuilder csv = new StringBuilder();
         ArrayList<Pilot> pilots = getAllPilots();
         for (int i = 0; i < pilots.size(); i++) {
-            if (i > 0) csv += "\r\n";
+            if (i > 0) csv.append("\r\n");
             Pilot p = pilots.get(i);
             String str_pilot = String.format("%s, %s, %s, %s, %s, %s, %s, %s, %s, %s", p.firstname, p.lastname, p.nationality, p.language, p.team, p.frequency, p.models, p.email, p.nac_no, p.fai_id);
-            csv += str_pilot;
+            csv.append(str_pilot);
         }
 
-        return csv;
+        return csv.toString();
     }
 
 }
