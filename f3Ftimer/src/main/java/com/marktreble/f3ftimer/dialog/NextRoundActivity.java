@@ -28,7 +28,6 @@ import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
 
-
 public class NextRoundActivity extends FragmentActivity {
 
     private Fragment mCurrentFragment;
@@ -36,7 +35,7 @@ public class NextRoundActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
+        ((F3FtimerApplication) getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.race_timer);
 

@@ -44,7 +44,7 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
+        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ArrayAdapter<String> mArrAdapter;
@@ -84,7 +84,10 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
             TextView noneView = new TextView(this);
             noneView.setText(getString(R.string.no_rounds));
 
-            noneView.setTextColor(r.getColor(R.color.text2));
+            noneView.setTextColor(F3FtimerApplication.themeAttributeToColor(
+                    R.attr.t2,
+                    this,
+                    R.color.light_grey));
             int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
             noneView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
             noneView.setPadding(px1, px1, px1, px1);

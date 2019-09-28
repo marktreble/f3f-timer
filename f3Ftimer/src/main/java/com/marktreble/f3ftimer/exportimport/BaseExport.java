@@ -69,7 +69,7 @@ public abstract class BaseExport extends Activity {
             mSaveFolder = folder;
         }
 
-        mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+        AlertDialog.Builder dlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
 
                 .setTitle("Save Location")
                 .setMessage("Your file(s) will be exported to:\n" + mSaveFolder)
@@ -104,8 +104,10 @@ public abstract class BaseExport extends Activity {
                     public void onClick(DialogInterface dialog, int which) {
                         mActivity.finish();
                     }
-                }).show();
-
+                });
+        mDlg = dlg.create();
+        mDlg.setCanceledOnTouchOutside(false);
+        mDlg.show();
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)

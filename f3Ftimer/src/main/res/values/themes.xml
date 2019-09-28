@@ -16,6 +16,7 @@
     <style name="AppTheme.Overlay" parent="Theme.Overlay">
         <item name="bg">@color/black</item>
         <item name="bg2">@color/text1</item>
+        <item name="bg3">@color/dark_grey</item>
         <item name="t1">@color/text</item>
         <item name="t2">@color/text3</item>
         <item name="t3">@color/text2</item>
@@ -23,14 +24,8 @@
         <item name="div">@color/border</item>
     </style>
 
-    <style name="AppTheme.Transparent" parent="Theme.Transparent">
-        <item name="bg">@color/black</item>
-        <item name="bg2">@color/text1</item>
-        <item name="t1">@color/text</item>
-        <item name="t2">@color/text3</item>
-        <item name="t3">@color/text2</item>
-        <item name="t4">@color/text3</item><!-- Group headings BG -->
-        <item name="div">@color/border</item>
+    <style name="AppTheme.Transparent" parent="AppTheme.Overlay">
+        <item name="android:backgroundDimEnabled">false</item>
         <item name="android:textColorPrimary">@color/text2</item>
     </style>
 
@@ -50,6 +45,7 @@
     <style name="AppTheme.F3f.Overlay" parent="Theme.Overlay">
         <item name="bg">@color/black</item>
         <item name="bg2">@color/dark_grey</item>
+        <item name="bg3">@color/light_grey</item>
         <item name="t1">@color/light_grey</item>
         <item name="t2">@color/f3f</item>
         <item name="t3">@color/text2</item>
@@ -57,14 +53,8 @@
         <item name="div">@color/border</item>
     </style>
 
-    <style name="AppTheme.F3f.Transparent" parent="Theme.Transparent">
-        <item name="bg">@color/black</item>
-        <item name="bg2">@color/dark_grey</item>
-        <item name="t1">@color/light_grey</item>
-        <item name="t2">@color/f3f</item>
-        <item name="t3">@color/text2</item>
-        <item name="t4">@color/dark_grey</item>
-        <item name="div">@color/border</item>
+    <style name="AppTheme.F3f.Transparent" parent="AppTheme.F3f.Overlay">
+        <item name="android:backgroundDimEnabled">false</item>
         <item name="android:textColorPrimary">@color/text2</item>
     </style>
 
@@ -84,6 +74,7 @@
     <style name="AppTheme.Yellow.Black.Overlay" parent="Theme.Overlay">
         <item name="bg">@color/black</item>
         <item name="bg2">@color/dark_grey</item>
+        <item name="bg3">@color/light_grey</item>
         <item name="t1">@color/light_grey</item>
         <item name="t2">@color/yellow</item>
         <item name="t3">@color/text2</item>
@@ -91,14 +82,8 @@
         <item name="div">@color/border</item>
     </style>
 
-    <style name="AppTheme.Yellow.Black.Transparent" parent="Theme.Transparent">
-        <item name="bg">@color/black</item>
-        <item name="bg2">@color/dark_grey</item>
-        <item name="t1">@color/light_grey</item>
-        <item name="t2">@color/yellow</item>
-        <item name="t3">@color/text2</item>
-        <item name="t4">@color/dark_grey</item>
-        <item name="div">@color/border</item>
+    <style name="AppTheme.Yellow.Black.Transparent" parent="AppTheme.Yellow.Black.Overlay">
+        <item name="android:backgroundDimEnabled">false</item>
         <item name="android:textColorPrimary">@color/text2</item>
     </style>
 
@@ -118,6 +103,7 @@
     <style name="AppTheme.White.Black.Overlay" parent="Theme.Overlay">
         <item name="bg">@color/black</item>
         <item name="bg2">@color/dark_grey</item>
+        <item name="bg3">@color/light_grey</item>
         <item name="t1">@color/light_grey</item>
         <item name="t2">@color/white</item>
         <item name="t3">@color/text2</item>
@@ -125,15 +111,37 @@
         <item name="div">@color/border</item>
     </style>
 
-    <style name="AppTheme.White.Black.Transparent" parent="Theme.Transparent">
-        <item name="bg">@color/black</item>
-        <item name="bg2">@color/dark_grey</item>
-        <item name="t1">@color/light_grey</item>
-        <item name="t2">@color/white</item>
-        <item name="t3">@color/text2</item>
-        <item name="t4">@color/dark_grey</item>
-        <item name="div">@color/border</item>
+    <style name="AppTheme.White.Black.Transparent" parent="AppTheme.White.Black.Overlay">
+        <item name="android:backgroundDimEnabled">false</item>
         <item name="android:textColorPrimary">@color/text2</item>
     </style>
 
+    <!-- White/Red Theme -->
+    <style name="AppTheme.Red.White" parent="AppBaseTheme">
+        <item name="android:actionBarStyle">@style/carbonActionBar</item>
+        <item name="bg">@color/white</item>
+        <item name="bg2">@color/light_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/red</item>
+        <item name="t3">@color/black</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="grad_fade">@color/white</item>
+        <item name="div">@color/dark_border</item>
+    </style>
+
+    <style name="AppTheme.Red.White.Overlay" parent="Theme.Overlay">
+        <item name="bg">@color/white</item>
+        <item name="bg2">@color/light_grey</item>
+        <item name="bg3">@color/light_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/red</item>
+        <item name="t3">@color/black</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="div">@color/dark_border</item>
+    </style>
+
+    <style name="AppTheme.Red.White.Transparent" parent="AppTheme.Red.White.Overlay">
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:textColorPrimary">@color/dark_grey</item>
+    </style>
 </resources>

@@ -2,6 +2,7 @@
 <resources>
     <attr name="bg" format="reference"/>
     <attr name="bg2" format="reference"/>
+    <attr name="bg3" format="reference"/>
     <attr name="t1" format="reference"/>
     <attr name="t2" format="reference"/>
     <attr name="t3" format="reference"/>

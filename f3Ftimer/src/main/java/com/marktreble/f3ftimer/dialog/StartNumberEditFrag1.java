@@ -11,9 +11,12 @@
 
 package com.marktreble.f3ftimer.dialog;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,17 +25,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class StartNumberEditFrag1 extends Fragment {
 
     View mView;
     private Intent mIntent;
-    private String mStartNumber;
-    private Handler mHandler;
-    private int mSz;
-    private float mAnimationDelay;
+    private Activity mActivity;
 
     public StartNumberEditFrag1() {
         // Required empty public constructor
@@ -43,8 +43,24 @@ public class StartNumberEditFrag1 extends Fragment {
         super.onCreate(savedInstanceState);
 
         mIntent = getActivity().getIntent(); // gets the previously created intent
-        mHandler = new Handler();
-        mSz = ((StartNumberEditActivity) getActivity()).mArrPilots.size();
+        mActivity = getActivity();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (((StartNumberEditActivity) getActivity()).mArrPilots != null) {
+            setPilotPreview();
+        }
+        mActivity.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        mActivity.unregisterReceiver(onBroadcast);
     }
 
     @Override
@@ -58,7 +74,10 @@ public class StartNumberEditFrag1 extends Fragment {
         generate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startAnimation();
+                ((StartNumberEditActivity) getActivity()).startRandomAnimation();
+                Button done = mView.findViewById(R.id.button_done);
+                done.setEnabled(false);
+
             }
         });
 
@@ -75,48 +94,19 @@ public class StartNumberEditFrag1 extends Fragment {
         return mView;
     }
 
-    private void startAnimation() {
+    private void setPilotPreview() {
+        if (getActivity() == null) return;
+
+        String start = ((StartNumberEditActivity) getActivity()).mStartNumber;
+        String name = ((StartNumberEditActivity) getActivity()).mStartName;
         Button done = mView.findViewById(R.id.button_done);
-        done.setEnabled(false);
 
-        mAnimationDelay = 5;
-        mHandler.post(animate);
-    }
-
-    private Runnable animate = new Runnable() {
-        @Override
-        public void run() {
-            int random = 0;
-            while (!setPilotPreview(String.format("%d", random))) {
-                random = (int) Math.floor(Math.random() * mSz) + 1;
-            }
-            mAnimationDelay *= 1.1;
-            if (mAnimationDelay < 500) {
-                mHandler.postDelayed(animate, (long) mAnimationDelay);
-            } else {
-                Button done = mView.findViewById(R.id.button_done);
-                done.setEnabled(true);
-            }
-        }
-    };
-
-    private boolean setPilotPreview(String start) {
         ViewGroup cnt = mView.findViewById(R.id.preview);
         cnt.removeAllViews();
-        if (start.equals("")) return false;
 
-        String name = "";
-        int n = Integer.parseInt(start, 10);
-        if (n == 0) return false;
+        if (start == null) return;
 
-        for (Pilot p : ((StartNumberEditActivity) getActivity()).mArrPilots) {
-            if (p.number.equals(start)) {
-                name = String.format("%s %s", p.firstname, p.lastname);
-            }
-        }
-        if (name.equals("")) return false;
-
-        mStartNumber = start;
+        done.setEnabled(!start.equals(""));
 
         View pilotView = getLayoutInflater().inflate(R.layout.listrow_pickpilots, cnt);
 
@@ -127,14 +117,30 @@ public class StartNumberEditFrag1 extends Fragment {
         nm.setText(start);
         nm.setVisibility(View.VISIBLE);
         tv.setText(name);
-
-        return true;
     }
 
     private void done() {
-        mIntent.putExtra("start_number", mStartNumber);
+        mIntent.putExtra("start_number", ((StartNumberEditActivity) getActivity()).mStartNumber);
         getActivity().setResult(RaceActivity.RESULT_OK, mIntent);
         getActivity().finish();
     }
+
+    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra(IComm.MSG_UI_UPDATE)) {
+                Bundle extras = intent.getExtras();
+                if (extras == null) {
+                    return;
+                }
+                String data = extras.getString(IComm.MSG_UI_UPDATE, "");
+
+
+                if (data.equals("random_start_number")) {
+                    setPilotPreview();
+                }
+            }
+        }
+    };
 
 }

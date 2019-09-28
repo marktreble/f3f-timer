@@ -14,7 +14,6 @@ package com.marktreble.f3ftimer.exportimport;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -71,23 +70,41 @@ public class FileExportRace extends BaseExport {
         _options = mArrNames.toArray(_options);
         _selections = new boolean[_options.length];
 
-        mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
 
                 .setTitle("Select races to export")
                 .setMultiChoiceItems(_options, _selections, new DialogSelectionClickHandler())
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int clicked) {
-                        Log.d("EXPORT", "ONCLICKPOSITOVE");
-                        mDlg.dismiss();
-                        showExportTypeList();
+                        int selected = 0; // count of selected items
+                        for (int i = 0; i < _options.length; i++) {
+                            if (_selections[i]) {
+                                selected++;
+                            }
+                        }
+                        if (selected > 0) {
+                            mDlg.dismiss();
+                            showExportTypeList();
+                        } else {
+                            // Nothing selected, so dismiss
+                            finish();
+                        }
                     }
                 })
-                .show();
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mActivity.finish();
+                    }
+                });
+        mDlg = dlg.create();
+        mDlg.setCanceledOnTouchOutside(false);
+        mDlg.show();
     }
 
     private void showExportTypeList() {
 
-        mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+        mExportFileType = -1;
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
 
                 .setTitle("Select file type")
                 .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
@@ -96,15 +113,25 @@ public class FileExportRace extends BaseExport {
                         mExportFileType = which;
                     }
                 })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int clicked) {
                         if (mExportFileType >= 0) {
                             mDlg.dismiss();
                             promptForSaveFolder(null);
+                        } else {
+                            // Nothing selected, so dismiss
+                            finish();
                         }
                     }
                 })
-                .show();
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mActivity.finish();
+                    }
+                });
+        mDlg = dlg.create();
+        mDlg.setCanceledOnTouchOutside(false);
+        mDlg.show();
     }
 
     public class DialogSelectionClickHandler implements DialogInterface.OnMultiChoiceClickListener {

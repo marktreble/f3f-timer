@@ -11,7 +11,6 @@
 
 package com.marktreble.f3ftimer.dialog;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -33,7 +32,7 @@ public class TimeEntryActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
+        ((F3FtimerApplication) getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.time_entry);
 

@@ -26,9 +26,6 @@ import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
 import java.util.ArrayList;
 
-/**
- * Created by marktreble on 22/12/14.
- */
 public class FlyingOrderEditActivity extends FragmentActivity {
 
     private Integer mRid;
@@ -36,7 +33,7 @@ public class FlyingOrderEditActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
+        ((F3FtimerApplication) getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.race_new);
 

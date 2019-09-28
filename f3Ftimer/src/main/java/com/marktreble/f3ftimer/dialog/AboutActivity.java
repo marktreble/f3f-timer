@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.F3FtimerApplication;
@@ -24,7 +25,7 @@ public class AboutActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
+        ((F3FtimerApplication) getApplication()).setOverlayTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about);
 
@@ -43,5 +44,17 @@ public class AboutActivity extends Activity {
         version.setText(String.format("%s %s (Build %s)", getString(R.string.version), v, b));
 
     }
+
+    public void onResume() {
+        super.onResume();
+        findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+
 
 }

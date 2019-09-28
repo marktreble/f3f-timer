@@ -188,29 +188,29 @@
         <!--  Dialogs -->
         <activity
             android:name=".dialog.NewRaceActivity"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 
         <activity
             android:name=".dialog.PilotsEditActivity"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 
         <activity
             android:name=".dialog.AboutActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/AppTheme.Transparent" />
 
         <activity
             android:name=".dialog.HelpActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/AppTheme.Transparent" />
 
         <activity
             android:name=".dialog.RaceTimerActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/AppTheme.Transparent" />
 
         <activity
             android:name=".dialog.NextRoundActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/AppTheme.Transparent" />
 
         <activity
             android:name=".dialog.SettingsActivity"
@@ -218,30 +218,30 @@
 
         <activity
             android:name=".dialog.TimeEntryActivity"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
 
         <activity
             android:name=".dialog.RaceRoundTimeoutActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/AppTheme.Transparent" />
 
         <activity
             android:name=".dialog.GroupScoreEditActivity"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity
             android:name=".dialog.FlyingOrderEditActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/AppTheme.Transparent" />
 
         <activity
             android:name=".dialog.StartNumberEditActivity"
-            android:theme="@style/Theme.Transparent"
+            android:theme="@style/AppTheme.Transparent"
             android:windowSoftInputMode="stateAlwaysHidden" />
 
         <activity
             android:name=".dialog.RotateEditActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/AppTheme.Transparent" />
 
         <activity
             android:name=".exportimport.BluetoothImportRace"

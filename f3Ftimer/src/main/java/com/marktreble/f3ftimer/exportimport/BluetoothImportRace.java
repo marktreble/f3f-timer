@@ -243,7 +243,7 @@ public class BluetoothImportRace extends BaseImport {
                                 .setTitle("Connection Denied")
                                 .setCancelable(true)
                                 .setMessage("Failed to connect to " + deviceName)
-                                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                                .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         finish();

@@ -27,15 +27,11 @@ import android.widget.TextView;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 
-/**
- * Created by marktreble on 27/08/2017.
- */
-
 public class F3xvaultAPILoginActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
+        ((F3FtimerApplication) getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.f3xvault_api_login);
 

@@ -12,12 +12,9 @@
 package com.marktreble.f3ftimer.racemanager;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,7 +23,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -55,7 +51,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
@@ -172,7 +167,7 @@ public class RaceActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
+        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ImageView view = findViewById(android.R.id.home);
@@ -722,7 +717,7 @@ public class RaceActivity extends ListActivity {
         }
 
         if (requestCode == RaceListActivity.DLG_SETTINGS) {
-            ((F3FtimerApplication)getApplication()).restartApp();
+            ((F3FtimerApplication) getApplication()).restartApp();
         }
 
         invalidateOptionsMenu(); // Refresh menu so that any changes in state are shown
@@ -1179,7 +1174,7 @@ public class RaceActivity extends ListActivity {
 
                 .setTitle("Select Pilots to Add")
                 .setMultiChoiceItems(_options, _selections, new DialogSelectionClickHandler())
-                .setPositiveButton("OK", new DialogButtonClickHandler())
+                .setPositiveButton(android.R.string.ok, new DialogButtonClickHandler())
                 .show();
     }
 

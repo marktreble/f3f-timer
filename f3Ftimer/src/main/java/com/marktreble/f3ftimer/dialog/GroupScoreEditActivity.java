@@ -11,7 +11,6 @@
 
 package com.marktreble.f3ftimer.dialog;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
@@ -25,15 +24,12 @@ import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
-/**
- * Created by marktreble on 22/12/14.
- */
 public class GroupScoreEditActivity extends AppCompatActivity {
     private Intent mIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
+        ((F3FtimerApplication) getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_score);
 

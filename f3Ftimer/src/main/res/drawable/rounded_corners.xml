@@ -2,17 +2,17 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <gradient
-        android:startColor="#000000"
-        android:endColor="#333333"
+        android:startColor="@color/black"
+        android:endColor="@color/dark_grey"
         android:angle="270" />
     <stroke
         android:width="3dp"
-        android:color="@color/border" />
+        android:color="@color/dark_border" />
     <padding
-        android:left="10dp"
-        android:top="10dp"
-        android:right="10dp"
-        android:bottom="10dp" />
+        android:left="@dimen/dialog_padding"
+        android:top="@dimen/dialog_padding"
+        android:right="@dimen/dialog_padding"
+        android:bottom="@dimen/dialog_padding" />
     <corners android:radius="20dp" />
 
 </shape>

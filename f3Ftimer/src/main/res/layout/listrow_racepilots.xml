@@ -3,7 +3,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/black">
+    android:background="?attr/bg">
 
     <LinearLayout
         android:id="@+id/group_header"

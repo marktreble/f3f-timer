@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="InconsistentArrays">
     <string-array name="InputSources" translatable="false">
         <item>Demo Mode - On Screen Buzzers</item>
         <item>USB - IOIO</item>
@@ -93,18 +95,12 @@
         <item>@string/beep</item>
     </string-array>
 
-    <string-array name="theme_names" translatable="false">
+    <string-array name="theme_names">
         <item>Classic</item>
-        <item>F3F</item>
-        <item>Black/Yellow</item>
-        <item>Black/White</item>
     </string-array>
 
     <string-array name="theme_values" translatable="false">
         <item>AppTheme</item>
-        <item>AppTheme.F3f</item>
-        <item>AppTheme.Yellow.Black</item>
-        <item>AppTheme.White.Black</item>
     </string-array>
 
 </resources>

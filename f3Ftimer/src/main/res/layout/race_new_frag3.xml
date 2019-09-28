@@ -18,7 +18,7 @@
         android:divider="#cccccc"
         android:dividerHeight="2dp"
         android:drawSelectorOnTop="false"
-        android:listSelector="@color/background" />
+        android:listSelector="?attr/bg" />
 
     <RelativeLayout
         android:layout_width="match_parent"

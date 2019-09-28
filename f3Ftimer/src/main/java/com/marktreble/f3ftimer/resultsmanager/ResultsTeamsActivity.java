@@ -50,7 +50,7 @@ public class ResultsTeamsActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
+        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ImageView view = findViewById(android.R.id.home);
@@ -131,16 +131,19 @@ public class ResultsTeamsActivity extends ListActivity {
         };
 
         if (mArrNames.size() == 0) {
-            TextView ftdView = new TextView(mContext);
-            ftdView.setText(getString(R.string.no_teams));
+            TextView noneView = new TextView(mContext);
+            noneView.setText(getString(R.string.no_teams));
 
             Resources r = getResources();
             int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-            ftdView.setTextColor(r.getColor(R.color.text2));
-            ftdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-            ftdView.setPadding(px1, px1, px1, px1);
+            noneView.setTextColor(F3FtimerApplication.themeAttributeToColor(
+                    R.attr.t2,
+                    this,
+                    R.color.light_grey));
+            noneView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            noneView.setPadding(px1, px1, px1, px1);
 
-            getListView().addFooterView(ftdView);
+            getListView().addFooterView(noneView);
 
             getListView().invalidateViews();
         }

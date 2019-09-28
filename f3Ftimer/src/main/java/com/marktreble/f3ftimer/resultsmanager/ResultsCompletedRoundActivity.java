@@ -56,7 +56,7 @@ public class ResultsCompletedRoundActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
+        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ImageView view = findViewById(android.R.id.home);

@@ -21,4 +21,6 @@ public class IComm {
     public final static String RCV_LIVE_UPDATE = "com.marktreble.f3ftimer.onLiveUpdate";
 
     public final static String MSG_SERVICE_CALLBACK = "com.marktreble.f3ftimer.service_callback";
+
+    public final static String MSG_UI_UPDATE = "com.marktreble.f3ftimer.ui_update";
 }

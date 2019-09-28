@@ -305,7 +305,7 @@ public class NewRaceFrag3 extends ListFragment {
 
                 .setTitle("Select Pilots")
                 .setMultiChoiceItems(_names, _selections, new DialogSelectionClickHandler())
-                .setPositiveButton("OK", new DialogButtonClickHandler())
+                .setPositiveButton(android.R.string.ok, new DialogButtonClickHandler())
                 .show();
     }
 

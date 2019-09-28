@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
 
-    <color name="yellow">#fff000</color>
-    <color name="light_grey">#999999</color>
-    <color name="dark_grey">#333333</color>
+    <color name="yellow">#FFfff000</color>
+    <color name="light_grey">#FF999999</color>
+    <color name="dark_grey">#FF333333</color>
 
     <color name="f3f">#f3f</color>
+
+    <color name="border">#cccccc</color>
+    <color name="dark_border">#aaa</color>
 
     <color name="text">#0ea4e3</color>
     <color name="text1">#075271</color>
@@ -15,7 +18,6 @@
     <color name="text3">#ffa500</color>
     <color name="text4">#000000</color>
     <color name="background">#000000</color>
-    <color name="border">#cccccc</color>
     <color name="selector">#333333</color>
     <color name="orange">#ff8000</color>
     <color name="green">#008000</color>

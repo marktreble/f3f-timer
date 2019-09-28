@@ -122,5 +122,9 @@
     <orderEntry type="module" module-name="iOIOLibAndroid" />
     <orderEntry type="module" module-name="iOIOLibBT" />
     <orderEntry type="module" module-name="usbSerialForAndroid" />
+    <orderEntry type="module" module-name="iOIOLibAccessory" />
+    <orderEntry type="module" module-name="iOIOLibAndroid" />
+    <orderEntry type="module" module-name="iOIOLibBT" />
+    <orderEntry type="module" module-name="usbSerialForAndroid" />
   </component>
 </module>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="InconsistentArrays">
+    <string-array name="theme_names">
+        <item>Classic</item>
+        <item>F3F</item>
+        <item>Black/Yellow</item>
+        <item>Black/White</item>
+        <item>White/Red</item>
+    </string-array>
+
+    <string-array name="theme_values" translatable="false">
+        <item>AppTheme</item>
+        <item>AppTheme.F3f</item>
+        <item>AppTheme.Yellow.Black</item>
+        <item>AppTheme.White.Black</item>
+        <item>AppTheme.Red.White</item>
+    </string-array>
+
+</resources>

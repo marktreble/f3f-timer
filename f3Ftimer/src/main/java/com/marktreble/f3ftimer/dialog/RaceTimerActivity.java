@@ -45,7 +45,6 @@ import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
-
 public class RaceTimerActivity extends FragmentActivity {
 
     public Pilot mPilot;
@@ -78,7 +77,7 @@ public class RaceTimerActivity extends FragmentActivity {
         getWindow().setFlags(LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
                 LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
 
-        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
+        ((F3FtimerApplication) getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.race_timer);
 

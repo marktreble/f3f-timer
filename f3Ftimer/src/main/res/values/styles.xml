@@ -28,18 +28,14 @@
         <item name="android:textColor">?attr/t1</item>
     </style>
 
-    <style name="Theme.Transparent" parent="AppTheme">
+    <style name="Theme.Overlay" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-    </style>
-
-    <style name="Theme.Overlay" parent="Theme.Transparent">
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
@@ -63,7 +59,7 @@
         <item name="colorAccent">@color/text3</item>
     </style>
 
-    <style name="AppTheme.Button.Done" parent="Theme.AppCompat">
+    <style name="AppTheme.Button.Done" parent="@android:style/Widget.Holo.Light.Button">
         <item name="android:paddingEnd">@dimen/nav_button_padding</item>
         <item name="android:paddingStart">@dimen/nav_button_padding</item>
         <item name="android:textColor">?attr/t3</item>
@@ -78,19 +74,19 @@
         <item name="android:textColor">?attr/t3</item>
     </style>
 
-    <style name="AppTheme.Button.Positive" parent="Theme.AppCompat">
+    <style name="AppTheme.Button.Positive" parent="@android:style/Widget.Holo.Light.Button">
         <item name="android:textColor">@color/text2</item>
         <item name="android:textSize">@dimen/ctrl_button</item>
         <item name="android:background">@color/green</item>
     </style>
 
-    <style name="AppTheme.Button.Negative" parent="Theme.AppCompat">
+    <style name="AppTheme.Button.Negative" parent="@android:style/Widget.Holo.Light.Button">
         <item name="android:textColor">@color/text2</item>
         <item name="android:textSize">@dimen/ctrl_button</item>
         <item name="android:background">@color/red</item>
     </style>
 
-    <style name="AppTheme.Button.Neutral" parent="Theme.AppCompat">
+    <style name="AppTheme.Button.Neutral" parent="@android:style/Widget.Holo.Light.Button">
         <item name="android:textColor">@color/text2</item>
         <item name="android:textSize">@dimen/ctrl_button</item>
         <item name="android:background">@color/orange</item>
@@ -124,7 +120,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">true</item>
-        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:backgroundDimEnabled">true</item>
     </style>
 
 </resources>

@@ -31,7 +31,8 @@ public class FileExportPilots extends BaseExport {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+        mExportFileType = -1;
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
 
                 .setTitle("Select file type")
                 .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
@@ -40,16 +41,28 @@ public class FileExportPilots extends BaseExport {
                         mExportFileType = which;
                     }
                 })
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setNegativeButton(getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int clicked) {
+                        finish();
+                    }
+                })
+                .setPositiveButton(getString(R.string.button_next), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int clicked) {
                         if (mExportFileType >= 0) {
                             mDlg.dismiss();
                             promptForSaveFolder(null);
-
+                        } else {
+                            finish();
                         }
                     }
-                })
-                .show();
+                });
+
+        mDlg = dlg.create();
+        mDlg.setCancelable(false);
+        mDlg.setCanceledOnTouchOutside(false);
+        mDlg.show();
+
+
     }
 
     @Override

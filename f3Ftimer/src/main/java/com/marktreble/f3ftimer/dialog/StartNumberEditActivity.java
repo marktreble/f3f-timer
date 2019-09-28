@@ -11,8 +11,10 @@
 
 package com.marktreble.f3ftimer.dialog;
 
-import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +25,7 @@ import android.view.Window;
 
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 
@@ -31,18 +34,24 @@ import java.util.List;
 
 public class StartNumberEditActivity extends AppCompatActivity {
 
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-
     ArrayList<Pilot> mArrPilots;
+    String mStartNumber;
+    String mStartName;
+
+    private Handler mHandler;
+    private Context mContext;
+    private float mAnimationDelay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
+        ((F3FtimerApplication) getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.start_number);
+
+        TabLayout tabLayout;
+        ViewPager viewPager;
 
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -58,6 +67,34 @@ public class StartNumberEditActivity extends AppCompatActivity {
         mArrPilots = datasource.getAllPilotsForRace(race_id, 0, 0, 0);
         datasource.close();
 
+        mHandler = new Handler();
+
+        mContext = this;
+
+        if (savedInstanceState != null) {
+            mStartNumber = savedInstanceState.getString("mStartNumber");
+            mStartName = savedInstanceState.getString("mStartName");
+            mAnimationDelay = savedInstanceState.getFloat("mAnimationDelay", 9999);
+
+            if (mAnimationDelay > 0 && mAnimationDelay < 500) {
+                mHandler.postDelayed(animate, (long) mAnimationDelay);
+            }
+        }
+
+    }
+
+    public void onPause() {
+        super.onPause();
+        mHandler.removeCallbacksAndMessages(null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString("mStartNumber", mStartNumber);
+        outState.putString("mStartName", mStartName);
+        outState.putFloat("mAnimationDelay", mAnimationDelay);
     }
 
     private void setupViewPager(ViewPager viewPager) {
@@ -72,7 +109,7 @@ public class StartNumberEditActivity extends AppCompatActivity {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
+        ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
 
@@ -86,7 +123,7 @@ public class StartNumberEditActivity extends AppCompatActivity {
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
@@ -96,4 +133,50 @@ public class StartNumberEditActivity extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
+
+    void startRandomAnimation() {
+        mAnimationDelay = 5;
+        mHandler.post(animate);
+    }
+
+    private Runnable animate = new Runnable() {
+        @Override
+        public void run() {
+            int random = 0;
+            while (!isValidStartNumber(String.format("%d", random))) {
+                random = (int) Math.floor(Math.random() * mArrPilots.size()) + 1;
+            }
+            mAnimationDelay *= 1.1;
+            // Post notification to update fragment
+            Intent i = new Intent(IComm.RCV_UPDATE);
+            i.putExtra(IComm.MSG_UI_UPDATE, "random_start_number");
+            mContext.sendBroadcast(i);
+
+            if (mAnimationDelay < 500) {
+                mHandler.postDelayed(animate, (long) mAnimationDelay);
+            }
+        }
+    };
+
+    private boolean isValidStartNumber(String start) {
+        if (start == null) return false;
+        if (start.equals("")) return false;
+
+        String name = "";
+        int n = Integer.parseInt(start, 10);
+        if (n == 0) return false;
+
+        for (Pilot p : mArrPilots) {
+            if (p.number.equals(start)) {
+                name = String.format("%s %s", p.firstname, p.lastname);
+            }
+        }
+        if (name.equals("")) return false;
+
+        mStartNumber = start;
+        mStartName = name;
+        return true;
+    }
 }
+
+

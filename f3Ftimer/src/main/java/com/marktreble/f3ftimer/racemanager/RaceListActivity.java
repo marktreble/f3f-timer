@@ -12,14 +12,11 @@
 package com.marktreble.f3ftimer.racemanager;
 
 import android.Manifest;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
@@ -39,7 +36,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
-import com.jakewharton.processphoenix.ProcessPhoenix;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
@@ -90,7 +86,7 @@ public class RaceListActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
+        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -138,7 +134,7 @@ public class RaceListActivity extends ListActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
                 builder.setTitle("Permission Denied")
                         .setMessage("You will not be able to export files")
-                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // User cancelled the dialog
                             }
@@ -193,7 +189,7 @@ public class RaceListActivity extends ListActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
                 builder.setTitle("Import Race")
                         .setMessage("Your Race(s) have been imported")
-                        .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 // User cancelled the dialog
                             }
@@ -204,7 +200,7 @@ public class RaceListActivity extends ListActivity {
         }
 
         if (requestCode == RaceListActivity.DLG_SETTINGS) {
-            ((F3FtimerApplication)getApplication()).restartApp();
+            ((F3FtimerApplication) getApplication()).restartApp();
         }
     }
 
@@ -315,7 +311,7 @@ public class RaceListActivity extends ListActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
             builder.setTitle("No Pilots")
                     .setMessage("Before you create a race, you must set up a database of pilots in the Pilot Manager")
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // User cancelled the dialog
                         }
@@ -334,7 +330,7 @@ public class RaceListActivity extends ListActivity {
     }
 
     public void importRace() {
-        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+        AlertDialog.Builder dlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
                 .setTitle(R.string.select_import_source)
                 .setItems(R.array.import_sources, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -358,13 +354,19 @@ public class RaceListActivity extends ListActivity {
                                 break;
                         }
                     }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDlg.dismiss();
+                    }
                 });
-        mDlg = mDlgb.create();
+        mDlg = dlg.create();
+        mDlg.setCanceledOnTouchOutside(false);
         mDlg.show();
     }
 
     public void exportRace() {
-        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+        AlertDialog.Builder dlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
                 .setTitle(R.string.select_export_destination)
                 .setItems(R.array.export_destinations, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -380,8 +382,14 @@ public class RaceListActivity extends ListActivity {
                                 break;
                         }
                     }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDlg.dismiss();
+                    }
                 });
-        mDlg = mDlgb.create();
+        mDlg = dlg.create();
+        mDlg.setCanceledOnTouchOutside(false);
         mDlg.show();
     }
 

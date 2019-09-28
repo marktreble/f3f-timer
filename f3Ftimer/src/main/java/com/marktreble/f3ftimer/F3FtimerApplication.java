@@ -11,15 +11,12 @@
 
 package com.marktreble.f3ftimer;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.util.TypedValue;
 
 import com.jakewharton.processphoenix.ProcessPhoenix;
@@ -70,13 +67,17 @@ public class F3FtimerApplication extends Application {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String t = sharedPref.getString("pref_app_theme", "");
 
+        if (t.equals("")) return;
+
         int s = getResources().getIdentifier(t, "style", getPackageName());
         context.setTheme(s);
     }
 
     public void setOverlayTheme(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String t = sharedPref.getString("pref_app_theme","");
+        String t = sharedPref.getString("pref_app_theme", "");
+
+        if (t.equals("")) return;
 
         int s = getResources().getIdentifier(t + ".Overlay", "style", getPackageName());
         context.setTheme(s);
@@ -85,6 +86,8 @@ public class F3FtimerApplication extends Application {
     public void setTransparentTheme(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         String t = sharedPref.getString("pref_app_theme", "");
+
+        if (t.equals("")) return;
 
         int s = getResources().getIdentifier(t + ".Transparent", "style", getPackageName());
         context.setTheme(s);

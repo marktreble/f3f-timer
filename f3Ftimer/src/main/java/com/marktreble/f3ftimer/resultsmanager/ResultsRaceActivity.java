@@ -83,7 +83,7 @@ public class ResultsRaceActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
+        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ArrayAdapter<String> mArrAdapter;
@@ -421,7 +421,7 @@ public class ResultsRaceActivity extends ListActivity {
 
                 .setTitle("TO DO...")
                 .setMessage("This feature will be implemented soon")
-                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //
@@ -439,7 +439,7 @@ public class ResultsRaceActivity extends ListActivity {
 
                 .setTitle("TO DO...")
                 .setMessage("This feature will be implemented soon")
-                .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
+                .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         //

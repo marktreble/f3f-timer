@@ -3,17 +3,17 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/background"
+    android:background="?attr/bg"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListView
         android:id="@android:id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:cacheColorHint="@color/background"
+        android:cacheColorHint="?attr/bg"
         android:divider="#cccccc"
         android:dividerHeight="2dp"
         android:drawSelectorOnTop="false"
-        android:listSelector="@color/background" />
+        android:listSelector="?attr/bg" />
 
 </LinearLayout>
