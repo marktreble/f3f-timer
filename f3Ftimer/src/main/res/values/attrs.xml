@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="bg" format="reference"/>
+    <attr name="bg2" format="reference"/>
+    <attr name="t1" format="reference"/>
+    <attr name="t2" format="reference"/>
+    <attr name="t3" format="reference"/>
+    <attr name="t4" format="reference"/>
+    <attr name="div" format="reference"/>
+    <attr name="grad_fade" format="reference"/>
+</resources>

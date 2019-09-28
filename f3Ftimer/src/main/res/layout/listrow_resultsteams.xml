@@ -20,7 +20,7 @@
             android:layout_gravity="center"
             android:layout_marginRight="8dp"
             android:minHeight="68dp"
-            android:textColor="@color/text2"
+            android:textColor="?attr/t3"
             android:textSize="16sp"
             android:textStyle="bold">
 
@@ -37,7 +37,7 @@
             android:minWidth="@dimen/ten"
             android:paddingLeft="0dp"
             android:paddingRight="10dp"
-            android:textColor="@color/text3"
+            android:textColor="?attr/t2"
             android:textSize="16sp"
             android:textStyle="bold">
 
@@ -55,7 +55,7 @@
             android:paddingRight="10dp"
             android:paddingTop="4dp"
             android:text="@string/empty"
-            android:textColor="@color/text3"
+            android:textColor="?attr/t2"
             android:textSize="16sp"
             android:textStyle="bold">
 
@@ -72,7 +72,7 @@
             android:background="@color/transparent"
             android:paddingLeft="40dp"
             android:paddingRight="30dp"
-            android:textColor="@color/text2"
+            android:textColor="?attr/t3"
             android:textSize="16sp"
             android:textStyle="normal">
         </TextView>

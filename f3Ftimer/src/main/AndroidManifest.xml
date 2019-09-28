@@ -214,7 +214,7 @@
 
         <activity
             android:name=".dialog.SettingsActivity"
-            android:theme="@style/Theme.Transparent" />
+            android:theme="@style/Theme.AppCompat" />
 
         <activity
             android:name=".dialog.TimeEntryActivity"

@@ -25,6 +25,7 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -68,7 +69,8 @@ public abstract class BaseExport extends Activity {
             mSaveFolder = folder;
         }
 
-        mDlg = new AlertDialog.Builder(mContext)
+        mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                 .setTitle("Save Location")
                 .setMessage("Your file(s) will be exported to:\n" + mSaveFolder)
                 .setNeutralButton("Change Path", new DialogInterface.OnClickListener() {

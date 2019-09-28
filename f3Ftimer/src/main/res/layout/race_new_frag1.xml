@@ -27,15 +27,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/race_name"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2" />
 
             <EditText
                 android:id="@+id/new_race_name"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textCapSentences|textNoSuggestions">
-
+                android:inputType="textCapSentences|textNoSuggestions"
+                style="@style/AppTheme.EditText">
                 <requestFocus />
             </EditText>
 
@@ -44,14 +44,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/race_rounds_per_flight"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2" />
 
             <EditText
                 android:id="@+id/new_race_rounds_per_flight"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="number">
+                android:inputType="number"
+                style="@style/AppTheme.EditText">
 
             </EditText>
 
@@ -60,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/race_offset"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2" />
 
 
             <EditText
@@ -68,7 +69,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="number" />
+                android:inputType="number"
+                style="@style/AppTheme.EditText" />
 
         </LinearLayout>
     </ScrollView>
@@ -76,16 +78,12 @@
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/nav_button_height"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_centerInParent="false"
-        android:paddingRight="10dp"
-        android:paddingLeft="10dp"
-        android:textColor="@color/text2"
-        android:gravity="center_vertical|center_horizontal"
-        android:background="@drawable/round_button"
-        android:text="@string/button_next" />
+        android:text="@string/button_next"
+        style="@style/AppTheme.Button.Done" />
 
 </RelativeLayout>

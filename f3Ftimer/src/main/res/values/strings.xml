@@ -133,7 +133,7 @@
     <string name="nl">Dutch</string>
     <string name="es">Spanish</string>
 
-    <string name="ftd_result" formatted="false">Fastest Time: %.2fs by %s in round %d</string>
+    <string name="ftd_result" formatted="true">Fastest Time: %1$.2f by %2$s in round %3$d</string>
 
     <!-- Headings -->
     <string name="leader_board">Leader Board</string>
@@ -176,6 +176,13 @@
     <string name="snd_turn">Turn</string>
     <string name="snd_turn9">Last Turn</string>
     <string name="snd_penalty">Penalty</string>
+
+    <!-- Theme -->
+    <string name="app_theme">Colour Theme</string>
+    <string name="theme_classic" translatable="false">AppTheme</string>
+    <string name="theme_f3f" translatable="false">AppTheme.F3f</string>
+    <string name="theme_yellow_black" translatable="false">AppTheme.Yellow.Black</string>
+    <string name="theme_white_black" translatable="false">AppTheme.White.Black</string>
 
     <!-- Import/Export Dialogs -->
     <string name="awaiting_connection">Awaiting Connection…</string>

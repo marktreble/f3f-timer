@@ -14,16 +14,18 @@ package com.marktreble.f3ftimer.dialog;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
-public class TimeEntryActivity extends Activity {
+public class TimeEntryActivity extends AppCompatActivity {
 
     Integer mPid = 0;
     Integer mRound = 0;
@@ -31,6 +33,7 @@ public class TimeEntryActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.time_entry);
 

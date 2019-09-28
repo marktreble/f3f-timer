@@ -191,6 +191,17 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/app_theme"
+        android:persistent="false">
+        <ListPreference
+            android:key="pref_app_theme"
+            android:title="Application Theme"
+            android:entries="@array/theme_names"
+            android:entryValues="@array/theme_values" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/other_settings"
         android:persistent="false">
 

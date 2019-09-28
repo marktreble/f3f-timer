@@ -33,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
@@ -62,6 +63,7 @@ public class PilotsActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ImageView view = findViewById(android.R.id.home);

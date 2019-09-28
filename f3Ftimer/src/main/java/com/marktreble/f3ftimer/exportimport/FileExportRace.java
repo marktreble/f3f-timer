@@ -16,6 +16,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.filesystem.FileExport;
@@ -70,7 +71,8 @@ public class FileExportRace extends BaseExport {
         _options = mArrNames.toArray(_options);
         _selections = new boolean[_options.length];
 
-        mDlg = new AlertDialog.Builder(this)
+        mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+
                 .setTitle("Select races to export")
                 .setMultiChoiceItems(_options, _selections, new DialogSelectionClickHandler())
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -85,7 +87,8 @@ public class FileExportRace extends BaseExport {
 
     private void showExportTypeList() {
 
-        mDlg = new AlertDialog.Builder(this)
+        mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+
                 .setTitle("Select file type")
                 .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
                     @Override

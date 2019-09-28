@@ -12,9 +12,7 @@
     android:paddingRight="30dp"
     android:paddingEnd="30dp"
     android:paddingTop="4dp"
-    android:textColor="@color/text3"
-    android:textSize="24sp"
+    android:textColor="?attr/t2"
+    android:textSize="@dimen/list_label"
     android:textStyle="bold"
-    android:text="@string/pilot_name">
-
-</TextView>
+    />

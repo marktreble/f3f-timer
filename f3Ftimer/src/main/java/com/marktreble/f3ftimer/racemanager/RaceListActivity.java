@@ -12,11 +12,14 @@
 package com.marktreble.f3ftimer.racemanager;
 
 import android.Manifest;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
@@ -36,6 +39,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.jakewharton.processphoenix.ProcessPhoenix;
+import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
@@ -61,6 +66,7 @@ public class RaceListActivity extends ListActivity {
     static int DLG_NEW_RACE = 0;
     static int START_RACE = 1;
     static int DLG_IMPORT = 2;
+    static int DLG_SETTINGS = 9;
     static final int PERMISSIONS_REQUEST = 101;
 
     private ArrayAdapter<String> mArrAdapter;
@@ -84,6 +90,7 @@ public class RaceListActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -128,7 +135,7 @@ public class RaceListActivity extends ListActivity {
         if (requestCode == PERMISSIONS_REQUEST) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 //not granted
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
                 builder.setTitle("Permission Denied")
                         .setMessage("You will not be able to export files")
                         .setNegativeButton("OK", new DialogInterface.OnClickListener() {
@@ -183,7 +190,7 @@ public class RaceListActivity extends ListActivity {
                 getNamesArray();
                 mArrAdapter.notifyDataSetChanged();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
                 builder.setTitle("Import Race")
                         .setMessage("Your Race(s) have been imported")
                         .setNegativeButton("OK", new DialogInterface.OnClickListener() {
@@ -194,6 +201,10 @@ public class RaceListActivity extends ListActivity {
                 builder.create().show();
 
             }
+        }
+
+        if (requestCode == RaceListActivity.DLG_SETTINGS) {
+            ((F3FtimerApplication)getApplication()).restartApp();
         }
     }
 
@@ -301,7 +312,7 @@ public class RaceListActivity extends ListActivity {
         datasource.close();
 
         if (allPilots.size() == 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
             builder.setTitle("No Pilots")
                     .setMessage("Before you create a race, you must set up a database of pilots in the Pilot Manager")
                     .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -323,7 +334,7 @@ public class RaceListActivity extends ListActivity {
     }
 
     public void importRace() {
-        mDlgb = new AlertDialog.Builder(mContext)
+        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
                 .setTitle(R.string.select_import_source)
                 .setItems(R.array.import_sources, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -353,7 +364,7 @@ public class RaceListActivity extends ListActivity {
     }
 
     public void exportRace() {
-        mDlgb = new AlertDialog.Builder(mContext)
+        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
                 .setTitle(R.string.select_export_destination)
                 .setItems(R.array.export_destinations, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -376,7 +387,7 @@ public class RaceListActivity extends ListActivity {
 
     public void settings() {
         Intent intent = new Intent(mContext, SettingsActivity.class);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, DLG_SETTINGS);
     }
 
     public void pilotManager() {
@@ -391,12 +402,12 @@ public class RaceListActivity extends ListActivity {
 
     public void help() {
         Intent intent = new Intent(mContext, HelpActivity.class);
-        startActivityForResult(intent, 1);
+        startActivity(intent);
     }
 
     public void about() {
         Intent intent = new Intent(mContext, AboutActivity.class);
-        startActivityForResult(intent, 1);
+        startActivity(intent);
     }
 
 

@@ -3,4 +3,21 @@
     <dimen name="ten">10dp</dimen>
     <dimen name="small_width">320dp</dimen>
     <dimen name="twenty">20dp</dimen>
+
+
+    <dimen name="dialog_padding">10dp</dimen>
+    <dimen name="form_label">?android:attr/textAppearanceLarge</dimen>
+
+    <dimen name="nav_button_padding">10dp</dimen>
+    <dimen name="nav_button">16dp</dimen>
+    <dimen name="nav_button_height">48dp</dimen>
+
+    <dimen name="ctrl_button">20dp</dimen>
+
+    <dimen name="clock_time">60sp</dimen>
+
+    <dimen name="title">24sp</dimen>
+    <dimen name="subtitle">18sp</dimen>
+
+    <dimen name="list_label">24sp</dimen>
 </resources>

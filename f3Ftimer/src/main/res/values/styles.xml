@@ -5,17 +5,12 @@
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
     <style name="AppBaseTheme" parent="@android:style/Theme.Holo.Light">
+
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
-    </style>
-
-    <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-        <item name="android:actionBarStyle">@style/carbonActionBar</item>
     </style>
 
     <style name="carbonActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
@@ -24,13 +19,16 @@
     </style>
 
     <style name="titleTextStyle" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/text</item>
-        <item name="android:textSize">32sp</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/t1</item>
+        <item name="android:textSize">@dimen/title</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
+    <style name="largeText" parent="@android:style/Widget.Holo.Light.TextView">
+        <item name="android:textColor">?attr/t1</item>
+    </style>
 
-    <style name="Theme.Transparent" parent="Theme.AppCompat">
+    <style name="Theme.Transparent" parent="AppTheme">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>
@@ -39,18 +37,10 @@
         <item name="android:backgroundDimEnabled">false</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <!--<item name="android:animateLayoutChanges">true</item>-->
     </style>
 
-    <style name="Theme.Overlay" parent="Theme.AppCompat">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowIsFloating">true</item>
+    <style name="Theme.Overlay" parent="Theme.Transparent">
         <item name="android:backgroundDimEnabled">true</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
     </style>
 
     <!-- You can also inherit from NNF_BaseTheme.Light -->
@@ -71,6 +61,70 @@
         <item name="colorPrimary">@color/text</item>
         <item name="colorPrimaryDark">@color/text2</item>
         <item name="colorAccent">@color/text3</item>
+    </style>
+
+    <style name="AppTheme.Button.Done" parent="Theme.AppCompat">
+        <item name="android:paddingEnd">@dimen/nav_button_padding</item>
+        <item name="android:paddingStart">@dimen/nav_button_padding</item>
+        <item name="android:textColor">?attr/t3</item>
+        <item name="android:gravity">center_vertical|center_horizontal</item>
+        <item name="android:layout_gravity">end</item>
+        <item name="android:textSize">@dimen/nav_button</item>
+        <item name="android:background">@drawable/round_button</item>
+    </style>
+
+    <style name="AppTheme.Picker" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">?attr/t2</item>
+        <item name="android:textColor">?attr/t3</item>
+    </style>
+
+    <style name="AppTheme.Button.Positive" parent="Theme.AppCompat">
+        <item name="android:textColor">@color/text2</item>
+        <item name="android:textSize">@dimen/ctrl_button</item>
+        <item name="android:background">@color/green</item>
+    </style>
+
+    <style name="AppTheme.Button.Negative" parent="Theme.AppCompat">
+        <item name="android:textColor">@color/text2</item>
+        <item name="android:textSize">@dimen/ctrl_button</item>
+        <item name="android:background">@color/red</item>
+    </style>
+
+    <style name="AppTheme.Button.Neutral" parent="Theme.AppCompat">
+        <item name="android:textColor">@color/text2</item>
+        <item name="android:textSize">@dimen/ctrl_button</item>
+        <item name="android:background">@color/orange</item>
+    </style>
+
+    <style name="AppTheme.Label" parent="AppBaseTheme">
+        <item name="android:textColor">?attr/t2</item>
+        <item name="android:textSize">@dimen/ctrl_button</item>
+        <item name="android:background">@color/transparent</item>
+    </style>
+
+    <style name="AppTheme.EditText" parent="@android:style/Widget.Holo.Light.EditText">
+        <item name="android:padding">@dimen/ten</item>
+        <item name="android:textColor">?attr/t3</item>
+        <item name="android:textSize">@dimen/ctrl_button</item>
+        <item name="android:background">@drawable/text_edit_bg</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+
+    <style name="AppTheme.Spinner" parent="@android:style/Widget.Holo.Light.Spinner">
+        <item name="android:paddingTop">@dimen/ten</item>
+        <item name="android:textColor">?attr/t3</item>
+        <item name="android:textSize">@dimen/ctrl_button</item>
+        <item name="android:background">@drawable/text_edit_bg</item>
+        <item name="android:popupBackground">?attr/t4</item>
+    </style>
+
+    <style name="AppTheme.AlertDialog" parent="@android:style/Theme.Holo">
+        <item name="android:textColor">?attr/t3</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
     </style>
 
 </resources>

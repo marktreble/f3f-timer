@@ -43,15 +43,11 @@
         <Button
             android:id="@+id/button_skip"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/nav_button_height"
             android:layout_toLeftOf="@+id/button_next"
             android:layout_marginRight="10dp"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:textColor="@color/text2"
-            android:gravity="center_vertical|center_horizontal"
-            android:background="@drawable/round_button"
-            android:text="@string/skip_number" />
+            android:text="@string/skip_number"
+            style="@style/AppTheme.Button.Done" />
 
         <Button
             android:id="@+id/button_next"
@@ -61,12 +57,8 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="false"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:textColor="@color/text2"
-            android:gravity="center_vertical|center_horizontal"
-            android:background="@drawable/round_button"
-            android:text="@string/button_next" />
+            android:text="@string/button_next"
+            style="@style/AppTheme.Button.Done" />
 
 
     </RelativeLayout>

@@ -12,17 +12,23 @@
 package com.marktreble.f3ftimer.dialog;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 
 public class HelpActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((F3FtimerApplication)getApplication()).setOverlayTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.help);
 
@@ -40,6 +46,7 @@ public class HelpActivity extends Activity {
 
         TextView version = findViewById(R.id.version);
         version.setText(String.format("%s %s (Build %s)", getString(R.string.version), v, b));
-    }
 
+
+    }
 }

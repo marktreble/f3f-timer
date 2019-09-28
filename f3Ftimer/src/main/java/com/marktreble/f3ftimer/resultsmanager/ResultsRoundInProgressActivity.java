@@ -27,6 +27,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -56,6 +57,7 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ImageView view = findViewById(android.R.id.home);
@@ -126,7 +128,6 @@ public class ResultsRoundInProgressActivity extends ListActivity {
 
                 TextView p_name = row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
-                p_name.setTextColor(getResources().getColor(R.color.text3));
 
                 Drawable flag = p.getFlag(mContext);
                 if (flag != null) {

@@ -12,38 +12,37 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@android:color/transparent"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
+            android:paddingLeft="@dimen/dialog_padding">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/username"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2" />
 
             <EditText
                 android:id="@+id/username"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textNoSuggestions" />
+                android:inputType="textNoSuggestions"
+                style="@style/AppTheme.EditText" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/password"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2" />
 
             <EditText
                 android:id="@+id/password"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPassword" />
+                android:inputType="textPassword"
+                style="@style/AppTheme.EditText" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -60,7 +59,9 @@
                     android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:text="@string/remember_login_details"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="?attr/t3" />
+
             </LinearLayout>
 
             <Button
@@ -69,7 +70,8 @@
                 android:layout_height="0dp"
                 android:layout_gravity="end"
                 android:layout_weight="1"
-                android:text="@string/btn_login" />
+                android:text="@string/btn_login"
+                style="@style/AppTheme.Button.Done" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

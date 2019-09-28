@@ -12,9 +12,9 @@
         android:background="@drawable/circle"
         android:gravity="center"
         android:layout_gravity="center"
-        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
         android:minHeight="68dp"
-        android:textColor="@color/text2"
+        android:textColor="?attr/t3"
         android:textSize="16sp"
         android:textStyle="bold">
 
@@ -29,12 +29,10 @@
         android:gravity="center_vertical"
         android:minHeight="88dp"
         android:paddingBottom="4dp"
-        android:paddingLeft="10dp"
         android:paddingStart="10dp"
-        android:paddingRight="30dp"
         android:paddingEnd="30dp"
         android:paddingTop="4dp"
-        android:textColor="@color/text3"
+        android:textColor="?attr/t2"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -43,12 +41,12 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginLeft="@dimen/ten"
         android:layout_marginStart="@dimen/ten"
         android:layout_weight="0"
         android:background="@drawable/up"
         android:contentDescription="@string/button_up"
         android:clickable="true"
+        android:focusable="true"
         android:onClick="moveUp" />
 
     <Button
@@ -56,11 +54,11 @@
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginLeft="@dimen/ten"
         android:layout_marginStart="@dimen/ten"
         android:background="@drawable/down"
         android:contentDescription="@string/button_down"
         android:clickable="true"
+        android:focusable="true"
         android:onClick="moveDown" />
 
 

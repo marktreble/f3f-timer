@@ -130,7 +130,8 @@ public class FileImportRace extends BaseImport {
                     String[] parts = filename.split("\\.");
                     String extension = parts[parts.length - 1];
 
-                    new AlertDialog.Builder(mContext, R.style.AppTheme)
+                    new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                             .setTitle("Wrong file type (." + extension + ")")
                             .setMessage("Sorry, f3f timer can only import files in 'json' format")
                             .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {

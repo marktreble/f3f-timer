@@ -33,6 +33,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -82,6 +83,7 @@ public class ResultsRaceActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ArrayAdapter<String> mArrAdapter;
@@ -182,7 +184,8 @@ public class ResultsRaceActivity extends ListActivity {
 
     private void share() {
 
-        mDlgb = new AlertDialog.Builder(mContext)
+        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                 .setTitle(R.string.select_share_results_destination)
                 .setItems(R.array.results_share_destinations, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -305,7 +308,7 @@ public class ResultsRaceActivity extends ListActivity {
     }
 
     private void export() {
-        mDlgb = new AlertDialog.Builder(mContext)
+        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
                 .setTitle(R.string.select_export_results_destination)
                 .setItems(R.array.results_export_destinations, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -414,7 +417,8 @@ public class ResultsRaceActivity extends ListActivity {
     }
 
     private void export_f3ftimer() {
-        mDlgb = new AlertDialog.Builder(mContext)
+        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                 .setTitle("TO DO...")
                 .setMessage("This feature will be implemented soon")
                 .setNegativeButton("Ok", new DialogInterface.OnClickListener() {
@@ -431,7 +435,8 @@ public class ResultsRaceActivity extends ListActivity {
     }
 
     private void export_f3xvault() {
-        mDlgb = new AlertDialog.Builder(mContext)
+        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                 .setTitle("TO DO...")
                 .setMessage("This feature will be implemented soon")
                 .setNegativeButton("Ok", new DialogInterface.OnClickListener() {

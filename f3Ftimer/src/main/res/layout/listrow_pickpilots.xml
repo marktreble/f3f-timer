@@ -11,7 +11,7 @@
         android:background="@drawable/circle"
         android:gravity="center"
         android:layout_gravity="center"
-        android:textColor="@color/text2"
+        android:textColor="?attr/t3"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -29,7 +29,7 @@
         android:paddingRight="30dp"
         android:paddingEnd="30dp"
         android:paddingTop="4dp"
-        android:textColor="@color/text3"
+        android:textColor="?attr/t2"
         android:textSize="24sp"
         android:textStyle="bold" />
 

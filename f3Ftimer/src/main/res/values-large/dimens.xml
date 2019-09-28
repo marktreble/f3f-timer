@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="nav_button">18dp</dimen>
+    <dimen name="ctrl_button">24dp</dimen>
+
+    <dimen name="clock_time">100sp</dimen>
+
+    <dimen name="title">32sp</dimen>
+
+</resources>

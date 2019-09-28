@@ -301,7 +301,8 @@ public class NewRaceFrag3 extends ListFragment {
     private void showPilotsDialog() {
         getUnselectedArray();
 
-        mDlg = new AlertDialog.Builder(getActivity())
+        mDlg = new AlertDialog.Builder(getActivity(), R.style.AppTheme_AlertDialog)
+
                 .setTitle("Select Pilots")
                 .setMultiChoiceItems(_names, _selections, new DialogSelectionClickHandler())
                 .setPositiveButton("OK", new DialogButtonClickHandler())

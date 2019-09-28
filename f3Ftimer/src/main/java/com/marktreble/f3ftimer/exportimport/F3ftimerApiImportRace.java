@@ -132,7 +132,8 @@ public class F3ftimerApiImportRace extends BaseImport
                 mToken = token;
                 showRaceNamesDialog(race_list);
             } else {
-                new AlertDialog.Builder(mContext)
+                new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                         .setTitle("No Races Available")
                         .setMessage("No races are available for download at the moment.")
                         .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -160,7 +161,8 @@ public class F3ftimerApiImportRace extends BaseImport
                 mActivity.finish();
 
             } else {
-                new AlertDialog.Builder(mContext)
+                new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                         .setTitle("Import Failed")
                         .setMessage("Sorry, something went wrong!")
                         .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -179,7 +181,8 @@ public class F3ftimerApiImportRace extends BaseImport
         hideProgress();
 
         if (data == null) {
-            new AlertDialog.Builder(mContext)
+            new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                     .setTitle("Network Error")
                     .setMessage("Sorry, no response from server.")
                     .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -216,7 +219,8 @@ public class F3ftimerApiImportRace extends BaseImport
         }
 
         CharSequence[] list = racelist.toArray(new CharSequence[0]);
-        mDlgb = new AlertDialog.Builder(mContext)
+        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                 .setTitle("Races Available for Import")
                 .setCancelable(true)
                 .setItems(list, raceClickListener);

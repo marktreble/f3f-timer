@@ -15,6 +15,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.filesystem.FileExport;
 
 /**
@@ -30,7 +31,8 @@ public class FileExportPilots extends BaseExport {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDlg = new AlertDialog.Builder(this)
+        mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+
                 .setTitle("Select file type")
                 .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
                     @Override

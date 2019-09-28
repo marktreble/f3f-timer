@@ -3,14 +3,14 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="?attr/bg"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#075271">
+        android:background="?attr/bg2">
 
         <TextView
             android:id="@+id/race_title"
@@ -24,7 +24,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="30dp"
             android:text="@string/empty"
-            android:textColor="@color/text2"
+            android:textColor="?attr/t3"
             android:textSize="32sp"
             android:textStyle="bold">
 
@@ -40,7 +40,7 @@
             android:paddingLeft="20dp"
             android:paddingRight="30dp"
             android:text="@string/empty"
-            android:textColor="@color/text2"
+            android:textColor="?attr/t3"
             android:textSize="32sp"
             android:textStyle="bold">
 
@@ -50,7 +50,7 @@
             android:id="@+id/external_display_connection_status"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
             android:layout_marginTop="2dp"
             android:layout_gravity="center_vertical" />
 
@@ -58,14 +58,14 @@
             android:id="@+id/connection_status"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_gravity="center_vertical" />
 
     </LinearLayout>
 
     <TextView
         android:id="@+id/results_ip"
-        android:background="#075271"
+        android:background="?attr/bg2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
@@ -73,9 +73,9 @@
         android:lines="1"
         android:ellipsize="end"
         android:gravity="center_vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="30dp"
-        android:textColor="@color/text2"
+        android:paddingStart="20dp"
+        android:paddingEnd="30dp"
+        android:textColor="?attr/t2"
         android:textSize="20sp"
         android:textStyle="bold"
         android:visibility="gone">
@@ -92,8 +92,8 @@
         android:gravity="center_vertical"
         android:paddingLeft="20dp"
         android:paddingRight="30dp"
-        android:background="@color/text2"
-        android:textColor="@color/text4"
+        android:background="?attr/t3"
+        android:textColor="?attr/bg"
         android:textSize="24sp"
         android:textStyle="bold" />
 
@@ -102,10 +102,10 @@
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:cacheColorHint="@color/background"
-        android:divider="#cccccc"
+        android:cacheColorHint="?attr/bg"
+        android:divider="?attr/div"
         android:dividerHeight="2dp"
         android:drawSelectorOnTop="false"
-        android:listSelector="@color/background" />
+        android:listSelector="?attr/bg" />
 
 </LinearLayout>

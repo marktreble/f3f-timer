@@ -12,9 +12,12 @@
 package com.marktreble.f3ftimer.racemanager;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -23,6 +26,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -51,6 +55,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.jakewharton.processphoenix.ProcessPhoenix;
+import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
@@ -86,6 +92,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class RaceActivity extends ListActivity {
 
     public static boolean DEBUG = true;
@@ -95,7 +103,7 @@ public class RaceActivity extends ListActivity {
     public static int RACE_FINISHED = 6;
 
     // Dialogs
-    static int DLG_SETTINGS = 0;
+    static int DLG_SETTINGS = 9;
     static int DLG_TIMER = 1;
     static int DLG_NEXT_ROUND = 2;
     static int DLG_TIMEOUT = 3;
@@ -164,7 +172,7 @@ public class RaceActivity extends ListActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i("RACEACTIVITY", "ONCREATE");
+        ((F3FtimerApplication)getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
         ImageView view = findViewById(android.R.id.home);
@@ -286,7 +294,8 @@ public class RaceActivity extends ListActivity {
         // Start Results Display Server
         if (mPrefResultsDisplay) {
             if (mPrefExternalDisplay == null || mPrefExternalDisplay.equals("")) {
-                mDlg = new AlertDialog.Builder(mContext)
+                mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                         .setTitle("External Display")
                         .setMessage("Could not start external display service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off.")
                         .setNegativeButton(getString(android.R.string.ok), null)
@@ -328,7 +337,7 @@ public class RaceActivity extends ListActivity {
                 // Enable tethering
                 Intent tetherSettings = new Intent();
                 tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
-                tetherSettings.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                tetherSettings.setFlags(FLAG_ACTIVITY_NEW_TASK);
                 startActivity(tetherSettings);
             }
         }
@@ -711,6 +720,11 @@ public class RaceActivity extends ListActivity {
                 scrubRound();
             }
         }
+
+        if (requestCode == RaceListActivity.DLG_SETTINGS) {
+            ((F3FtimerApplication)getApplication()).restartApp();
+        }
+
         invalidateOptionsMenu(); // Refresh menu so that any changes in state are shown
     }
 
@@ -1032,6 +1046,16 @@ public class RaceActivity extends ListActivity {
 
     private void setList() {
 
+        final int background = F3FtimerApplication.themeAttributeToColor(
+                R.attr.bg,
+                this,
+                R.color.black);
+
+        final int normal = F3FtimerApplication.themeAttributeToColor(
+                R.attr.t2,
+                this,
+                R.color.text3);
+
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_racepilots, R.id.text1, mArrNames) {
             @Override
             public @NonNull
@@ -1062,7 +1086,7 @@ public class RaceActivity extends ListActivity {
                 TextView p_name = row.findViewById(R.id.text1);
                 p_name.setText(mArrNames.get(position));
                 p_name.setPaintFlags(p_name.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
-                p_name.setTextColor(ContextCompat.getColor(mContext, R.color.text3));
+                p_name.setTextColor(normal);
 
                 View group_header = row.findViewById(R.id.group_header);
                 TextView group_header_label = row.findViewById(R.id.group_header_label);
@@ -1080,7 +1104,7 @@ public class RaceActivity extends ListActivity {
                     p_name.setCompoundDrawablePadding(padding);
                 }
 
-                row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background));
+                row.setBackgroundColor(background);
 
                 if (p.status == Pilot.STATUS_RETIRED) {
                     p_name.setPaintFlags(p_name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
@@ -1151,7 +1175,8 @@ public class RaceActivity extends ListActivity {
         _options = mArrRemainingNames.toArray(_options);
         _selections = new boolean[_options.length];
 
-        mDlg = new AlertDialog.Builder(this)
+        mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+
                 .setTitle("Select Pilots to Add")
                 .setMultiChoiceItems(_options, _selections, new DialogSelectionClickHandler())
                 .setPositiveButton("OK", new DialogButtonClickHandler())
@@ -1260,7 +1285,8 @@ public class RaceActivity extends ListActivity {
     }
 
     private void showTimeoutNotStarted() {
-        mDlg = new AlertDialog.Builder(mContext)
+        mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                 .setTitle("Timeout Not Started")
                 .setMessage("Timeout is not active at the moment")
                 .setNegativeButton(getString(android.R.string.ok), null)
@@ -1363,7 +1389,8 @@ public class RaceActivity extends ListActivity {
                     String vid = extras.getString("vendorId");
                     String pid = extras.getString("productId");
 
-                    mDlg = new AlertDialog.Builder(mContext)
+                    mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                             .setTitle("Unsupported Hardware")
                             .setMessage("VendorId=" + vid + "\n ProductId=" + pid)
                             .setNegativeButton(getString(android.R.string.ok), null)
@@ -1447,7 +1474,8 @@ public class RaceActivity extends ListActivity {
                 changeStartNumber();
                 return true;
             case R.id.menu_scrub_round:
-                mDlg = new AlertDialog.Builder(mContext)
+                mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                         .setTitle(getString(R.string.menu_scrub_round))
                         .setMessage(getString(R.string.menu_scrub_round_confirm))
                         .setNegativeButton(getString(android.R.string.cancel), null)

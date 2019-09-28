@@ -36,6 +36,7 @@ import android.view.WindowManager.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
@@ -77,6 +78,7 @@ public class RaceTimerActivity extends FragmentActivity {
         getWindow().setFlags(LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
                 LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH);
 
+        ((F3FtimerApplication)getApplication()).setTransparentTheme(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.race_timer);
 
@@ -410,7 +412,8 @@ public class RaceTimerActivity extends FragmentActivity {
                 }
 
                 if (data.equals("no_out_stream")) {
-                    mADialog = new AlertDialog.Builder(mContext)
+                    mADialog = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                             .setTitle("No Output Stream Available")
                             .setMessage("Check that the timer board is plugged in, and powered?")
                             .setPositiveButton(android.R.string.ok, null).show();

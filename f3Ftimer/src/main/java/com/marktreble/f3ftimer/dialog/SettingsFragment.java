@@ -84,6 +84,8 @@ public class SettingsFragment extends PreferenceFragment
         setListSummary("pref_buzz_turn9");
         setListSummary("pref_buzz_penalty");
 
+        setListSummary("pref_app_theme");
+
 
         Preference pref_results_server = findPreference("pref_results_server");
 

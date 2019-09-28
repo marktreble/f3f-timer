@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.data.CountryCodes;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
@@ -176,7 +177,8 @@ public abstract class BaseImport extends Activity {
             mActivity.finish();
 
         } else {
-            new AlertDialog.Builder(mContext)
+            new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                     .setTitle("Import Failed")
                     .setMessage("Sorry, something went wrong!")
                     .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
@@ -286,7 +288,8 @@ public abstract class BaseImport extends Activity {
             mActivity.finish();
 
         } else {
-            new AlertDialog.Builder(mContext)
+            new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                     .setTitle("Import Failed")
                     .setMessage("Sorry, something went wrong!")
                     .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {

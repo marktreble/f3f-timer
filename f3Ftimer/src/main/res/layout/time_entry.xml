@@ -8,10 +8,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@android:color/transparent"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp">
+        android:padding="@dimen/dialog_padding"
+>
 
         <TextView
             android:id="@+id/textView1"
@@ -19,14 +17,15 @@
             android:layout_height="wrap_content"
             android:text="@string/enter_time"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/text3" />
+            android:textColor="?attr/t2" />
 
         <EditText
             android:id="@+id/editText1"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:inputType="number|numberDecimal">
+            android:inputType="number|numberDecimal"
+            style="@style/AppTheme.EditText" >
 
             <requestFocus />
         </EditText>

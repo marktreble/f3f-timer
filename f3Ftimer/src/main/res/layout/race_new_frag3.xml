@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_gravity="right"
+    android:layout_gravity="end"
     android:background="@android:color/transparent"
     android:orientation="vertical"
     android:paddingBottom="10dp"
@@ -31,14 +31,14 @@
             android:id="@+id/button_add_wrapper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:orientation="vertical">
 
             <Button
                 android:id="@+id/button_add"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_gravity="left"
+                android:layout_gravity="start"
                 android:background="@drawable/add"
                 android:contentDescription="@string/button_add" />
 
@@ -57,8 +57,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button_add_wrapper"
-            android:layout_marginLeft="12dp"
+            android:layout_toEndOf="@+id/button_add_wrapper"
+            android:layout_marginStart="12dp"
             android:orientation="vertical">
 
             <Button
@@ -83,19 +83,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
             android:layout_toEndOf="@+id/button_scramble_wrapper"
-            android:layout_toRightOf="@+id/button_scramble_wrapper"
-            android:layout_weight="1"
             android:orientation="vertical">
 
             <Button
                 android:id="@+id/button_rotate"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:layout_alignBottom="@+id/button_scramble_wrapper"
-                android:layout_toEndOf="@+id/button_manual_wrapper"
-                android:layout_toRightOf="@+id/button_manual_wrapper"
                 android:background="@drawable/rotate"
                 android:contentDescription="@string/button_rotate" />
 
@@ -115,8 +110,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_toRightOf="@+id/button_rotate_wrapper"
-            android:layout_marginLeft="12dp"
+            android:layout_toEndOf="@+id/button_rotate_wrapper"
+            android:layout_marginStart="12dp"
             android:orientation="vertical">
 
             <Button
@@ -139,17 +134,12 @@
         <Button
             android:id="@+id/button_next"
             android:layout_width="wrap_content"
-            android:layout_height="48dp"
+            android:layout_height="@dimen/nav_button_height"
             android:layout_alignParentBottom="false"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:layout_centerInParent="false"
-            android:layout_gravity="right"
-            android:paddingRight="10dp"
-            android:paddingLeft="10dp"
-            android:textColor="@color/text2"
-            android:gravity="center_vertical|center_horizontal"
-            android:background="@drawable/round_button"
-            android:text="@string/button_save" />
+            android:text="@string/button_save"
+            style="@style/AppTheme.Button.Done" />
 
 
     </RelativeLayout>

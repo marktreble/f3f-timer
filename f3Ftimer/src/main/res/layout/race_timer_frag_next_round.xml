@@ -3,10 +3,7 @@
     android:layout_height="wrap_content"
     android:background="@android:color/transparent"
     android:orientation="vertical"
-    android:paddingBottom="10dp"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingTop="10dp">
+    android:padding="@dimen/dialog_padding">
 
     <TextView
         android:id="@+id/current_round"
@@ -14,7 +11,7 @@
         android:layout_height="wrap_content"
         android:text="@string/empty"
         android:layout_gravity="center_horizontal"
-        android:textColor="@color/text3"
+        android:textColor="?attr/t2"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -23,8 +20,8 @@
         android:layout_height="wrap_content"
         android:text="@string/empty"
         android:gravity="center"
-        android:textColor="@color/text3"
-        android:textSize="60sp">
+        android:textColor="?attr/t2"
+        android:textSize="@dimen/clock_time" >
 
     </TextView>
 
@@ -40,30 +37,23 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:textColor="@color/text2"
-            android:textSize="20sp"
             android:text="@string/abort"
-            android:background="@color/red" />
+            style="@style/AppTheme.Button.Negative" />
 
         <Button
             android:id="@+id/button_finish_race"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:textColor="@color/text2"
-            android:textSize="20sp"
             android:text="@string/finish_race"
-            android:background="@color/orange" />
+            style="@style/AppTheme.Button.Neutral" />
 
         <Button
             android:id="@+id/button_next_round"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:textColor="@color/text2"
-            android:textSize="20sp"
             android:text="@string/next_round"
-            android:background="@color/green" />
+            style="@style/AppTheme.Button.Positive" />
     </LinearLayout>
 </LinearLayout>

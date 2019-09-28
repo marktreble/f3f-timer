@@ -18,6 +18,8 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.marktreble.f3ftimer.R;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -282,7 +284,7 @@ public class API {
                 ((Activity) mContext.get()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        new AlertDialog.Builder(mContext.get())
+                        new AlertDialog.Builder(mContext.get(), R.style.AppTheme_AlertDialog)
                                 .setTitle("Network Unavailable")
                                 .setMessage("Please check that you are connected to either WiFi or a Mobile network")
                                 .setOnCancelListener(new DialogInterface.OnCancelListener() {

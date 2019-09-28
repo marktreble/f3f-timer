@@ -19,9 +19,9 @@
             android:background="@drawable/circle"
             android:gravity="center"
             android:layout_gravity="center"
-            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
             android:minHeight="68dp"
-            android:textColor="@color/text2"
+            android:textColor="?attr/t3"
             android:textSize="16sp"
             android:textStyle="bold">
 
@@ -33,7 +33,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_gravity="center_horizontal"
-            android:textColor="@color/text3"
+            android:textColor="?attr/t2"
             android:textSize="10sp"
             android:text="@string/thirty" />
 
@@ -43,7 +43,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:layout_gravity="center_horizontal"
-            android:textColor="@color/text3"
+            android:textColor="?attr/t2"
             android:textSize="20sp"
             android:text="@string/thirty" />
     </LinearLayout>
@@ -53,10 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingBottom="10dp"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="10dp">
+        android:padding="@dimen/dialog_padding">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -66,15 +63,15 @@
 
             <TextView
                 android:id="@+id/number"
-                android:layout_width="32dp"
+                android:layout_width="0dp"
                 android:layout_height="32dp"
                 android:layout_weight="0"
                 android:background="@drawable/circle"
                 android:gravity="center"
                 android:layout_gravity="center"
-                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
                 android:minHeight="68dp"
-                android:textColor="@color/text2"
+                android:textColor="?attr/t3"
                 android:textSize="16sp"
                 android:textStyle="bold">
 
@@ -87,7 +84,7 @@
                 android:layout_gravity="center_vertical"
                 android:text="@string/empty"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2" />
         </LinearLayout>
 
         <TextView
@@ -96,8 +93,8 @@
             android:layout_height="wrap_content"
             android:text="@string/thirty"
             android:layout_gravity="center_horizontal"
-            android:textColor="@color/text3"
-            android:textSize="60sp">
+            android:textColor="?attr/t2"
+            android:textSize="@dimen/clock_time">
 
         </TextView>
 
@@ -107,7 +104,7 @@
             android:layout_height="wrap_content"
             android:text=""
             android:layout_gravity="center_horizontal"
-            android:textColor="@color/text3"
+            android:textColor="?attr/t2"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
@@ -133,7 +130,7 @@
                 android:layout_weight="1"
                 android:text="@string/empty"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3">
+                android:textColor="?attr/t2">
 
             </TextView>
 
@@ -146,7 +143,7 @@
                 android:layout_weight="1"
                 android:text="@string/empty"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3">
+                android:textColor="?attr/t2">
 
             </TextView>
         </LinearLayout>
@@ -172,68 +169,54 @@
                 android:layout_width="fill_parent"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:textColor="@color/text2"
-                android:textSize="20sp"
                 android:text="@string/start_working_time"
                 android:visibility="gone"
-                android:background="@color/orange">
-
-            </Button>
+                style="@style/AppTheme.Button.Neutral" />
 
             <Button
                 android:id="@+id/button_model_launched"
                 android:layout_width="fill_parent"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:textColor="@color/text2"
-                android:textSize="20sp"
                 android:text="@string/model_launch"
                 android:visibility="gone"
-                android:background="@color/green" />
+                style="@style/AppTheme.Button.Positive" />
 
             <Button
                 android:id="@+id/button_abort"
                 android:layout_width="fill_parent"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:textColor="@color/text2"
-                android:textSize="20sp"
                 android:text="@string/abort"
                 android:visibility="gone"
-                android:background="@color/red" />
+                style="@style/AppTheme.Button.Negative" />
 
             <Button
                 android:id="@+id/button_refly"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/text2"
-                android:textSize="20sp"
                 android:text="@string/refly"
                 android:visibility="gone"
-                android:background="@color/orange" />
+                style="@style/AppTheme.Button.Neutral" />
 
             <Button
                 android:id="@+id/button_finish"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/text2"
-                android:textSize="20sp"
                 android:text="@string/finish"
                 android:visibility="gone"
-                android:background="@color/green" />
+                style="@style/AppTheme.Button.Positive" />
 
             <Button
                 android:id="@+id/button_zero"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:textColor="@color/text2"
-                android:textSize="20sp"
                 android:text="@string/score_zero"
                 android:visibility="gone"
-                android:background="@color/red" />
+                style="@style/AppTheme.Button.Negative" />
 
             <Button
                 android:id="@+id/base_B"
@@ -249,23 +232,19 @@
                 android:id="@+id/button_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textColor="@color/text2"
-                android:textSize="20sp"
                 android:layout_weight="1"
                 android:text="@string/button_cancel"
                 android:visibility="gone"
-                android:background="@color/orange" />
+                style="@style/AppTheme.Button.Neutral" />
 
             <Button
                 android:id="@+id/button_next_pilot"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:textColor="@color/text2"
-                android:textSize="20sp"
                 android:layout_weight="1"
                 android:text="@string/button_next_pilot"
                 android:visibility="gone"
-                android:background="@color/green" />
+                style="@style/AppTheme.Button.Positive" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -12,10 +12,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@android:color/transparent"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
+            android:padding="@dimen/dialog_padding">
 
             <TextView
                 android:id="@+id/textView1"
@@ -23,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_firstname"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3">
+                android:textColor="?attr/t2" >
 
                 <requestFocus />
             </TextView>
@@ -33,8 +30,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textCapSentences">
-
+                android:inputType="textCapSentences"
+                style="@style/AppTheme.EditText">
                 <requestFocus />
             </EditText>
 
@@ -44,14 +41,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_surname"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2"  />
 
             <EditText
                 android:id="@+id/editText2"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textCapSentences" />
+                android:inputType="textCapSentences"
+                style="@style/AppTheme.EditText" />
 
             <TextView
                 android:id="@+id/textView6"
@@ -59,12 +57,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_nationality"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2"  />
 
             <Spinner
                 android:id="@+id/spinner6"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                style="@style/AppTheme.Spinner" />
 
             <TextView
                 android:id="@+id/textView7"
@@ -72,12 +71,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_language"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2"  />
 
             <Spinner
                 android:id="@+id/spinner7"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                style="@style/AppTheme.Spinner" />
 
             <TextView
                 android:id="@+id/textView3"
@@ -85,14 +85,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_email"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2"  />
 
             <EditText
                 android:id="@+id/editText3"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                style="@style/AppTheme.EditText" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -100,14 +101,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_frequency"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2"  />
 
             <EditText
                 android:id="@+id/editText4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                style="@style/AppTheme.EditText" />
 
             <TextView
                 android:id="@+id/textView5"
@@ -115,14 +117,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_models"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2"  />
 
             <EditText
                 android:id="@+id/editText5"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ems="10"
-                android:inputType="textCapSentences" />
+                android:inputType="textCapSentences"
+                style="@style/AppTheme.EditText" />
 
             <TextView
                 android:id="@+id/textView8"
@@ -130,14 +133,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_nac_no"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2"  />
 
             <EditText
                 android:id="@+id/editText6"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ems="10"
-                android:inputType="textNoSuggestions" />
+                android:inputType="textNoSuggestions"
+                style="@style/AppTheme.EditText" />
 
             <TextView
                 android:id="@+id/textView9"
@@ -145,14 +149,15 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_fai_id"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3" />
+                android:textColor="?attr/t2" />
 
             <EditText
                 android:id="@+id/editText7"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:ems="10"
-                android:inputType="textNoSuggestions" />
+                android:inputType="textNoSuggestions"
+                style="@style/AppTheme.EditText" />
 
             <TextView
                 android:id="@+id/textView10"
@@ -160,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/pilot_team"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="@color/text3"
+                android:textColor="?attr/t2"
                 android:visibility="gone" />
 
             <AutoCompleteTextView
@@ -169,15 +174,17 @@
                 android:layout_height="match_parent"
                 android:ems="10"
                 android:inputType="textCapSentences"
-                android:visibility="gone" />
+                android:visibility="gone"
+                style="@style/AppTheme.EditText" />
 
             <Button
                 android:id="@+id/button1"
+                android:layout_marginTop="@dimen/ten"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_gravity="right"
-                android:layout_weight="1"
-                android:text="@string/button_save" />
+                android:layout_height="@dimen/nav_button_height"
+                android:layout_gravity="end"
+                android:text="@string/button_save"
+                style="@style/AppTheme.Button.Done" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

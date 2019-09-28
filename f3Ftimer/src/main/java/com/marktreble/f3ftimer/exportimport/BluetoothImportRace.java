@@ -151,7 +151,8 @@ public class BluetoothImportRace extends BaseImport {
 
         mDevices = mPairedAndDiscoveredDeviceNames.toArray(new CharSequence[0]);
 
-        mDlgb = new AlertDialog.Builder(mContext)
+        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                 .setTitle("Searching for Devices...")
                 .setCancelable(true)
                 .setItems(mDevices, deviceClickListener);
@@ -237,7 +238,8 @@ public class BluetoothImportRace extends BaseImport {
                     } catch (IOException connectException) {
                         // Unable to connect; close the socket and get out
                         connectException.printStackTrace();
-                        mDlgb = new AlertDialog.Builder(mContext)
+                        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                                 .setTitle("Connection Denied")
                                 .setCancelable(true)
                                 .setMessage("Failed to connect to " + deviceName)
@@ -395,7 +397,8 @@ public class BluetoothImportRace extends BaseImport {
             }
 
             CharSequence[] list = racelist.toArray(new CharSequence[0]);
-            mDlgb = new AlertDialog.Builder(mContext)
+            mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+
                     .setTitle("Races Available for Import")
                     .setCancelable(true)
                     .setItems(list, raceClickListener);

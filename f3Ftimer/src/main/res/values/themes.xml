@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Default Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <item name="android:actionBarStyle">@style/carbonActionBar</item>
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/text1</item>
+        <item name="t1">@color/text</item>
+        <item name="t2">@color/text3</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/text3</item><!-- Group headings BG -->
+        <item name="grad_fade">@color/black</item>
+        <item name="div">@color/border</item>
+    </style>
+
+    <style name="AppTheme.Overlay" parent="Theme.Overlay">
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/text1</item>
+        <item name="t1">@color/text</item>
+        <item name="t2">@color/text3</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/text3</item><!-- Group headings BG -->
+        <item name="div">@color/border</item>
+    </style>
+
+    <style name="AppTheme.Transparent" parent="Theme.Transparent">
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/text1</item>
+        <item name="t1">@color/text</item>
+        <item name="t2">@color/text3</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/text3</item><!-- Group headings BG -->
+        <item name="div">@color/border</item>
+        <item name="android:textColorPrimary">@color/text2</item>
+    </style>
+
+    <!-- F3F Theme -->
+    <style name="AppTheme.F3f" parent="AppBaseTheme">
+        <item name="android:actionBarStyle">@style/carbonActionBar</item>
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/f3f</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="grad_fade">@color/black</item>
+        <item name="div">@color/border</item>
+    </style>
+
+    <style name="AppTheme.F3f.Overlay" parent="Theme.Overlay">
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/f3f</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="div">@color/border</item>
+    </style>
+
+    <style name="AppTheme.F3f.Transparent" parent="Theme.Transparent">
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/f3f</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="div">@color/border</item>
+        <item name="android:textColorPrimary">@color/text2</item>
+    </style>
+
+    <!-- Black/Yellow Theme -->
+    <style name="AppTheme.Yellow.Black" parent="AppBaseTheme">
+        <item name="android:actionBarStyle">@style/carbonActionBar</item>
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/yellow</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="grad_fade">@color/black</item>
+        <item name="div">@color/border</item>
+    </style>
+
+    <style name="AppTheme.Yellow.Black.Overlay" parent="Theme.Overlay">
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/yellow</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="div">@color/border</item>
+    </style>
+
+    <style name="AppTheme.Yellow.Black.Transparent" parent="Theme.Transparent">
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/yellow</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="div">@color/border</item>
+        <item name="android:textColorPrimary">@color/text2</item>
+    </style>
+
+    <!-- Black/White Theme -->
+    <style name="AppTheme.White.Black" parent="AppBaseTheme">
+        <item name="android:actionBarStyle">@style/carbonActionBar</item>
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/white</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="grad_fade">@color/black</item>
+        <item name="div">@color/border</item>
+    </style>
+
+    <style name="AppTheme.White.Black.Overlay" parent="Theme.Overlay">
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/white</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="div">@color/border</item>
+    </style>
+
+    <style name="AppTheme.White.Black.Transparent" parent="Theme.Transparent">
+        <item name="bg">@color/black</item>
+        <item name="bg2">@color/dark_grey</item>
+        <item name="t1">@color/light_grey</item>
+        <item name="t2">@color/white</item>
+        <item name="t3">@color/text2</item>
+        <item name="t4">@color/dark_grey</item>
+        <item name="div">@color/border</item>
+        <item name="android:textColorPrimary">@color/text2</item>
+    </style>
+
+</resources>
