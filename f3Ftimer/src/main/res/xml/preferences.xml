@@ -23,7 +23,7 @@
         <EditTextPreference
             android:key="pref_usb_baudrate"
             android:title="@string/usb_baudrate"
-            android:defaultValue="2400" />
+            android:defaultValue="9600" />
         <ListPreference
             android:key="pref_usb_stopbits"
             android:title="@string/usb_stopbits"
