@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:startColor="?attr/bg"
+        android:endColor="?attr/bg3"
+        android:angle="270" />
+    <stroke
+        android:width="3dp"
+        android:color="?attr/div" />
+    <padding
+        android:left="@dimen/dialog_padding"
+        android:top="@dimen/dialog_padding"
+        android:right="@dimen/dialog_padding"
+        android:bottom="@dimen/dialog_padding" />
+    <corners android:radius="20dp" />
+
+</shape>

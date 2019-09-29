@@ -8,7 +8,7 @@
         android:id="@+id/window_resize"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:src="@drawable/minimize"
+        android:src="@mipmap/minimize"
         android:padding="8dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"

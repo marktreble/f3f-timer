@@ -159,12 +159,12 @@ public class RaceTimerActivity extends FragmentActivity {
             public void onClick(View v) {
                 if (mWindowState == WINDOW_STATE_FULL) {
                     mWindowState = WINDOW_STATE_MINIMIZED;
-                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.expand));
+                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.expand));
                     setMinimized(true);
 
                 } else {
                     mWindowState = WINDOW_STATE_FULL;
-                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.minimize));
+                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.minimize));
                     setExpanded();
 
                 }
@@ -230,7 +230,7 @@ public class RaceTimerActivity extends FragmentActivity {
             public void run() {
                 // Retain the mimimized state when rotated
                 if (mWindowState == WINDOW_STATE_MINIMIZED) {
-                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.expand));
+                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.expand));
                     setMinimized(false);
                 }
             }

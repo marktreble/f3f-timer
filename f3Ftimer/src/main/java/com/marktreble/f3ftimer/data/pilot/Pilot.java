@@ -76,7 +76,7 @@ public class Pilot {
 
     public Drawable getFlag(Context context) {
         if (nationality == null) return null;
-        String uri = "@drawable/" + nationality.toLowerCase();
+        String uri = "@mipmap/" + nationality.toLowerCase();
         int imageResource = context.getResources().getIdentifier(uri, null, context.getPackageName());
         if (imageResource == 0) return null;
         return ContextCompat.getDrawable(context, imageResource);

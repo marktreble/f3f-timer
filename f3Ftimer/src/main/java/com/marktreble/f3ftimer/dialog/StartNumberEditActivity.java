@@ -160,7 +160,7 @@ public class StartNumberEditActivity extends AppCompatActivity {
 
     private boolean isValidStartNumber(String start) {
         if (start == null) return false;
-        if (start.equals("")) return false;
+        if (start.trim().equals("")) return false;
 
         String name = "";
         int n = Integer.parseInt(start, 10);
@@ -171,7 +171,7 @@ public class StartNumberEditActivity extends AppCompatActivity {
                 name = String.format("%s %s", p.firstname, p.lastname);
             }
         }
-        if (name.equals("")) return false;
+        if (name.trim().equals("")) return false;
 
         mStartNumber = start;
         mStartName = name;

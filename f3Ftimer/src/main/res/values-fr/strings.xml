@@ -8,6 +8,7 @@
     <string name="menu_settings">Settings</string>
     <string name="app_pilots">Pilot Manager</string>
     <string name="app_race">Race Manager</string>
+    <string name="pilot_name">Pilot Name</string>
     <string name="pilot_firstname">First Name</string>
     <string name="pilot_surname">Surname</string>
     <string name="pilot_email">Email Address</string>

@@ -42,7 +42,10 @@ public class GroupScoreEditActivity extends AppCompatActivity {
 
         mIntent = getIntent(); // gets the previously created intent
         int max_groups = mIntent.getIntExtra("max_groups", 1);
+        if (max_groups<1) max_groups = 1;
+
         int current_groups = mIntent.getIntExtra("current_groups", 1);
+        if (current_groups<1) current_groups = 1;
 
         numGroups.setMinValue(1);
         numGroups.setMaxValue(max_groups);

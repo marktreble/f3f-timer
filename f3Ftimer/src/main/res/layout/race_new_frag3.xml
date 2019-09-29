@@ -39,7 +39,7 @@
                 android:layout_width="48dp"
                 android:layout_height="48dp"
                 android:layout_gravity="start"
-                android:background="@drawable/add"
+                android:background="@mipmap/add"
                 android:contentDescription="@string/button_add" />
 
             <TextView
@@ -65,7 +65,7 @@
                 android:id="@+id/button_scramble"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/random"
+                android:background="@mipmap/random"
                 android:contentDescription="@string/button_scramble" />
 
             <TextView
@@ -91,7 +91,7 @@
                 android:id="@+id/button_rotate"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/rotate"
+                android:background="@mipmap/rotate"
                 android:contentDescription="@string/button_rotate" />
 
             <TextView
@@ -118,7 +118,7 @@
                 android:id="@+id/button_manual"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:background="@drawable/manual"
+                android:background="@mipmap/manual"
                 android:contentDescription="@string/button_manual" />
 
             <TextView

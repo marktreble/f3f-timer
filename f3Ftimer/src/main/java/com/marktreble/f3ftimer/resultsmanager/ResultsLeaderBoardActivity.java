@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -140,11 +141,11 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 
                 Drawable rosette = null;
                 if (position == 0) {
-                    rosette = ContextCompat.getDrawable(mContext, R.drawable.gold);
+                    rosette = ContextCompat.getDrawable(mContext, R.mipmap.gold);
                 } else if (position == 1) {
-                    rosette = ContextCompat.getDrawable(mContext, R.drawable.silver);
+                    rosette = ContextCompat.getDrawable(mContext, R.mipmap.silver);
                 } else if (position == 2) {
-                    rosette = ContextCompat.getDrawable(mContext, R.drawable.bronze);
+                    rosette = ContextCompat.getDrawable(mContext, R.mipmap.bronze);
                 }
 
                 Drawable flag = p.getFlag(mContext);
@@ -174,13 +175,19 @@ public class ResultsLeaderBoardActivity extends ListActivity {
         }
 
         Resources r = getResources();
-        int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
         ftdView.setTextColor(F3FtimerApplication.themeAttributeToColor(
                 R.attr.t2,
                 this,
                 R.color.light_grey));
-        ftdView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-        ftdView.setPadding(px1, px1, px1, px1);
+
+        int textSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, r.getDimension(R.dimen.list_label), getResources().getDisplayMetrics());
+        ftdView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+
+        int px1 = (int)r.getDimension(R.dimen.dialog_padding);
+        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px1, getResources().getDisplayMetrics());
+        ftdView.setPadding(padding, padding, padding, padding);
+
+        ftdView.setGravity(Gravity.CENTER);
 
         getListView().addFooterView(ftdView);
 

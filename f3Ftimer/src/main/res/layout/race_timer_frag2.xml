@@ -20,7 +20,7 @@
             android:gravity="center"
             android:layout_gravity="center"
             android:layout_marginEnd="8dp"
-            android:minHeight="68dp"
+            android:minHeight="@dimen/min_row_height"
             android:textColor="?attr/t3"
             android:textSize="16sp"
             android:textStyle="bold">
@@ -63,16 +63,15 @@
 
             <TextView
                 android:id="@+id/number"
-                android:layout_width="0dp"
-                android:layout_height="32dp"
-                android:layout_weight="0"
+                android:layout_width="@dimen/circle_diameter"
+                android:layout_height="@dimen/circle_diameter"
                 android:background="@drawable/circle"
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:layout_marginEnd="8dp"
-                android:minHeight="68dp"
+                android:minHeight="@dimen/min_row_height"
                 android:textColor="?attr/t3"
-                android:textSize="16sp"
+                android:textSize="@dimen/list_label"
                 android:textStyle="bold">
 
             </TextView>
@@ -111,7 +110,7 @@
             android:id="@+id/wind_warning"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/warning"
+            android:drawableLeft="@mipmap/warning"
             android:visibility="invisible"
             android:text="@string/wind_warning"
             android:textAppearance="?android:attr/textAppearanceMedium"

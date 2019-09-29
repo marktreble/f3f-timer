@@ -24,7 +24,7 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             android:textColor="?attr/t3"
-            android:textSize="20sp"
+            android:textSize="@dimen/list_label2"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -35,16 +35,16 @@
 
         <TextView
             android:id="@+id/number"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="@dimen/circle_diameter"
+            android:layout_height="@dimen/circle_diameter"
             android:layout_weight="0"
             android:background="@drawable/circle"
             android:gravity="center"
             android:layout_gravity="center"
             android:layout_marginRight="8dp"
-            android:minHeight="68dp"
+            android:minHeight="@dimen/min_row_height"
             android:textColor="?attr/t3"
-            android:textSize="16sp"
+            android:textSize="@dimen/list_label"
             android:textStyle="bold">
 
         </TextView>
@@ -56,12 +56,12 @@
             android:layout_weight="1"
             android:background="@color/transparent"
             android:gravity="center_vertical"
-            android:minHeight="68dp"
+            android:minHeight="@dimen/min_row_height"
             android:minWidth="@dimen/ten"
             android:paddingStart="0dp"
             android:paddingEnd="10dp"
             android:textColor="?attr/t2"
-            android:textSize="16sp"
+            android:textSize="@dimen/list_label"
             android:textStyle="bold">
 
         </TextView>
@@ -72,14 +72,14 @@
             android:layout_height="wrap_content"
             android:background="@color/transparent"
             android:gravity="end|center_vertical"
-            android:minHeight="68dp"
+            android:minHeight="@dimen/min_row_height"
             android:paddingBottom="4dp"
             android:paddingStart="0dp"
             android:paddingEnd="10dp"
             android:paddingTop="4dp"
             android:text="@string/empty"
             android:textColor="@color/red"
-            android:textSize="16sp"
+            android:textSize="@dimen/list_label"
             android:textStyle="bold" />
 
         <TextView
@@ -88,14 +88,14 @@
             android:layout_height="wrap_content"
             android:background="@color/transparent"
             android:gravity="end|center_vertical"
-            android:minHeight="68dp"
+            android:minHeight="@dimen/min_row_height"
             android:paddingBottom="4dp"
             android:paddingStart="0dp"
             android:paddingEnd="10dp"
             android:paddingTop="4dp"
             android:text="@string/notime"
             android:textColor="?attr/t2"
-            android:textSize="16sp"
+            android:textSize="@dimen/list_label"
             android:textStyle="bold">
 
         </TextView>
@@ -108,18 +108,18 @@
 
         <TextView
             android:id="@+id/points"
-            android:layout_width="75dp"
+            android:layout_width="@dimen/points_column_width"
             android:layout_height="wrap_content"
             android:background="@color/transparent"
             android:gravity="end|center_vertical"
-            android:minHeight="68dp"
+            android:minHeight="@dimen/min_row_height"
             android:paddingBottom="4dp"
             android:paddingStart="0dp"
             android:paddingEnd="10dp"
             android:paddingTop="4dp"
             android:text="@string/empty"
             android:textColor="?attr/t2"
-            android:textSize="16sp"
+            android:textSize="@dimen/list_label"
             android:textStyle="bold">
 
         </TextView>

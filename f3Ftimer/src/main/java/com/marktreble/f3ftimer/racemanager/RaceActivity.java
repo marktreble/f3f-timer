@@ -435,7 +435,14 @@ public class RaceActivity extends ListActivity {
             startServers();
         }
 
-        mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName())));
+        int id = getResources().getIdentifier(mExternalDisplayStatusIcon, "mipmap", getPackageName());
+        if (id == 0) {
+            id = getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName());
+        }
+
+        if (id > 0) {
+            mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, id));
+        }
 
         if (mPrefResultsDisplay) {
             mExternalDisplayStatus.setVisibility(View.VISIBLE);
@@ -443,8 +450,16 @@ public class RaceActivity extends ListActivity {
             mExternalDisplayStatus.setVisibility(View.GONE);
         }
 
-        if (sInputSource.equals(mInputSource))
-            mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName())));
+        if (sInputSource.equals(mInputSource)) {
+            id = getResources().getIdentifier(mStatusIcon, "mipmap", getPackageName());
+            if (id == 0) {
+                id = getResources().getIdentifier(mStatusIcon, "drawable", getPackageName());
+            }
+
+            if (id > 0) {
+                mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, id));
+            }
+        }
 
         mPower.setText(mBatteryLevel);
 
@@ -1620,7 +1635,8 @@ public class RaceActivity extends ListActivity {
         Intent intent = new Intent(mContext, GroupScoreEditActivity.class);
         int max_groups = (int) Math.floor(mArrPilots.size() / 10f);
         intent.putExtra("max_groups", max_groups);
-        intent.putExtra("current_groups", mArrGroups.size());
+        intent.putExtra("current_groups", mGroupScoring.num_groups);
+        Log.d("PPP", "SZ = "  + mGroupScoring.num_groups);
         startActivityForResult(intent, DLG_GROUP_SCORE_EDIT);
     }
 

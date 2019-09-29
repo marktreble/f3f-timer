@@ -293,7 +293,7 @@ public class BluetoothImportRace extends BaseImport {
         while (mIsListening) {
             try {
                 // Read from the InputStream
-                StringBuilder builder = new StringBuilder();
+                final StringBuilder builder = new StringBuilder();
                 boolean eof = false;
                 while (!eof) {
                     bufferLength = mmInStream.read(buffer);
