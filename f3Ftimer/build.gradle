@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "com.marktreble.f3ftimer"
         minSdkVersion 19
-        targetSdkVersion 26
+        targetSdkVersion 28
     }
 
     buildTypes {
@@ -31,7 +31,7 @@ dependencies {
     implementation project(':iOIOLibBT')
     implementation project(':usbSerialForAndroid')
 
-    implementation 'com.nononsenseapps:filepicker:2.4.2'
+    implementation 'com.nononsenseapps:filepicker:4.1.0'
     implementation 'com.amitshekhar.android:debug-db:1.0.1'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'org.apache.commons:commons-lang3:3.6'
@@ -39,10 +39,11 @@ dependencies {
     implementation 'com.jakewharton:process-phoenix:2.0.0'
 
     api files('libs/acra-4.4.0.jar')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
-    implementation 'com.android.support:support-v4:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation "com.android.support:preference-v7:28.0.0"
 
 }
 

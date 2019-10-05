@@ -13,16 +13,13 @@ package com.marktreble.f3ftimer.racemanager;
 
 import android.app.ActionBar;
 import android.app.ActivityManager;
-import android.app.AlertDialog;
-import android.app.ListActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -31,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
+import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
 import android.print.PrintAttributes;
 import android.print.PrintManager;
@@ -51,9 +49,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
+import com.marktreble.f3ftimer.constants.Pref;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -61,6 +61,7 @@ import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.FlyingOrderEditActivity;
+import com.marktreble.f3ftimer.dialog.GenericAlert;
 import com.marktreble.f3ftimer.dialog.GroupScoreEditActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.dialog.NextRoundActivity;
@@ -89,13 +90,15 @@ import java.util.Map;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
-public class RaceActivity extends ListActivity {
+public class RaceActivity extends BaseActivity
+        implements ListView.OnClickListener {
 
-    public static boolean DEBUG = true;
     public static int RESULT_ABORTED = 4; // Changed from 2 to 4 because of conflict with dialog dismissal
     public static int ROUND_SCRUBBED = 3;
     public static int ENABLE_BLUETOOTH = 5;
     public static int RACE_FINISHED = 6;
+
+    static final String DIALOG = "dialog";
 
     // Dialogs
     static int DLG_SETTINGS = 9;
@@ -140,9 +143,8 @@ public class RaceActivity extends ListActivity {
     private boolean mTimeoutCompleteDialogShown = false;
     private boolean mMenuShown = false;
 
-    private Context mContext;
+    GenericAlert mDLG;
 
-    public AlertDialog mDlg;
     String[] _options;    // String array of all pilots in database
     boolean[] _selections;    // bool array of which has been selected
 
@@ -165,17 +167,11 @@ public class RaceActivity extends ListActivity {
 
     private RaceData.Group mGroupScoring;
 
+    private String mCachedIP = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
-
-        ImageView view = findViewById(android.R.id.home);
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-        view.setPadding(0, 0, px, 0);
-
-        mContext = this;
 
         setContentView(R.layout.race);
 
@@ -194,7 +190,7 @@ public class RaceActivity extends ListActivity {
         datasource.close();
         mRace = race;
 
-        mListView = getListView();
+        mListView = findViewById(android.R.id.list);
         registerForContextMenu(mListView);
 
         getWindow().addFlags(LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -226,17 +222,25 @@ public class RaceActivity extends ListActivity {
 
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    Log.i("UUUUU", "CHECKING CONN");
                     sendCommand("get_connection_status");
                     handler.postDelayed(this, delay);
                 }
             }, delay);
 
+        } else {
+            mArrNames = savedInstanceState.getStringArrayList("mArrNames");
+            mArrNumbers = savedInstanceState.getStringArrayList("mArrNumbers");
+            mArrPilots = new ArrayList<>();
+            mArrGroups = savedInstanceState.getIntegerArrayList("mArrGroups");
+            mArrRounds = savedInstanceState.getIntegerArrayList("mArrRounds");
+            mFirstInGroup = new ArrayList<>();
         }
 
         // Render the list
         getNamesArray();
         setList();
+
+        mListView.setAdapter(mArrAdapter);
 
         if (getActionBar() == null) return;
         getActionBar().addOnMenuVisibilityListener(new ActionBar.OnMenuVisibilityListener() {
@@ -250,14 +254,12 @@ public class RaceActivity extends ListActivity {
 
     @Override
     public void onDestroy() {
-        Log.i("DRIVER (Race Activity)", "Destroyed");
         super.onDestroy();
 
         unregisterReceiver(onBroadcast);
         unregisterReceiver(mBatInfoReceiver);
 
         if (isFinishing()) {
-            Log.i("DRIVER", "STOP SERVERS");
             stopServers();
         }
     }
@@ -272,7 +274,6 @@ public class RaceActivity extends ListActivity {
     public void startServers() {
         // Start Results server
         if (mPrefResults) {
-            Log.i("START SERVICE", "RESULTS");
             if (mPrefWifiHotspot) {
                 if (Wifi.canEnableWifiHotspot(this)) {
                     mWifiSavedState = Wifi.enableWifiHotspot(this);
@@ -289,12 +290,20 @@ public class RaceActivity extends ListActivity {
         // Start Results Display Server
         if (mPrefResultsDisplay) {
             if (mPrefExternalDisplay == null || mPrefExternalDisplay.equals("")) {
-                mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+                String[] buttons_array = new String[1];
+                buttons_array[0] = getString(android.R.string.cancel);
 
-                        .setTitle("External Display")
-                        .setMessage("Could not start external display service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off.")
-                        .setNegativeButton(getString(android.R.string.ok), null)
-                        .show();
+                mDLG = GenericAlert.newInstance(
+                        getString(R.string.err_external_display),
+                        getString(R.string.err_external_display_no_device),
+                        buttons_array,
+                        null
+                );
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack(null);
+                ft.add(mDLG, DIALOG);
+                ft.commit();
             } else {
                 RaceResultsDisplayService.stop(this);
 
@@ -326,7 +335,7 @@ public class RaceActivity extends ListActivity {
 
         }
 
-        boolean pref_usb_tethering = sharedPref.getBoolean("pref_usb_tether", false);
+        boolean pref_usb_tethering = sharedPref.getBoolean(Pref.USB_TETHER, Pref.USB_TETHER_DEFAULT);
         if (pref_usb_tethering) {
             if (!USB.setupUsbTethering(getApplicationContext())) {
                 // Enable tethering
@@ -374,16 +383,24 @@ public class RaceActivity extends ListActivity {
         outState.putString("display_status_icon", mExternalDisplayStatusIcon);
         outState.putString("battery_level", mBatteryLevel);
 
-        outState.putString("pref_input_source", mInputSource);
-        outState.putString("pref_input_source_device", mInputSourceDevice);
+        outState.putString(Pref.INPUT_SRC, mInputSource);
+        outState.putString(Pref.INPUT_SRC_DEVICE, mInputSourceDevice);
         outState.putBoolean("pref_results", mPrefResults);
         outState.putBoolean("pref_wifi_hotspot", mPrefWifiHotspot);
         outState.putBoolean("pref_results_display", mPrefResultsDisplay);
         outState.putString("pref_external_display", mPrefExternalDisplay);
+        TextView results = findViewById(R.id.results_ip);
+        outState.putString("cache_ip_addr", results.getText().toString());
 
 
         mListViewScrollPos = mListView.onSaveInstanceState();
         outState.putParcelable("listviewscrollpos", mListViewScrollPos);
+
+        outState.putStringArrayList("mArrNames", mArrNames);
+        outState.putStringArrayList("mArrNumbers", mArrNumbers);
+        outState.putStringArrayList("mArrRemainingNames", mArrRemainingNames);
+        outState.putIntegerArrayList("mArrGroups", mArrGroups);
+        outState.putIntegerArrayList("mArrRounds", mArrRounds);
 
     }
 
@@ -399,8 +416,8 @@ public class RaceActivity extends ListActivity {
         mExternalDisplayStatusIcon = savedInstanceState.getString("display_status_icon");
         mBatteryLevel = savedInstanceState.getString("battery_level");
 
-        mInputSource = savedInstanceState.getString("pref_input_source");
-        mInputSourceDevice = savedInstanceState.getString("pref_input_source_device");
+        mInputSource = savedInstanceState.getString(Pref.INPUT_SRC);
+        mInputSourceDevice = savedInstanceState.getString(Pref.INPUT_SRC_DEVICE);
         mPrefResults = savedInstanceState.getBoolean("pref_results");
         mPrefWifiHotspot = savedInstanceState.getBoolean("pref_wifi_hotspot");
         mPrefResultsDisplay = savedInstanceState.getBoolean("pref_results_display");
@@ -409,6 +426,9 @@ public class RaceActivity extends ListActivity {
         mListViewScrollPos = savedInstanceState.getParcelable("listviewscrollpos");
         if (mListView != null)
             mListView.onRestoreInstanceState(mListViewScrollPos);
+
+        mCachedIP = savedInstanceState.getString("cache_ip_addr", "");
+
 
     }
 
@@ -424,12 +444,12 @@ public class RaceActivity extends ListActivity {
         String sPrefExternalDisplay = mPrefExternalDisplay;
         getPreferences();
 
-        if (!sInputSource.equals(mInputSource)                        // Input src changed
-                || sPrefResults != mPrefResults                            // Results server toggled
-                || sPrefWifiHotspot != mPrefWifiHotspot                   // wifi hotspot toggled
-                || sPrefResultsDisplay != mPrefResultsDisplay             // External Display server toggled
-                || !sInputSourceDevice.equals(mInputSourceDevice)   // Input Source device changed
-                || !sPrefExternalDisplay.equals(mPrefExternalDisplay) // Extrenal Display device changed
+        if (!sInputSource.equals(mInputSource)                          // Input src changed
+                || sPrefResults != mPrefResults                         // Results server toggled
+                || sPrefWifiHotspot != mPrefWifiHotspot                 // wifi hotspot toggled
+                || sPrefResultsDisplay != mPrefResultsDisplay           // External Display server toggled
+                || !sInputSourceDevice.equals(mInputSourceDevice)       // Input Source device changed
+                || !sPrefExternalDisplay.equals(mPrefExternalDisplay)   // External Display device changed
         ) {
             stopServers();
             startServers();
@@ -480,8 +500,8 @@ public class RaceActivity extends ListActivity {
     private void getPreferences() {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        mInputSource = sharedPref.getString("pref_input_src", getString(R.string.Demo));
-        mInputSourceDevice = sharedPref.getString("pref_input_src_device", "");
+        mInputSource = sharedPref.getString(Pref.INPUT_SRC, getString(R.string.Demo));
+        mInputSourceDevice = sharedPref.getString(Pref.INPUT_SRC_DEVICE, "");
         mPrefResults = sharedPref.getBoolean("pref_results_server", false);
         mPrefWifiHotspot = sharedPref.getBoolean("pref_wifi_hotspot", false);
         mPrefResultsDisplay = sharedPref.getBoolean("pref_results_display", false);
@@ -508,8 +528,12 @@ public class RaceActivity extends ListActivity {
         TextView results = findViewById(R.id.results_ip);
         if (mPrefResults) {
             results.setVisibility(View.VISIBLE);
-            new fetchIPAsyncTask(results).execute();
 
+            if (mCachedIP.equals("")) {
+                new fetchIPAsyncTask(results).execute();
+            } else {
+                results.setText(mCachedIP);
+            }
         } else {
             results.setVisibility(View.GONE);
         }
@@ -545,6 +569,7 @@ public class RaceActivity extends ListActivity {
         protected void onPostExecute(String ip) {
             // update the UI (this is executed on UI thread)
             super.onPostExecute(ip);
+
             TextView view = mViewWR.get();
             view.setText(String.format("%s:8080", ip));
         }
@@ -554,8 +579,9 @@ public class RaceActivity extends ListActivity {
      * Start a pilot on his run
      */
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onClick(View v) {
         // Pilot has been clicked, so start the Race Timer Activity
+        int position = (int)v.getTag();
 
         Pilot p = mArrPilots.get(position);
         int round = mArrRounds.get(position);
@@ -576,9 +602,6 @@ public class RaceActivity extends ListActivity {
         mPilotDialogShown = false;
         getNamesArray();
         mArrAdapter.notifyDataSetChanged();
-
-        Log.i("RESULT CODE", Integer.toString(resultCode));
-        Log.i("REQUEST CODE", Integer.toString(requestCode));
 
         // Clear the shown flag regardless of success
         if (requestCode == RaceActivity.DLG_TIMER)
@@ -680,8 +703,6 @@ public class RaceActivity extends ListActivity {
                     num = 0;
                 }
 
-                Log.i("GROUP SCORING", "CHANGED NUMBER OF GROUPS TO " + num_groups);
-
                 RacePilotData datasource = new RacePilotData(RaceActivity.this);
                 datasource.open();
                 ArrayList<Pilot> allPilots = datasource.getAllPilotsForRace(mRid, mRnd, mRace.offset, mRace.start_number);
@@ -705,7 +726,6 @@ public class RaceActivity extends ListActivity {
                     num = 1;
                 }
 
-                Log.i("FLYING ORDER", "CHANGED START NUMBER TO " + start_number);
                 RaceData datasource = new RaceData(RaceActivity.this);
                 datasource.open();
                 datasource.setStartNumber(mRid, num);
@@ -1078,6 +1098,8 @@ public class RaceActivity extends ListActivity {
 
                 if (null == convertView) {
                     row = getLayoutInflater().inflate(R.layout.listrow_racepilots, parent, false);
+                    row.setOnClickListener(RaceActivity.this);
+                    row.setOnCreateContextMenuListener(RaceActivity.this);
                 } else {
                     row = convertView;
                 }
@@ -1151,10 +1173,11 @@ public class RaceActivity extends ListActivity {
                     points.setText("");
                 }
 
+                row.setTag(position);
+
                 return row;
             }
         };
-        setListAdapter(mArrAdapter);
     }
 
     /*
@@ -1185,14 +1208,18 @@ public class RaceActivity extends ListActivity {
         _options = mArrRemainingNames.toArray(_options);
         _selections = new boolean[_options.length];
 
+        /*
         mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
 
                 .setTitle("Select Pilots to Add")
                 .setMultiChoiceItems(_options, _selections, new DialogSelectionClickHandler())
                 .setPositiveButton(android.R.string.ok, new DialogButtonClickHandler())
                 .show();
+
+         */
     }
 
+    /*
     public class DialogSelectionClickHandler implements DialogInterface.OnMultiChoiceClickListener {
         public void onClick(DialogInterface dialog, int clicked, boolean selected) {
             _selections[clicked] = selected;
@@ -1214,10 +1241,11 @@ public class RaceActivity extends ListActivity {
 
                 getNamesArray();
                 mArrAdapter.notifyDataSetChanged();
-                mDlg = null;
+                //mDlg = null;
             }
         }
     }
+    */
 
     private boolean showPilotDialog(int round, int pilot_id, String bib_no) {
         if (mPilotDialogShown) return true;
@@ -1295,12 +1323,20 @@ public class RaceActivity extends ListActivity {
     }
 
     private void showTimeoutNotStarted() {
-        mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.ok);
 
-                .setTitle("Timeout Not Started")
-                .setMessage("Timeout is not active at the moment")
-                .setNegativeButton(getString(android.R.string.ok), null)
-                .show();
+        mDLG = GenericAlert.newInstance(
+                getString(R.string.err_round_timeout),
+                getString(R.string.err_round_timeout_inactive),
+                buttons_array,
+                null
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+        ft.add(mDLG, DIALOG);
+        ft.commit();
     }
 
     public boolean isServiceRunning(String serviceClassName) {
@@ -1320,7 +1356,7 @@ public class RaceActivity extends ListActivity {
     // Binding for UI->Service Communication
     public void sendCommand(String cmd) {
         Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
-        i.putExtra("com.marktreble.f3ftimer.ui_callback", cmd);
+        i.putExtra(IComm.MSG_UI_CALLBACK, cmd);
         sendBroadcast(i);
     }
 
@@ -1371,40 +1407,64 @@ public class RaceActivity extends ListActivity {
                     mStatusIcon = extras.getString("icon");
 
                     mConnectionStatus = true;
-                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName())));
+                    int id = getResources().getIdentifier(mStatusIcon, "mipmap", getPackageName());
+                    if (id == 0) {
+                        id = getResources().getIdentifier(mStatusIcon, "drawable", getPackageName());
+                    }
+                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, id));
                 }
 
                 if (data.equals("driver_stopped")) {
                     mStatusIcon = extras.getString("icon");
 
                     mConnectionStatus = false;
-                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mStatusIcon, "drawable", getPackageName())));
+                    int id = getResources().getIdentifier(mStatusIcon, "mipmap", getPackageName());
+                    if (id == 0) {
+                        id = getResources().getIdentifier(mStatusIcon, "drawable", getPackageName());
+                    }
+                    mStatus.setImageDrawable(ContextCompat.getDrawable(mContext,id));
                 }
 
                 if (data.equals("external_display_connected")) {
                     mExternalDisplayStatusIcon = extras.getString("icon");
 
                     mDisplayStatus = true;
-                    mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName())));
+                    int id = getResources().getIdentifier(mExternalDisplayStatusIcon, "mipmap", getPackageName());
+                    if (id == 0) {
+                        id = getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName());
+                    }
+                    mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, id));
                 }
 
                 if (data.equals("external_display_disconnected")) {
                     mExternalDisplayStatusIcon = extras.getString("icon");
 
                     mDisplayStatus = false;
-                    mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName())));
+                    int id = getResources().getIdentifier(mExternalDisplayStatusIcon, "mipmap", getPackageName());
+                    if (id == 0) {
+                        id = getResources().getIdentifier(mExternalDisplayStatusIcon, "drawable", getPackageName());
+                    }
+                    mExternalDisplayStatus.setImageDrawable(ContextCompat.getDrawable(mContext, id));
                 }
 
                 if (data.equals("unsupported")) {
                     String vid = extras.getString("vendorId");
                     String pid = extras.getString("productId");
 
-                    mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+                    String[] buttons_array = new String[1];
+                    buttons_array[0] = getString(android.R.string.ok);
 
-                            .setTitle("Unsupported Hardware")
-                            .setMessage("VendorId=" + vid + "\n ProductId=" + pid)
-                            .setNegativeButton(getString(android.R.string.ok), null)
-                            .show();
+                    mDLG = GenericAlert.newInstance(
+                            getString(R.string.err_unsupported),
+                            String.format(getString(R.string.err_unsupported_details), vid, pid),
+                            buttons_array,
+                            null
+                    );
+
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.addToBackStack(null);
+                    ft.add(mDLG, DIALOG);
+                    ft.commit();
                 }
 
                 if (data.equals("no_bluetooth")) {
@@ -1461,9 +1521,10 @@ public class RaceActivity extends ListActivity {
         // Scrub Round
         menu.getItem(3).setEnabled(!mGroupNotStarted);
 
-        // Group scoring (disable when multiple flights are being used)
-        //menu.getItem(4).setEnabled(mRace.rounds_per_flight < 2);
-        menu.getItem(5).setEnabled(mRace.rounds_per_flight < 2);
+        // Group scoring
+        // disable when multiple flights are being used
+        // disable when <10 pilots
+        menu.getItem(5).setEnabled((mRace.rounds_per_flight < 2) && (mArrPilots.size()) >= 10);
 
         return super.onPrepareOptionsMenu(menu);
 
@@ -1484,18 +1545,31 @@ public class RaceActivity extends ListActivity {
                 changeStartNumber();
                 return true;
             case R.id.menu_scrub_round:
-                mDlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
 
-                        .setTitle(getString(R.string.menu_scrub_round))
-                        .setMessage(getString(R.string.menu_scrub_round_confirm))
-                        .setNegativeButton(getString(android.R.string.cancel), null)
-                        .setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                String[] buttons_array = new String[2];
+                buttons_array[0] = getString(android.R.string.cancel);
+                buttons_array[1] = getString(android.R.string.ok);
+
+                mDLG = GenericAlert.newInstance(
+                        getString(R.string.menu_scrub_round),
+                        getString(R.string.menu_scrub_round_confirm),
+                        buttons_array,
+                        new ResultReceiver(new Handler()) {
                             @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                scrubRound();
+                            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                                super.onReceiveResult(resultCode, resultData);
+
+                                if (resultCode == 1) {
+                                    scrubRound();
+                                }
                             }
-                        })
-                        .show();
+                        }
+                );
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack(null);
+                ft.add(mDLG, DIALOG);
+                ft.commit();
 
                 return true;
             case R.id.menu_group_score:

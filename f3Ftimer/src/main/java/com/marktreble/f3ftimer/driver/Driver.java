@@ -231,9 +231,9 @@ public class Driver implements TTS.onInitListenerProxy {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("UI->Service", "onReceive");
-            if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
+            if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
                 Bundle extras = intent.getExtras();
-                String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
+                String data = extras.getString(IComm.MSG_UI_CALLBACK);
                 Log.d("UI->Service", data);
 
                 if (data == null) return;
@@ -297,7 +297,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
                 /* Callbacks from SettingsActivity */
                 if (data.equals("pref_buzzer")) {
-                    mSoundFXon = extras.getBoolean("com.marktreble.f3ftimer.value");
+                    mSoundFXon = extras.getBoolean(IComm.MSG_VALUE);
                     return;
                 }
 
@@ -307,13 +307,13 @@ public class Driver implements TTS.onInitListenerProxy {
                         || data.equals("pref_buzz_turn")
                         || data.equals("pref_buzz_turn9")
                         || data.equals("pref_buzz_penalty")) {
-                    String value = extras.getString("com.marktreble.f3ftimer.value");
+                    String value = extras.getString(IComm.MSG_VALUE);
                     setSound(data, value);
                     return;
                 }
 
                 if (data.equals("pref_voice")) {
-                    mSpeechFXon = extras.getBoolean("com.marktreble.f3ftimer.value");
+                    mSpeechFXon = extras.getBoolean(IComm.MSG_VALUE);
 
                     if (mSpeechFXon && mTts == null) {
                         startSpeechSynthesiser();
@@ -324,7 +324,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
                 if (data.equals("pref_voice_lang")) {
                     if (mSpeechFXon) {
-                        mDefaultSpeechLang = extras.getString("com.marktreble.f3ftimer.value");
+                        mDefaultSpeechLang = extras.getString(IComm.MSG_VALUE);
                         // Try to set speech lang - if not available then setSpeechFXLanguage returns the default Language
                         mPilotLang = setSpeechFXLanguage(mPilotLang);
                     }
@@ -332,12 +332,12 @@ public class Driver implements TTS.onInitListenerProxy {
                 }
 
                 if (data.equals("pref_full_volume")) {
-                    mSetFullVolume = extras.getBoolean("com.marktreble.f3ftimer.value");
+                    mSetFullVolume = extras.getBoolean(IComm.MSG_VALUE);
                     return;
                 }
 
                 if (data.equals("pref_audible_wind_warning")) {
-                    mAudibleWindWarning = extras.getBoolean("com.marktreble.f3ftimer.value");
+                    mAudibleWindWarning = extras.getBoolean(IComm.MSG_VALUE);
                     return;
                 }
 
@@ -935,7 +935,7 @@ public class Driver implements TTS.onInitListenerProxy {
     };
 
     private void show_round_timeout_explicitly() {
-        String key = "Timeout" + Integer.toString(mRid);
+        String key = "Timeout " + mRid;
         SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
         final long start = timeout.getLong("start", 0);
         if (start > 0) {

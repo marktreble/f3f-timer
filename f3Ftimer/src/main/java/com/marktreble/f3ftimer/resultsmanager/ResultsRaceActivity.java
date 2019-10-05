@@ -11,36 +11,38 @@
 
 package com.marktreble.f3ftimer.resultsmanager;
 
-import android.app.AlertDialog;
-import android.app.ListActivity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.TypedValue;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.marktreble.f3ftimer.F3FtimerApplication;
+import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
+import com.marktreble.f3ftimer.dialog.GenericAlert;
+import com.marktreble.f3ftimer.dialog.GenericListPicker;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
+import com.marktreble.f3ftimer.exportimport.F3ftimerApiExportRace;
+import com.marktreble.f3ftimer.exportimport.F3xvaultApiExportRace;
 import com.marktreble.f3ftimer.filesystem.F3XVaultExport;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
@@ -49,24 +51,27 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class ResultsRaceActivity extends ListActivity {
+public class ResultsRaceActivity extends BaseActivity
+    implements ListView.OnClickListener {
 
     private Integer mRid;
 
-    private Context mContext;
+    static int DLG_EXPORT = 2;
 
-    private AlertDialog mDlg;
-    private AlertDialog.Builder mDlgb;
+    static final int EXPORT_EMAIL = 100;
+    static final int EXPORT_EMAIL_F3XV = 101;
+    static final int EXPORT_F3F_TIMER = 102;
+    static final int EXPORT_F3X_VAULT = 103;
 
-    static final int EXPORT_EMAIL = 0;
-    static final int EXPORT_EMAIL_F3XV = 1;
-    static final int EXPORT_F3F_TIMER = 2;
-    static final int EXPORT_F3X_VAULT = 3;
+    static final int SHARE_EMAIL = 100;
+    static final int SHARE_SOCIAL_MEDIA = 101;
 
+    static final String DIALOG = "dialog";
 
-    static final int SHARE_EMAIL = 0;
-    static final int SHARE_SOCIAL_MEDIA = 1;
+    GenericAlert mDLG;
+    GenericListPicker mDLG2;
 
     /* TEMPORARY */
     // Needs a class creating for calcs
@@ -80,20 +85,14 @@ public class ResultsRaceActivity extends ListActivity {
     private int mFTDRound;
     /* END */
 
+    ArrayAdapter<String> mArrAdapter;
+    ArrayList<String> mOptions;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
-
-        ArrayAdapter<String> mArrAdapter;
-
-        ImageView view = findViewById(android.R.id.home);
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-        view.setPadding(0, 0, px, 0);
-
-        mContext = this;
 
         setContentView(R.layout.race);
 
@@ -105,6 +104,14 @@ public class ResultsRaceActivity extends ListActivity {
             }
         }
 
+        getNamesArray();
+        setList();
+
+        ListView lv = findViewById(android.R.id.list);
+        lv.setAdapter(mArrAdapter);
+    }
+
+    private void getNamesArray() {
         RaceData datasource = new RaceData(this);
         datasource.open();
         Race race = datasource.getRace(mRid);
@@ -113,18 +120,42 @@ public class ResultsRaceActivity extends ListActivity {
         TextView tt = findViewById(R.id.race_title);
         tt.setText(race.name);
 
-        ArrayList<String> arrOptions = new ArrayList<>();
-        arrOptions.add(String.format("Round in Progress (R%d)", race.round));
-        arrOptions.add("Completed Rounds");
-        arrOptions.add("Leader Board");
-        arrOptions.add("Team Results");
+        mOptions = new ArrayList<>();
+        mOptions.add(String.format("Round in Progress (R%d)", race.round));
+        mOptions.add("Completed Rounds");
+        mOptions.add("Leader Board");
+        mOptions.add("Team Results");
 
-        mArrAdapter = new ArrayAdapter<>(this, R.layout.listrow, arrOptions);
-        setListAdapter(mArrAdapter);
+    }
+
+    private void setList() {
+        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow, mOptions) {
+            @Override
+            public @NonNull
+            View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                View row;
+
+                if (null == convertView) {
+                    row = getLayoutInflater().inflate(R.layout.listrow, parent, false);
+                    row.setOnClickListener(ResultsRaceActivity.this);
+                    row.setOnCreateContextMenuListener(ResultsRaceActivity.this);
+                } else {
+                    row = convertView;
+                }
+
+                row.setTag(position);
+
+                TextView tv = row.findViewById(R.id.text1);
+                tv.setText(mOptions.get(position));
+
+                return row;
+            }
+        };
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onClick(View v) {
+        int position = (int)v.getTag();
         Intent intent = null;
         switch (position) {
             case 0:
@@ -183,13 +214,19 @@ public class ResultsRaceActivity extends ListActivity {
     }
 
     private void share() {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
 
-        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
-
-                .setTitle(R.string.select_share_results_destination)
-                .setItems(R.array.results_share_destinations, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
+        ArrayList<String> options = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.results_share_destinations)));
+        mDLG2 = GenericListPicker.newInstance(
+                getString(R.string.select_share_results_destination),
+                options,
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        switch (resultCode) {
                             case SHARE_EMAIL:
                                 share_email();
                                 break;
@@ -198,9 +235,13 @@ public class ResultsRaceActivity extends ListActivity {
                                 break;
                         }
                     }
-                });
-        mDlg = mDlgb.create();
-        mDlg.show();
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG2, DIALOG);
+        ft.commit();
+
     }
 
     private void share_email() {
@@ -209,7 +250,7 @@ public class ResultsRaceActivity extends ListActivity {
         Race race = datasource.getRace(mRid);
         datasource.close();
 
-        this.getNamesArray();
+        this.getNamesArray2();
 
         StringBuilder results = new StringBuilder();
         String[] email_list = new String[mArrNames.size()];
@@ -253,7 +294,7 @@ public class ResultsRaceActivity extends ListActivity {
         Race race = datasource.getRace(mRid);
         datasource.close();
 
-        this.getNamesArray();
+        this.getNamesArray2();
 
         // Generate results as an image
         int w = 320, h = (mArrNames.size() + 6) * 24;
@@ -308,11 +349,19 @@ public class ResultsRaceActivity extends ListActivity {
     }
 
     private void export() {
-        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
-                .setTitle(R.string.select_export_results_destination)
-                .setItems(R.array.results_export_destinations, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
+
+        ArrayList<String> options = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.results_export_destinations)));
+        mDLG2 = GenericListPicker.newInstance(
+                getString(R.string.select_export_results_destination),
+                options,
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        switch (resultCode) {
                             case EXPORT_EMAIL:
                                 export_email();
                                 break;
@@ -327,9 +376,12 @@ public class ResultsRaceActivity extends ListActivity {
                                 break;
                         }
                     }
-                });
-        mDlg = mDlgb.create();
-        mDlg.show();
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG2, DIALOG);
+        ft.commit();
     }
 
     private void pilotManager() {
@@ -417,41 +469,16 @@ public class ResultsRaceActivity extends ListActivity {
     }
 
     private void export_f3ftimer() {
-        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
-
-                .setTitle("TO DO...")
-                .setMessage("This feature will be implemented soon")
-                .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //
-                    }
-                });
-
-
-        mDlg = mDlgb.create();
-        mDlg.show();
-
+        Intent intent = new Intent(mContext, F3ftimerApiExportRace.class);
+        startActivityForResult(intent, DLG_EXPORT);
     }
 
     private void export_f3xvault() {
-        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
-
-                .setTitle("TO DO...")
-                .setMessage("This feature will be implemented soon")
-                .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        //
-                    }
-                });
-
-
-        mDlg = mDlgb.create();
-        mDlg.show();
+        Intent intent = new Intent(mContext, F3xvaultApiExportRace.class);
+        startActivityForResult(intent, DLG_EXPORT);
     }
 
-    private void getNamesArray() {
+    private void getNamesArray2() {
 
         Results r = new Results();
         r.getResultsForRace(ResultsRaceActivity.this, mRid, true);

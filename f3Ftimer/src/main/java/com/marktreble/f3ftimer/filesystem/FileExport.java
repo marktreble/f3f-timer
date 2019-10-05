@@ -36,38 +36,48 @@ public class FileExport {
             file = new File(path + String.format("/%s", filename));
         }
         File dir = new File(file.getAbsolutePath()).getParentFile();
+
         if (!dir.exists() || !dir.isDirectory()) {
             if (!dir.mkdirs()) {
-                Log.d(TAG, "DIR CREATED");
+                Log.d(TAG, "DIR CREATE FAILED: " + dir.getPath());
+                return;
             }
         }
         Log.d(TAG, "WRITING FILE TO: " + file.getPath());
-
-        FileOutputStream stream;
         try {
-            stream = new FileOutputStream(file);
-            try {
-                stream.write(output.getBytes());
-
-                try {
-                    stream.flush();
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                try {
-                    stream.flush();
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (FileNotFoundException e) {
+            file.createNewFile();
+        } catch (IOException e) {
             e.printStackTrace();
+        }
+
+        if (file.exists()) {
+
+            FileOutputStream stream;
+            try {
+                stream = new FileOutputStream(file);
+                try {
+                    stream.write(output.getBytes());
+
+                    try {
+                        stream.flush();
+                        stream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        stream.flush();
+                        stream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
     }
 

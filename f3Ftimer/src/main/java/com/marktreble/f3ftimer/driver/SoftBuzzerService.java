@@ -111,12 +111,12 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
+            if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
                 Bundle extras = intent.getExtras();
                 if (extras == null)
                     extras = new Bundle();
 
-                String data = extras.getString("com.marktreble.f3ftimer.ui_callback", "");
+                String data = extras.getString(IComm.MSG_UI_CALLBACK, "");
                 Log.i(TAG, data);
 
                 if (data.equals("get_connection_status")) {
@@ -128,7 +128,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
                 }
 
                 if (data.equals("pref_wind_angle_offset")) {
-                    mSlopeOrientation = Float.valueOf(intent.getExtras().getString("com.marktreble.f3ftimer.value"));
+                    mSlopeOrientation = Float.valueOf(intent.getExtras().getString(IComm.MSG_VALUE));
                 }
             }
         }

@@ -17,14 +17,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
+import android.support.v7.preference.EditTextPreference;
+import android.support.v7.preference.ListPreference;
+import android.support.v7.preference.Preference;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
+import com.marktreble.f3ftimer.constants.Pref;
 import com.marktreble.f3ftimer.languages.Languages;
 import com.marktreble.f3ftimer.media.TTS;
 import com.marktreble.f3ftimer.wifi.Wifi;
@@ -41,7 +42,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class SettingsFragment extends PreferenceFragment
+public class SettingsFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener, TTS.onInitListenerProxy {
 
     private TTS mTts;
@@ -51,10 +52,12 @@ public class SettingsFragment extends PreferenceFragment
         super.onCreate(savedInstanceState);
 
         mTts = TTS.sharedTTS(getActivity(), this);
+    }
 
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         // Load the preferences from an XML resource
-        addPreferencesFromResource(R.xml.preferences);
-
+        setPreferencesFromResource(R.xml.preferences, rootKey);
     }
 
     @Override
@@ -65,14 +68,14 @@ public class SettingsFragment extends PreferenceFragment
 
         // Set values
         setInputSourceActiveFields();
-        setBTDeviceSummary("pref_input_src_device");
+        setBTDeviceSummary(Pref.INPUT_SRC_DEVICE);
         setLangSummary("pref_voice_lang");
-        setLangSummary("pref_input_src");
-        setStringSummary("pref_usb_baudrate");
+        setLangSummary(Pref.INPUT_SRC);
+        setStringSummary(Pref.USB_BAUDRATE  );
         setStringSummary("pref_input_tcpio_ip");
-        setListSummary("pref_usb_stopbits");
-        setListSummary("pref_usb_databits");
-        setListSummary("pref_usb_parity");
+        setListSummary(Pref.USB_STOPBITS);
+        setListSummary(Pref.USB_DATABITS);
+        setListSummary(Pref.USB_PARITY);
         setBTDeviceSummary("pref_external_display");
 
         setStringSummary("pref_wind_angle_offset");
@@ -117,14 +120,14 @@ public class SettingsFragment extends PreferenceFragment
                 || key.equals("pref_voice")
                 || key.equals("pref_results_server")
                 || key.equals("pref_wind_measurement")
-                || key.equals("pref_usb_tether")
+                || key.equals(Pref.USB_TETHER)
                 || key.equals("pref_audible_wind_warning")
                 || key.equals("pref_full_volume")) {
             // Send to Service
             sendBooleanValueToService(key, sharedPreferences.getBoolean(key, false));
         }
 
-        if (key.equals("pref_usb_baudrate")
+        if (key.equals(Pref.USB_BAUDRATE  )
                 || key.equals("pref_input_tcpio_ip")) {
             setStringSummary(key);
             sendStringValueToService(key, sharedPreferences.getString(key, ""));
@@ -188,40 +191,40 @@ public class SettingsFragment extends PreferenceFragment
 
     private void sendStringValueToService(String key, String value) {
         Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
-        i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
-        i.putExtra("com.marktreble.f3ftimer.value", value);
+        i.putExtra(IComm.MSG_UI_CALLBACK, key);
+        i.putExtra(IComm.MSG_VALUE, value);
         getActivity().sendBroadcast(i);
     }
 
     private void sendBooleanValueToService(String key, boolean value) {
         Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
-        i.putExtra("com.marktreble.f3ftimer.ui_callback", key);
-        i.putExtra("com.marktreble.f3ftimer.value", value);
+        i.putExtra(IComm.MSG_UI_CALLBACK, key);
+        i.putExtra(IComm.MSG_VALUE, value);
         getActivity().sendBroadcast(i);
     }
 
     private void setInputSourceActiveFields() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String inputSource = sharedPref.getString("pref_input_src", "");
+        String inputSource = sharedPref.getString(Pref.INPUT_SRC, "");
         if (inputSource.equals(getString(R.string.BLUETOOTH_HC_05))) {
             // BT - Hide baud rate etc.., and show device picker
             findPreference("pref_input_tcpio_ip").setEnabled(false);
-            findPreference("pref_usb_baudrate").setEnabled(false);
-            findPreference("pref_usb_stopbits").setEnabled(false);
-            findPreference("pref_usb_databits").setEnabled(false);
-            findPreference("pref_usb_parity").setEnabled(false);
+            findPreference(Pref.USB_BAUDRATE  ).setEnabled(false);
+            findPreference(Pref.USB_STOPBITS).setEnabled(false);
+            findPreference(Pref.USB_DATABITS).setEnabled(false);
+            findPreference(Pref.USB_PARITY).setEnabled(false);
 
-            findPreference("pref_input_src_device").setEnabled(true);
+            findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(true);
 
         } else if (inputSource.equals(getString(R.string.Demo))) {
             // Demo mode - hide all options
             findPreference("pref_input_tcpio_ip").setEnabled(false);
-            findPreference("pref_usb_baudrate").setEnabled(false);
-            findPreference("pref_usb_stopbits").setEnabled(false);
-            findPreference("pref_usb_databits").setEnabled(false);
-            findPreference("pref_usb_parity").setEnabled(false);
+            findPreference(Pref.USB_BAUDRATE  ).setEnabled(false);
+            findPreference(Pref.USB_STOPBITS).setEnabled(false);
+            findPreference(Pref.USB_DATABITS).setEnabled(false);
+            findPreference(Pref.USB_PARITY).setEnabled(false);
 
-            findPreference("pref_input_src_device").setEnabled(false);
+            findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(false);
         } else {
             // USB - Hide device picker, show baud rate etc..
             if (inputSource.equals(getString(R.string.TCP_IO))) {
@@ -230,12 +233,12 @@ public class SettingsFragment extends PreferenceFragment
                 findPreference("pref_input_tcpio_ip").setEnabled(false);
             }
 
-            findPreference("pref_usb_baudrate").setEnabled(true);
-            findPreference("pref_usb_stopbits").setEnabled(true);
-            findPreference("pref_usb_databits").setEnabled(true);
-            findPreference("pref_usb_parity").setEnabled(true);
+            findPreference(Pref.USB_BAUDRATE  ).setEnabled(true);
+            findPreference(Pref.USB_STOPBITS).setEnabled(true);
+            findPreference(Pref.USB_DATABITS).setEnabled(true);
+            findPreference(Pref.USB_PARITY).setEnabled(true);
 
-            findPreference("pref_input_src_device").setEnabled(false);
+            findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(false);
 
         }
     }
@@ -296,7 +299,11 @@ public class SettingsFragment extends PreferenceFragment
         if (pref instanceof ListPreference) {
             ListPreference listPref = (ListPreference) pref;
             String value = (String) listPref.getEntry();
+            Log.d("PPP", "VAL = " + value);
+
             pref.setSummary(value);
+        } else {
+            Log.d("PPP", "NOT A LIST PREF");
         }
     }
 
@@ -358,7 +365,7 @@ public class SettingsFragment extends PreferenceFragment
     }
 
     private void populateInputSourceDevices() {
-        ListPreference pref = (ListPreference) findPreference("pref_input_src_device");
+        ListPreference pref = (ListPreference) findPreference(Pref.INPUT_SRC_DEVICE);
         populatePairedDevices(pref);
     }
 

@@ -20,6 +20,7 @@ import android.os.IBinder;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
+import com.marktreble.f3ftimer.constants.Pref;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
@@ -149,12 +150,12 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
+            if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
                 Bundle extras = intent.getExtras();
                 if (extras == null) {
                     return;
                 }
-                String data = extras.getString("com.marktreble.f3ftimer.ui_callback", "");
+                String data = extras.getString(IComm.MSG_UI_CALLBACK, "");
 
 
                 if (data.equals("get_connection_status")) {
@@ -181,7 +182,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
         }
 
         mBaudRate = 2400;
-        String baudrate = extras.getString("pref_usb_baudrate", "2400");
+        String baudrate = extras.getString(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
         if (baudrate != null)
             try {
                 mBaudRate = Integer.parseInt(baudrate, 10);
@@ -189,7 +190,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                 e.printStackTrace();
             }
 
-        String stopbits = extras.getString("pref_usb_stopbits", "1");
+        String stopbits = extras.getString(Pref.USB_STOPBITS, Pref.USB_STOPBITS_DEFAULT);
 
         switch (stopbits) {
             case "2":
@@ -201,7 +202,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                 break;
         }
 
-        String parity = extras.getString("pref_usb_parity", "None");
+        String parity = extras.getString(Pref.USB_PARITY, Pref.USB_PARITY_DEFAULT);
         switch (parity) {
             case "Odd":
                 mParity = Uart.Parity.ODD;

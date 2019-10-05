@@ -11,20 +11,19 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.v4.app.FragmentTransaction;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
+import com.marktreble.f3ftimer.dialog.GenericCheckboxPicker;
 import com.marktreble.f3ftimer.filesystem.FileExport;
 
 import java.util.ArrayList;
 
-/**
- * Created by marktreble on 27/12/14.
- */
 public class FileExportRace extends BaseExport {
 
     // final static String TAG = "FileExportRace";
@@ -35,21 +34,41 @@ public class FileExportRace extends BaseExport {
     String[] _options;    // String array of all races in database
     boolean[] _selections;    // bool array of which has been selected
 
-    private int mExportFileType;
+    static final String DIALOG = "dialog";
+
+    GenericCheckboxPicker mDLG4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        showRaceList();
+        if (savedInstanceState == null) {
+            showRaceList();
+        } else {
+            _options = savedInstanceState.getStringArray("options");
+            _selections = savedInstanceState.getBooleanArray("selections");
+        }
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putStringArray("options", _options);
+        outState.putBooleanArray("selections", _selections);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mDlg != null) mDlg = null;
+
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        mDLG4.dismiss();
+    }
 
     private void showRaceList() {
 
@@ -70,84 +89,59 @@ public class FileExportRace extends BaseExport {
         _options = mArrNames.toArray(_options);
         _selections = new boolean[_options.length];
 
-        AlertDialog.Builder dlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+        String[] buttons_array = new String[2];
+        buttons_array[0] = getString(android.R.string.cancel);
+        buttons_array[1] = getString(android.R.string.ok);
 
-                .setTitle("Select races to export")
-                .setMultiChoiceItems(_options, _selections, new DialogSelectionClickHandler())
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int clicked) {
-                        int selected = 0; // count of selected items
-                        for (int i = 0; i < _options.length; i++) {
-                            if (_selections[i]) {
-                                selected++;
-                            }
-                        }
-                        if (selected > 0) {
-                            mDlg.dismiss();
-                            showExportTypeList();
-                        } else {
-                            // Nothing selected, so dismiss
-                            finish();
-                        }
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mActivity.finish();
-                    }
-                });
-        mDlg = dlg.create();
-        mDlg.setCanceledOnTouchOutside(false);
-        mDlg.show();
-    }
-
-    private void showExportTypeList() {
-
-        mExportFileType = -1;
-        AlertDialog.Builder dlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
-
-                .setTitle("Select file type")
-                .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
+        mDLG4 = GenericCheckboxPicker.newInstance(
+                getString(R.string.ttl_select_race),
+                mArrNames,
+                buttons_array,
+                new ResultReceiver(new Handler()) {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mExportFileType = which;
-                    }
-                })
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int clicked) {
-                        if (mExportFileType >= 0) {
-                            mDlg.dismiss();
-                            promptForSaveFolder(null);
-                        } else {
-                            // Nothing selected, so dismiss
-                            finish();
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        switch (resultCode) {
+                            case 0:
+                                mActivity.finish();
+                                break;
+                            case 1:
+                                int selectedCount = 0;
+                                if (resultData.containsKey("selected")) {
+                                    _selections = resultData.getBooleanArray("selected");
+                                    if (_selections != null) {
+                                        for (boolean selection: _selections) {
+                                            if (selection) selectedCount++;
+                                        }
+                                    }
+                                }
+
+                                if (selectedCount > 0) {
+                                    call("showExportTypeList", null);
+                                } else {
+                                    // Nothing selected, so dismiss
+                                    mActivity.finish();
+                                }
+                                break;
                         }
                     }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mActivity.finish();
-                    }
-                });
-        mDlg = dlg.create();
-        mDlg.setCanceledOnTouchOutside(false);
-        mDlg.show();
-    }
+                }
+        );
 
-    public class DialogSelectionClickHandler implements DialogInterface.OnMultiChoiceClickListener {
-        public void onClick(DialogInterface dialog, int clicked, boolean selected) {
-            _selections[clicked] = selected;
-        }
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG4, DIALOG);
+        ft.commit();
     }
 
     @Override
     protected void beginExport() {
+        showProgress(getString(R.string.exporting));
+
         for (int i = 0; i < _options.length; i++) {
             if (_selections[i]) {
                 exportRaceData(mArrRaces.get(i));
             }
         }
-
         finish();
     }
 

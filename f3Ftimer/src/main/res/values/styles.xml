@@ -4,22 +4,23 @@
         Base application theme, dependent on API level. This theme is replaced
         by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
     -->
-    <style name="AppBaseTheme" parent="@android:style/Theme.Holo.Light">
-
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light">
         <!--
             Theme customizations available in newer API levels can go in
             res/values-vXX/styles.xml, while customizations related to
             backward-compatibility can go here.
         -->
+        <item name="android:actionMenuTextColor">@color/black</item>
     </style>
 
-    <style name="carbonActionBar" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:background">@drawable/gradient_background</item>
+    <style name="carbonActionBar" parent="@style/Theme.AppCompat.Light">
+        <!--<item name="android:background">@drawable/gradient_background</item>-->
+        <item name="android:textColor">@color/text</item>
         <item name="android:titleTextStyle">@style/titleTextStyle</item>
     </style>
 
-    <style name="titleTextStyle" parent="@android:style/TextAppearance">
-        <item name="android:textColor">?attr/t1</item>
+    <style name="titleTextStyle" parent="@style/Theme.AppCompat.Light">
+        <item name="android:textColor">@color/text</item>
         <item name="android:textSize">@dimen/title</item>
         <item name="android:textStyle">normal</item>
     </style>
@@ -42,9 +43,9 @@
     <!-- You can also inherit from NNF_BaseTheme.Light -->
     <style name="FilePickerTheme" parent="NNF_BaseTheme">
         <!-- Set these to match your theme -->
-        <item name="colorPrimary">@color/text</item>
+        <item name="colorPrimary">@color/black</item>
         <item name="colorPrimaryDark">@color/text2</item>
-        <item name="colorAccent">@color/text3</item>
+        <item name="colorAccent">@color/light_grey</item>
 
         <!-- Need to set this also to style create folder dialog -->
         <item name="alertDialogTheme">@style/FilePickerAlertDialogTheme</item>
@@ -54,9 +55,9 @@
     </style>
 
     <style name="FilePickerAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
-        <item name="colorPrimary">@color/text</item>
+        <item name="colorPrimary">@color/black</item>
         <item name="colorPrimaryDark">@color/text2</item>
-        <item name="colorAccent">@color/text3</item>
+        <item name="colorAccent">@color/dark_grey</item>
     </style>
 
     <style name="AppTheme.Button.Done" parent="@android:style/Widget.Holo.Light.Button">

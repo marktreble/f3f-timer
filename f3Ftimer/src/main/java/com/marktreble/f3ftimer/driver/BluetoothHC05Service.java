@@ -27,6 +27,7 @@ import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
+import com.marktreble.f3ftimer.constants.Pref;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
@@ -166,11 +167,11 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
+            if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
                 Bundle extras = intent.getExtras();
                 String data = null;
                 if (extras != null) {
-                    data = extras.getString("com.marktreble.f3ftimer.ui_callback");
+                    data = extras.getString(IComm.MSG_UI_CALLBACK);
                     Log.i(TAG, data);
                 }
 
@@ -198,7 +199,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
 
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            mInputSourceDevice = extras.getString("pref_input_src_device");
+            mInputSourceDevice = extras.getString(Pref.INPUT_SRC_DEVICE);
         }
 
         Log.i("DRIVER", "SENDING UPDATE: " + ICN_DISCONN);
@@ -341,8 +342,13 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // Add the name and address to an array adapter to show in a ListView
-                Log.i("FOUND BT DEVICE", device.getName() + "::" + device.getAddress());
-                mDiscoveredDeviceNames.add(device.getName());
+                String name = device.getName();
+                if (name == null) name = "Unknown";
+                Log.i("FOUND BT DEVICE", name + "::" + device.getAddress());
+
+                if (mDiscoveredDevices.contains(device)) return;
+
+                mDiscoveredDeviceNames.add(name);
                 mDiscoveredDevices.add(device);
 
                 mPairedAndDiscoveredDeviceNames = new ArrayList<>();

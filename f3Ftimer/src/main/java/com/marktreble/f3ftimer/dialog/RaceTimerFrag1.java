@@ -39,7 +39,7 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.race_timer_frag2, container, false);
 
-        Button swt = (Button) mView.findViewById(R.id.button_start_working_time);
+        Button swt = mView.findViewById(R.id.button_start_working_time);
         swt.setVisibility(View.VISIBLE);
         swt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,7 +50,7 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
             }
         });
 
-        Button ml = (Button) mView.findViewById(R.id.button_model_launched);
+        Button ml = mView.findViewById(R.id.button_model_launched);
         ml.setVisibility(View.VISIBLE);
         ml.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,7 +60,7 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
             }
         });
 
-        Button ab = (Button) mView.findViewById(R.id.button_abort);
+        Button ab = mView.findViewById(R.id.button_abort);
         ab.setVisibility(View.VISIBLE);
         ab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +74,7 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
             }
         });
 
-        TextView status = (TextView) mView.findViewById(R.id.status);
+        TextView status = mView.findViewById(R.id.status);
         status.setVisibility(View.GONE);
 
         super.setPilotName();

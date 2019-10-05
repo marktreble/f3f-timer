@@ -31,13 +31,10 @@ import org.acra.annotation.ReportsCrashes;
 
 public class F3FtimerApplication extends Application {
 
-    String theme;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        theme = ".Yellow";
 
         // The following line triggers the initialization of ACRA
         ACRA.init(this);
@@ -65,9 +62,9 @@ public class F3FtimerApplication extends Application {
 
     public void setBaseTheme(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String t = sharedPref.getString("pref_app_theme", "");
+        String t = sharedPref.getString("pref_app_theme", "AppTheme");
 
-        if (t.equals("")) return;
+        if (t.equals("")) t = "AppTheme";
 
         int s = getResources().getIdentifier(t, "style", getPackageName());
         context.setTheme(s);
@@ -75,9 +72,9 @@ public class F3FtimerApplication extends Application {
 
     public void setOverlayTheme(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String t = sharedPref.getString("pref_app_theme", "");
+        String t = sharedPref.getString("pref_app_theme", "AppTheme.Overlay");
 
-        if (t.equals("")) return;
+        if (t.equals("")) t = "AppTheme.Overlay";
 
         int s = getResources().getIdentifier(t + ".Overlay", "style", getPackageName());
         context.setTheme(s);
@@ -85,9 +82,9 @@ public class F3FtimerApplication extends Application {
 
     public void setTransparentTheme(Context context) {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        String t = sharedPref.getString("pref_app_theme", "");
+        String t = sharedPref.getString("pref_app_theme", "AppTheme.Transparent");
 
-        if (t.equals("")) return;
+        if (t.equals("")) t = "AppTheme.Transparent";
 
         int s = getResources().getIdentifier(t + ".Transparent", "style", getPackageName());
         context.setTheme(s);

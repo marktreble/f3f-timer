@@ -67,6 +67,9 @@ public class RaceTimerActivity extends FragmentActivity {
     public static int WINDOW_STATE_FULL = 0;
     public static int WINDOW_STATE_MINIMIZED = 1;
 
+    static final String DIALOG = "dialog";
+
+    GenericAlert mDLG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +129,7 @@ public class RaceTimerActivity extends FragmentActivity {
         } else {
             // Pass the race/pilot details to the service
             Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
-            i.putExtra("com.marktreble.f3ftimer.ui_callback", "start_pilot");
+            i.putExtra(IComm.MSG_UI_CALLBACK, "start_pilot");
             i.putExtra("com.marktreble.f3ftimer.pilot_id", mPilot.id);
             i.putExtra("com.marktreble.f3ftimer.race_id", mRace.id);
             i.putExtra("com.marktreble.f3ftimer.round", mRound);
@@ -299,7 +302,7 @@ public class RaceTimerActivity extends FragmentActivity {
     // Binding for UI->Service Communication
     public void sendCommand(String cmd) {
         Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
-        i.putExtra("com.marktreble.f3ftimer.ui_callback", cmd);
+        i.putExtra(IComm.MSG_UI_CALLBACK, cmd);
         Log.d("SEND COMMAND", cmd);
         sendBroadcast(i);
     }
@@ -307,7 +310,7 @@ public class RaceTimerActivity extends FragmentActivity {
     // Binding for UI->Service Communication
     public void sendOrderedCommand(String cmd) {
         Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
-        i.putExtra("com.marktreble.f3ftimer.ui_callback", cmd);
+        i.putExtra(IComm.MSG_UI_CALLBACK, cmd);
         i.putExtra("com.marktreble.f3ftimer.round", mRound);
         sendOrderedBroadcast(i, null);
     }
@@ -331,12 +334,10 @@ public class RaceTimerActivity extends FragmentActivity {
                     return;
                 }
                 if (data.equals("show_progress")) {
-                    Log.d("TTS", "DIALOG SHOWN");
                     showProgress();
                 }
 
                 if (data.equals("hide_progress")) {
-                    Log.d("TTS", "DIALOG HID");
                     hideProgress();
                 }
 
@@ -385,11 +386,6 @@ public class RaceTimerActivity extends FragmentActivity {
                     if (mCurrentFragment.getClass().equals(RaceTimerFrag4.class)) {
                         ((RaceTimerFrag4) mCurrentFragment).cont();
                     }
-                    // End the activity
-
-                    //mActivity.setResult(RaceActivity.RESULT_OK);
-                    //mActivity.finish();
-
                 }
 
                 if (data.equals("wind_illegal")) {
@@ -411,20 +407,25 @@ public class RaceTimerActivity extends FragmentActivity {
                 }
 
                 if (data.equals("no_out_stream")) {
-                    mADialog = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+                    String[] buttons_array = new String[1];
+                    buttons_array[0] = getString(android.R.string.ok);
 
-                            .setTitle("No Output Stream Available")
-                            .setMessage("Check that the timer board is plugged in, and powered?")
-                            .setPositiveButton(android.R.string.ok, null).show();
+                    mDLG = GenericAlert.newInstance(
+                            getString(R.string.ttl_no_output_stream),
+                            getString(R.string.msg_no_output_stream),
+                            buttons_array,
+                            null
+                    );
 
-
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.addToBackStack(null);
+                    ft.add(mDLG, DIALOG);
+                    ft.commit();
                 }
 
                 if (data.equals("driver_stopped")) {
                     // End the activity
                     mActivity.setResult(RaceActivity.RESULT_ABORTED);
-                    //mActivity.finish();
-
                 }
 
 

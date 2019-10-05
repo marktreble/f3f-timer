@@ -13,18 +13,21 @@ package com.marktreble.f3ftimer.exportimport;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.ClipData;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.dialog.GenericAlert;
 import com.nononsenseapps.filepicker.FilePickerActivity;
+import com.nononsenseapps.filepicker.Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,14 +35,15 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-/**
- * Created by marktreble on 27/12/14.
- */
 public class FileImportRace extends BaseImport {
 
     // final static String TAG = "FileImportRace";
 
     private static final int ACTION_PICK_FILE = 1;
+
+    static final String DIALOG = "dialog";
+
+    GenericAlert mDLG;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,16 +104,30 @@ public class FileImportRace extends BaseImport {
                     finish();
                 } else {
                     strFailures = strFailures.substring(0, strFailures.length() - 2);
-                    new AlertDialog.Builder(mContext, R.style.FilePickerAlertDialogTheme)
-                            .setTitle("Wrong file types")
-                            .setMessage("Sorry, f3f timer can only import files in 'json' format. Some of your chosen files failed to import (" + strFailures + ")")
-                            .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    finish();
 
+                    String[] buttons_array = new String[1];
+                    buttons_array[0] = getString(android.R.string.cancel);
+
+                    mDLG = GenericAlert.newInstance(
+                            getString(R.string.err_wrong_file_type),
+                            String.format(getString(R.string.msg_wrong_file_type), strFailures),
+                            buttons_array,
+                            new ResultReceiver(new Handler()) {
+                                @Override
+                                protected void onReceiveResult(int resultCode, Bundle resultData) {
+                                    super.onReceiveResult(resultCode, resultData);
+
+                                    if (resultCode == 0) {
+                                        mActivity.finish();
+                                    }
                                 }
-                            })
-                            .show();
+                            }
+                    );
+
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.addToBackStack(null);
+                    ft.add(mDLG, DIALOG);
+                    ft.commit();
 
                 }
 
@@ -130,17 +148,29 @@ public class FileImportRace extends BaseImport {
                     String[] parts = filename.split("\\.");
                     String extension = parts[parts.length - 1];
 
-                    new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+                    String[] buttons_array = new String[1];
+                    buttons_array[0] = getString(android.R.string.cancel);
 
-                            .setTitle("Wrong file type (." + extension + ")")
-                            .setMessage("Sorry, f3f timer can only import files in 'json' format")
-                            .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
+                    mDLG = GenericAlert.newInstance(
+                            String.format(getString(R.string.err_wrong_file_type_s), extension),
+                            getString(R.string.msg_wrong_file_type_s),
+                            buttons_array,
+                            new ResultReceiver(new Handler()) {
+                                @Override
+                                protected void onReceiveResult(int resultCode, Bundle resultData) {
+                                    super.onReceiveResult(resultCode, resultData);
 
-                                    mActivity.finish();
+                                    if (resultCode == 0) {
+                                        mActivity.finish();
+                                    }
                                 }
-                            })
-                            .show();
+                            }
+                    );
+
+                    FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                    ft.addToBackStack(null);
+                    ft.add(mDLG, DIALOG);
+                    ft.commit();
                 }
             }
         } else {
@@ -149,6 +179,8 @@ public class FileImportRace extends BaseImport {
     }
 
     private boolean importFile(Uri uri) {
+        showProgress(getString(R.string.importing));
+
         String filename = uri.toString();
 
         String[] parts = filename.split("\\.");
@@ -174,10 +206,8 @@ public class FileImportRace extends BaseImport {
     }
 
     private String readFile(Uri uri) {
-        String path = uri.getPath();
-        if (path == null) return "";
+        File f = Utils.getFileForUri(uri);
 
-        File f = new File(path);
         FileInputStream inputStream;
         try {
             inputStream = new FileInputStream(f);

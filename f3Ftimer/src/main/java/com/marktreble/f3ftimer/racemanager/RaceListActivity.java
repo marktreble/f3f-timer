@@ -12,30 +12,28 @@
 package com.marktreble.f3ftimer.racemanager;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.app.ListActivity;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
@@ -43,6 +41,8 @@ import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
+import com.marktreble.f3ftimer.dialog.GenericAlert;
+import com.marktreble.f3ftimer.dialog.GenericListPicker;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.dialog.NewRaceActivity;
 import com.marktreble.f3ftimer.dialog.SettingsActivity;
@@ -56,8 +56,10 @@ import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-public class RaceListActivity extends ListActivity {
+public class RaceListActivity extends BaseActivity
+        implements ListView.OnClickListener {
 
     static int DLG_NEW_RACE = 0;
     static int START_RACE = 1;
@@ -71,41 +73,24 @@ public class RaceListActivity extends ListActivity {
 
     public Intent mIntent;
 
-    private Context mContext;
+    static final String DIALOG = "dialog";
 
-    private AlertDialog mDlg;
-    private AlertDialog.Builder mDlgb;
+    GenericAlert mDLG;
+    GenericListPicker mDLG2;
 
-    static final int IMPORT_SRC_BT = 0;
-    static final int IMPORT_SRC_FILE = 1;
-    static final int IMPORT_SRC_F3FTIMER_API = 2;
-    static final int IMPORT_SRC_F3XVAULT_API = 3;
+    static final int IMPORT_SRC_BT = 100;
+    static final int IMPORT_SRC_FILE = 101;
+    static final int IMPORT_SRC_F3FTIMER_API = 102;
+    static final int IMPORT_SRC_F3XVAULT_API = 103;
 
-    static final int EXPORT_SRC_BT = 0;
-    static final int EXPORT_SRC_FILE = 1;
+    static final int EXPORT_SRC_BT = 100;
+    static final int EXPORT_SRC_FILE = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
 
-        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        ImageView view = findViewById(android.R.id.home);
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-        view.setPadding(0, 0, px, 0);
-
-        mIntent = getIntent();
-
-        mContext = this;
-
         setContentView(R.layout.race_manager);
-
-        getNamesArray();
-        setList();
-
-        registerForContextMenu(getListView());
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
             if (!checkIfAlreadyhavePermission()) {
@@ -113,7 +98,17 @@ public class RaceListActivity extends ListActivity {
             }
         }
 
+        mIntent = getIntent();
+
+        getNamesArray();
+        setList();
+
+        ListView lv = findViewById(android.R.id.list);
+        lv.setAdapter(mArrAdapter);
+        registerForContextMenu(lv);
     }
+
+
 
     private boolean checkIfAlreadyhavePermission() {
         int result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -131,25 +126,51 @@ public class RaceListActivity extends ListActivity {
         if (requestCode == PERMISSIONS_REQUEST) {
             if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 //not granted
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
-                builder.setTitle("Permission Denied")
-                        .setMessage("You will not be able to export files")
-                        .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User cancelled the dialog
-                            }
-                        });
-                builder.create().show();
+
+                String[] buttons_array = new String[1];
+                buttons_array[0] = getString(android.R.string.ok);
+
+                mDLG = GenericAlert.newInstance(
+                        getString(R.string.ttl_fs_permission_denied),
+                        getString(R.string.msg_fs_permission_denied),
+                        buttons_array,
+                        null
+                );
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(mDLG, DIALOG);
+                ft.commit();
             }
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
     private void setList() {
-        mArrAdapter = new ArrayAdapter<>(this, R.layout.listrow, mArrNames);
-        setListAdapter(mArrAdapter);
+        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow, mArrNames) {
+            @Override
+            public @NonNull
+            View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                View row;
+
+                if (null == convertView) {
+                    row = getLayoutInflater().inflate(R.layout.listrow, parent, false);
+                    row.setOnClickListener(RaceListActivity.this);
+                    row.setOnCreateContextMenuListener(RaceListActivity.this);
+                } else {
+                    row = convertView;
+                }
+
+                row.setTag(mArrIds.get(position));
+
+                TextView tv = row.findViewById(R.id.text1);
+                tv.setText(mArrNames.get(position));
+
+                return row;
+            }
+        };
     }
 
+    @Override
     public void onBackPressed() {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);
         homeIntent.addCategory(Intent.CATEGORY_HOME);
@@ -158,12 +179,12 @@ public class RaceListActivity extends ListActivity {
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onClick(View v) {
         // Get the extras from this intent (will have usb perms!)
         Bundle extras = mIntent.getExtras();
         if (extras == null) extras = new Bundle();
         // Add the race id to this bundle
-        Integer pid = mArrIds.get(position);
+        int pid = (int)v.getTag();
         extras.putInt("race_id", pid);
 
         // Now start race activity with the modified bundle!
@@ -186,15 +207,19 @@ public class RaceListActivity extends ListActivity {
                 getNamesArray();
                 mArrAdapter.notifyDataSetChanged();
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
-                builder.setTitle("Import Race")
-                        .setMessage("Your Race(s) have been imported")
-                        .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User cancelled the dialog
-                            }
-                        });
-                builder.create().show();
+                String[] buttons_array = new String[1];
+                buttons_array[0] = getString(android.R.string.ok);
+
+                mDLG = GenericAlert.newInstance(
+                        getString(R.string.ttl_import_race),
+                        getString(R.string.msg_import_race_success),
+                        buttons_array,
+                        null
+                );
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(mDLG, DIALOG);
+                ft.commit();
 
             }
         }
@@ -308,20 +333,31 @@ public class RaceListActivity extends ListActivity {
         datasource.close();
 
         if (allPilots.size() == 0) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog);
-            builder.setTitle("No Pilots")
-                    .setMessage("Before you create a race, you must set up a database of pilots in the Pilot Manager")
-                    .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // User cancelled the dialog
+            String[] buttons_array = new String[2];
+            buttons_array[0] = getString(android.R.string.cancel);
+            buttons_array[1] = getString(R.string.btn_open_pilot_manager);
+
+            mDLG = GenericAlert.newInstance(
+                    getString(R.string.err_no_pilots),
+                    getString(R.string.err_no_pilots_instruction),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+
+                        if (resultCode == 1) {
+                            Intent intent = new Intent(RaceListActivity.this, PilotsActivity.class);
+                            startActivity(intent);
                         }
-                    }).setPositiveButton("Open Pilot Manager", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
-                    Intent intent = new Intent(RaceListActivity.this, PilotsActivity.class);
-                    startActivity(intent);
+                    }
                 }
-            });
-            builder.create().show();
+            );
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(mDLG, DIALOG);
+            ft.commit();
+
         } else {
 
             Intent intent = new Intent(RaceListActivity.this, NewRaceActivity.class);
@@ -330,12 +366,20 @@ public class RaceListActivity extends ListActivity {
     }
 
     public void importRace() {
-        AlertDialog.Builder dlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
-                .setTitle(R.string.select_import_source)
-                .setItems(R.array.import_sources, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
+
+        ArrayList<String> options = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.import_sources)));
+        mDLG2 = GenericListPicker.newInstance(
+                getString(R.string.select_import_source),
+                options,
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
                         Intent intent;
-                        switch (which) {
+                        switch (resultCode) {
                             case IMPORT_SRC_BT:
                                 intent = new Intent(mContext, BluetoothImportRace.class);
                                 startActivityForResult(intent, DLG_IMPORT);
@@ -354,24 +398,30 @@ public class RaceListActivity extends ListActivity {
                                 break;
                         }
                     }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mDlg.dismiss();
-                    }
-                });
-        mDlg = dlg.create();
-        mDlg.setCanceledOnTouchOutside(false);
-        mDlg.show();
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG2, DIALOG);
+        ft.commit();
+
     }
 
     public void exportRace() {
-        AlertDialog.Builder dlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
-                .setTitle(R.string.select_export_destination)
-                .setItems(R.array.export_destinations, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
+
+        ArrayList<String> options = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.export_destinations)));
+        mDLG2 = GenericListPicker.newInstance(
+                getString(R.string.select_export_destination),
+                options,
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
                         Intent intent;
-                        switch (which) {
+                        switch (resultCode) {
                             case EXPORT_SRC_BT:
                                 intent = new Intent(mContext, BluetoothExportRace.class);
                                 startActivity(intent);
@@ -382,15 +432,13 @@ public class RaceListActivity extends ListActivity {
                                 break;
                         }
                     }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mDlg.dismiss();
-                    }
-                });
-        mDlg = dlg.create();
-        mDlg.setCanceledOnTouchOutside(false);
-        mDlg.show();
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG2, DIALOG);
+        ft.commit();
+
     }
 
     public void settings() {

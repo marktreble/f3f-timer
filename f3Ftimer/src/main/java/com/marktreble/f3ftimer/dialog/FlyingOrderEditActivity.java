@@ -16,7 +16,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.View;
 
 import com.marktreble.f3ftimer.F3FtimerApplication;
@@ -41,9 +40,7 @@ public class FlyingOrderEditActivity extends FragmentActivity {
         mRid = i.getIntExtra("race_id", 0);
 
         NewRaceFrag3 f;
-        if (savedInstanceState != null) {
-            Log.i("ONCREATE (FOEACTIVITY)", "RESTORING FROM SAVEDINSTANCESTATE");
-        } else {
+        if (savedInstanceState == null) {
 
             pilots = new ArrayList<>();
             RacePilotData datasource = new RacePilotData(this);
@@ -59,8 +56,6 @@ public class FlyingOrderEditActivity extends FragmentActivity {
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.dialog1, f, "newracefrag3");
             ft.commit();
-
-            Log.i("HEYHEYHEY", pilots.toString());
         }
     }
 
@@ -88,8 +83,6 @@ public class FlyingOrderEditActivity extends FragmentActivity {
                 if (p.id == this.pilots.get(i)) {
                     if (p.pilot_id == 0) p.id = 0;
                     datasource.addPilot(p, mRid);
-                    Log.i("EDITRACE", p.toString());
-
                 }
             }
         }

@@ -12,19 +12,29 @@
 package com.marktreble.f3ftimer.exportimport;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.data.CountryCodes;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.dialog.GenericAlert;
 import com.opencsv.CSVReader;
 
 import org.json.JSONArray;
@@ -39,28 +49,78 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
-/**
- * Created by marktreble on 09/12/2015.
- * Base class for data imports
- */
-public abstract class BaseImport extends Activity {
+public abstract class BaseImport extends AppCompatActivity {
 
     Context mContext;
     public Activity mActivity;
+
+    static final String DIALOG = "dialog";
+
+    GenericAlert mDLG;
+
+    String mProgressMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.api);
 
         mContext = this;
         mActivity = this;
+
+        if (savedInstanceState != null) {
+            mProgressMessage = savedInstanceState.getString("progress_message");
+            View progress = findViewById(R.id.progress);
+            TextView progressLabel = progress.findViewById(R.id.progressLabel);
+            progressLabel.setText(mProgressMessage);
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("progress_message", mProgressMessage);
+    }
+
+    protected void showProgress(final String msg) {
+        mProgressMessage = msg;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                View progress = findViewById(R.id.progress);
+                TextView progressLabel = progress.findViewById(R.id.progressLabel);
+                progressLabel.setText(msg);
+            }
+        });
+
+    }
+
+    protected void hideProgress() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                View progress = findViewById(R.id.progress);
+                TextView progressLabel = progress.findViewById(R.id.progressLabel);
+                progressLabel.setText("");
+            }
+        });
+    }
+
+    public void onResume() {
+        super.onResume();
+
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE));
+    }
+
+    public void onPause() {
+        super.onPause();
+
+        this.unregisterReceiver(onBroadcast);
     }
 
     protected void importRaceJSON(String data) {
         // Parse json and add to database
-        Log.i("IMPORT", "DATA: " + data);
-
         try {
             JSONObject racedata = new JSONObject(data);
             JSONObject race = racedata.optJSONObject("race");
@@ -136,11 +196,7 @@ public abstract class BaseImport extends Activity {
                         datasource2.setPilotTimeInRound(race_id, pilot_id, i + 1, time);
                         if (penalty > 0)
                             datasource2.setPenalty(race_id, pilot_id, i + 1, penalty);
-
-
                     }
-
-
                 }
             }
 
@@ -177,16 +233,29 @@ public abstract class BaseImport extends Activity {
             mActivity.finish();
 
         } else {
-            new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
 
-                    .setTitle("Import Failed")
-                    .setMessage("Sorry, something went wrong!")
-                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+            String[] buttons_array = new String[1];
+            buttons_array[0] = getString(android.R.string.cancel);
+
+            mDLG = GenericAlert.newInstance(
+                    getString(R.string.ttl_import_failed),
+                    getString(R.string.msg_import_failed),
+                    buttons_array,
+                    new ResultReceiver(new Handler()) {
+                        @Override
+                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+                            super.onReceiveResult(resultCode, resultData);
+
                             mActivity.finish();
                         }
-                    })
-                    .show();
+                    }
+            );
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.addToBackStack(null);
+            ft.add(mDLG, DIALOG);
+            ft.commit();
+
         }
     }
 
@@ -216,12 +285,14 @@ public abstract class BaseImport extends Activity {
                             // Race Data
                             race.put("race_id", fields[0]);
                             race.put("name", fields[1]);
-                            race.put("round", (fields.length < 7) ? "1" : fields[6]);
-                            race.put("type", (fields.length < 8) ? "1" : fields[7]);
-                            race.put("offset", (fields.length < 9) ? "0" : fields[8]);
-                            race.put("status", (fields.length < 10) ? "0" : fields[9]);
-                            race.put("rounds_per_flight", (fields.length < 11) ? "1" : fields[12]);
-                            race.put("start_number", (fields.length < 12) ? "1" : fields[13]);
+                            race.put("round", (fields.length < 8) ? "1" : fields[7]);
+                            race.put("type", (fields.length < 9) ? "1" : fields[8]);
+                            race.put("offset", (fields.length < 10) ? "0" : fields[9]);
+                            race.put("status", (fields.length < 11) ? "0" : fields[10]);
+                            race.put("rounds_per_flight", (fields.length < 12) ? "1" : fields[11]);
+                            race.put("start_number", (fields.length < 13) ? "1" : fields[12]);
+                            Log.d("PPP", race.toString());
+
                             break;
                         case 1:
                             // Pilot headers - ignore
@@ -278,8 +349,6 @@ public abstract class BaseImport extends Activity {
     }
 
     protected void importPilotsCSV(String data) {
-        //TODO
-        // Should use openCSV for parsing
         JSONArray pilot_data = parsePilotsCSV(data);
 
         if (pilot_data != null) {
@@ -288,16 +357,29 @@ public abstract class BaseImport extends Activity {
             mActivity.finish();
 
         } else {
-            new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
 
-                    .setTitle("Import Failed")
-                    .setMessage("Sorry, something went wrong!")
-                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+            String[] buttons_array = new String[1];
+            buttons_array[0] = getString(android.R.string.cancel);
+
+            mDLG = GenericAlert.newInstance(
+                    getString(R.string.ttl_import_failed),
+                    getString(R.string.msg_import_failed),
+                    buttons_array,
+                    new ResultReceiver(new Handler()) {
+                        @Override
+                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+                            super.onReceiveResult(resultCode, resultData);
+
                             mActivity.finish();
                         }
-                    })
-                    .show();
+                    }
+            );
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.addToBackStack(null);
+            ft.add(mDLG, DIALOG);
+            ft.commit();
+
         }
 
     }
@@ -344,5 +426,55 @@ public abstract class BaseImport extends Activity {
 
         return pilot_data;
     }
+
+    protected void call(String func, @Nullable String data) {
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra("cmd", func);
+        i.putExtra("dta", data);
+        sendBroadcast(i);
+    }
+
+    private void connectionDenied(String deviceName) {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
+
+        mDLG = GenericAlert.newInstance(
+                getString(R.string.ttl_connection_denied),
+                String.format(getString(R.string.msg_connection_denied), deviceName),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+
+                        finish();
+                    }
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+        ft.add(mDLG, DIALOG);
+        ft.commit();
+    }
+
+    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra("cmd")) {
+                Bundle extras = intent.getExtras();
+                if (extras == null) {
+                    return;
+                }
+                String cmd = extras.getString("cmd", "");
+                String dta = extras.getString("dta");
+
+                if (cmd.equals("connectionDenied")) {
+                    connectionDenied(dta);
+                }
+
+            }
+        }
+    };
 
 }

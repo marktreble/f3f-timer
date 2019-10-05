@@ -11,20 +11,19 @@
 
 package com.marktreble.f3ftimer.resultsmanager;
 
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -36,25 +35,20 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 import java.util.ArrayList;
 
-public class ResultsCompletedRoundsActivity extends ListActivity {
+public class ResultsCompletedRoundsActivity extends BaseActivity
+    implements ListView.OnClickListener {
 
     private Integer mRid;
 
-    private Context mContext;
+    private ArrayAdapter<String> mArrAdapter;
+
+    ArrayList<String> mOptions;
+
+    private int mNumRounds = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
-
-        ArrayAdapter<String> mArrAdapter;
-
-        ImageView view = findViewById(android.R.id.home);
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-        view.setPadding(0, 0, px, 0);
-
-        mContext = this;
 
         setContentView(R.layout.race);
 
@@ -66,6 +60,29 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
             }
         }
 
+        getNamesArray();
+        setList();
+
+        ListView lv = findViewById(android.R.id.list);
+        lv.setAdapter(mArrAdapter);
+
+        if (mNumRounds <= 1) {
+            TextView noneView = new TextView(this);
+            noneView.setText(getString(R.string.no_rounds));
+
+            noneView.setTextColor(F3FtimerApplication.themeAttributeToColor(
+                    R.attr.t2,
+                    this,
+                    R.color.light_grey));
+            int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics());
+            noneView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            noneView.setPadding(px1, px1, px1, px1);
+
+            lv.addFooterView(noneView);
+        }
+    }
+
+    private void getNamesArray() {
         RaceData datasource = new RaceData(this);
         datasource.open();
         Race race = datasource.getRace(mRid);
@@ -74,33 +91,42 @@ public class ResultsCompletedRoundsActivity extends ListActivity {
         TextView tt = findViewById(R.id.race_title);
         tt.setText(race.name);
 
-        ArrayList<String> arrOptions = new ArrayList<>();
+        mOptions = new ArrayList<>();
         for (int i = 1; i < race.round; i++) {
-            arrOptions.add(String.format("Round %d", i));
+           mOptions.add(String.format("Round %d", i));
         }
 
-        mArrAdapter = new ArrayAdapter<>(this, R.layout.listrow, arrOptions);
-        if (race.round <= 1) {
-            TextView noneView = new TextView(this);
-            noneView.setText(getString(R.string.no_rounds));
+        mNumRounds = race.round;
+    }
 
-            noneView.setTextColor(F3FtimerApplication.themeAttributeToColor(
-                    R.attr.t2,
-                    this,
-                    R.color.light_grey));
-            int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-            noneView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-            noneView.setPadding(px1, px1, px1, px1);
+    private void setList() {
+        mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow, mOptions) {
+            @Override
+            public @NonNull
+            View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                View row;
 
-            getListView().addFooterView(noneView);
-        }
+                if (null == convertView) {
+                    row = getLayoutInflater().inflate(R.layout.listrow, parent, false);
+                    row.setOnClickListener(ResultsCompletedRoundsActivity.this);
+                    row.setOnCreateContextMenuListener(ResultsCompletedRoundsActivity.this);
+                } else {
+                    row = convertView;
+                }
 
-        setListAdapter(mArrAdapter);
+                row.setTag(position);
 
+                TextView tv = row.findViewById(R.id.text1);
+                tv.setText(mOptions.get(position));
+
+                return row;
+            }
+        };
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onClick(View v) {
+        int position = (int)v.getTag();
         Intent intent = new Intent(this, ResultsCompletedRoundActivity.class);
         intent.putExtra("race_id", mRid);
         intent.putExtra("round_id", position + 1);

@@ -2,7 +2,7 @@
 <resources>
     <!-- Default Application theme. -->
     <style name="AppTheme" parent="AppBaseTheme">
-        <item name="android:actionBarStyle">@style/carbonActionBar</item>
+        <item name="actionBarTheme">@style/carbonActionBar</item>
         <item name="bg">@color/black</item>
         <item name="bg2">@color/text1</item>
         <item name="t1">@color/text</item>

@@ -30,6 +30,7 @@ import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
+import com.marktreble.f3ftimer.constants.Pref;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
@@ -142,13 +143,13 @@ public class USBOtherService extends Service implements DriverInterface {
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
+            if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
                 Bundle extras = intent.getExtras();
                 if (extras == null) {
                     return;
                 }
 
-                String data = extras.getString("com.marktreble.f3ftimer.ui_callback", "");
+                String data = extras.getString(IComm.MSG_UI_CALLBACK, "");
                 Log.i("USB SERVICE UI->Service", data);
 
                 if (data.equals("get_connection_status")) {
@@ -176,14 +177,14 @@ public class USBOtherService extends Service implements DriverInterface {
         }
 
         mBaudRate = 2400;
-        String baudrate = extras.getString("pref_usb_baudrate", "2400");
+        String baudrate = extras.getString(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
         try {
             mBaudRate = Integer.parseInt(baudrate, 10);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
 
-        String databits = extras.getString("pref_usb_databits", "8");
+        String databits = extras.getString(Pref.USB_DATABITS, Pref.USB_DATABITS_DEFAULT);
 
         switch (databits) {
             case "5":
@@ -201,7 +202,7 @@ public class USBOtherService extends Service implements DriverInterface {
                 break;
         }
 
-        String stopbits = extras.getString("pref_usb_stopbits", "1");
+        String stopbits = extras.getString(Pref.USB_STOPBITS, Pref.USB_STOPBITS_DEFAULT);
 
         switch (stopbits) {
             case "2":
@@ -213,7 +214,7 @@ public class USBOtherService extends Service implements DriverInterface {
                 break;
         }
 
-        String parity = extras.getString("pref_usb_parity", "None");
+        String parity = extras.getString(Pref.USB_PARITY, Pref.USB_PARITY_DEFAULT);
         switch (parity) {
             case "Odd":
                 mParity = UsbSerialPort.PARITY_ODD;

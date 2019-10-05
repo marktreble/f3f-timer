@@ -2,13 +2,8 @@
 <resources>
     <string name="locale">en</string>
     <string name="app_name">F3Ftimer</string>
-    <string name="app_uuid" translatable="false">9ab9ee24-331c-44d9-ae73-23e0befc9e57</string>
-    <string name="external_display_uuid" translatable="false">cbedac48-833c-4f3e-b69a-834e9e61d0c9</string>
-    <string name="HC05_uuid" translatable="false">"00001101-0000-1000-8000-00805F9B34FB"</string>
     <string name="version">Version</string>
     <string name="credits">An open source project by Mark Treble</string>
-    <string name="repositary" translatable="false">https://www.github.com/marktreble/f3f-timer</string>
-    <string name="instructions" translatable="false">https://www.github.com/marktreble/f3f-timer/wiki/instructions</string>
     <string name="help">Please see the link below for instruction on how to use this software.</string>
     <string name="menu_settings">Settings</string>
     <string name="app_pilots">Pilot Manager</string>
@@ -32,14 +27,9 @@
     <string name="race_race">Race</string>
     <string name="race_practice">Practice</string>
     <string name="button_save">Save</string>
-    <string name="button_add" translatable="false">+</string>
     <string name="button_next">Next</string>
     <string name="button_done">Done</string>
-    <string name="button_scramble">S</string>
-    <string name="button_rotate">R</string>
     <string name="button_manual">M</string>
-    <string name="button_up">^</string>
-    <string name="button_down">v</string>
     <string name="button_next_pilot">Next Pilot</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_accept">Accept</string>
@@ -52,8 +42,6 @@
     <string name="resize">Resize</string>
     <string name="retired">Ret</string>
     <string name="reflight">RF</string>
-    <string name="notime" translatable="false">--.--</string>
-    <string name="thirty" translatable="false">30.00</string>
     <string name="start_working_time">Start Working Time</string>
     <string name="working_time_started">Working Time Started</string>
     <string name="late_entry">Late Entry</string>
@@ -65,7 +53,6 @@
     <string name="scrub_round">Scrub Round</string>
     <string name="scrub_group">Scrub Group</string>
     <string name="minutes_remaining">Minutes Remaining</string>
-    <string name="zero" translatable="false">0.00</string>
     <string name="off_course">Off Course</string>
     <string name="on_course">On Course</string>
     <string name="working_time">Working Time</string>
@@ -105,7 +92,6 @@
     <string name="audio">Audio Options</string>
     <string name="USB_IOIO" translatable="false">USB - IOIO</string>
     <string name="USB_OTHER">USB - Other</string>
-    <string name="BLUETOOTH_HC_05" translatable="false">Bluetooth - HC-05</string>
     <string name="TCP_IO" translatable="false">TCP/IP Socket - f3ftimer-server:1234</string>
     <string name="Demo">Demo Mode - On Screen Buzzers</string>
     <string name="input_tcpio_ip">IP / host name for \"f3ftimer-server\"</string>
@@ -155,8 +141,6 @@
     <string name="wind_warning_audible">Wind Warning Audible</string>
 
     <!-- Soft Buzzers -->
-    <string name="A" translatable="false">A</string>
-    <string name="B" translatable="false">B</string>
     <string name="end_of_round">End of Round</string>
     <string name="run_complete">Run Complete</string>
 
@@ -180,14 +164,9 @@
 
     <!-- Theme -->
     <string name="app_theme">Colour Theme</string>
-    <string name="theme_classic" translatable="false">AppTheme</string>
-    <string name="theme_f3f" translatable="false">AppTheme.F3f</string>
-    <string name="theme_yellow_black" translatable="false">AppTheme.Yellow.Black</string>
-    <string name="theme_white_black" translatable="false">AppTheme.White.Black</string>
 
     <!-- Import/Export Dialogs -->
     <string name="awaiting_connection">Awaiting Connection…</string>
-    <string name="http_protocol_hint" translatable="false">http(s)://</string>
     <string name="remember_login_details">  Remember these details</string>
 
 </resources>

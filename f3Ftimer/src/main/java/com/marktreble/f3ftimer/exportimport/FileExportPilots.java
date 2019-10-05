@@ -11,12 +11,16 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.dialog.GenericRadioPicker;
 import com.marktreble.f3ftimer.filesystem.FileExport;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by marktreble on 27/12/14.
@@ -25,55 +29,74 @@ public class FileExportPilots extends BaseExport {
 
     // final static String TAG = "FileExportPilots";
 
-    private int mExportFileType;
+    private Integer mExportFileType = -1;
+
+    static final String DIALOG = "dialog";
+
+    GenericRadioPicker mDLG3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mExportFileType = -1;
-        AlertDialog.Builder dlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+        if (savedInstanceState == null) {
 
-                .setTitle("Select file type")
-                .setSingleChoiceItems(filetypes, -1, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mExportFileType = which;
-                    }
-                })
-                .setNegativeButton(getString(R.string.button_cancel), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int clicked) {
-                        finish();
-                    }
-                })
-                .setPositiveButton(getString(R.string.button_next), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int clicked) {
-                        if (mExportFileType >= 0) {
-                            mDlg.dismiss();
-                            promptForSaveFolder(null);
-                        } else {
-                            finish();
+            String[] buttons_array = new String[2];
+            buttons_array[0] = getString(android.R.string.cancel);
+            buttons_array[1] = getString(R.string.button_next);
+
+            mDLG3 = GenericRadioPicker.newInstance(
+                    getString(R.string.ttl_select_file_type),
+                    new ArrayList<>(Arrays.asList(filetypes)),
+                    buttons_array,
+                    new ResultReceiver(new Handler()) {
+                        @Override
+                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+                            super.onReceiveResult(resultCode, resultData);
+                            switch (resultCode) {
+                                case 0:
+                                    mActivity.finish();
+                                    break;
+                                case 1:
+                                    mExportFileType = -1;
+                                    if (resultData.containsKey("checked")) {
+                                        mExportFileType = resultData.getInt("checked");
+                                    }
+                                    if (mExportFileType >= 0) {
+                                        call("promptForSaveFolder", null);
+                                    } else {
+                                        mActivity.finish();
+                                    }
+                                    break;
+                            }
                         }
                     }
-                });
+            );
 
-        mDlg = dlg.create();
-        mDlg.setCancelable(false);
-        mDlg.setCanceledOnTouchOutside(false);
-        mDlg.show();
+            mDLG3.show(getSupportFragmentManager(), DIALOG);
+        } else {
+            mExportFileType = savedInstanceState.getInt("mExportFileType");
+            mSaveFolder = savedInstanceState.getString("mSaveFolder");
+        }
+    }
 
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
 
+        outState.putInt("mExportFileType", mExportFileType);
+        outState.putString("mSaveFolder", mSaveFolder);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mDlg != null) mDlg = null;
     }
 
 
     @Override
     protected void beginExport() {
+        showProgress(getString(R.string.exporting));
+
         exportPilotData();
         finish();
     }

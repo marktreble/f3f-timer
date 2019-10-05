@@ -12,10 +12,7 @@
 package com.marktreble.f3ftimer.pilotmanager;
 
 import android.app.Activity;
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -29,11 +26,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.marktreble.f3ftimer.F3FtimerApplication;
+import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
@@ -47,7 +43,8 @@ import com.marktreble.f3ftimer.resultsmanager.ResultsActivity;
 
 import java.util.ArrayList;
 
-public class PilotsActivity extends ListActivity {
+public class PilotsActivity extends BaseActivity
+    implements ListView.OnClickListener {
 
     // Dialogs
     static int DLG_ADD_PILOT = 1;
@@ -59,26 +56,17 @@ public class PilotsActivity extends ListActivity {
     private ArrayList<Integer> mArrIds;
     private ArrayList<Pilot> mArrPilots;
 
-    private Context mContext;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
-
-        ImageView view = findViewById(android.R.id.home);
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-        view.setPadding(0, 0, px, 0);
 
         setContentView(R.layout.pilot_manager);
 
-        mContext = this;
+        ListView lv = findViewById(android.R.id.list);
+        registerForContextMenu(lv);
 
         getNamesArray();
         setList();
-
-        registerForContextMenu(getListView());
     }
 
     private void setList() {
@@ -91,6 +79,8 @@ public class PilotsActivity extends ListActivity {
 
                 if (null == convertView) {
                     row = getLayoutInflater().inflate(R.layout.listrow, parent, false);
+                    row.setOnClickListener(PilotsActivity.this);
+                    row.setOnCreateContextMenuListener(PilotsActivity.this);
                 } else {
                     row = convertView;
                 }
@@ -106,13 +96,18 @@ public class PilotsActivity extends ListActivity {
                     int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, getResources().getDisplayMetrics());
                     p_name.setCompoundDrawablePadding(padding);
                 }
+
+                row.setTag(position);
+
                 return row;
             }
         };
 
-        setListAdapter(mArrAdapter);
+        ListView lv = findViewById(android.R.id.list);
+        lv.setAdapter(mArrAdapter);
     }
 
+    @Override
     public void onBackPressed() {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);
         homeIntent.addCategory(Intent.CATEGORY_HOME);
@@ -121,7 +116,8 @@ public class PilotsActivity extends ListActivity {
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onClick(View v) {
+        int position = (int)v.getTag();
         Intent intent = new Intent(this, PilotsEditActivity.class);
         Integer pid = mArrIds.get(position);
         intent.putExtra("pilot_id", pid);
@@ -164,7 +160,6 @@ public class PilotsActivity extends ListActivity {
             datasource.deletePilot(id);
             datasource.close();
             getNamesArray();
-//          mArrAdapter.remove(mArrNames.get(info.position));
             mArrAdapter.notifyDataSetChanged();
 
         }
@@ -202,7 +197,6 @@ public class PilotsActivity extends ListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.i("MENU", "onCREATEOPTIONSMENU");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.pilots, menu);
         return true;

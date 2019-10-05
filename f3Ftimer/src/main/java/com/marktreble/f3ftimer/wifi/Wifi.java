@@ -79,6 +79,7 @@ public class Wifi {
      * Get IP address of the first network interface found (IPv4 prior to IPv6).
      */
     public static String getIPAddress(boolean useIPv4) {
+        Log.d("PPP", "getIPAddress");
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface intf : interfaces) {
@@ -86,8 +87,9 @@ public class Wifi {
                 for (InetAddress addr : addrs) {
                     if (!addr.isLoopbackAddress()) {
                         String sAddr = addr.getHostAddress();
+                        Log.d("PPP", sAddr);
                         //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-                        boolean isIPv4 = sAddr.indexOf(':') < 0;
+                        boolean isIPv4 = (sAddr.trim().length() > 0) && (sAddr.indexOf(':') < 0);
 
                         if (useIPv4) {
                             if (isIPv4)
@@ -104,7 +106,7 @@ public class Wifi {
         } catch (Exception ex) {
             ex.printStackTrace();
         } // for now eat exceptions
-        return "";
+        return "???";
     }
 
 

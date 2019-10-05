@@ -11,7 +11,6 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
@@ -31,14 +30,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.UUID;
 
-/**
- * Created by marktreble on 27/12/14.
- */
 public class BluetoothExportRace extends BaseExport {
 
     //private static String TAG = "BlueToothExportRace";
 
-    private AlertDialog mDlg;
 
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothServerSocket mmServerSocket;
@@ -54,7 +49,6 @@ public class BluetoothExportRace extends BaseExport {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.bt_export);
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
@@ -69,6 +63,8 @@ public class BluetoothExportRace extends BaseExport {
         } else {
             startListening();
         }
+
+        showProgress(getString(R.string.awaiting_connection));
     }
 
     @Override
@@ -81,7 +77,6 @@ public class BluetoothExportRace extends BaseExport {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mDlg != null) mDlg = null;
     }
 
     @Override

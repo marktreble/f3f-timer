@@ -1,5 +1,5 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="AppBaseTheme" parent="@android:style/Theme.Holo.Light">
+    <style name="AppBaseTheme" parent="@style/Theme.AppCompat.Light">
         <item name="android:overlapAnchor">true</item>
     </style>
 </resources>

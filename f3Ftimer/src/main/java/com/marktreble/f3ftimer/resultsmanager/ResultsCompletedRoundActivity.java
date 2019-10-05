@@ -11,10 +11,7 @@
 
 package com.marktreble.f3ftimer.resultsmanager;
 
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,10 +21,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
-import com.marktreble.f3ftimer.F3FtimerApplication;
+import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.RaceData;
@@ -39,7 +36,7 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 import java.util.ArrayList;
 
-public class ResultsCompletedRoundActivity extends ListActivity {
+public class ResultsCompletedRoundActivity extends BaseActivity {
 
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
@@ -51,20 +48,9 @@ public class ResultsCompletedRoundActivity extends ListActivity {
     private Integer mRid;
     private Integer mRound;
 
-    private Context mContext;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
-
-        ImageView view = findViewById(android.R.id.home);
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-        view.setPadding(0, 0, px, 0);
-
-        mContext = this;
 
         setContentView(R.layout.race);
 
@@ -93,8 +79,11 @@ public class ResultsCompletedRoundActivity extends ListActivity {
         TextView tt = findViewById(R.id.race_title);
         tt.setText(String.format("R%d%s", mRound, group_scored));
 
+        getNamesArray();
         setList();
-        setListAdapter(mArrAdapter);
+
+        ListView lv = findViewById(android.R.id.list);
+        lv.setAdapter(mArrAdapter);
     }
 
     /*
@@ -112,8 +101,6 @@ public class ResultsCompletedRoundActivity extends ListActivity {
     }
 
     private void setList() {
-        this.getNamesArray();
-
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots, R.id.text1, mArrNames) {
             @Override
             public @NonNull
@@ -175,8 +162,6 @@ public class ResultsCompletedRoundActivity extends ListActivity {
                 return row;
             }
         };
-
-        getListView().invalidateViews();
     }
 
     @Override

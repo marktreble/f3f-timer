@@ -11,8 +11,6 @@
 
 package com.marktreble.f3ftimer.resultsmanager;
 
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -23,9 +21,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.results.Results;
@@ -36,7 +35,7 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 import java.util.ArrayList;
 
-public class ResultsTeamsActivity extends ListActivity {
+public class ResultsTeamsActivity extends BaseActivity {
 
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
@@ -46,19 +45,9 @@ public class ResultsTeamsActivity extends ListActivity {
 
     private Integer mRid;
 
-    private Context mContext;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
-
-        ImageView view = findViewById(android.R.id.home);
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-        view.setPadding(0, 0, px, 0);
-
-        mContext = this;
 
         setContentView(R.layout.race);
 
@@ -73,8 +62,27 @@ public class ResultsTeamsActivity extends ListActivity {
         TextView tt = findViewById(R.id.race_title);
         tt.setText(getString(R.string.team_results));
 
+        getNamesArray();
         setList();
-        setListAdapter(mArrAdapter);
+
+        ListView lv = findViewById(android.R.id.list);
+        lv.setAdapter(mArrAdapter);
+
+        if (mArrNames.size() == 0) {
+            TextView noneView = new TextView(mContext);
+            noneView.setText(getString(R.string.no_teams));
+
+            Resources r = getResources();
+            int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
+            noneView.setTextColor(F3FtimerApplication.themeAttributeToColor(
+                    R.attr.t2,
+                    this,
+                    R.color.light_grey));
+            noneView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
+            noneView.setPadding(px1, px1, px1, px1);
+
+            lv.addFooterView(noneView);
+        }
     }
 
     /*
@@ -94,8 +102,6 @@ public class ResultsTeamsActivity extends ListActivity {
     }
 
     private void setList() {
-        this.getNamesArray();
-
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultsteams, R.id.text1, mArrNames) {
             @Override
             public @NonNull
@@ -129,24 +135,6 @@ public class ResultsTeamsActivity extends ListActivity {
                 return row;
             }
         };
-
-        if (mArrNames.size() == 0) {
-            TextView noneView = new TextView(mContext);
-            noneView.setText(getString(R.string.no_teams));
-
-            Resources r = getResources();
-            int px1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-            noneView.setTextColor(F3FtimerApplication.themeAttributeToColor(
-                    R.attr.t2,
-                    this,
-                    R.color.light_grey));
-            noneView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 24);
-            noneView.setPadding(px1, px1, px1, px1);
-
-            getListView().addFooterView(noneView);
-
-            getListView().invalidateViews();
-        }
     }
 
     @Override

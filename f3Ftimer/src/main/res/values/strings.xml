@@ -35,11 +35,11 @@
     <string name="button_add" translatable="false">+</string>
     <string name="button_next">Next</string>
     <string name="button_done">Done</string>
-    <string name="button_scramble">S</string>
-    <string name="button_rotate">R</string>
+    <string name="button_scramble" translatable="false">S</string>
+    <string name="button_rotate" translatable="false">R</string>
     <string name="button_manual">M</string>
-    <string name="button_up">^</string>
-    <string name="button_down">v</string>
+    <string name="button_up" translatable="false">^</string>
+    <string name="button_down" translatable="false">v</string>
     <string name="button_next_pilot">Next Pilot</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_accept">Accept</string>
@@ -103,10 +103,10 @@
     <string name="menu_print_pilots_list">Print Pilot List</string>
     <string name="enter_time">Enter Time</string>
     <string name="audio">Audio Options</string>
-    <string name="USB_IOIO" translatable="false">USB - IOIO</string>
+    <string name="USB_IOIO">USB - IOIO</string>
     <string name="USB_OTHER">USB - Other</string>
     <string name="BLUETOOTH_HC_05" translatable="false">Bluetooth - HC-05</string>
-    <string name="TCP_IO" translatable="false">TCP/IP Socket - f3ftimer-server:1234</string>
+    <string name="TCP_IO">TCP/IP Socket - f3ftimer-server:1234</string>
     <string name="Demo">Demo Mode - On Screen Buzzers</string>
     <string name="input_tcpio_ip">IP / host name for \"f3ftimer-server\"</string>
     <string name="bluetooth_paired_device">HC-05 Paired Device</string>
@@ -165,7 +165,7 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="btn_login">Log In</string>
-    <string name="USBJE" translatable="false">USB - Jon Edison Timer Box</string>
+    <string name="USBJE">USB - Jon Edison Timer Box</string>
 
     <!-- Sounds -->
     <string name="whistle">whistle</string>
@@ -190,4 +190,73 @@
     <string name="http_protocol_hint" translatable="false">http(s)://</string>
     <string name="remember_login_details">  Remember these details</string>
 
+    <!-- No Pilots -->
+    <string name="err_no_pilots">No Pilots</string>,
+    <string name="err_no_pilots_instruction">Before you create a race, you must set up a database of pilots in the Pilot Manager</string>
+    <string name="btn_open_pilot_manager">Open Pilot Manager</string>
+
+    <!-- External Display -->
+    <string name="err_external_display">External Display</string>
+    <string name="err_external_display_no_device">Could not start external display service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off</string>
+
+    <!-- Round timeout -->
+    <string name="err_round_timeout">Timeout Not Started</string>
+    <string name="err_round_timeout_inactive">Timeout is not active at the moment</string>
+
+    <!-- USB Interface -->
+    <string name="err_unsupported">Unsupported Hardware</string>
+    <string name="err_unsupported_details">VendorId=%1$s\n ProductId=%2$s</string>
+
+    <!-- Import Race -->
+    <string name="ttl_import_race">Import Race</string>
+    <string name="msg_import_race_success">Your Race(s) have been imported</string>
+
+    <!-- FileSystem permission denied -->
+    <string name="ttl_fs_permission_denied">Permission Denied</string>
+    <string name="msg_fs_permission_denied">You will not be able to export files</string>
+
+    <!-- Bluetooth Import/Export -->
+    <string name="select_device">Searching for Devices...</string>
+    <string name="ttl_connection_denied">Connection Denied</string>
+    <string name="msg_connection_denied">Failed to connect to %1$s</string>
+    <string name="ttl_available_races">Races Available for Import</string>
+
+    <!-- File Import -->
+    <string name="err_wrong_file_type">Wrong file types</string>
+    <string name="msg_wrong_file_type">Sorry, f3f timer can only import files in \'json\' format. Some of your chosen files failed to import (%1$s)</string>
+
+    <string name="err_wrong_file_type_s">Wrong file type (.%1$s)</string>
+    <string name="msg_wrong_file_type_s">Sorry, f3f timer can only import files in \'json\' format</string>
+
+    <!-- File Export -->
+    <string name="ttl_save_location">Save Location</string>
+    <string name="msg_save_location">Your file(s) will be exported to:\n%1$s</string>
+    <string name="btn_change_path">Change Path</string>
+    <string name="btn_export">Export</string>
+
+    <string name="ttl_select_race">Select races to export</string>
+    <string name="ttl_file_type">Select file type</string>
+
+    <string name="ttl_import_failed">Import Failed</string>
+    <string name="msg_import_failed">Sorry, something went wrong!</string>
+
+    <string name="ttl_no_races_available">No Races Available</string>
+    <string name="msg_no_races_available">No races are available for download at the moment</string>
+
+    <string name="ttl_network_error">Network Error</string>
+    <string name="msg_network_error">Sorry, no response from server</string>
+    <string name="msg_network_error2">Please check that you are connected to either WiFi or a Mobile network</string>
+
+    <string name="ttl_select_race_import">Races Available for Import</string>
+    <string name="ttl_select_file_type">Select file type</string>
+
+    <string name="ttl_no_output_stream">No Output Stream Available</string>
+    <string name="msg_no_output_stream">Check that the timer board is plugged in, and powered?</string>
+
+    <string name="connecting_to_server">Connecting to Server..</string>
+    <string name="downloading_race">Downloading Race..</string>
+
+    <string name="connecting">Connecting..</string>
+    <string name="exporting">Exporting..</string>
+    <string name="importing">Importing..</string>
 </resources>

@@ -22,6 +22,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.Pref;
 
 public class RaceTimerFrag3 extends RaceTimerFrag {
 
@@ -69,7 +70,7 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
         });
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String soft_buttons = sharedPref.getString("pref_input_src", getString(R.string.Demo));
+        String soft_buttons = sharedPref.getString(Pref.INPUT_SRC, getString(R.string.Demo));
         if (soft_buttons.equals(getString(R.string.Demo))) {
             Button baseA = mView.findViewById(R.id.base_A);
             baseA.setVisibility(View.VISIBLE);

@@ -1,4 +1,3 @@
-package com.marktreble.f3ftimer.exportimport;
 /*
  *     ___________ ______   _______
  *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
@@ -10,18 +9,21 @@ package com.marktreble.f3ftimer.exportimport;
  *
  */
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+package com.marktreble.f3ftimer.exportimport;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.v4.app.FragmentTransaction;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.api.API;
 import com.marktreble.f3ftimer.dialog.F3xvaultAPILoginActivity;
+import com.marktreble.f3ftimer.dialog.GenericAlert;
+import com.marktreble.f3ftimer.dialog.GenericListPicker;
 import com.opencsv.CSVReader;
 
 import org.json.JSONArray;
@@ -39,11 +41,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by marktreble on 27/08/2017.
- */
-
-
 // Get Race list: http://www.f3xvault.com/api.php?login=#####e&password=#####&function=searchEvents&event_type_code=f3f&show_future=1&date_from=2017-08-28
 // Get Pilots: http://www.f3xvault.com/api.php?login=#####&password=#####&function=getEventPilots&event_id=?
 
@@ -52,6 +49,8 @@ public class F3xvaultApiImportRace extends BaseImport
 
     private static final int DLG_LOGIN = 1;
 
+    private static final long PROGRESS_DELAY = 500;
+
     private API mAPITask = null;
 
     private String mUsername;
@@ -59,25 +58,23 @@ public class F3xvaultApiImportRace extends BaseImport
 
     private ArrayList<String> mAvailableRaceIds;
 
-    AlertDialog mDlg;
-    AlertDialog.Builder mDlgb;
+    static final String DIALOG = "dialog";
+
+    GenericAlert mDLG;
+    GenericListPicker mDLG2;
 
     String mDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.api);
 
         // Show source/auth dialog
-
-        Intent intent = new Intent(mActivity, F3xvaultAPILoginActivity.class);
-        startActivityForResult(intent, DLG_LOGIN);
-
-
+        if (savedInstanceState == null) {
+            Intent intent = new Intent(mActivity, F3xvaultAPILoginActivity.class);
+            startActivityForResult(intent, DLG_LOGIN);
+        }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -86,30 +83,35 @@ public class F3xvaultApiImportRace extends BaseImport
 
         if (resultCode == RESULT_OK) {
             if (requestCode == DLG_LOGIN) {
-                String username = data.getStringExtra("username");
-                String password = data.getStringExtra("password");
+                final String username = data.getStringExtra("username");
+                final String password = data.getStringExtra("password");
 
-                showProgress("Connecting to Server..");
+                showProgress(getString(R.string.connecting_to_server));
 
-                mDataSource = "http://www.f3xvault.com/api.php";
-                Map<String, String> params = new HashMap<>();
-                params.put(API.ENDPOINT_KEY, API.F3XV_IMPORT);
-                params.put("login", username);
-                params.put("password", password);
-                params.put("function", API.F3XV_IMPORT);
-                params.put("event_type_code", "f3f");
-                params.put("show_future", "1");
-                params.put("date_from", DateFormat.format("yyyy-MM-dd", new Date()).toString());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                    mDataSource = "http://www.f3xvault.com/api.php";
+                    Map<String, String> params = new HashMap<>();
+                    params.put(API.ENDPOINT_KEY, API.F3XV_IMPORT);
+                    params.put("login", username);
+                    params.put("password", password);
+                    params.put("function", API.F3XV_IMPORT);
+                    params.put("event_type_code", "f3f");
+                    params.put("show_future", "1");
+                    params.put("date_from", DateFormat.format("yyyy-MM-dd", new Date()).toString());
 
-                mUsername = username;
-                mPassword = password;
+                    mUsername = username;
+                    mPassword = password;
 
-                mAPITask = new API();
-                mAPITask.mCallback = this;
-                mAPITask.request = API.F3XV_IMPORT;
-                mAPITask.mAppendEndpoint = false;
-                mAPITask.mIsJSON = false;
-                mAPITask.makeAPICall(this, mDataSource, API.httpmethod.GET, params);
+                    mAPITask = new API();
+                    mAPITask.mCallback = F3xvaultApiImportRace.this;
+                    mAPITask.request = API.F3XV_IMPORT;
+                    mAPITask.mAppendEndpoint = false;
+                    mAPITask.mIsJSON = false;
+                    mAPITask.makeAPICall(F3xvaultApiImportRace.this, mDataSource, API.httpmethod.GET, params);
+                    }
+                }, PROGRESS_DELAY);
 
             }
         } else {
@@ -117,24 +119,11 @@ public class F3xvaultApiImportRace extends BaseImport
         }
     }
 
-    public void showProgress(String msg) {
-        View progress = findViewById(R.id.progress);
-        TextView progressLabel = findViewById(R.id.progressLabel);
-
-        progressLabel.setText(msg);
-        progress.setVisibility(View.VISIBLE);
-    }
-
-    public void hideProgress() {
-        View progress = findViewById(R.id.progress);
-        progress.setVisibility(View.GONE);
-    }
-
     public void onAPISuccess(String request, JSONObject data) {
         mAPITask = null;
         hideProgress();
 
-        Log.i("f3xv", request + " : " + API.F3XV_IMPORT);
+        Log.d("f3xv", request + " : " + API.F3XV_IMPORT);
         if (request.equals(API.F3XV_IMPORT)) {
             JSONArray race_list = new JSONArray();
 
@@ -172,16 +161,29 @@ public class F3xvaultApiImportRace extends BaseImport
             if (race_list.length() > 0) {
                 showRaceNamesDialog(race_list);
             } else {
-                new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
 
-                        .setTitle("No Races Available")
-                        .setMessage("No races are available for download at the moment.")
-                        .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                String[] buttons_array = new String[1];
+                buttons_array[0] = getString(android.R.string.cancel);
+
+                mDLG = GenericAlert.newInstance(
+                        getString(R.string.ttl_no_races_available),
+                        getString(R.string.msg_no_races_available),
+                        buttons_array,
+                        new ResultReceiver(new Handler()) {
+                            @Override
+                            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                                super.onReceiveResult(resultCode, resultData);
+
                                 mActivity.finish();
                             }
-                        })
-                        .show();
+                        }
+                );
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.addToBackStack(null);
+                ft.add(mDLG, DIALOG);
+                ft.commit();
+
             }
         }
 
@@ -202,16 +204,27 @@ public class F3xvaultApiImportRace extends BaseImport
                 mActivity.finish();
 
             } else {
-                new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+                String[] buttons_array = new String[1];
+                buttons_array[0] = getString(android.R.string.cancel);
 
-                        .setTitle("Import Failed")
-                        .setMessage("Sorry, something went wrong!")
-                        .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
+                mDLG = GenericAlert.newInstance(
+                        getString(R.string.ttl_import_failed),
+                        getString(R.string.msg_import_failed),
+                        buttons_array,
+                        new ResultReceiver(new Handler()) {
+                            @Override
+                            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                                super.onReceiveResult(resultCode, resultData);
+
                                 mActivity.finish();
                             }
-                        })
-                        .show();
+                        }
+                );
+
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.add(mDLG, DIALOG);
+                ft.commit();
+
             }
         }
 
@@ -220,18 +233,32 @@ public class F3xvaultApiImportRace extends BaseImport
     public void onAPIError(String request, JSONObject data) {
         mAPITask = null;
         hideProgress();
+        Log.e("f3xv", request + " : " + API.F3XV_IMPORT);
+        Log.e("f3xv", request + " : " + data);
 
         if (data == null) {
-            new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+            String[] buttons_array = new String[1];
+            buttons_array[0] = getString(android.R.string.cancel);
 
-                    .setTitle("Network Error")
-                    .setMessage("Sorry, no response from server.")
-                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
+            mDLG = GenericAlert.newInstance(
+                    getString(R.string.ttl_network_error),
+                    getString(R.string.msg_network_error),
+                    buttons_array,
+                    new ResultReceiver(new Handler()) {
+                        @Override
+                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+                            super.onReceiveResult(resultCode, resultData);
+
                             mActivity.finish();
                         }
-                    })
-                    .show();
+                    }
+            );
+
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.addToBackStack(null);
+            ft.add(mDLG, DIALOG);
+            ft.commit();
+
             return;
         }
         String message = null;
@@ -259,36 +286,53 @@ public class F3xvaultApiImportRace extends BaseImport
             racelist.add(name);
         }
 
-        CharSequence[] list = racelist.toArray(new CharSequence[0]);
-        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
 
-                .setTitle("Races Available for Import")
-                .setCancelable(true)
-                .setItems(list, raceClickListener);
+        mDLG2 = GenericListPicker.newInstance(
+                getString(R.string.ttl_select_race_import),
+                racelist,
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        Log.d("f3xv", "RESULT = " + resultCode);
+                        if (resultCode == 0) {
+                            mDLG2.dismiss();
+                            mActivity.finish();
+                        } else if (resultCode >= 100) {
+                            raceClicked(resultCode - 100);
+                        }
+                    }
+                }
+        );
 
-        mDlg = mDlgb.create();
-        mDlg.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                if (mAPITask == null)
-                    mActivity.finish();
-            }
-        });
-        mDlg.show();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG2, DIALOG);
+        ft.commit();
+
     }
 
-    private final DialogInterface.OnClickListener raceClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            downloadRace(mAvailableRaceIds.get(which));
-            dialog.cancel();
+    public void raceClicked(final int which) {
+        if (which < 0 || which > mAvailableRaceIds.size()) {
+            mDLG2.dismiss();
+            mActivity.finish();
         }
-    };
+        mDLG2.dismiss();
+
+        showProgress(getString(R.string.downloading_race));
+
+        new Handler().postDelayed(new Runnable() {
+          @Override
+          public void run() {
+              downloadRace(mAvailableRaceIds.get(which));
+          }
+        }, PROGRESS_DELAY);
+
+    }
 
     public void downloadRace(String id) {
-        Log.i("ONACTIVITY", "DOWNLOADING RACE");
-
-        showProgress("Downloading Race..");
 
         Map<String, String> params = new HashMap<>();
         params.put(API.ENDPOINT_KEY, API.F3XV_IMPORT_RACE);

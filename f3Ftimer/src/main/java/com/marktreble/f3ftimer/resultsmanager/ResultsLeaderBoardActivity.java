@@ -11,8 +11,6 @@
 
 package com.marktreble.f3ftimer.resultsmanager;
 
-import android.app.ListActivity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -26,10 +24,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
@@ -41,7 +39,7 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 import java.util.ArrayList;
 
-public class ResultsLeaderBoardActivity extends ListActivity {
+public class ResultsLeaderBoardActivity extends BaseActivity {
 
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
@@ -55,19 +53,9 @@ public class ResultsLeaderBoardActivity extends ListActivity {
 
     private Integer mRid;
 
-    private Context mContext;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ((F3FtimerApplication) getApplication()).setBaseTheme(this);
         super.onCreate(savedInstanceState);
-
-        ImageView view = findViewById(android.R.id.home);
-        Resources r = getResources();
-        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, r.getDisplayMetrics());
-        view.setPadding(0, 0, px, 0);
-
-        mContext = this;
 
         setContentView(R.layout.race);
 
@@ -82,15 +70,41 @@ public class ResultsLeaderBoardActivity extends ListActivity {
         TextView tt = findViewById(R.id.race_title);
         tt.setText(getString(R.string.leader_board));
 
+        getNamesArray();
         setList();
-        setListAdapter(mArrAdapter);
+
+        ListView lv = findViewById(android.R.id.list);
+        lv.setAdapter(mArrAdapter);
+
+        TextView ftdView = new TextView(mContext);
+        if (mFTD < 9999) {
+            ftdView.setText(String.format(getString(R.string.ftd_result), mFTD, mFTDName, mFTDRound));
+        } else {
+            ftdView.setText(getString(R.string.no_rounds));
+        }
+
+        Resources r = getResources();
+        ftdView.setTextColor(F3FtimerApplication.themeAttributeToColor(
+                R.attr.t2,
+                this,
+                R.color.light_grey));
+
+        int textSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, r.getDimension(R.dimen.list_label), getResources().getDisplayMetrics());
+        ftdView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+
+        int px1 = (int)r.getDimension(R.dimen.dialog_padding);
+        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px1, getResources().getDisplayMetrics());
+        ftdView.setPadding(padding, padding, padding, padding);
+
+        ftdView.setGravity(Gravity.CENTER);
+
+        lv.addFooterView(ftdView);
     }
 
     /*
      * Show pilot breakdown
      */
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onClick(View v) {
         // Pilot has been clicked, so show breakdown of rounds
 
     }
@@ -116,8 +130,6 @@ public class ResultsLeaderBoardActivity extends ListActivity {
     }
 
     private void setList() {
-        this.getNamesArray();
-
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow_resultspilots, R.id.text1, mArrNames) {
             @Override
             public @NonNull
@@ -166,32 +178,6 @@ public class ResultsLeaderBoardActivity extends ListActivity {
                 return row;
             }
         };
-
-        TextView ftdView = new TextView(mContext);
-        if (mFTD < 9999) {
-            ftdView.setText(String.format(getString(R.string.ftd_result), mFTD, mFTDName, mFTDRound));
-        } else {
-            ftdView.setText(getString(R.string.no_rounds));
-        }
-
-        Resources r = getResources();
-        ftdView.setTextColor(F3FtimerApplication.themeAttributeToColor(
-                R.attr.t2,
-                this,
-                R.color.light_grey));
-
-        int textSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, r.getDimension(R.dimen.list_label), getResources().getDisplayMetrics());
-        ftdView.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-
-        int px1 = (int)r.getDimension(R.dimen.dialog_padding);
-        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px1, getResources().getDisplayMetrics());
-        ftdView.setPadding(padding, padding, padding, padding);
-
-        ftdView.setGravity(Gravity.CENTER);
-
-        getListView().addFooterView(ftdView);
-
-        getListView().invalidateViews();
     }
 
     @Override

@@ -11,21 +11,22 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ResultReceiver;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.dialog.GenericAlert;
+import com.marktreble.f3ftimer.dialog.GenericListPicker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,10 +46,12 @@ import java.util.UUID;
 public class BluetoothImportRace extends BaseImport {
 
 
-    private AlertDialog mDlg;
-    private AlertDialog.Builder mDlgb;
+    static final String DIALOG = "dialog";
 
-    private BluetoothAdapter mBluetoothAdapter;
+    GenericAlert mDLG;
+    GenericListPicker mDLG2;
+
+    public BluetoothAdapter mBluetoothAdapter;
     ArrayList<String> mDiscoveredDeviceNames;
     ArrayList<BluetoothDevice> mDiscoveredDevices;
 
@@ -86,11 +89,13 @@ public class BluetoothImportRace extends BaseImport {
             return;
         }
 
-        if (!mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-        } else {
-            getBluetoothDevices();
+        if (savedInstanceState == null) {
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            } else {
+                getBluetoothDevices();
+            }
         }
     }
 
@@ -151,27 +156,35 @@ public class BluetoothImportRace extends BaseImport {
 
         mDevices = mPairedAndDiscoveredDeviceNames.toArray(new CharSequence[0]);
 
-        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
 
-                .setTitle("Searching for Devices...")
-                .setCancelable(true)
-                .setItems(mDevices, deviceClickListener);
+        mDLG2 = GenericListPicker.newInstance(
+                getString(R.string.select_device),
+                mPairedAndDiscoveredDeviceNames,
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        if (resultCode == 0) {
+                            mBluetoothAdapter.cancelDiscovery();
 
-        mDlg = mDlgb.create();
+                            mPairedAndDiscoveredDeviceNames = null;
 
-        mDlg.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                mBluetoothAdapter.cancelDiscovery();
-                if (mmSocket == null) {
-                    Log.i("BT", "FINISHING ACTIVITY IN ONDISMISS");
-                    mActivity.finish();
+                            if (mmSocket == null) {
+                                mActivity.finish();
+                            }
+                        } else if (resultCode >= 100) {
+                            deviceClicked(resultCode - 100);
+                        }
+                    }
                 }
+        );
 
-            }
-        });
-        mDlg.show();
-
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG2, DIALOG);
+        ft.commit();
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -182,97 +195,77 @@ public class BluetoothImportRace extends BaseImport {
                 // Get the BluetoothDevice object from the Intent
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 // Add the name and address to an array adapter to show in a ListView
-                Log.i("FOUND BT DEVICE", device.getName() + "::" + device.getAddress());
-                mDiscoveredDeviceNames.add(device.getName());
+                String name = device.getName();
+                if (name == null) name = "Unknown";
+                Log.i("FOUND BT DEVICE", name + "::" + device.getAddress());
+
+                if (mDiscoveredDevices.contains(device)) return;
+
+                mDiscoveredDeviceNames.add(name);
                 mDiscoveredDevices.add(device);
 
-                mPairedAndDiscoveredDeviceNames = new ArrayList<>();
-                mPairedAndDiscoveredDeviceNames.addAll(mPairedDeviceNames);
-                mPairedAndDiscoveredDeviceNames.addAll(mDiscoveredDeviceNames);
+                mPairedAndDiscoveredDeviceNames.add(name);
+                mPairedAndDiscoveredDevices.add(device);
 
-                mPairedAndDiscoveredDevices = new ArrayList<>();
-                mPairedAndDiscoveredDevices.addAll(mPairedDevices);
-                mPairedAndDiscoveredDevices.addAll(mDiscoveredDevices);
 
-                String[] devices = mPairedAndDiscoveredDeviceNames.toArray(new String[0]);
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(BluetoothImportRace.this, android.R.layout.select_dialog_item, devices);
-
-                mDlg.getListView().setAdapter(adapter);
 
             }
         }
     };
 
-    private final DialogInterface.OnClickListener deviceClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            Log.i("BT", "DEVICE CLICKED");
-            mBluetoothAdapter.cancelDiscovery();
-            BluetoothDevice mmDevice;
-            mmDevice = mPairedAndDiscoveredDevices.get(which);
-            final String deviceName = mPairedAndDiscoveredDeviceNames.get(which);
 
-            BluetoothSocket tmp;
-            // uuid is the app's UUID string, also used by the server code
-            UUID uuid = UUID.fromString(getResources().getString(R.string.app_uuid));
-            try {
-                tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
-                Log.i("BT", "connected to " + mmDevice.getName());
-            } catch (IOException e) {
-                Log.i("BT", "Failed to connect to device");
-                return;
-            }
-            mmSocket = tmp;
+    public void deviceClicked(int which) {
+        showProgress(getString(R.string.connecting));
 
-            Thread connectThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i("BT", "Starting Runnable");
-                    android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        mBluetoothAdapter.cancelDiscovery();
+        final BluetoothDevice mmDevice = mPairedAndDiscoveredDevices.get(which);
+        final String deviceName = mPairedAndDiscoveredDeviceNames.get(which);
+
+        Thread createSocketThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                BluetoothSocket tmp;
+                // uuid is the app's UUID string, also used by the server code
+                UUID uuid = UUID.fromString(getResources().getString(R.string.app_uuid));
+                try {
+                    tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
+                    Log.i("BT", "connected to " + mmDevice.getName());
+                } catch (IOException e) {
+                    Log.i("BT", "Failed to connect to device");
+                    return;
+                }
+                mmSocket = tmp;
+
+                Log.i("BT", "Starting Runnable");
+
+                try {
+                    // Connect the device through the socket. This will block
+                    // until it succeeds or throws an exception
+                    mmSocket.connect();
+                } catch (IOException connectException) {
+                    // Unable to connect; close the socket and get out
+                    connectException.printStackTrace();
+
+                    call("connectionDenied", deviceName);
 
                     try {
-                        // Connect the device through the socket. This will block
-                        // until it succeeds or throws an exception
-                        mmSocket.connect();
-                    } catch (IOException connectException) {
-                        // Unable to connect; close the socket and get out
-                        connectException.printStackTrace();
-                        mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
-
-                                .setTitle("Connection Denied")
-                                .setCancelable(true)
-                                .setMessage("Failed to connect to " + deviceName)
-                                .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        finish();
-                                    }
-                                });
-
-                        mDlg = mDlgb.create();
-                        mDlg.show();
-
-                        try {
-                            mmSocket.close();
-                        } catch (IOException closeException) {
-                            closeException.printStackTrace();
-                        }
-                        return;
+                        mmSocket.close();
+                    } catch (IOException closeException) {
+                        closeException.printStackTrace();
                     }
-
-                    // Do work to manage the connection (in a separate thread)
-                    manageConnectedSocket();
+                    return;
                 }
-            });
 
-            new Handler().postDelayed(connectThread, 100);
-            dialog.dismiss();
-        }
-    };
+                // Do work to manage the connection (in a separate thread)
+                manageConnectedSocket();
+
+            }
+        });
+        createSocketThread.start();
+
+    }
 
     private void manageConnectedSocket() {
-        Log.i("BT", "GET IO STREAMS");
         try {
             mmInStream = mmSocket.getInputStream();
             mmOutStream = mmSocket.getOutputStream();
@@ -335,7 +328,6 @@ public class BluetoothImportRace extends BaseImport {
     }
 
     public void closeSocket() {
-        Log.i("BT", "CLEANING UP");
         mIsListening = false;
 
         if (mmInStream != null) {
@@ -370,7 +362,6 @@ public class BluetoothImportRace extends BaseImport {
     private void sendRequest(String cmd, String data) {
         mCommandSent = cmd;
         cmd = (data.equals("")) ? cmd : cmd + " " + data;
-        Log.i("BT", cmd);
         byte[] msg = cmd.getBytes();
         try {
             mmOutStream.write(msg);
@@ -380,7 +371,6 @@ public class BluetoothImportRace extends BaseImport {
     }
 
     private void showRaceNamesDialog(String response) {
-        Log.i("BT", "RESPONSE: " + response);
 
         JSONArray racenames;
         try {
@@ -396,45 +386,49 @@ public class BluetoothImportRace extends BaseImport {
                 racelist.add(name);
             }
 
-            CharSequence[] list = racelist.toArray(new CharSequence[0]);
-            mDlgb = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+            String[] buttons_array = new String[1];
+            buttons_array[0] = getString(android.R.string.cancel);
 
-                    .setTitle("Races Available for Import")
-                    .setCancelable(true)
-                    .setItems(list, raceClickListener);
-
-            mDlg = mDlgb.create();
-            mDlg.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    mBluetoothAdapter.cancelDiscovery();
-                    if (!mCommandSent.equals(CMD_GET)) {
-                        Log.i("BT", "FINISHING ACTIVITY IN ONDISMISS");
-                        mActivity.finish();
+            mDLG2 = GenericListPicker.newInstance(
+                    getString(R.string.ttl_available_races),
+                    racelist,
+                    buttons_array,
+                    new ResultReceiver(new Handler()) {
+                        @Override
+                        protected void onReceiveResult(int resultCode, Bundle resultData) {
+                            super.onReceiveResult(resultCode, resultData);
+                            if (resultCode == 0) {
+                                mBluetoothAdapter.cancelDiscovery();
+                                if (!mCommandSent.equals(CMD_GET)) {
+                                    mActivity.finish();
+                                }
+                            } else if (resultCode >= 100) {
+                                raceClicked(resultCode - 100);
+                            }
+                        }
                     }
+            );
 
-                }
-            });
-            mDlg.show();
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            ft.add(mDLG2, DIALOG);
+            ft.commit();
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
     }
 
-    private final DialogInterface.OnClickListener raceClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-            sendRequest(CMD_GET, mAvailableRaceIds.get(which));
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    listen();
-                }
-            }, 100);
-            dialog.dismiss();
-        }
-    };
+    public void raceClicked(int which) {
+        sendRequest(CMD_GET, mAvailableRaceIds.get(which));
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                listen();
+            }
+        }, 100);
+        mDLG2.dismiss();
+    }
 
     protected void importRace(String data) {
         super.importRaceJSON(data);

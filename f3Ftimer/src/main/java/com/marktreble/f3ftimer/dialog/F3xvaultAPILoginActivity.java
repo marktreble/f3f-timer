@@ -87,7 +87,7 @@ public class F3xvaultAPILoginActivity extends Activity {
         editor.putBoolean("pref_f3xv_api_details_remember", api_remember);
 
         if (api_remember) {
-            // Save details to user Prefs
+            // Save details to user Pref
             editor.putString("pref_f3xv_api_username", str_username);
             editor.putString("pref_f3xv_api_password", str_password);
 

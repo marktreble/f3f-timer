@@ -197,7 +197,8 @@
             android:key="pref_app_theme"
             android:title="Application Theme"
             android:entries="@array/theme_names"
-            android:entryValues="@array/theme_values" />
+            android:entryValues="@array/theme_values"
+            android:defaultValue="AppTheme"/>
 
     </PreferenceCategory>
 

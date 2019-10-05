@@ -12,13 +12,9 @@
 package com.marktreble.f3ftimer.data.api;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
-
-import com.marktreble.f3ftimer.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,7 +85,6 @@ public class API {
         boolean mIsJSON;
         APICallbackInterface mCallback;
         String mRequest;
-
 
         apiCall(Context context, String base, int method, boolean appendEndpoint, boolean isJSON, APICallbackInterface callback, String request) {
             super();
@@ -275,7 +270,7 @@ public class API {
                 if (success.equals("1")) {
                     mCallback.onAPISuccess(mRequest, o);
                 } else {
-                    mCallback.onAPIError(mRequest, o);
+                    mCallback.onAPIError(mRequest, null);
                 }
                 return;
             }
@@ -284,18 +279,8 @@ public class API {
                 ((Activity) mContext.get()).runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        new AlertDialog.Builder(mContext.get(), R.style.AppTheme_AlertDialog)
-                                .setTitle("Network Unavailable")
-                                .setMessage("Please check that you are connected to either WiFi or a Mobile network")
-                                .setOnCancelListener(new DialogInterface.OnCancelListener() {
-                                    @Override
-                                    public void onCancel(DialogInterface dialog) {
-                                        if (mCallback != null)
-                                            mCallback.onAPIError(mRequest, null);
-
-                                    }
-                                })
-                                .create().show();
+                        if (mCallback != null)
+                            mCallback.onAPIError(mRequest, null);
                     }
                 });
 

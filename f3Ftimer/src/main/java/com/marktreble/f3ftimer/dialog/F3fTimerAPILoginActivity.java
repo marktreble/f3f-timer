@@ -94,7 +94,7 @@ public class F3fTimerAPILoginActivity extends Activity {
         editor.putBoolean("pref_api_details_remember", api_remember);
 
         if (api_remember) {
-            // Save details to user Prefs
+            // Save details to user Pref
             editor.putString("pref_api_datasource", str_datasource);
             editor.putString("pref_api_username", str_username);
             editor.putString("pref_api_password", str_password);

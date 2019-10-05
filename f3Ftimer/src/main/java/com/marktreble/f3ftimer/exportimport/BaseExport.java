@@ -13,34 +13,40 @@ package com.marktreble.f3ftimer.exportimport;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.ResultReceiver;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.dialog.GenericAlert;
+import com.marktreble.f3ftimer.dialog.GenericRadioPicker;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
-/**
- * Created by marktreble on 09/12/2015.
- * Base class for data exports
- */
-public abstract class BaseExport extends Activity {
+public abstract class BaseExport extends AppCompatActivity {
 
-    final CharSequence[] filetypes = {"json", "csv"};
+    final String[] filetypes = {"json", "csv"};
     final static int EXPORT_FILE_TYPE_JSON = 0;
     final static int EXPORT_FILE_TYPE_CSV = 1;
 
@@ -50,70 +56,76 @@ public abstract class BaseExport extends Activity {
     Activity mActivity;
     String mSaveFolder;
 
-    public AlertDialog mDlg;
+    static final String DIALOG = "dialog";
+
+    GenericAlert mDLG;
+    GenericRadioPicker mDLG3;
+
+    protected Integer mExportFileType = -1;
+
+    String mProgressMessage;
 
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.api);
 
         mContext = this;
         mActivity = this;
 
+        if (savedInstanceState != null) {
+            mProgressMessage = savedInstanceState.getString("progress_message");
+            View progress = findViewById(R.id.progress);
+            TextView progressLabel = progress.findViewById(R.id.progressLabel);
+            progressLabel.setText(mProgressMessage);
+        }
     }
 
-    protected void promptForSaveFolder(String folder) {
-        if (folder == null) {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            mSaveFolder = sharedPref.getString("export_save_folder", Environment.getExternalStorageDirectory().getPath());
-        } else {
-            mSaveFolder = folder;
-        }
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("progress_message", mProgressMessage);
+    }
 
-        AlertDialog.Builder dlg = new AlertDialog.Builder(mContext, R.style.AppTheme_AlertDialog)
+    protected void showProgress(final String msg) {
+        mProgressMessage = msg;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                View progress = findViewById(R.id.progress);
+                TextView progressLabel = progress.findViewById(R.id.progressLabel);
+                progressLabel.setText(msg);
+            }
+        });
 
-                .setTitle("Save Location")
-                .setMessage("Your file(s) will be exported to:\n" + mSaveFolder)
-                .setNeutralButton("Change Path", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Intent i = new Intent(mContext, FilteredFilePickerActivity.class);
-                        // This works if you defined the intent filter
-                        // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+    }
 
-                        // Set these depending on your use case. These are the defaults.
-                        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-                        i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
-                        i.putExtra(FilteredFilePickerActivity.EXTRA_MODE, FilteredFilePickerActivity.MODE_DIR);
+    protected void hideProgress() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                View progress = findViewById(R.id.progress);
+                TextView progressLabel = progress.findViewById(R.id.progressLabel);
+                progressLabel.setText("");
+            }
+        });
+    }
 
-                        // Configure initial directory by specifying a String.
-                        // You could specify a String like "/storage/emulated/0/", but that can
-                        // dangerous. Always use Android's API calls to get paths to the SD-card or
-                        // internal memory.
-                        i.putExtra(FilteredFilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+    public void onResume() {
+        super.onResume();
 
-                        startActivityForResult(i, ACTION_PICK_FOLDER);
-                        dialog.dismiss();
-                    }
-                })
-                .setPositiveButton("Export", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        beginExport();
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        mActivity.finish();
-                    }
-                });
-        mDlg = dlg.create();
-        mDlg.setCanceledOnTouchOutside(false);
-        mDlg.show();
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE));
+    }
+
+    public void onPause() {
+        super.onPause();
+
+        this.unregisterReceiver(onBroadcast);
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("EXPORT", "ONACTIVITYRESULT " + requestCode + ":" + resultCode);
         if (requestCode == ACTION_PICK_FOLDER && resultCode == Activity.RESULT_OK) {
             Uri uri = data.getData();
             if (uri != null) {
@@ -130,7 +142,8 @@ public abstract class BaseExport extends Activity {
         }
     }
 
-    void beginExport() {
+    protected void beginExport() {
+
     }
 
     protected String getSerialisedRaceData(int race_id, int round) {
@@ -181,6 +194,7 @@ public abstract class BaseExport extends Activity {
         race_params += String.format("\"%s\",", ""); // F3XV Start Date
         race_params += String.format("\"%s\",", ""); // F3XV End Date
         race_params += String.format("\"%s\",", ""); // F3XV Type
+        race_params += String.format("\"%s\",", ""); // F3XV Num Rounds
         race_params += String.format("\"%d\",", race.round);
         race_params += String.format("\"%d\",", race.type);
         race_params += String.format("\"%d\",", race.offset);
@@ -241,5 +255,138 @@ public abstract class BaseExport extends Activity {
         return pilots;
 
     }
+
+    protected void call(String func, @Nullable String data) {
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra("cmd", func);
+        i.putExtra("dta", data);
+        sendBroadcast(i);
+    }
+
+
+    protected void promptForSaveFolder(String folder) {
+        if (folder == null) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            mSaveFolder = sharedPref.getString("export_save_folder", Environment.getExternalStorageDirectory().getPath());
+        } else {
+            mSaveFolder = folder;
+        }
+
+        String[] buttons_array = new String[3];
+        buttons_array[0] = getString(android.R.string.cancel);
+        buttons_array[1] = getString(R.string.btn_change_path);
+        buttons_array[2] = getString(R.string.btn_export);
+
+        mDLG = GenericAlert.newInstance(
+                getString(R.string.ttl_save_location),
+                String.format(getString(R.string.msg_save_location), mSaveFolder),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+
+                        switch (resultCode) {
+                            case 0:
+                                mActivity.finish();
+                                break;
+                            case 1:
+                                Intent i = new Intent(mContext, FilteredFilePickerActivity.class);
+                                // This works if you defined the intent filter
+                                // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+
+                                // Set these depending on your use case. These are the defaults.
+                                i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
+                                i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
+                                i.putExtra(FilteredFilePickerActivity.EXTRA_MODE, FilteredFilePickerActivity.MODE_DIR);
+
+                                // Configure initial directory by specifying a String.
+                                // You could specify a String like "/storage/emulated/0/", but that can
+                                // dangerous. Always use Android's API calls to get paths to the SD-card or
+                                // internal memory.
+                                i.putExtra(FilteredFilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
+
+                                startActivityForResult(i, ACTION_PICK_FOLDER);
+                                mDLG.dismiss();
+                                break;
+                            case 2:
+                                call("beginExport", null);
+                                break;
+                        }
+                    }
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+        ft.add(mDLG, DIALOG);
+        ft.commit();
+
+    }
+
+    private void showExportTypeList() {
+        String[] buttons_array = new String[2];
+        buttons_array[0] = getString(android.R.string.cancel);
+        buttons_array[1] = getString(R.string.button_next);
+
+        mDLG3 = GenericRadioPicker.newInstance(
+                getString(R.string.ttl_select_file_type),
+                new ArrayList<>(Arrays.asList(filetypes)),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        switch (resultCode) {
+                            case 0:
+                                mActivity.finish();
+                                break;
+                            case 1:
+                                mExportFileType = -1;
+                                if (resultData.containsKey("checked")) {
+                                    mExportFileType = resultData.getInt("checked");
+                                }
+                                if (mExportFileType >= 0) {
+                                    call("promptForSaveFolder", null);
+                                } else {
+                                    mActivity.finish();
+                                }
+                                break;
+                        }
+                    }
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG3, DIALOG);
+        ft.commit();
+
+    }
+
+    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra("cmd")) {
+                Bundle extras = intent.getExtras();
+                if (extras == null) {
+                    return;
+                }
+                String cmd = extras.getString("cmd", "");
+                String dta = extras.getString("dta");
+
+                if (cmd.equals("promptForSaveFolder")) {
+                    promptForSaveFolder(dta);
+                }
+
+                if (cmd.equals("beginExport")) {
+                    beginExport();
+                }
+
+                if (cmd.equals("showExportTypeList")) {
+                    showExportTypeList();
+                }
+            }
+        }
+    };
 
 }

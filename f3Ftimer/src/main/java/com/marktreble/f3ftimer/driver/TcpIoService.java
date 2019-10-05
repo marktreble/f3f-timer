@@ -171,9 +171,9 @@ public class TcpIoService extends Service implements DriverInterface {
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("com.marktreble.f3ftimer.ui_callback")) {
+            if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
                 Bundle extras = intent.getExtras();
-                String data = extras.getString("com.marktreble.f3ftimer.ui_callback");
+                String data = extras.getString(IComm.MSG_UI_CALLBACK);
                 Log.d(TAG, data);
 
                 if (data == null) return;
@@ -195,12 +195,12 @@ public class TcpIoService extends Service implements DriverInterface {
                 }
 
                 if (data.equals("pref_wind_angle_offset")) {
-                    mSlopeOrientation = Float.valueOf(intent.getExtras().getString("com.marktreble.f3ftimer.value"));
+                    mSlopeOrientation = Float.valueOf(intent.getExtras().getString(IComm.MSG_VALUE));
                     Log.d("TcpIoService", "pref_wind_angle_offset=" + mSlopeOrientation);
                 }
 
                 if (data.equals("pref_input_tcpio_ip")) {
-                    mF3ftimerServerIp = intent.getExtras().getString("com.marktreble.f3ftimer.value", DEFAULT_F3FTIMER_SERVER_IP);
+                    mF3ftimerServerIp = intent.getExtras().getString(IComm.MSG_VALUE, DEFAULT_F3FTIMER_SERVER_IP);
                     Log.d("TcpIoService", "Connecting to new IP: " + mF3ftimerServerIp);
                     destroy();
                 }

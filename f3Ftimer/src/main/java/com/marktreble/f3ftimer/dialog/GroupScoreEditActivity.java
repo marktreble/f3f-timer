@@ -26,6 +26,7 @@ import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class GroupScoreEditActivity extends AppCompatActivity {
     private Intent mIntent;
+    private NumberPicker mNumGroups;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,8 +35,8 @@ public class GroupScoreEditActivity extends AppCompatActivity {
         setContentView(R.layout.group_score);
 
 
-        final NumberPicker numGroups = findViewById(R.id.numgroups);
-        setDividerColor(numGroups, F3FtimerApplication.themeAttributeToColor(
+        mNumGroups = findViewById(R.id.numgroups);
+        setDividerColor(mNumGroups, F3FtimerApplication.themeAttributeToColor(
                 R.attr.div,
                 this,
                 R.color.light_grey));
@@ -44,22 +45,34 @@ public class GroupScoreEditActivity extends AppCompatActivity {
         int max_groups = mIntent.getIntExtra("max_groups", 1);
         if (max_groups<1) max_groups = 1;
 
-        int current_groups = mIntent.getIntExtra("current_groups", 1);
-        if (current_groups<1) current_groups = 1;
+        int current_groups;
+        if (savedInstanceState == null) {
+            current_groups = mIntent.getIntExtra("current_groups", 1);
+            if (current_groups < 1) current_groups = 1;
 
-        numGroups.setMinValue(1);
-        numGroups.setMaxValue(max_groups);
-        numGroups.setValue(current_groups);
+        } else {
+            current_groups = savedInstanceState.getInt("current_groups");
+        }
+
+        mNumGroups.setMinValue(1);
+        mNumGroups.setMaxValue(max_groups);
+        mNumGroups.setValue(current_groups);
 
         Button done = findViewById(R.id.button_done);
         done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mIntent.putExtra("num_groups", String.format("%d", numGroups.getValue()));
+                mIntent.putExtra("num_groups", String.format("%d", mNumGroups.getValue()));
                 setResult(RaceActivity.RESULT_OK, mIntent);
                 finish();
             }
         });
+    }
+
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("current_groups", mNumGroups.getValue());
     }
 
     // https://stackoverflow.com/questions/24233556/changing-numberpicker-divider-color
@@ -72,9 +85,7 @@ public class GroupScoreEditActivity extends AppCompatActivity {
                 try {
                     ColorDrawable colorDrawable = new ColorDrawable(color);
                     pf.set(picker, colorDrawable);
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (Resources.NotFoundException | IllegalAccessException e) {
+                } catch (IllegalArgumentException | Resources.NotFoundException | IllegalAccessException e) {
                     e.printStackTrace();
                 }
                 break;

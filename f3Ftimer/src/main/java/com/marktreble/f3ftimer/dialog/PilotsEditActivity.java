@@ -128,7 +128,7 @@ public class PilotsEditActivity extends AppCompatActivity {
                 String code = ((String) codes[position]).toLowerCase();
                 Drawable img = null;
                 if (!code.equals("")) {
-                    String uri = "@drawable/" + code;
+                    String uri = "@mipmap/" + code;
                     int imageResource = getResources().getIdentifier(uri, null, getPackageName());
                     img = getResources().getDrawable(imageResource);
                 }
