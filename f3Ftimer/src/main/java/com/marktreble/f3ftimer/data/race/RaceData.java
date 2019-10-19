@@ -261,6 +261,7 @@ public class RaceData {
         public Float points;     // Actual points (after penalties)
         public Integer penalty;
         public Integer group;
+        public Boolean discarded;
     }
 
 }

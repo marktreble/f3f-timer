@@ -31,7 +31,6 @@ dependencies {
     implementation project(':iOIOLibBT')
     implementation project(':usbSerialForAndroid')
 
-    implementation 'com.nononsenseapps:filepicker:4.1.0'
     implementation 'com.amitshekhar.android:debug-db:1.0.1'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'org.apache.commons:commons-lang3:3.6'

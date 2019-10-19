@@ -48,7 +48,6 @@
     <string name="random_shuffle">Random Shuffle</string>
     <string name="rotate_shuffle">Rotate Shuffle</string>
     <string name="manual_shuffle">Manual Shuffle</string>
-    <string name="empty" />
     <string name="resize">Resize</string>
     <string name="retired">Ret</string>
     <string name="reflight">RF</string>
@@ -124,6 +123,7 @@
     <string name="enter_start_number">Enter Start Number</string>
     <string name="generate_start_number">Generate Start Number</string>
     <string name="enter_rotate_offset">Enter number of shifted positions</string>
+    <string name="ttl_select_pilots">Select Pilots to Add</string>
     <string name="wifi">Wifi Buzzers</string>
     <string name="pref_enable_acra">Enable ACRA Crash Reports</string>
     <string name="pref_acra_enabled">Enabled</string>
@@ -134,7 +134,34 @@
     <string name="nl">Dutch</string>
     <string name="es">Spanish</string>
 
+    <string name="ttl_round_number">Round %1$d</string>
+    <string name="ttl_round_number_short">R%1$d</string>
+    <string name="ttl_round_number_name">R%d - %s</string>
+    <string name="ttl_round_groups"> - %1$d Groups</string>
+    <string name="ttl_round_number_groups">R%d%s</string>
     <string name="ftd_result" formatted="true">Fastest Time: %1$.2f by %2$s in round %3$d</string>
+
+    <string name="ttl_round_in_progress">Round in Progress (R%1$d)</string>
+    <string name="ttl_completed_rounds">Completed Rounds</string>
+    <string name="ttl_team_results">Team Results</string>
+    <string name="ttl_leader_board">Leader Board</string>
+
+    <!-- Context Menu -->
+    <string name="cmenu_reflight">Award Reflight</string>
+    <string name="cmenu_add_penalty">Add Penalty</string>
+    <string name="cmenu_remove_penalty">Remove Penalty</string>
+    <string name="cmenu_skip_round">Skip Round (Award 0 points)</string>
+    <string name="cmenu_retire">Retire From Race</string>
+    <string name="cmenu_reinstate">Reinstate</string>
+    <string name="cmenu_manual_entry">Enter Time Manually</string>
+    <string name="cmenu_edit_pilot">Edit Pilot details</string>
+
+    <!-- Printed Pilot List -->
+    <string name="ttl_pilot_list">Pilot List</string>
+
+    <!-- Settings -->
+    <string name="app_theme">Colour Theme</string>
+    <string name="external_results_files">External Results (FileSystem)</string>
 
     <!-- Headings -->
     <string name="leader_board">Leader Board</string>
@@ -168,8 +195,8 @@
     <string name="USBJE">USB - Jon Edison Timer Box</string>
 
     <!-- Sounds -->
-    <string name="whistle">whistle</string>
-    <string name="beep">beep</string>
+    <string name="whistle">Whistle</string>
+    <string name="beep">Beep</string>
 
     <!-- Sound Settings -->
     <string name="snd_off_course">Off Course</string>
@@ -178,15 +205,9 @@
     <string name="snd_turn9">Last Turn</string>
     <string name="snd_penalty">Penalty</string>
 
-    <!-- Theme -->
-    <string name="app_theme">Colour Theme</string>
-    <string name="theme_classic" translatable="false">AppTheme</string>
-    <string name="theme_f3f" translatable="false">AppTheme.F3f</string>
-    <string name="theme_yellow_black" translatable="false">AppTheme.Yellow.Black</string>
-    <string name="theme_white_black" translatable="false">AppTheme.White.Black</string>
 
     <!-- Import/Export Dialogs -->
-    <string name="awaiting_connection">Awaiting Connection…</string>
+    <string name="awaiting_connection">Awaiting Connection..</string>
     <string name="http_protocol_hint" translatable="false">http(s)://</string>
     <string name="remember_login_details">  Remember these details</string>
 
@@ -205,7 +226,7 @@
 
     <!-- USB Interface -->
     <string name="err_unsupported">Unsupported Hardware</string>
-    <string name="err_unsupported_details">VendorId=%1$s\n ProductId=%2$s</string>
+    <string name="err_unsupported_details" translatable="false">VendorId=%1$s\n ProductId=%2$s</string>
 
     <!-- Import Race -->
     <string name="ttl_import_race">Import Race</string>
@@ -224,6 +245,9 @@
     <!-- File Import -->
     <string name="err_wrong_file_type">Wrong file types</string>
     <string name="msg_wrong_file_type">Sorry, f3f timer can only import files in \'json\' format. Some of your chosen files failed to import (%1$s)</string>
+
+    <string name="err_permission_denied">Permission Denied</string>
+    <string name="msg_permission_denied">Sorry, you don\'t have permission to access that file!</string>
 
     <string name="err_wrong_file_type_s">Wrong file type (.%1$s)</string>
     <string name="msg_wrong_file_type_s">Sorry, f3f timer can only import files in \'json\' format</string>
@@ -259,4 +283,61 @@
     <string name="connecting">Connecting..</string>
     <string name="exporting">Exporting..</string>
     <string name="importing">Importing..</string>
+
+    <string name="empty" translatable="false"></string>
+
+    <string name="ttl_race_imported">Race Imported</string>
+    <string name="msg_race_imported">Your race has been imported</string>
+
+    <string name="ttl_pilots_imported">Pilots Imported</string>
+    <string name="msg_pilots_imported">Your pilots have been imported</string>
+
+    <!-- Countries -->
+    <string name="aus">Australia</string>
+    <string name="cze">Czech Republic</string>
+    <string name="dnk">Denmark</string>
+    <string name="fra">France</string>
+    <string name="deu">Germany</string>
+    <string name="ind">India</string>
+    <string name="nld">Netherlands</string>
+    <string name="nor">Norway</string>
+    <string name="prt">Portugal</string>
+    <string name="esp">Spain</string>
+    <string name="che">Switzerland</string>
+    <string name="gbr">United Kingdom</string>
+    <string name="usa">United States</string>
+
+    <!-- Parity -->
+    <string name="parity_none" translatable="false">None</string>
+    <string name="parity_odd" translatable="false">Odd</string>
+    <string name="parity_even" translatable="false">Even</string>
+    <string name="parity_mark" translatable="false">Mark</string>
+    <string name="parity_space" translatable="false">Space</string>
+
+    <!-- Theme Names -->
+    <string name="theme_classic">Classic</string>
+    <string name="theme_f3f" translatable="false">F3F</string>
+    <string name="theme_blackyellow">Black/Yellow</string>
+    <string name="theme_blackwhite">Black/White</string>
+    <string name="theme_whitered">White/Red</string>
+
+    <!-- Import Sources -->
+    <string name="import_bt" translatable="false">Bluetooth</string>
+    <string name="import_file">From File</string>
+    <string name="import_api_f3ft">From Web (f3ftimer api)</string>
+    <string name="import_api_f3xv">From Web (f3xvault api)</string>
+
+    <!-- Export Destinations -->
+    <string name="export_bt" translatable="false">Bluetooth</string>
+    <string name="export_file">To File</string>
+
+    <string name="export_email_csv">Email CSV File</string>
+    <string name="export_email_f3xv">Email F3X Vault Upload File</string>
+    <string name="export_api_f3ft">Upload to Web (f3ftimer api)</string>
+    <string name="export_api_f3xv">Upload to Web (F3X Vault)</string>
+
+    <!-- Share Destinations -->
+    <string name="share_email">Share by email</string>
+    <string name="share_social_media">Share on Social Media</string>
+
 </resources>

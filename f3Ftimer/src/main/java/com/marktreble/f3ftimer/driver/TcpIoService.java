@@ -102,7 +102,7 @@ public class TcpIoService extends Service implements DriverInterface {
 
         stopConnectThread = true;
 
-        if (mConnected == true) driverDisconnected();
+        if (mConnected) driverDisconnected();
 
         try {
             this.unregisterReceiver(onBroadcast);
@@ -341,7 +341,7 @@ public class TcpIoService extends Service implements DriverInterface {
             timeAlreadyReceived = true;
             Log.d(TAG, "TIME " + time.trim());
             mDriver.mPilot_Time = Float.parseFloat(time.trim().replace(",", "."));
-            Log.d(TAG, "TIME " + Float.toString(mDriver.mPilot_Time));
+            Log.d(TAG, "TIME " + mDriver.mPilot_Time);
             mDriver.runComplete();
             mState = 0;
             mTimerStatus = 0;
@@ -460,7 +460,7 @@ public class TcpIoService extends Service implements DriverInterface {
                     byte[] data = new byte[bufferLength];
                     System.arraycopy(buffer, 0, data, 0, bufferLength);
                     String strbuf = new String(data, 0, data.length).replaceAll("[^\\x20-\\x7F]", "").trim();
-                    String strarray[] = strbuf.split(" ");
+                    String[] strarray = strbuf.split(" ");
                     for (String str : strarray) {
                         int len = str.length();
                         if (len > 0) {

@@ -35,15 +35,13 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 import java.util.ArrayList;
 
-public class ResultsTeamsActivity extends BaseActivity {
+public class ResultsTeamsActivity extends ResultsRaceBaseActivity {
 
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
     private ArrayList<String> mArrNumbers;
     private ArrayList<Float> mArrScores;
     private ArrayList<ArrayList<String>> mArrPilotNames;
-
-    private Integer mRid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,62 +133,5 @@ public class ResultsTeamsActivity extends BaseActivity {
                 return row;
             }
         };
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.results, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.menu_share:
-                share();
-                return true;
-            case R.id.menu_pilot_manager:
-                pilotManager();
-                return true;
-            case R.id.menu_race_manager:
-                raceManager();
-                return true;
-            case R.id.menu_help:
-                help();
-                return true;
-            case R.id.menu_about:
-                about();
-                return true;
-
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public void share() {
-
-    }
-
-    public void pilotManager() {
-        Intent intent = new Intent(mContext, PilotsActivity.class);
-        startActivity(intent);
-    }
-
-    public void raceManager() {
-        Intent intent = new Intent(mContext, RaceListActivity.class);
-        startActivity(intent);
-    }
-
-    public void help() {
-        Intent intent = new Intent(mContext, HelpActivity.class);
-        startActivity(intent);
-    }
-
-    public void about() {
-        Intent intent = new Intent(mContext, AboutActivity.class);
-        startActivity(intent);
     }
 }

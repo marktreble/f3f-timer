@@ -14,10 +14,14 @@ package com.marktreble.f3ftimer.exportimport;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.dialog.GenericRadioPicker;
-import com.marktreble.f3ftimer.filesystem.FileExport;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,8 +33,6 @@ public class FileExportPilots extends BaseExport {
 
     // final static String TAG = "FileExportPilots";
 
-    private Integer mExportFileType = -1;
-
     static final String DIALOG = "dialog";
 
     GenericRadioPicker mDLG3;
@@ -40,51 +42,12 @@ public class FileExportPilots extends BaseExport {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
-
-            String[] buttons_array = new String[2];
-            buttons_array[0] = getString(android.R.string.cancel);
-            buttons_array[1] = getString(R.string.button_next);
-
-            mDLG3 = GenericRadioPicker.newInstance(
-                    getString(R.string.ttl_select_file_type),
-                    new ArrayList<>(Arrays.asList(filetypes)),
-                    buttons_array,
-                    new ResultReceiver(new Handler()) {
-                        @Override
-                        protected void onReceiveResult(int resultCode, Bundle resultData) {
-                            super.onReceiveResult(resultCode, resultData);
-                            switch (resultCode) {
-                                case 0:
-                                    mActivity.finish();
-                                    break;
-                                case 1:
-                                    mExportFileType = -1;
-                                    if (resultData.containsKey("checked")) {
-                                        mExportFileType = resultData.getInt("checked");
-                                    }
-                                    if (mExportFileType >= 0) {
-                                        call("promptForSaveFolder", null);
-                                    } else {
-                                        mActivity.finish();
-                                    }
-                                    break;
-                            }
-                        }
-                    }
-            );
-
-            mDLG3.show(getSupportFragmentManager(), DIALOG);
-        } else {
-            mExportFileType = savedInstanceState.getInt("mExportFileType");
-            mSaveFolder = savedInstanceState.getString("mSaveFolder");
+            showExportTypeList();
         }
     }
 
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putInt("mExportFileType", mExportFileType);
-        outState.putString("mSaveFolder", mSaveFolder);
     }
 
     @Override
@@ -95,23 +58,29 @@ public class FileExportPilots extends BaseExport {
 
     @Override
     protected void beginExport() {
-        showProgress(getString(R.string.exporting));
+        mArrExportFiles = new JSONArray();
+        JSONObject o = new JSONObject();
+        try {
+            o.put("data", getPilotData(mExportFileType));
+            o.put("name", "pilots");
 
-        exportPilotData();
-        finish();
+            mArrExportFiles.put(o);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        createDocument();
     }
 
-    private void exportPilotData() {
-        // Serialize all race data, pilots, times + groups
-
-        switch (mExportFileType) {
+    private String getPilotData(int type) {
+        String response = "";
+        switch (type) {
             case EXPORT_FILE_TYPE_JSON:
-                new FileExport().writeExportFile(mContext, super.getSerialisedPilotData(), "pilots.json", mSaveFolder);
+                response = getSerialisedPilotData();
                 break;
-
             case EXPORT_FILE_TYPE_CSV:
-                new FileExport().writeExportFile(mContext, super.getCSVPilotData(), "pilots.csv", mSaveFolder);
+                response =  getCSVPilotData();
                 break;
         }
+        return response;
     }
 }

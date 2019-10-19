@@ -59,7 +59,7 @@ public class GenericListPicker extends DialogFragment
             public void onBackPressed() {
                 //do your stuff
                 dismiss();
-                getActivity().finish();
+                //getActivity().finish();
             }
         };
 

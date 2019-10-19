@@ -58,9 +58,22 @@ The following table lists known device compatibility:
 - Multi-lingual voice synthesis
 - Transfer of race data between devices over bluetooth
 
+## New in V2.0
+
+- Generate a printable (PDF) list if pilots for use as score sheets
+- Built in start number generator
+- Colour themes. Different screen colours will affect visibility and/or battery life. We have no statistics yet - so any feedback would be welcome
+- Export file to upload results to F3XVault
+- Export files for F3Fgear (https://play.google.com/store/apps/details?id=gliderware.f3fgear&hl=en_GB)
+- Results Manager: Added pilot names for each team in team results
+- Results Manager: Added drill down from Leader Board to view the points/times for each pilot for the whole race showing discards
+
 ### Installation
 
 The latest stable release can be downloaded here:
+<a href="https://www.marktreble.co.uk/clients/f3f/F3Ftimer2.0.apk">F3Ftimer2.0.apk</a>
+
+Archived Release
 <a href="https://www.marktreble.co.uk/clients/f3f/F3Ftimer.11.9.17.apk">F3Ftimer.11.9.17.apk</a>
 
 You can also use the external display which connects using bluetooth from another android device:

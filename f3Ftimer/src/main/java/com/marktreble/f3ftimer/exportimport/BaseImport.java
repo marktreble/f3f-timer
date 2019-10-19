@@ -11,11 +11,14 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -28,7 +31,6 @@ import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
-import com.marktreble.f3ftimer.data.data.CountryCodes;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.race.Race;
@@ -41,13 +43,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public abstract class BaseImport extends AppCompatActivity {
 
@@ -60,6 +67,14 @@ public abstract class BaseImport extends AppCompatActivity {
 
     String mProgressMessage;
 
+    protected static final long PROGRESS_DELAY = 500;
+    protected static final int ACTION_PICK_FILE = 1;
+
+    protected static final int IMPORT_RESULT_CANCELLED = 0;
+    protected static final int IMPORT_RESULT_WRONG_TYPE = 1;
+    protected static final int IMPORT_RESULT_NO_PERMISSION = 2;
+    protected static final int IMPORT_RESULT_SUCCESS = 3;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -71,9 +86,11 @@ public abstract class BaseImport extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             mProgressMessage = savedInstanceState.getString("progress_message");
-            View progress = findViewById(R.id.progress);
-            TextView progressLabel = progress.findViewById(R.id.progressLabel);
-            progressLabel.setText(mProgressMessage);
+            if (mProgressMessage != null) {
+                if (!mProgressMessage.equals("")) {
+                    showProgress(mProgressMessage);
+                }
+            }
         }
     }
 
@@ -83,12 +100,64 @@ public abstract class BaseImport extends AppCompatActivity {
         outState.putString("progress_message", mProgressMessage);
     }
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (resultCode == Activity.RESULT_CANCELED) {
+            finish();
+            return;
+        }
+
+        if (requestCode == ACTION_PICK_FILE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    Uri uri = data.getData();
+                    if (uri != null) {
+                        final String type = mContext.getContentResolver().getType(uri);
+                        switch (importFile(uri, type)) {
+                            case IMPORT_RESULT_WRONG_TYPE:
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        hideProgress();
+                                        call("wrongFileType", type);
+                                    }
+                                }, PROGRESS_DELAY);
+                                break;
+                            case IMPORT_RESULT_NO_PERMISSION:
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        hideProgress();
+                                        call("permissionDenied", type);
+                                    }
+                                }, PROGRESS_DELAY);
+                                break;
+                            case IMPORT_RESULT_SUCCESS:
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        hideProgress();
+                                        importComplete();
+                                    }
+                                }, PROGRESS_DELAY);
+                                break;
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     protected void showProgress(final String msg) {
         mProgressMessage = msg;
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 View progress = findViewById(R.id.progress);
+                progress.setVisibility(View.VISIBLE);
                 TextView progressLabel = progress.findViewById(R.id.progressLabel);
                 progressLabel.setText(msg);
             }
@@ -97,14 +166,17 @@ public abstract class BaseImport extends AppCompatActivity {
     }
 
     protected void hideProgress() {
+        mProgressMessage = "";
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 View progress = findViewById(R.id.progress);
+                progress.setVisibility(View.GONE);
                 TextView progressLabel = progress.findViewById(R.id.progressLabel);
                 progressLabel.setText("");
             }
         });
+
     }
 
     public void onResume() {
@@ -118,6 +190,203 @@ public abstract class BaseImport extends AppCompatActivity {
 
         this.unregisterReceiver(onBroadcast);
     }
+
+    protected int importFile(Uri uri, String type) {
+        return IMPORT_RESULT_CANCELLED;
+    }
+
+    protected void importComplete() {
+        // Virtual Function
+    }
+
+    protected String readFile(Uri uri) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        try (InputStream inputStream =
+                     getContentResolver().openInputStream(uri);
+             BufferedReader reader = new BufferedReader(
+                     new InputStreamReader(Objects.requireNonNull(inputStream)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return stringBuilder.toString();
+    }
+
+    protected void call(String func, @Nullable String data) {
+        Log.d("PPP", "CALLING: " + func + " WITH: " + data);
+        Intent i = new Intent(IComm.RCV_UPDATE);
+        i.putExtra("cmd", func);
+        i.putExtra("dta", data);
+        sendBroadcast(i);
+    }
+
+    private void connectionDenied(String deviceName) {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
+
+        mDLG = GenericAlert.newInstance(
+                getString(R.string.ttl_connection_denied),
+                String.format(getString(R.string.msg_connection_denied), deviceName),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+
+                        finish();
+                    }
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+        ft.add(mDLG, DIALOG);
+        ft.commit();
+    }
+
+    private void wrongFileType(String extension) {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
+
+        mDLG = GenericAlert.newInstance(
+                String.format(getString(R.string.err_wrong_file_type_s), extension),
+                getString(R.string.msg_wrong_file_type_s),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+
+                        if (resultCode == 0) {
+                            mActivity.finish();
+                        }
+                    }
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+        ft.add(mDLG, DIALOG);
+        ft.commit();
+    }
+
+    private void permissionDenied() {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.cancel);
+
+        mDLG = GenericAlert.newInstance(
+                getString(R.string.err_permission_denied),
+                getString(R.string.msg_permission_denied),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+
+                        if (resultCode == 0) {
+                            mActivity.finish();
+                        }
+                    }
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+        ft.add(mDLG, DIALOG);
+        ft.commit();
+    }
+
+    private void raceImported() {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.ok);
+
+        mDLG = GenericAlert.newInstance(
+                getString(R.string.ttl_race_imported),
+                getString(R.string.msg_race_imported),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+
+                        if (resultCode == 0) {
+                            mActivity.finish();
+                        }
+                    }
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+        ft.add(mDLG, DIALOG);
+        ft.commit();
+    }
+
+    private void pilotsImported() {
+        String[] buttons_array = new String[1];
+        buttons_array[0] = getString(android.R.string.ok);
+
+        mDLG = GenericAlert.newInstance(
+                getString(R.string.ttl_pilots_imported),
+                getString(R.string.msg_pilots_imported),
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+
+                        if (resultCode == 0) {
+                            mActivity.finish();
+                        }
+                    }
+                }
+        );
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.addToBackStack(null);
+        ft.add(mDLG, DIALOG);
+        ft.commit();
+    }
+
+    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.hasExtra("cmd")) {
+                Bundle extras = intent.getExtras();
+                if (extras == null) {
+                    return;
+                }
+                String cmd = extras.getString("cmd", "");
+                String dta = extras.getString("dta");
+
+                Log.d("PPP", "RECEIVED: " + cmd + " WITH: " + dta);
+
+                if (cmd.equals("connectionDenied")) {
+                    connectionDenied(dta);
+                }
+
+                if (cmd.equals("wrongFileType")) {
+                    wrongFileType(dta);
+                }
+
+                if (cmd.equals("permissionDenied")) {
+                    permissionDenied();
+                }
+
+                if (cmd.equals("raceImported")) {
+                    raceImported();
+                }
+
+                if (cmd.equals("pilotsImported")) {
+                    pilotsImported();
+                }
+
+            }
+        }
+    };
 
     protected void importRaceJSON(String data) {
         // Parse json and add to database
@@ -204,58 +473,6 @@ public abstract class BaseImport extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        }
-    }
-
-    protected void importPilotsJSON(String data) {
-        try {
-            JSONArray pilots = new JSONArray(data);
-
-            PilotData datasource = new PilotData(mContext);
-            datasource.open();
-
-            for (int i = 0; i < pilots.length(); i++) {
-                JSONObject p = pilots.optJSONObject(i);
-                Pilot pilot = new Pilot(p);
-                datasource.savePilot(pilot);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    protected void importRaceCSV(String data) {
-        JSONObject race_data = parseRaceCSV(data);
-
-        if (race_data != null) {
-            importRaceJSON(race_data.toString());
-            mActivity.setResult(RESULT_OK);
-            mActivity.finish();
-
-        } else {
-
-            String[] buttons_array = new String[1];
-            buttons_array[0] = getString(android.R.string.cancel);
-
-            mDLG = GenericAlert.newInstance(
-                    getString(R.string.ttl_import_failed),
-                    getString(R.string.msg_import_failed),
-                    buttons_array,
-                    new ResultReceiver(new Handler()) {
-                        @Override
-                        protected void onReceiveResult(int resultCode, Bundle resultData) {
-                            super.onReceiveResult(resultCode, resultData);
-
-                            mActivity.finish();
-                        }
-                    }
-            );
-
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack(null);
-            ft.add(mDLG, DIALOG);
-            ft.commit();
-
         }
     }
 
@@ -348,133 +565,20 @@ public abstract class BaseImport extends AppCompatActivity {
         return race_data;
     }
 
-    protected void importPilotsCSV(String data) {
-        JSONArray pilot_data = parsePilotsCSV(data);
-
-        if (pilot_data != null) {
-            importPilotsJSON(pilot_data.toString());
-            mActivity.setResult(RESULT_OK);
-            mActivity.finish();
-
-        } else {
-
-            String[] buttons_array = new String[1];
-            buttons_array[0] = getString(android.R.string.cancel);
-
-            mDLG = GenericAlert.newInstance(
-                    getString(R.string.ttl_import_failed),
-                    getString(R.string.msg_import_failed),
-                    buttons_array,
-                    new ResultReceiver(new Handler()) {
-                        @Override
-                        protected void onReceiveResult(int resultCode, Bundle resultData) {
-                            super.onReceiveResult(resultCode, resultData);
-
-                            mActivity.finish();
-                        }
-                    }
-            );
-
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.addToBackStack(null);
-            ft.add(mDLG, DIALOG);
-            ft.commit();
-
-        }
-
-    }
-
-    protected JSONArray parsePilotsCSV(String data) {
-        JSONArray pilot_data = new JSONArray();
-
+    protected void importPilotsJSON(String data) {
         try {
-            String tmpfile = "csv.txt";
-            File file;
-            try {
-                file = File.createTempFile(tmpfile, null, mContext.getCacheDir());
-                OutputStream os = new FileOutputStream(file);
-                OutputStreamWriter outputStreamWriter = new OutputStreamWriter(os);
-                outputStreamWriter.write(data);
-                outputStreamWriter.close();
+            JSONArray pilots = new JSONArray(data);
 
-                CountryCodes countryCodes = CountryCodes.sharedCountryCodes(mContext);
+            PilotData datasource = new PilotData(mContext);
+            datasource.open();
 
-                CSVReader reader = new CSVReader(new FileReader(file.getAbsolutePath()));
-                String[] fields;
-                JSONObject pilot;
-                while ((fields = reader.readNext()) != null) {
-                    pilot = new JSONObject();
-                    pilot.put("firstname", fields[0]);
-                    pilot.put("lastname", fields[1]);
-                    pilot.put("nationality", countryCodes.findIsoCountryCode(fields[2]));
-                    pilot.put("language", fields[3]);
-                    pilot.put("team", fields[4]);
-                    pilot.put("frequency", fields[5]);
-                    pilot.put("models", fields[6]);
-                    pilot.put("email", fields[7]);
-                    pilot_data.put(pilot);
-                }
-            } catch (IOException e) {
-                Log.e("Exception", "File write failed: " + e.toString());
-                return null;
+            for (int i = 0; i < pilots.length(); i++) {
+                JSONObject p = pilots.optJSONObject(i);
+                Pilot pilot = new Pilot(p);
+                datasource.savePilot(pilot);
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
-            return null;
         }
-
-        return pilot_data;
     }
-
-    protected void call(String func, @Nullable String data) {
-        Intent i = new Intent(IComm.RCV_UPDATE);
-        i.putExtra("cmd", func);
-        i.putExtra("dta", data);
-        sendBroadcast(i);
-    }
-
-    private void connectionDenied(String deviceName) {
-        String[] buttons_array = new String[1];
-        buttons_array[0] = getString(android.R.string.cancel);
-
-        mDLG = GenericAlert.newInstance(
-                getString(R.string.ttl_connection_denied),
-                String.format(getString(R.string.msg_connection_denied), deviceName),
-                buttons_array,
-                new ResultReceiver(new Handler()) {
-                    @Override
-                    protected void onReceiveResult(int resultCode, Bundle resultData) {
-                        super.onReceiveResult(resultCode, resultData);
-
-                        finish();
-                    }
-                }
-        );
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.addToBackStack(null);
-        ft.add(mDLG, DIALOG);
-        ft.commit();
-    }
-
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.hasExtra("cmd")) {
-                Bundle extras = intent.getExtras();
-                if (extras == null) {
-                    return;
-                }
-                String cmd = extras.getString("cmd", "");
-                String dta = extras.getString("dta");
-
-                if (cmd.equals("connectionDenied")) {
-                    connectionDenied(dta);
-                }
-
-            }
-        }
-    };
-
 }

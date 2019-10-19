@@ -12,20 +12,29 @@
 package com.marktreble.f3ftimer.filesystem;
 
 import android.content.Context;
+import android.os.Environment;
 
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.results.Results;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class F3XVaultExport extends FileExport {
 
+    /**
+     * Write the results [race.name].f3xv.txt file for the given Race
+     *
+     * @param context Context
+     * @param race Race
+     * @return
+     */
     public boolean writeResultsFile(Context context, Race race) {
 
         // Update the race (.f3f) file
-        if (this.isExternalStorageWritable()) {
+        if (isExternalStorageWritable()) {
             StringBuilder data = new StringBuilder();
 
             Results r = new Results();
@@ -68,6 +77,21 @@ public class F3XVaultExport extends FileExport {
             // External storage is not writable
             return false;
         }
+    }
 
+    /**
+     * Get storage directory. By default this creates and returns /F3F directory within Documents
+     *
+     * @param context Context
+     * @param name String
+     * @return File
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public File getDataStorageDir(Context context, String name) {
+        // Get the directory for the user's public pictures directory.
+        File base = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        base = new File(base, "F3F");
+        base.mkdirs();
+        return new File(base.getAbsolutePath() + String.format("/%s", sanitise(name)));
     }
 }

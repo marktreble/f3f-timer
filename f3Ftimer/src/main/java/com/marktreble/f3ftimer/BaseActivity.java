@@ -11,6 +11,7 @@ import android.text.Html;
 public class BaseActivity extends AppCompatActivity {
 
     protected Context mContext;
+    protected String mPageTitle = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +28,7 @@ public class BaseActivity extends AppCompatActivity {
                 this,
                 R.color.light_grey);
         String hexColour = String.format("#%06X", (0xFFFFFF & Color.argb(0, Color.red(t1), Color.green(t1), Color.blue(t1))));
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + hexColour + "\">" + getString(R.string.app_name) + "</font>"));
+        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + hexColour + "\">" + mPageTitle + "</font>"));
 
         mContext = this;
     }

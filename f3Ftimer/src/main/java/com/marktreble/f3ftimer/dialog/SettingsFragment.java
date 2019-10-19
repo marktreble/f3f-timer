@@ -13,10 +13,14 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.ListPreference;
 import android.support.v7.preference.Preference;
@@ -37,15 +41,23 @@ import com.marktreble.f3ftimer.languages.Languages;
 import com.marktreble.f3ftimer.media.TTS;
 import com.marktreble.f3ftimer.wifi.Wifi;
 
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import static android.app.Activity.RESULT_OK;
+import static org.apache.commons.lang3.CharEncoding.US_ASCII;
+
 public class SettingsFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener, TTS.onInitListenerProxy {
 
     private TTS mTts;
+
+    final private int REQUEST_PICK_FOLDER = 9999;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -100,8 +112,51 @@ public class SettingsFragment extends PreferenceFragmentCompat
             pref_results_server.setSummary("Serve results over HTTP");
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Preference filePicker = findPreference("pref_results_F3Fgear_path");
+            SharedPreferences path = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String strPath = path.getString("pref_results_F3Fgear_path", "");
+
+            Uri uri = Uri.parse(strPath);
+            String dcdPath = uri.getLastPathSegment();
+            filePicker.setSummary(dcdPath);
+
+            filePicker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+                @Override
+                public boolean onPreferenceClick(Preference preference) {
+
+                    Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    i.addCategory(Intent.CATEGORY_DEFAULT);
+                    startActivityForResult(Intent.createChooser(i, "Choose directory"), REQUEST_PICK_FOLDER);
+                    return true;
+                }
+            });
+        }
+
         return view;
 
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_PICK_FOLDER:
+                    Uri uri = data.getData();
+
+                    final int takeFlags = getActivity().getIntent().getFlags()
+                            & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    // Check for the freshest data.
+                    getActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+
+                    Preference filePicker = findPreference("pref_results_F3Fgear_path");
+                    filePicker.setSummary(uri.getLastPathSegment());
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                    pref.edit().putString("pref_results_F3Fgear_path", uri.toString()).apply();
+
+                    break;
+            }
+        }
     }
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {

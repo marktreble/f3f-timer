@@ -42,7 +42,6 @@ public class Results {
     public ArrayList<Float> mArrScores;
     public ArrayList<ArrayList<RaceData.Time>> mArrTimes;
     public ArrayList<ArrayList<String>> mArrPilotNames;
-
     public ArrayList<RaceData.Group> mArrGroupings; // Holds the number of groups + start pilot for each round
 
     public float mFTD;
@@ -290,6 +289,7 @@ public class Results {
                     pilot_time.penalty = p.penalty;
                     pilot_time.round = rnd;
                     pilot_time.group = p.group;
+                    pilot_time.discarded = false;
 
                     ArrayList<RaceData.Time> arr_times;
                     ArrayList<RaceData.Time> o = map_pilots.get(p.id);
@@ -350,6 +350,11 @@ public class Results {
                 tot -= arr_times.get(j).penalty * 100;
 
             map_totals.put(key, round2FixedRounded(tot));
+
+            // Record the discarded round numbers
+            for (int j = 0; j <numdiscards; j++) {
+                arr_times.get(j).discarded = true;
+            }
         }
 
         // Make an array from the totals and sort them in ascending order
@@ -386,7 +391,7 @@ public class Results {
                 @Override
                 public int compare(Pilot p1, Pilot p2) {
                     //return p1.id < p2.id ? -1 : p1.id == p2.id ? 0 : 1;
-                    return Integer.compare(p2.id, p1.id);
+                    return Integer.compare(p1.id, p2.id);
                 }
             });
         }

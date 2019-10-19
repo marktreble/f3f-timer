@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="InconsistentArrays">
     <string-array name="InputSources" translatable="false">
-        <item>Demo Mode - On Screen Buzzers</item>
-        <item>USB - IOIO</item>
-        <item>USB - Other</item>
-        <item>Bluetooth - HC-05</item>
-        <item>TCP/IP Socket - f3ftimer-server:1234</item>
+        <item>@string/Demo</item>
+        <item>@string/USB_IOIO</item>
+        <item>@string/USB_OTHER</item>
+        <item>@string/BLUETOOTH_HC_05</item>
+        <item>@string/TCP_IO</item>
     </string-array>
 
     <string-array name="options_stopbits" translatable="false">
@@ -23,11 +23,11 @@
     </string-array>
 
     <string-array name="options_parity" translatable="false">
-        <item>None</item>
-        <item>Odd</item>
-        <item>Even</item>
-        <item>Mark</item>
-        <item>Space</item>
+        <item>@string/parity_none</item>
+        <item>@string/parity_odd</item>
+        <item>@string/parity_even</item>
+        <item>@string/parity_mark</item>
+        <item>@string/parity_space</item>
     </string-array>
 
     <string-array name="countrycodes" translatable="false">
@@ -47,56 +47,61 @@
         <item>US</item>
     </string-array>
 
-    <string-array name="nationalities">
+    <string-array name="nationalities" translatable="false">
         <item />
-        <item>Australia</item>
-        <item>Czech Republic</item>
-        <item>Denmark</item>
-        <item>France</item>
-        <item>Germany</item>
-        <item>India</item>
-        <item>Netherlands</item>
-        <item>Norway</item>
-        <item>Portugal</item>
-        <item>Spain</item>
-        <item>Switzerland</item>
-        <item>United Kingdom</item>
-        <item>United States</item>
+        <item>@string/aus</item>
+        <item>@string/cze</item>
+        <item>@string/dnk</item>
+        <item>@string/fra</item>
+        <item>@string/deu</item>
+        <item>@string/ind</item>
+        <item>@string/nld</item>
+        <item>@string/nor</item>
+        <item>@string/prt</item>
+        <item>@string/esp</item>
+        <item>@string/che</item>
+        <item>@string/gbr</item>
+        <item>@string/usa</item>
     </string-array>
 
     <string-array name="import_sources" translatable="false">
-        <item>Bluetooth</item>
-        <item>From File</item>
-        <item>From Web (f3ftimer api)</item>
-        <item>From Web (f3xvault api)</item>
+        <item>@string/import_bt</item>
+        <item>@string/import_file</item>
+        <item>@string/import_api_f3ft</item>
+        <item>@string/import_api_f3xv</item>
     </string-array>
 
     <string-array name="export_destinations" translatable="false">
-        <item>Bluetooth</item>
-        <item>To File</item>
+        <item>@string/export_bt</item>
+        <item>@string/export_file</item>
     </string-array>
 
     <string-array name="results_export_destinations" translatable="false">
-        <item>Email CSV File</item>
-        <item>Email F3X Vault Upload File</item>
-        <item>Upload to Web (f3ftimer api)</item>
-        <item>Upload to Web (F3X Vault)</item>
+        <item>@string/export_email_csv</item>
+        <item>@string/export_email_f3xv</item>
+        <item>@string/export_api_f3ft</item>
+        <item>@string/export_api_f3xv</item>
     </string-array>
 
     <string-array name="results_share_destinations" translatable="false">
-        <item>Share by email</item>
-        <item>Share on Social Media</item>
+        <item>@string/share_email</item>
+        <item>@string/share_social_media</item>
     </string-array>
 
     <string-array name="empty_array" translatable="false" />
 
-    <string-array name="options_sounds" translatable="false">
+    <string-array name="sound_names" translatable="false">
         <item>@string/whistle</item>
         <item>@string/beep</item>
     </string-array>
 
-    <string-array name="theme_names">
-        <item>Classic</item>
+    <string-array name="sound_values" translatable="false">
+        <item>whistle</item>
+        <item>beep</item>
+    </string-array>
+
+    <string-array name="theme_names" translatable="false">
+        <item>@string/theme_classic</item>
     </string-array>
 
     <string-array name="theme_values" translatable="false">

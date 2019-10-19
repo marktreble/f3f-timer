@@ -36,12 +36,24 @@ public class TTS implements TextToSpeech.OnInitListener {
         void onError(String utteranceId);
     }
 
+    /**
+     * Constructor
+     *
+     * @param context Context
+     */
     private TTS(Context context) {
         Log.i(TAG, "STARTING TTS ENGINE");
         mttsengine = new TextToSpeech(context, this);
     }
 
 
+    /**
+     * TTS Engine Singleton creator
+     *
+     * @param context Context
+     * @param listener TTS.onInitListenerProxy
+     * @return TTS
+     */
     public static TTS sharedTTS(Context context, TTS.onInitListenerProxy listener) {
         if (sharedTTS == null) { //if there is no instance available... create new one
             sharedTTS = new TTS(context);
@@ -53,20 +65,40 @@ public class TTS implements TextToSpeech.OnInitListener {
         return sharedTTS;
     }
 
+    /**
+     * Set listener callbacks
+     *
+     * @param listener TTS.onInitListenerProxy
+     */
     public void setListener(TTS.onInitListenerProxy listener) {
         mInitListener = listener;
     }
 
+    /**
+     * Getter for the TTS Engine
+     *
+     * @return TextToSpeech
+     */
     public TextToSpeech ttsengine() {
         return mttsengine;
     }
 
+    /**
+     * Clean Up
+     */
     public void release() {
-        mttsengine.shutdown();
-        mttsengine = null;
+        if (mttsengine != null) {
+            mttsengine.shutdown();
+            mttsengine = null;
+        }
         sharedTTS = null;
     }
 
+    /**
+     * Initialise the TTS progress listener
+     *
+     * @param status Int
+     */
     public void onInit(int status) {
         mTTSStatus = status;
 

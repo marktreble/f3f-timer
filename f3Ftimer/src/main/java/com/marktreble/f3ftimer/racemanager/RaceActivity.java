@@ -62,6 +62,7 @@ import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.dialog.AboutActivity;
 import com.marktreble.f3ftimer.dialog.FlyingOrderEditActivity;
 import com.marktreble.f3ftimer.dialog.GenericAlert;
+import com.marktreble.f3ftimer.dialog.GenericCheckboxPicker;
 import com.marktreble.f3ftimer.dialog.GroupScoreEditActivity;
 import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.dialog.NextRoundActivity;
@@ -76,6 +77,7 @@ import com.marktreble.f3ftimer.driver.SoftBuzzerService;
 import com.marktreble.f3ftimer.driver.TcpIoService;
 import com.marktreble.f3ftimer.driver.USBIOIOService;
 import com.marktreble.f3ftimer.driver.USBOtherService;
+import com.marktreble.f3ftimer.filesystem.F3FGearExport;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.printing.PilotListDocumentAdapter;
@@ -144,6 +146,7 @@ public class RaceActivity extends BaseActivity
     private boolean mMenuShown = false;
 
     GenericAlert mDLG;
+    GenericCheckboxPicker mDLG4;
 
     String[] _options;    // String array of all pilots in database
     boolean[] _selections;    // bool array of which has been selected
@@ -171,6 +174,8 @@ public class RaceActivity extends BaseActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPageTitle = getString(R.string.app_race);
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.race);
@@ -519,7 +524,7 @@ public class RaceActivity extends BaseActivity
 
         TextView tt = findViewById(R.id.race_title);
 
-        String title = String.format("R%d - %s", mRnd, mRace.name);
+        String title = String.format(getString(R.string.ttl_round_number_name), mRnd, mRace.name);
         tt.setText(title);
 
     }
@@ -597,9 +602,9 @@ public class RaceActivity extends BaseActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
         mPilotDialogShown = false;
+
         getNamesArray();
         mArrAdapter.notifyDataSetChanged();
 
@@ -771,27 +776,27 @@ public class RaceActivity extends BaseActivity
             Pilot p = mArrPilots.get(info.position);
 
             if ((p.status & Pilot.STATUS_NORMAL) == Pilot.STATUS_NORMAL && p.flown)
-                menu.add(Menu.NONE, 0, 0, "Award Reflight");
+                menu.add(Menu.NONE, 0, 0, getString(R.string.cmenu_reflight));
 
             if ((p.status & Pilot.STATUS_NORMAL) == Pilot.STATUS_NORMAL && p.flown) {
-                menu.add(Menu.NONE, 1, 1, "Add Penalty");
-                menu.add(Menu.NONE, 2, 2, "Remove Penalty");
+                menu.add(Menu.NONE, 1, 1, getString(R.string.cmenu_add_penalty));
+                menu.add(Menu.NONE, 2, 2, getString(R.string.cmenu_remove_penalty));
             }
             if ((p.status & Pilot.STATUS_RETIRED) == 0 && !p.flown)
-                menu.add(Menu.NONE, 3, 3, "Skip Round (Award 0 points)");
+                menu.add(Menu.NONE, 3, 3, getString(R.string.cmenu_skip_round));
 
             if ((p.status & Pilot.STATUS_RETIRED) == 0)
-                menu.add(Menu.NONE, 4, 4, "Retire From Race");
+                menu.add(Menu.NONE, 4, 4, getString(R.string.cmenu_retire));
 
             if ((p.status & Pilot.STATUS_RETIRED) > 0)
-                menu.add(Menu.NONE, 5, 5, "Reinstate");
+                menu.add(Menu.NONE, 5, 5, getString(R.string.cmenu_reinstate));
 
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             boolean allowManualEntry = sharedPref.getBoolean("pref_manual_entry", true);
             if (allowManualEntry)
-                menu.add(Menu.NONE, 6, 6, "Enter Time Manually");
+                menu.add(Menu.NONE, 6, 6, getString(R.string.cmenu_manual_entry));
 
-            menu.add(Menu.NONE, 7, 7, "Edit Pilot details");
+            menu.add(Menu.NONE, 7, 7, getString(R.string.cmenu_edit_pilot));
 
         }
     }
@@ -1208,44 +1213,42 @@ public class RaceActivity extends BaseActivity
         _options = mArrRemainingNames.toArray(_options);
         _selections = new boolean[_options.length];
 
-        /*
-        mDlg = new AlertDialog.Builder(this, R.style.AppTheme_AlertDialog)
+        String[] buttons_array = new String[2];
+        buttons_array[0] = getString(android.R.string.cancel);
+        buttons_array[1] = getString(android.R.string.ok);
 
-                .setTitle("Select Pilots to Add")
-                .setMultiChoiceItems(_options, _selections, new DialogSelectionClickHandler())
-                .setPositiveButton(android.R.string.ok, new DialogButtonClickHandler())
-                .show();
-
-         */
-    }
-
-    /*
-    public class DialogSelectionClickHandler implements DialogInterface.OnMultiChoiceClickListener {
-        public void onClick(DialogInterface dialog, int clicked, boolean selected) {
-            _selections[clicked] = selected;
-        }
-    }
-
-
-    public class DialogButtonClickHandler implements DialogInterface.OnClickListener {
-        public void onClick(DialogInterface dialog, int clicked) {
-            if (clicked == DialogInterface.BUTTON_POSITIVE) {
-                // Update the list
-                for (int i = 0; i < _options.length; i++) {
-                    if (_selections[i]) {
-                        addPilot(mArrRemainingPilots.get(i));
+        mDLG4 = GenericCheckboxPicker.newInstance(
+                getString(R.string.ttl_select_pilots),
+                mArrRemainingNames,
+                buttons_array,
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        switch (resultCode) {
+                            case 0:
+                                break;
+                            case 1:
+                                if (resultData.containsKey("selected")) {
+                                    _selections = resultData.getBooleanArray("selected");
+                                    if (_selections != null) {
+                                        for (int i = 0; i < _options.length; i++) {
+                                            if (_selections[i]) addPilot(mArrRemainingPilots.get(i));
+                                        }
+                                    }
+                                }
+                                getNamesArray();
+                                mArrAdapter.notifyDataSetChanged();
+                                break;
+                        }
                     }
-
                 }
-                // Dismiss picker, so update the listview!
+        );
 
-                getNamesArray();
-                mArrAdapter.notifyDataSetChanged();
-                //mDlg = null;
-            }
-        }
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(mDLG4, DIALOG);
+        ft.commit();
     }
-    */
 
     private boolean showPilotDialog(int round, int pilot_id, String bib_no) {
         if (mPilotDialogShown) return true;
@@ -1323,6 +1326,8 @@ public class RaceActivity extends BaseActivity
     }
 
     private void showTimeoutNotStarted() {
+        mMenuShown = false;
+
         String[] buttons_array = new String[1];
         buttons_array[0] = getString(android.R.string.ok);
 
@@ -1330,11 +1335,16 @@ public class RaceActivity extends BaseActivity
                 getString(R.string.err_round_timeout),
                 getString(R.string.err_round_timeout_inactive),
                 buttons_array,
-                null
+                new ResultReceiver(new Handler()) {
+                    @Override
+                    protected void onReceiveResult(int resultCode, Bundle resultData) {
+                        super.onReceiveResult(resultCode, resultData);
+                        mDLG.dismiss();
+                    }
+                }
         );
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.addToBackStack(null);
         ft.add(mDLG, DIALOG);
         ft.commit();
     }
@@ -1391,6 +1401,7 @@ public class RaceActivity extends BaseActivity
 
                 if (data.equals("show_timeout")) {
                     long start = intent.getLongExtra("start", 0);
+                    Log.d("PPP", "START: " + start);
                     if (start > 0)
                         showTimeout(start);
                 }
@@ -1532,7 +1543,7 @@ public class RaceActivity extends BaseActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
+        mMenuShown = false;
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.menu_next_round:
@@ -1622,6 +1633,12 @@ public class RaceActivity extends BaseActivity
         datasource.nextRound(mRid);
         datasource.setStatus(mRid, Race.STATUS_COMPLETE);
         datasource.close();
+
+        if (!new F3FGearExport().writeResultsFile(mContext, mRace)) {
+            // Failed to write
+            // Need some UI to indicate the problem
+        }
+
         finish();
     }
 
@@ -1639,7 +1656,15 @@ public class RaceActivity extends BaseActivity
         datasource.close();
 
         // Update the spreadsheet file
-        new SpreadsheetExport().writeResultsFile(mContext, mRace);
+        if (!new SpreadsheetExport().writeResultsFile(mContext, mRace)) {
+            // Failed to write
+            // Need some UI to indicate the problem
+        }
+
+        if (!new F3FGearExport().writeResultsFile(mContext, mRace)) {
+            // Failed to write
+            // Need some UI to indicate the problem
+        }
 
         setRound();
         getNamesArray();
@@ -1710,7 +1735,6 @@ public class RaceActivity extends BaseActivity
         int max_groups = (int) Math.floor(mArrPilots.size() / 10f);
         intent.putExtra("max_groups", max_groups);
         intent.putExtra("current_groups", mGroupScoring.num_groups);
-        Log.d("PPP", "SZ = "  + mGroupScoring.num_groups);
         startActivityForResult(intent, DLG_GROUP_SCORE_EDIT);
     }
 
@@ -1754,7 +1778,7 @@ public class RaceActivity extends BaseActivity
                 .getSystemService(Context.PRINT_SERVICE);
         if (printManager == null) return;
 
-        String jobName = getString(R.string.app_name) + " Pilot List";
+        String jobName = String.format("%s %s", getString(R.string.app_name), getString(R.string.ttl_pilot_list));
 
         PrintAttributes.Builder PAbuilder = new PrintAttributes.Builder();
         PAbuilder.setMediaSize(PrintAttributes.MediaSize.ISO_A4);

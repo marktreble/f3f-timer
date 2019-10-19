@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
+import android.support.v4.content.pm.PackageInfoCompat;
 import android.view.View;
 import android.widget.TextView;
 
@@ -35,7 +36,7 @@ public class AboutActivity extends Activity {
         try {
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
             v = pInfo.versionName;
-            b = String.format("%d", pInfo.versionCode);
+            b = String.format("%d", PackageInfoCompat.getLongVersionCode(pInfo));
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }

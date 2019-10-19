@@ -2,12 +2,12 @@
 <resources
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="InconsistentArrays">
-    <string-array name="theme_names">
-        <item>Classic</item>
-        <item>F3F</item>
-        <item>Black/Yellow</item>
-        <item>Black/White</item>
-        <item>White/Red</item>
+    <string-array name="theme_names" translatable="false">
+        <item>@string/theme_classic</item>
+        <item>@string/theme_f3f</item>
+        <item>@string/theme_blackyellow</item>
+        <item>@string/theme_blackwhite</item>
+        <item>@string/theme_whitered</item>
     </string-array>
 
     <string-array name="theme_values" translatable="false">

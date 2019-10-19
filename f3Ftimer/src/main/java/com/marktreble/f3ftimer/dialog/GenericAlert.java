@@ -49,9 +49,9 @@ public class GenericAlert extends DialogFragment
         Dialog dialog = new Dialog(getActivity(), getTheme()){
             @Override
             public void onBackPressed() {
+                super.onBackPressed();
                 //do your stuff
                 dismiss();
-                getActivity().finish();
             }
         };
 

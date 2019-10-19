@@ -303,7 +303,6 @@ public class Driver implements TTS.onInitListenerProxy {
 
                 if (data.equals("pref_buzz_off_course")
                         || data.equals("pref_buzz_on_course")
-                        || data.equals("pref_buzz_off_course")
                         || data.equals("pref_buzz_turn")
                         || data.equals("pref_buzz_turn9")
                         || data.equals("pref_buzz_penalty")) {
@@ -646,7 +645,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
         // Synthesized Call
         if (mSpeechFXon && mLeg < 10 && mLeg > 0) {
-            final String leg = Integer.toString(mLeg) + ((mLeg == 9) ? " " + Languages.useLanguage(mContext, mPilotLang).getString(R.string.and_last) : "");
+            final String leg = mLeg + ((mLeg == 9) ? " " + Languages.useLanguage(mContext, mPilotLang).getString(R.string.and_last) : "");
 
             mHandler.postDelayed(new Runnable() {
                 public void run() {
@@ -739,7 +738,11 @@ public class Driver implements TTS.onInitListenerProxy {
                 Log.d(TAG, "TIME SPOKEN");
 
                 // Update the .txt file
-                new SpreadsheetExport().writeResultsFile(mContext, mRace);
+                if (!new SpreadsheetExport().writeResultsFile(mContext, mRace)) {
+                    // Failed to write
+                    // Need some UI to indicate the problem
+                }
+
                 Log.d(TAG, "EXPORT FILE WRITTEN");
                 SystemClock.sleep(1000);
 
@@ -854,7 +857,7 @@ public class Driver implements TTS.onInitListenerProxy {
         long startRoundTimeout = System.currentTimeMillis();
 
         // Save timestamp to sharedPreferences
-        String key = "Timeout" + Integer.toString(mRid);
+        String key = "Timeout" + mRid;
         SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = timeout.edit();
         editor.putLong("start", startRoundTimeout);
@@ -864,7 +867,7 @@ public class Driver implements TTS.onInitListenerProxy {
     }
 
     private void startTimeoutDelay() {
-        String key = "Timeout" + Integer.toString(mRid);
+        String key = "Timeout" + mRid;
         SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
         long start = timeout.getLong("start", 0);
         if (start > 0) {
@@ -878,7 +881,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
     private void cancelTimeout() {
         // Reset the round timeout
-        SharedPreferences timeout = mContext.getSharedPreferences("Timeout" + Integer.toString(mRid), Context.MODE_PRIVATE);
+        SharedPreferences timeout = mContext.getSharedPreferences("Timeout" + mRid, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = timeout.edit();
         editor.putLong("start", 0);
         editor.apply();
@@ -893,7 +896,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
     private Runnable checkTimeout = new Runnable() {
         public void run() {
-            String key = "Timeout" + Integer.toString(mRid);
+            String key = "Timeout" + mRid;
             SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
             final long start = timeout.getLong("start", 0);
             if (start > 0) {
@@ -935,7 +938,7 @@ public class Driver implements TTS.onInitListenerProxy {
     };
 
     private void show_round_timeout_explicitly() {
-        String key = "Timeout " + mRid;
+        String key = "Timeout" + mRid;
         SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
         final long start = timeout.getLong("start", 0);
         if (start > 0) {

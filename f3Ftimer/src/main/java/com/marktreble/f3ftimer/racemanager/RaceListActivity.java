@@ -88,6 +88,8 @@ public class RaceListActivity extends BaseActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPageTitle = getString(R.string.app_race);
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.race_manager);
@@ -196,34 +198,15 @@ public class RaceListActivity extends BaseActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == RaceListActivity.DLG_NEW_RACE) {
-                getNamesArray();
-                mArrAdapter.notifyDataSetChanged();
+        /*
+         * Update the race list
+         */
+        getNamesArray();
+        mArrAdapter.notifyDataSetChanged();
 
-            }
-
-            if (requestCode == RaceListActivity.DLG_IMPORT) {
-                getNamesArray();
-                mArrAdapter.notifyDataSetChanged();
-
-                String[] buttons_array = new String[1];
-                buttons_array[0] = getString(android.R.string.ok);
-
-                mDLG = GenericAlert.newInstance(
-                        getString(R.string.ttl_import_race),
-                        getString(R.string.msg_import_race_success),
-                        buttons_array,
-                        null
-                );
-
-                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-                ft.add(mDLG, DIALOG);
-                ft.commit();
-
-            }
-        }
-
+        /*
+         * Restart the app if the theme has changed
+         */
         if (requestCode == RaceListActivity.DLG_SETTINGS) {
             ((F3FtimerApplication) getApplication()).restartApp();
         }

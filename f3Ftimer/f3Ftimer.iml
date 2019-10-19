@@ -136,9 +136,12 @@
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:livedata:1.1.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:livedata-core:1.1.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.core:runtime:1.1.1@aar" level="project" />
-    <orderEntry type="library" name="Gradle: com.nononsenseapps:filepicker:4.1.0@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.amitshekhar.android:debug-db:1.0.1@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.jakewharton:process-phoenix:2.0.0@aar" level="project" />
+    <orderEntry type="module" module-name="iOIOLibAccessory" />
+    <orderEntry type="module" module-name="iOIOLibAndroid" />
+    <orderEntry type="module" module-name="iOIOLibBT" />
+    <orderEntry type="module" module-name="usbSerialForAndroid" />
     <orderEntry type="module" module-name="iOIOLibAccessory" />
     <orderEntry type="module" module-name="iOIOLibAndroid" />
     <orderEntry type="module" module-name="iOIOLibBT" />

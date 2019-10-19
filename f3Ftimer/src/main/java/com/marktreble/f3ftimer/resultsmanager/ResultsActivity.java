@@ -42,6 +42,8 @@ public class ResultsActivity extends BaseActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPageTitle = getString(R.string.app_results);
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.results_manager);

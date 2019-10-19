@@ -49,8 +49,6 @@ public class F3xvaultApiImportRace extends BaseImport
 
     private static final int DLG_LOGIN = 1;
 
-    private static final long PROGRESS_DELAY = 500;
-
     private API mAPITask = null;
 
     private String mUsername;

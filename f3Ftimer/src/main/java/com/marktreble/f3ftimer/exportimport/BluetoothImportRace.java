@@ -48,7 +48,6 @@ public class BluetoothImportRace extends BaseImport {
 
     static final String DIALOG = "dialog";
 
-    GenericAlert mDLG;
     GenericListPicker mDLG2;
 
     public BluetoothAdapter mBluetoothAdapter;

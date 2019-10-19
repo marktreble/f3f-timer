@@ -39,7 +39,8 @@ import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
 import java.util.ArrayList;
 
-public class ResultsLeaderBoardActivity extends BaseActivity {
+public class ResultsLeaderBoardActivity extends ResultsRaceBaseActivity
+    implements ListView.OnClickListener {
 
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
@@ -50,8 +51,6 @@ public class ResultsLeaderBoardActivity extends BaseActivity {
     private float mFTD;
     private String mFTDName;
     private int mFTDRound;
-
-    private Integer mRid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +105,11 @@ public class ResultsLeaderBoardActivity extends BaseActivity {
      */
     public void onClick(View v) {
         // Pilot has been clicked, so show breakdown of rounds
-
+        int position = (int)v.getTag();
+        Intent intent = new Intent(this, ResultsIndividualPilotActivity.class);
+        intent.putExtra("race_id", mRid);
+        intent.putExtra("pilot_pos", position);
+        startActivityForResult(intent, mRid);
     }
 
 
@@ -139,6 +142,7 @@ public class ResultsLeaderBoardActivity extends BaseActivity {
 
                 if (null == convertView) {
                     row = getLayoutInflater().inflate(R.layout.listrow_resultspilots, parent, false);
+                    row.setOnClickListener(ResultsLeaderBoardActivity.this);
                 } else {
                     row = convertView;
                 }
@@ -175,66 +179,10 @@ public class ResultsLeaderBoardActivity extends BaseActivity {
                 TextView points = row.findViewById(R.id.points);
                 points.setText(String.format("%.2f", mArrScores.get(position)));
 
+                row.setTag(position);
+
                 return row;
             }
         };
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.results, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.menu_share:
-                share();
-                return true;
-            case R.id.menu_pilot_manager:
-                pilotManager();
-                return true;
-            case R.id.menu_race_manager:
-                raceManager();
-                return true;
-            case R.id.menu_help:
-                help();
-                return true;
-            case R.id.menu_about:
-                about();
-                return true;
-
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    public void share() {
-
-    }
-
-    public void pilotManager() {
-        Intent intent = new Intent(mContext, PilotsActivity.class);
-        startActivity(intent);
-    }
-
-    public void raceManager() {
-        Intent intent = new Intent(mContext, RaceListActivity.class);
-        startActivity(intent);
-    }
-
-    public void help() {
-        Intent intent = new Intent(mContext, HelpActivity.class);
-        startActivity(intent);
-    }
-
-    public void about() {
-        Intent intent = new Intent(mContext, AboutActivity.class);
-        startActivity(intent);
-    }
-
 }

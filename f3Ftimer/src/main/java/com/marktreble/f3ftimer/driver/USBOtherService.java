@@ -98,7 +98,6 @@ public class USBOtherService extends Service implements DriverInterface {
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy");
         super.onDestroy();
         if (mDriver != null)
             mDriver.destroy();

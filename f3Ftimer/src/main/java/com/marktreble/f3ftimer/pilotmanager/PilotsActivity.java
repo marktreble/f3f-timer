@@ -56,8 +56,15 @@ public class PilotsActivity extends BaseActivity
     private ArrayList<Integer> mArrIds;
     private ArrayList<Pilot> mArrPilots;
 
+    /**
+     * Standard Activity class function
+     *
+     * @param savedInstanceState Bundle
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        mPageTitle = getString(R.string.app_pilots);
+
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.pilot_manager);
@@ -69,6 +76,9 @@ public class PilotsActivity extends BaseActivity
         setList();
     }
 
+    /**
+     * Set up adapter for the ListView
+     */
     private void setList() {
 
         mArrAdapter = new ArrayAdapter<String>(this, R.layout.listrow, R.id.text1, mArrNames) {
@@ -107,6 +117,9 @@ public class PilotsActivity extends BaseActivity
         lv.setAdapter(mArrAdapter);
     }
 
+    /**
+     * Override onBackPressed
+     */
     @Override
     public void onBackPressed() {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN);
@@ -115,6 +128,11 @@ public class PilotsActivity extends BaseActivity
         startActivity(homeIntent);
     }
 
+    /**
+     * ListView.onClickListener
+     *
+     * @param v View
+     */
     @Override
     public void onClick(View v) {
         int position = (int)v.getTag();
@@ -125,6 +143,13 @@ public class PilotsActivity extends BaseActivity
         startActivityForResult(intent, DLG_EDIT_PILOT);
     }
 
+    /**
+     * Standard Activity class function
+     *
+     * @param requestCode int
+     * @param resultCode int
+     * @param data Intent
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

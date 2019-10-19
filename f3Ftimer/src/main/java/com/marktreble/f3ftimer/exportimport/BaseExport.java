@@ -17,17 +17,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
+import android.os.ParcelFileDescriptor;
 import android.os.ResultReceiver;
-import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -41,6 +40,13 @@ import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.dialog.GenericAlert;
 import com.marktreble.f3ftimer.dialog.GenericRadioPicker;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -50,11 +56,10 @@ public abstract class BaseExport extends AppCompatActivity {
     final static int EXPORT_FILE_TYPE_JSON = 0;
     final static int EXPORT_FILE_TYPE_CSV = 1;
 
-    private static final int ACTION_PICK_FOLDER = 1;
+    private static final int WRITE_REQUEST_CODE = 2;
 
     Context mContext;
     Activity mActivity;
-    String mSaveFolder;
 
     static final String DIALOG = "dialog";
 
@@ -62,8 +67,11 @@ public abstract class BaseExport extends AppCompatActivity {
     GenericRadioPicker mDLG3;
 
     protected Integer mExportFileType = -1;
+    protected JSONArray mArrExportFiles = new JSONArray();
 
     String mProgressMessage;
+
+    protected static final long PROGRESS_DELAY = 500;
 
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -78,13 +86,21 @@ public abstract class BaseExport extends AppCompatActivity {
             View progress = findViewById(R.id.progress);
             TextView progressLabel = progress.findViewById(R.id.progressLabel);
             progressLabel.setText(mProgressMessage);
+
+            try {
+                mArrExportFiles = new JSONArray(savedInstanceState.getString("export_races"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
         outState.putString("progress_message", mProgressMessage);
+        outState.putString("export_races", mArrExportFiles.toString());
     }
 
     protected void showProgress(final String msg) {
@@ -98,17 +114,6 @@ public abstract class BaseExport extends AppCompatActivity {
             }
         });
 
-    }
-
-    protected void hideProgress() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                View progress = findViewById(R.id.progress);
-                TextView progressLabel = progress.findViewById(R.id.progressLabel);
-                progressLabel.setText("");
-            }
-        });
     }
 
     public void onResume() {
@@ -126,19 +131,35 @@ public abstract class BaseExport extends AppCompatActivity {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ACTION_PICK_FOLDER && resultCode == Activity.RESULT_OK) {
-            Uri uri = data.getData();
-            if (uri != null) {
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-                SharedPreferences.Editor ed = sharedPref.edit();
-                ed.putString("export_save_folder", uri.getPath());
-                ed.apply();
+        if (resultCode == Activity.RESULT_CANCELED) {
+            finish();
+            return;
+        }
 
-                promptForSaveFolder(uri.getPath());
+        if (requestCode == WRITE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                if (data != null) {
+                    showProgress(getString(R.string.exporting));
+
+                    final Uri uri = data.getData();
+
+                    final int takeFlags = getIntent().getFlags()
+                            & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    // Check for the freshest data.
+                    getContentResolver().takePersistableUriPermission(uri, takeFlags);
+
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            writeDocument(uri);
+                        }
+                    }, PROGRESS_DELAY);
+
+                } else {
+                    finish();
+                }
             }
-
-        } else {
-            promptForSaveFolder(null);
         }
     }
 
@@ -263,68 +284,7 @@ public abstract class BaseExport extends AppCompatActivity {
         sendBroadcast(i);
     }
 
-
-    protected void promptForSaveFolder(String folder) {
-        if (folder == null) {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            mSaveFolder = sharedPref.getString("export_save_folder", Environment.getExternalStorageDirectory().getPath());
-        } else {
-            mSaveFolder = folder;
-        }
-
-        String[] buttons_array = new String[3];
-        buttons_array[0] = getString(android.R.string.cancel);
-        buttons_array[1] = getString(R.string.btn_change_path);
-        buttons_array[2] = getString(R.string.btn_export);
-
-        mDLG = GenericAlert.newInstance(
-                getString(R.string.ttl_save_location),
-                String.format(getString(R.string.msg_save_location), mSaveFolder),
-                buttons_array,
-                new ResultReceiver(new Handler()) {
-                    @Override
-                    protected void onReceiveResult(int resultCode, Bundle resultData) {
-                        super.onReceiveResult(resultCode, resultData);
-
-                        switch (resultCode) {
-                            case 0:
-                                mActivity.finish();
-                                break;
-                            case 1:
-                                Intent i = new Intent(mContext, FilteredFilePickerActivity.class);
-                                // This works if you defined the intent filter
-                                // Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-
-                                // Set these depending on your use case. These are the defaults.
-                                i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_MULTIPLE, false);
-                                i.putExtra(FilteredFilePickerActivity.EXTRA_ALLOW_CREATE_DIR, true);
-                                i.putExtra(FilteredFilePickerActivity.EXTRA_MODE, FilteredFilePickerActivity.MODE_DIR);
-
-                                // Configure initial directory by specifying a String.
-                                // You could specify a String like "/storage/emulated/0/", but that can
-                                // dangerous. Always use Android's API calls to get paths to the SD-card or
-                                // internal memory.
-                                i.putExtra(FilteredFilePickerActivity.EXTRA_START_PATH, Environment.getExternalStorageDirectory().getPath());
-
-                                startActivityForResult(i, ACTION_PICK_FOLDER);
-                                mDLG.dismiss();
-                                break;
-                            case 2:
-                                call("beginExport", null);
-                                break;
-                        }
-                    }
-                }
-        );
-
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.addToBackStack(null);
-        ft.add(mDLG, DIALOG);
-        ft.commit();
-
-    }
-
-    private void showExportTypeList() {
+    protected void showExportTypeList() {
         String[] buttons_array = new String[2];
         buttons_array[0] = getString(android.R.string.cancel);
         buttons_array[1] = getString(R.string.button_next);
@@ -347,7 +307,8 @@ public abstract class BaseExport extends AppCompatActivity {
                                     mExportFileType = resultData.getInt("checked");
                                 }
                                 if (mExportFileType >= 0) {
-                                    call("promptForSaveFolder", null);
+
+                                    call("beginExport", null);
                                 } else {
                                     mActivity.finish();
                                 }
@@ -363,6 +324,85 @@ public abstract class BaseExport extends AppCompatActivity {
 
     }
 
+    protected void createDocument() {
+        JSONObject r = null;
+        String fileName = "";
+        try {
+            r = mArrExportFiles.getJSONObject(0);
+            fileName = r.getString("name");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (r == null){
+            finish();
+            return;
+        }
+
+        String mimeType = "";
+        switch (mExportFileType) {
+            case EXPORT_FILE_TYPE_JSON:
+                mimeType = "application/json";
+                fileName+= ".json";
+                break;
+            case EXPORT_FILE_TYPE_CSV:
+                mimeType = "text/csv";
+                fileName+= ".csv";
+                break;
+        }
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+
+        // Filter to only show results that can be "opened", such as
+        // a file (as opposed to a list of contacts or timezones).
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        // Create a file with the requested MIME type.
+        intent.setType(mimeType);
+        intent.putExtra(Intent.EXTRA_TITLE, fileName);
+        startActivityForResult(intent, WRITE_REQUEST_CODE);
+    }
+
+    private void writeDocument(Uri uri) {
+
+        JSONObject r = null;
+        String data = "";
+        try {
+            r = mArrExportFiles.getJSONObject(0);
+            data = r.getString("data");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (r == null){
+            finish();
+            return;
+        }
+
+        try {
+            ParcelFileDescriptor doc = getContentResolver().openFileDescriptor(uri, "w");
+            if (doc != null) {
+                FileDescriptor desc = doc.getFileDescriptor();
+
+                FileOutputStream fileOutputStream =
+                        new FileOutputStream(desc);
+                fileOutputStream.write(data.getBytes());
+                // Let the document provider know you're done by closing the stream.
+                fileOutputStream.close();
+                doc.close();
+            } else {
+                finish();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mArrExportFiles.remove(0);
+        if (mArrExportFiles.length() > 0) {
+            createDocument();
+        } else {
+            finish();
+        }
+    }
+
     private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -374,9 +414,7 @@ public abstract class BaseExport extends AppCompatActivity {
                 String cmd = extras.getString("cmd", "");
                 String dta = extras.getString("dta");
 
-                if (cmd.equals("promptForSaveFolder")) {
-                    promptForSaveFolder(dta);
-                }
+                Log.d("PPP", "RECEIVED: " + cmd + " WITH: " + dta);
 
                 if (cmd.equals("beginExport")) {
                     beginExport();
@@ -384,6 +422,10 @@ public abstract class BaseExport extends AppCompatActivity {
 
                 if (cmd.equals("showExportTypeList")) {
                     showExportTypeList();
+                }
+
+                if (cmd.equals("createDocument")) {
+                    createDocument();
                 }
             }
         }

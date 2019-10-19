@@ -11,6 +11,7 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -68,10 +69,13 @@ public class F3ftimerApiImportRace extends BaseImport
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_CANCELED) {
+            finish();
+            return;
+        }
 
-        if (resultCode == RESULT_OK) {
-            if (requestCode == DLG_LOGIN) {
+        if (requestCode == DLG_LOGIN) {
+            if (resultCode == RESULT_OK) {
                 mDataSource = data.getStringExtra("datasource");
                 String username = data.getStringExtra("username");
                 String password = data.getStringExtra("password");
@@ -95,8 +99,6 @@ public class F3ftimerApiImportRace extends BaseImport
                 mAPITask.makeAPICall(this, mDataSource, API.httpmethod.POST, params);
 
             }
-        } else {
-            finish();
         }
     }
 

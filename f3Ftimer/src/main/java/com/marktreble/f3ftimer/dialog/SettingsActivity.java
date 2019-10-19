@@ -13,6 +13,7 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -22,10 +23,15 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Display the fragment as the main content.
-        getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, new SettingsFragment())
-                .commit();
+        if (savedInstanceState == null) {
+            Fragment settings = new SettingsFragment();
+
+            // Display the fragment as the main content.
+            getSupportFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, settings)
+                    .commit();
+        }
     }
+
 
 }

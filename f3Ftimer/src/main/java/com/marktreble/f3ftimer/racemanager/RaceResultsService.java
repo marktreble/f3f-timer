@@ -36,6 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -215,26 +216,18 @@ public class RaceResultsService extends Service {
         }
 
         private String[] parseHeaders(byte[] buffer) {
-            String s = null;
-            try {
-                s = new String(buffer, "ASCII");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            if (s != null) {
-                String[] lines = s.split("\n");
-                String line;
-                int l = 0;
-                String[] headers = new String[lines.length];
-                do {
-                    line = lines[l].trim();
-                    Log.d("F3fHTTPServerRequest", line);
-                    headers[l++] = line;
-                } while (line.length() > 0 && l < lines.length);
+            String s = new String(buffer, StandardCharsets.US_ASCII);
+            String[] lines = s.split("\n");
+            String line;
+            int l = 0;
+            String[] headers = new String[lines.length];
+            do {
+                line = lines[l].trim();
+                Log.d("F3fHTTPServerRequest", line);
+                headers[l++] = line;
+            } while (line.length() > 0 && l < lines.length);
 
-                return headers;
-            }
-            return null;
+            return headers;
         }
 
         private byte[] getStaticPage(String path, String ext) {

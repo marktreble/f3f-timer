@@ -191,6 +191,22 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/external_results_files"
+        android:persistent="false">
+        <CheckBoxPreference
+            android:key="pref_results_F3Fgear"
+            android:title="F3Fgear"
+            android:summary="Automatically export files for F3Fgear at the end of each round"
+            android:defaultValue="false" />
+
+        <Preference
+            android:key="pref_results_F3Fgear_path"
+            android:title="Path to save F3Fgear results files"
+            android:dependency="pref_results_F3Fgear" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/app_theme"
         android:persistent="false">
         <ListPreference

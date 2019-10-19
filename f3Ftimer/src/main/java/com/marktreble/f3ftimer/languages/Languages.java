@@ -28,20 +28,23 @@ import java.util.StringTokenizer;
 
 
 public class Languages {
-    public static String[] getAvailableLanguages(Context a) {
-        /*
-         *  Get all the available languages as a String array of 639-1 (2 letter language codes)
-         *  Sorted in alphabetical order
-         */
+    /**
+     *  Get all the available languages as a String array of ISO 639-1 (2 letter language codes)
+     *  Sorted in alphabetical order
+     *
+     * @param context Context
+     * @return String[]
+     */
+    public static String[] getAvailableLanguages(Context context) {
         ArrayList<String> al_languages = new ArrayList<>();
         DisplayMetrics metrics = new DisplayMetrics();
-        Resources r = a.getResources();
+        Resources r = context.getResources();
         Configuration c = r.getConfiguration();
         String[] tmp_languages = r.getAssets().getLocales();
         for (String _language : tmp_languages) {
             if (_language.split("_").length == 1) { // Language only locales (no country code)
                 c.locale = new Locale(_language);
-                Resources res = new Resources(a.getAssets(), metrics, c);
+                Resources res = new Resources(context.getAssets(), metrics, c);
                 try {
                     // check if the app_name key exists. If it does, the language is available
                     String name = res.getString(R.string.locale);
@@ -54,7 +57,7 @@ public class Languages {
 
                 String[] l = _language.split("_");
                 c.locale = new Locale(l[0]);
-                Resources res = new Resources(a.getAssets(), metrics, c);
+                Resources res = new Resources(context.getAssets(), metrics, c);
                 try {
                     // check if the app_name key exists. If it does, the language is available
                     String name = res.getString(R.string.locale);
@@ -74,24 +77,33 @@ public class Languages {
         return al_languages.toArray(new String[0]);
     }
 
-    public static Resources useLanguage(Context a, String lang) {
-        /*
-         * Returns a handle to the resources for a given textual language
-         */
-        Resources res = a.getResources();
+    /**
+     * Returns a handle to the resources for a given textual language
+     *
+     * @param context Context
+     * @param lang String
+     * @return Resources
+     */
+    public static Resources useLanguage(Context context, String lang) {
+        Resources res = context.getResources();
         Configuration config = res.getConfiguration();
         config.locale = Languages.stringToLocale(lang);
         res.updateConfiguration(config, null);
         return res;
     }
 
+    /**
+     * Returns the language string that has been set:
+     * to_lang - if set to the requested
+     * fallback - if requested is not available
+     * empty string - if no change is required
+     *
+     * @param to_lang String
+     * @param fallback String
+     * @param engine TextToSpeech
+     * @return String
+     */
     public static String setSpeechLanguage(String to_lang, String fallback, TextToSpeech engine) {
-        /*
-         * Returns the language string that has been set:
-         * to_lang - if set to the requested
-         * fallback - if requested is not available
-         * empty string - if no change is required
-         */
         Locale lang = Languages.stringToLocale(to_lang);
         Locale currLang = engine.getLanguage();
         String ret = "";
@@ -115,11 +127,14 @@ public class Languages {
         return ret;
     }
 
-    public static Locale stringToLocale(String s) {
-        /*
-         * Convert String to Locale
-         */
-        StringTokenizer tempStringTokenizer = new StringTokenizer(s, "_");
+    /**
+     * Convert String to Locale
+     *
+     * @param localeStr String
+     * @return Locale
+     */
+    public static Locale stringToLocale(String localeStr) {
+        StringTokenizer tempStringTokenizer = new StringTokenizer(localeStr, "_");
         String l = "";
         String c = "";
         if (tempStringTokenizer.hasMoreTokens())
