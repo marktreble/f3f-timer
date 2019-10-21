@@ -263,4 +263,10 @@
     <string name="share_social_media">Share on Social Media</string>
     <string name="share_email">Share by email</string>
     <string name="msg_connection_denied">Failed to connect to %1$s</string>
+    <string name="bel">Belgium</string>
+    <string name="aut">Austria</string>
+    <string name="svn">Slovenia</string>
+    <string name="isl">Iceland</string>
+    <string name="mco">Monaco</string>
+    <string name="pol">Poland</string>
 </resources>

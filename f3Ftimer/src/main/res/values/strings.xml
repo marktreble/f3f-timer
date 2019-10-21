@@ -294,15 +294,21 @@
 
     <!-- Countries -->
     <string name="aus">Australia</string>
+    <string name="aut">Austria</string>
+    <string name="bel">Belgium</string>
     <string name="cze">Czech Republic</string>
     <string name="dnk">Denmark</string>
     <string name="fra">France</string>
     <string name="deu">Germany</string>
     <string name="ind">India</string>
+    <string name="isl">Iceland</string>
+    <string name="mco">Monaco</string>
     <string name="nld">Netherlands</string>
     <string name="nor">Norway</string>
+    <string name="pol">Poland</string>
     <string name="prt">Portugal</string>
     <string name="esp">Spain</string>
+    <string name="svn">Slovenia</string>
     <string name="che">Switzerland</string>
     <string name="gbr">United Kingdom</string>
     <string name="usa">United States</string>

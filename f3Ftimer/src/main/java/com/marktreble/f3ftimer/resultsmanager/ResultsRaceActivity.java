@@ -56,8 +56,6 @@ import java.util.Arrays;
 public class ResultsRaceActivity extends ResultsRaceBaseActivity
     implements ListView.OnClickListener {
 
-    private Integer mRid;
-
     ArrayAdapter<String> mArrAdapter;
     ArrayList<String> mOptions;
 

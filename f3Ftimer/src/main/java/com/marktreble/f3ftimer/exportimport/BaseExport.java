@@ -211,43 +211,43 @@ public abstract class BaseExport extends AppCompatActivity {
         String race_params = "";
         race_params += String.format("\"%d\",", race.race_id);
         race_params += String.format("\"%s\",", race.name);
-        race_params += String.format("\"%s\",", ""); // F3XV Location
-        race_params += String.format("\"%s\",", ""); // F3XV Start Date
-        race_params += String.format("\"%s\",", ""); // F3XV End Date
-        race_params += String.format("\"%s\",", ""); // F3XV Type
-        race_params += String.format("\"%s\",", ""); // F3XV Num Rounds
+        race_params += String.format("\"%s\",", " "); // F3XV Location
+        race_params += String.format("\"%s\",", " "); // F3XV Start Date
+        race_params += String.format("\"%s\",", " "); // F3XV End Date
+        race_params += String.format("\"%s\",", " "); // F3XV Type
+        race_params += String.format("\"%s\",", " "); // F3XV Num Rounds
         race_params += String.format("\"%d\",", race.round);
         race_params += String.format("\"%d\",", race.type);
         race_params += String.format("\"%d\",", race.offset);
         race_params += String.format("\"%d\",", race.status);
         race_params += String.format("\"%d\",", race.rounds_per_flight);
-        race_params += String.format("\"%d\"\n", race.start_number);
+        race_params += String.format("\"%d\",\r\n", race.start_number);
 
         csvdata.append(race_params);
-        csvdata.append("\n");
+        csvdata.append("\r\n");
 
         for (Pilot p : racepilots) {
             String pilot_params = "";
             pilot_params += String.format("%d,", p.pilot_id);
-            pilot_params += String.format("\"%s\",", p.number);
-            pilot_params += String.format("\"%s\",", p.firstname);
-            pilot_params += String.format("\"%s\",", p.lastname);
+            pilot_params += String.format("\" %s\",", p.number);
+            pilot_params += String.format("\" %s\",", p.firstname);
+            pilot_params += String.format("\" %s\",", p.lastname);
             pilot_params += ","; // F3XV Pilot Class - not required?
-            pilot_params += String.format("\"%s\",", p.nac_no);
-            pilot_params += String.format("\"%s\",", p.fai_id);
+            pilot_params += String.format("\" %s\",", p.nac_no);
+            pilot_params += String.format("\" %s\",", p.fai_id);
             pilot_params += ","; // F3XV FAI License?
-            pilot_params += String.format("\"%s\",", p.team);
+            pilot_params += String.format("\" %s\",", p.team);
             // Extra data not in f3xvault api
-            pilot_params += String.format("%d,", p.status);
-            pilot_params += String.format("\"%s\",", p.email);
-            pilot_params += String.format("\"%s\",", p.frequency);
-            pilot_params += String.format("\"%s\",", p.models);
-            pilot_params += String.format("\"%s\",", p.nationality);
-            pilot_params += String.format("\"%s\"\n", p.language);
+            pilot_params += String.format(" %d,", p.status);
+            pilot_params += String.format("\" %s\",", p.email);
+            pilot_params += String.format("\" %s\",", p.frequency);
+            pilot_params += String.format("\" %s\",", p.models);
+            pilot_params += String.format("\" %s\",", p.nationality);
+            pilot_params += String.format("\" %s\",\r\n", p.language);
             csvdata.append(pilot_params);
         }
 
-        csvdata.append("\n");
+        csvdata.append("\r\n");
 
         StringBuilder group_params = new StringBuilder();
         StringBuilder start_params = new StringBuilder();
@@ -259,10 +259,9 @@ public abstract class BaseExport extends AppCompatActivity {
             start_params.append(String.format("%d", group.start_pilot));
         }
 
-        csvdata.append(group_params).append("\n");
-        csvdata.append(start_params).append("\n");
-        csvdata.append("\n");
-
+        csvdata.append(group_params).append("\r\n");
+        csvdata.append(start_params).append("\r\n");
+        csvdata.append("\r\n");
 
         return csvdata.toString();
     }
@@ -413,8 +412,6 @@ public abstract class BaseExport extends AppCompatActivity {
                 }
                 String cmd = extras.getString("cmd", "");
                 String dta = extras.getString("dta");
-
-                Log.d("PPP", "RECEIVED: " + cmd + " WITH: " + dta);
 
                 if (cmd.equals("beginExport")) {
                     beginExport();

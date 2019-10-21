@@ -33,14 +33,20 @@
     <string-array name="countrycodes" translatable="false">
         <item />
         <item>AU</item>
+        <item>AT</item>
+        <item>BE</item>
         <item>CZ</item>
         <item>DK</item>
         <item>FR</item>
         <item>DE</item>
         <item>IN</item>
+        <item>IS</item>
+        <item>MC</item>
         <item>NL</item>
         <item>NO</item>
         <item>PT</item>
+        <item>PL</item>
+        <item>SI</item>
         <item>ES</item>
         <item>CH</item>
         <item>GB</item>
@@ -50,14 +56,20 @@
     <string-array name="nationalities" translatable="false">
         <item />
         <item>@string/aus</item>
+        <item>@string/aut</item>
+        <item>@string/bel</item>
         <item>@string/cze</item>
         <item>@string/dnk</item>
         <item>@string/fra</item>
         <item>@string/deu</item>
         <item>@string/ind</item>
+        <item>@string/isl</item>
+        <item>@string/mco</item>
         <item>@string/nld</item>
         <item>@string/nor</item>
+        <item>@string/pol</item>
         <item>@string/prt</item>
+        <item>@string/svn</item>
         <item>@string/esp</item>
         <item>@string/che</item>
         <item>@string/gbr</item>

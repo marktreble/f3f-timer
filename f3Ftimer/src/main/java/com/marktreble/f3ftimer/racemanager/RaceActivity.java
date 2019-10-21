@@ -134,6 +134,7 @@ public class RaceActivity extends BaseActivity
     private boolean mPrefResultsDisplay;
     private String mPrefExternalDisplay;
     private boolean mPrefWindMeasurement;
+    private boolean mPrefResultsF3Fgear;
 
     private boolean mRoundComplete;
     private boolean mRoundNotStarted;
@@ -512,6 +513,8 @@ public class RaceActivity extends BaseActivity
         mPrefResultsDisplay = sharedPref.getBoolean("pref_results_display", false);
         mPrefExternalDisplay = sharedPref.getString("pref_external_display", "");
         mPrefWindMeasurement = sharedPref.getBoolean("pref_wind_measurement", false);
+        mPrefResultsF3Fgear = sharedPref.getBoolean("pref_results_F3Fgear", false);
+
     }
 
     private void setRound() {
@@ -1661,9 +1664,11 @@ public class RaceActivity extends BaseActivity
             // Need some UI to indicate the problem
         }
 
-        if (!new F3FGearExport().writeResultsFile(mContext, mRace)) {
-            // Failed to write
-            // Need some UI to indicate the problem
+        if (mPrefResultsF3Fgear) {
+            if (!new F3FGearExport().writeResultsFile(mContext, mRace)) {
+                // Failed to write
+                // Need some UI to indicate the problem
+            }
         }
 
         setRound();

@@ -4,7 +4,7 @@
     <string name="app_name">F3Ftimer</string>
     <string name="version">Version</string>
     <string name="credits">An open source project by Mark Treble</string>
-    <string name="help">Help is not implemented yet</string>
+    <string name="help">Veuillez consulter le lien ci-dessous pour savoir comment utiliser ce logiciel.</string>
     <string name="menu_settings">Settings</string>
     <string name="app_pilots">Pilot Manager</string>
     <string name="app_race">Race Manager</string>
@@ -242,5 +242,11 @@
     <string name="msg_save_location">Vos fichiers seront exportés vers:\n%1$s</string>
     <string name="msg_wrong_file_type">Désolé, le minuteur f3f ne peut importer que des fichiers au format \"json\". Certains des fichiers que vous avez choisis n\'ont pas été importés (%1$s)</string>
     <string name="msg_wrong_file_type_s">Désolé, le minuteur f3f ne peut importer que des fichiers au format \'json\'</string>
+    <string name="bel">Belgique</string>
+    <string name="aut">Austria</string>
+    <string name="svn">Slovenia</string>
+    <string name="isl">Iceland</string>
+    <string name="mco">Monaco</string>
+    <string name="pol">Poland</string>
 
 </resources>
