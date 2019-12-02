@@ -188,7 +188,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
             }
 
 
-            mBaudRate = 2400;
+            mBaudRate = Integer.parseInt(Pref.USB_BAUDRATE_DEFAULT);
             String baudrate = extras.getString(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
             if (baudrate != null)
                 try {
