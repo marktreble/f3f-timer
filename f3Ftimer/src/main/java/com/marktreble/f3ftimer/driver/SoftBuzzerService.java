@@ -137,6 +137,8 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
+
+
         driverDisconnected();
 
         mBoardConnected = true;
@@ -144,11 +146,14 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         driverConnected();
 
         // Output dummy wind readings
-        Bundle extras = intent.getExtras();
-        mWindTimestamp = System.currentTimeMillis();
-        mSlopeOrientation = 0.f;
-        if (extras != null)
-            mSlopeOrientation = Float.parseFloat(extras.getString("pref_wind_angle_offset", "0.0"));
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            mWindTimestamp = System.currentTimeMillis();
+            mSlopeOrientation = 0.f;
+            if (extras != null) {
+                mSlopeOrientation = Float.parseFloat(extras.getString("pref_wind_angle_offset", "0.0"));
+            }
+        }
 
         mWindEmulator = new Handler();
         Runnable runnable = new Runnable() {

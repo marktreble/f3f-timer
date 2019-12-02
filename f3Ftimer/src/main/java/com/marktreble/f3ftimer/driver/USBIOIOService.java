@@ -80,6 +80,10 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
     private Uart.StopBits mStopBits;
     private Uart.Parity mParity;
 
+    private int mRx;
+    private int mTx;
+    private int mStart;
+
     /*
      * General life-cycle function overrides
      */
@@ -174,48 +178,55 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStart(intent, startId);
 
-        mIntent = intent;
 
-        Bundle extras = intent.getExtras();
-        if (extras == null) {
-            return START_REDELIVER_INTENT;
-        }
+        if (intent != null) {
+            mIntent = intent;
 
-        mBaudRate = 2400;
-        String baudrate = extras.getString(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
-        if (baudrate != null)
-            try {
-                mBaudRate = Integer.parseInt(baudrate, 10);
-            } catch (NumberFormatException e) {
-                e.printStackTrace();
+            Bundle extras = intent.getExtras();
+            if (extras == null) {
+                return START_STICKY;
             }
 
-        String stopbits = extras.getString(Pref.USB_STOPBITS, Pref.USB_STOPBITS_DEFAULT);
 
-        switch (stopbits) {
-            case "2":
-                mStopBits = Uart.StopBits.TWO;
-                break;
-            case "1":
-            default:
-                mStopBits = Uart.StopBits.ONE;
-                break;
+            mBaudRate = 2400;
+            String baudrate = extras.getString(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
+            if (baudrate != null)
+                try {
+                    mBaudRate = Integer.parseInt(baudrate, 10);
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                }
+
+            String stopbits = extras.getString(Pref.USB_STOPBITS, Pref.USB_STOPBITS_DEFAULT);
+
+            switch (stopbits) {
+                case "2":
+                    mStopBits = Uart.StopBits.TWO;
+                    break;
+                case "1":
+                default:
+                    mStopBits = Uart.StopBits.ONE;
+                    break;
+            }
+
+            String parity = extras.getString(Pref.USB_PARITY, Pref.USB_PARITY_DEFAULT);
+            switch (parity) {
+                case "Odd":
+                    mParity = Uart.Parity.ODD;
+                    break;
+                case "Even":
+                    mParity = Uart.Parity.EVEN;
+                    break;
+                case "None":
+                default:
+                    mParity = Uart.Parity.NONE;
+                    break;
+            }
+            mRx = Integer.parseInt(extras.getString(Pref.IOIO_RX_PIN, Pref.IOIO_RX_PIN_DEFAULT));
+            mTx = Integer.parseInt(extras.getString(Pref.IOIO_TX_PIN, Pref.IOIO_TX_PIN_DEFAULT));
+            mStart = Integer.parseInt(extras.getString(Pref.IOIO_START_PIN, Pref.IOIO_START_PIN_DEFAULT));
+
         }
-
-        String parity = extras.getString(Pref.USB_PARITY, Pref.USB_PARITY_DEFAULT);
-        switch (parity) {
-            case "Odd":
-                mParity = Uart.Parity.ODD;
-                break;
-            case "Even":
-                mParity = Uart.Parity.EVEN;
-                break;
-            case "None":
-            default:
-                mParity = Uart.Parity.NONE;
-                break;
-        }
-
         return (START_STICKY);
     }
 
@@ -237,11 +248,11 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
                 led_ = ioio_.openDigitalOutput(IOIO.LED_PIN);
 
                 // Open comms channels
-                uart = ioio_.openUart(3, 4, mBaudRate, mParity, mStopBits);
+                uart = ioio_.openUart(mRx, mTx, mBaudRate, mParity, mStopBits);
                 data_in = uart.getInputStream();
                 data_out = uart.getOutputStream();
 
-                start = ioio_.openDigitalInput(46);
+                start = ioio_.openDigitalInput(mStart);
 
                 mBoardConnected = true;
                 mDriver.start(mIntent);

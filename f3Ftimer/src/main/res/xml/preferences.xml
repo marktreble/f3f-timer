@@ -42,7 +42,19 @@
             android:entries="@array/options_parity"
             android:entryValues="@array/options_parity"
             android:defaultValue="@string/none" />
+        <ListPreference
+            android:key="pref_ioio_rx"
+            android:title="@string/ioio_rx"
+            android:entries="@array/options_ioio_serial"
+            android:entryValues="@array/options_ioio_serial"
+            android:defaultValue="3" />
 
+        <ListPreference
+            android:key="pref_ioio_tx"
+            android:title="@string/ioio_tx"
+            android:entries="@array/options_ioio_serial"
+            android:entryValues="@array/options_ioio_serial"
+            android:defaultValue="4" />
     </PreferenceCategory>
 
     <PreferenceCategory

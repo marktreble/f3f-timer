@@ -246,8 +246,9 @@ public class RacePilotData {
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
             String team = cursor.getString(0);
-            if (!allTeams.contains(team))
+            if (!allTeams.contains(team) && team != null) {
                 allTeams.add(team);
+            }
 
             cursor.moveToNext();
         }

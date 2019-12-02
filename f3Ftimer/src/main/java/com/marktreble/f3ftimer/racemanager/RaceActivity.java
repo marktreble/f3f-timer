@@ -352,11 +352,16 @@ public class RaceActivity extends BaseActivity
             }
         }
 
-        USBIOIOService.startDriver(this, mInputSource, mRid, extras);
-        USBOtherService.startDriver(this, mInputSource, mRid, extras);
-        SoftBuzzerService.startDriver(this, mInputSource, mRid, extras);
-        BluetoothHC05Service.startDriver(this, mInputSource, mRid, extras);
-        TcpIoService.startDriver(this, mInputSource, mRid, extras);
+        startServers(extras);
+
+    }
+
+    public void startServers(Bundle e) {
+        USBIOIOService.startDriver(this, mInputSource, mRid, e);
+        USBOtherService.startDriver(this, mInputSource, mRid, e);
+        SoftBuzzerService.startDriver(this, mInputSource, mRid, e);
+        BluetoothHC05Service.startDriver(this, mInputSource, mRid, e);
+        TcpIoService.startDriver(this, mInputSource, mRid, e);
     }
 
     public void stopServers() {

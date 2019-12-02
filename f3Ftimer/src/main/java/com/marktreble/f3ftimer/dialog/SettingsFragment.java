@@ -88,6 +88,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setListSummary(Pref.USB_STOPBITS);
         setListSummary(Pref.USB_DATABITS);
         setListSummary(Pref.USB_PARITY);
+        setListSummary(Pref.IOIO_RX_PIN);
+        setListSummary(Pref.IOIO_TX_PIN);
         setBTDeviceSummary("pref_external_display");
 
         setStringSummary("pref_wind_angle_offset");
@@ -295,6 +297,14 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
             findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(false);
 
+        }
+
+        if (inputSource.equals(getString(R.string.USB_IOIO))) {
+            findPreference(Pref.IOIO_RX_PIN).setEnabled(true);
+            findPreference(Pref.IOIO_TX_PIN).setEnabled(true);
+        } else {
+            findPreference(Pref.IOIO_RX_PIN).setEnabled(false);
+            findPreference(Pref.IOIO_TX_PIN).setEnabled(false);
         }
     }
 

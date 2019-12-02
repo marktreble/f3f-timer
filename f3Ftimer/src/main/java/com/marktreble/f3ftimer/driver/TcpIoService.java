@@ -212,6 +212,8 @@ public class TcpIoService extends Service implements DriverInterface {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
+        if (intent == null) return START_STICKY;
+
         Log.d(TAG, "onStartCommand");
         mIntent = intent;
 

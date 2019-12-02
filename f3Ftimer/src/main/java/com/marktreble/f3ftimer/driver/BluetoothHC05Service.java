@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
-public class BluetoothHC05Service extends Service implements DriverInterface {
+public class BluetoothHC05Service extends Service implements DriverInterface, Thread.UncaughtExceptionHandler {
 
     private static final String TAG = "BluetoothHC05Service";
 
@@ -87,11 +87,18 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     private InputStream mmInStream;
     private OutputStream mmOutStream;
 
+    private Integer mPoll;
+
     private boolean mIsListening = false;
 
     /*
      * General life-cycle function overrides
      */
+
+    @Override
+    public void uncaughtException(Thread thread, Throwable ex) {
+        stopSelf();
+    }
 
     @Override
     public void onCreate() {
@@ -197,9 +204,14 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            mInputSourceDevice = extras.getString(Pref.INPUT_SRC_DEVICE);
+
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                mInputSourceDevice = extras.getString(Pref.INPUT_SRC_DEVICE);
+            }
+        } else {
+            Log.d("PPP", "NULL");
         }
 
         Log.i("DRIVER", "SENDING UPDATE: " + ICN_DISCONN);
@@ -387,6 +399,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
                         if (mmDevice.getAddress().equals(mInputSourceDevice)) {
                             Log.i(TAG, "Attempting connection to device " + mmDevice.getName());
                             tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
+                            break;
                         }
                     }
                 }
@@ -419,6 +432,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
                     // Connect the device through the socket. This will block
                     // until it succeeds or throws an exception
                     mmSocket.connect();
+
                 } catch (IOException connectException) {
                     // Unable to connect; close the socket and get out
                     connectException.printStackTrace();
@@ -447,8 +461,9 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
             e.printStackTrace();
         }
 
-        mBoardConnected = true;
+        mBoardConnected = false;
         mIsListening = true;
+        mPoll = 0;
         mDriver.start(mIntent);
         driverConnected();
 
@@ -465,15 +480,13 @@ public class BluetoothHC05Service extends Service implements DriverInterface {
     private void listen() {
         if (!mIsListening) return;
 
-
-        if (!mmSocket.isConnected()) {
-            mIsListening = false;
-            mBoardConnected = false;
-            driverDisconnected();
-            mDriver.destroy();
-
-            mHandler.removeCallbacks(listener);
+        // Poll every second
+        // Send /r/n down the socket to check that it is still alive
+        if (mPoll++%10 == 0) {
+            this.sendCmd("\n");
+            mBoardConnected = true;
         }
+
         // Listen
         byte[] buffer = new byte[1024];  // 1K buffer store for the stream
         int bufferLength; // bytes returned from read()

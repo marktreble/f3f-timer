@@ -30,6 +30,17 @@
         <item>@string/parity_space</item>
     </string-array>
 
+    <string-array name="options_ioio_serial" translatable="false">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
     <string-array name="countrycodes" translatable="false">
         <item />
         <item>AU</item>
@@ -44,8 +55,8 @@
         <item>MC</item>
         <item>NL</item>
         <item>NO</item>
-        <item>PT</item>
         <item>PL</item>
+        <item>PT</item>
         <item>SI</item>
         <item>ES</item>
         <item>CH</item>

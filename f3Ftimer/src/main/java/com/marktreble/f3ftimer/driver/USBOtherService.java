@@ -167,72 +167,70 @@ public class USBOtherService extends Service implements DriverInterface {
     public int onStartCommand(final Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            if (extras == null) {
+                return START_STICKY;
+            }
 
-        Log.i(TAG, "onStartCommand");
+            mBaudRate = 2400;
+            String baudrate = extras.getString(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
+            try {
+                mBaudRate = Integer.parseInt(baudrate, 10);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
 
-        Bundle extras = intent.getExtras();
-        if (extras == null) {
-            return START_REDELIVER_INTENT;
+            String databits = extras.getString(Pref.USB_DATABITS, Pref.USB_DATABITS_DEFAULT);
+
+            switch (databits) {
+                case "5":
+                    mDataBits = UsbSerialPort.DATABITS_5;
+                    break;
+                case "6":
+                    mDataBits = UsbSerialPort.DATABITS_6;
+                    break;
+                case "7":
+                    mDataBits = UsbSerialPort.DATABITS_7;
+                    break;
+                case "8":
+                default:
+                    mDataBits = UsbSerialPort.DATABITS_8;
+                    break;
+            }
+
+            String stopbits = extras.getString(Pref.USB_STOPBITS, Pref.USB_STOPBITS_DEFAULT);
+
+            switch (stopbits) {
+                case "2":
+                    mStopBits = UsbSerialPort.STOPBITS_2;
+                    break;
+                case "1":
+                default:
+                    mStopBits = UsbSerialPort.STOPBITS_1;
+                    break;
+            }
+
+            String parity = extras.getString(Pref.USB_PARITY, Pref.USB_PARITY_DEFAULT);
+            switch (parity) {
+                case "Odd":
+                    mParity = UsbSerialPort.PARITY_ODD;
+                    break;
+                case "Even":
+                    mParity = UsbSerialPort.PARITY_EVEN;
+                    break;
+                case "Mark":
+                    mParity = UsbSerialPort.PARITY_MARK;
+                    break;
+                case "Space":
+                    mParity = UsbSerialPort.PARITY_SPACE;
+                    break;
+                case "None":
+                default:
+                    mParity = UsbSerialPort.PARITY_NONE;
+                    break;
+            }
         }
-
-        mBaudRate = 2400;
-        String baudrate = extras.getString(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
-        try {
-            mBaudRate = Integer.parseInt(baudrate, 10);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-
-        String databits = extras.getString(Pref.USB_DATABITS, Pref.USB_DATABITS_DEFAULT);
-
-        switch (databits) {
-            case "5":
-                mDataBits = UsbSerialPort.DATABITS_5;
-                break;
-            case "6":
-                mDataBits = UsbSerialPort.DATABITS_6;
-                break;
-            case "7":
-                mDataBits = UsbSerialPort.DATABITS_7;
-                break;
-            case "8":
-            default:
-                mDataBits = UsbSerialPort.DATABITS_8;
-                break;
-        }
-
-        String stopbits = extras.getString(Pref.USB_STOPBITS, Pref.USB_STOPBITS_DEFAULT);
-
-        switch (stopbits) {
-            case "2":
-                mStopBits = UsbSerialPort.STOPBITS_2;
-                break;
-            case "1":
-            default:
-                mStopBits = UsbSerialPort.STOPBITS_1;
-                break;
-        }
-
-        String parity = extras.getString(Pref.USB_PARITY, Pref.USB_PARITY_DEFAULT);
-        switch (parity) {
-            case "Odd":
-                mParity = UsbSerialPort.PARITY_ODD;
-                break;
-            case "Even":
-                mParity = UsbSerialPort.PARITY_EVEN;
-                break;
-            case "Mark":
-                mParity = UsbSerialPort.PARITY_MARK;
-                break;
-            case "Space":
-                mParity = UsbSerialPort.PARITY_SPACE;
-                break;
-            case "None":
-            default:
-                mParity = UsbSerialPort.PARITY_NONE;
-                break;
-        }
-
         final Runnable make_connection = new Runnable() {
             @Override
             public void run() {
