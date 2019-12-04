@@ -47,5 +47,5 @@ dependencies {
 }
 
 tasks.withType(JavaCompile) {
-    options.compilerArgs << "-Xlint:divzero" << "-Xlint:unchecked" << "-Xlint:cast"
+    options.compilerArgs << "-Xlint:divzero" << "-Xlint:unchecked" << "-Xlint:cast" << "-Xlint:deprecation"
 }

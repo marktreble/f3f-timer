@@ -42,6 +42,7 @@
             android:entries="@array/options_parity"
             android:entryValues="@array/options_parity"
             android:defaultValue="@string/none" />
+
         <ListPreference
             android:key="pref_ioio_rx"
             android:title="@string/ioio_rx"
@@ -55,6 +56,11 @@
             android:entries="@array/options_ioio_serial"
             android:entryValues="@array/options_ioio_serial"
             android:defaultValue="4" />
+
+        <Preference
+            android:key="pref_btn_reset_to_default"
+            android:title="@string/reset_to_defaults" />
+
     </PreferenceCategory>
 
     <PreferenceCategory

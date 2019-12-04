@@ -42,7 +42,7 @@ public class AboutActivity extends Activity {
         }
 
         TextView version = findViewById(R.id.version);
-        version.setText(String.format("%s %s (Build %s)", getString(R.string.version), v, b));
+        version.setText(String.format("%s %s.%s", getString(R.string.version), v, b));
 
     }
 

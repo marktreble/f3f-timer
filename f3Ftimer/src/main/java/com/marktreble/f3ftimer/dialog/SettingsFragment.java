@@ -33,6 +33,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
@@ -90,6 +91,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setListSummary(Pref.USB_PARITY);
         setListSummary(Pref.IOIO_RX_PIN);
         setListSummary(Pref.IOIO_TX_PIN);
+
         setBTDeviceSummary("pref_external_display");
 
         setStringSummary("pref_wind_angle_offset");
@@ -135,9 +137,18 @@ public class SettingsFragment extends PreferenceFragmentCompat
             });
         }
 
+        Preference myPref = findPreference(Pref.RESET_BUTTON);
+        myPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+                resetToDefault(prefs, Pref.RESET_BUTTON);
+                return true;
+            }
+        });
         return view;
 
     }
+
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
@@ -246,6 +257,28 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
 
+    private void resetToDefault(SharedPreferences sharedPreferences, String key) {
+        if (key.equals(Pref.RESET_BUTTON)) {
+            SharedPreferences.Editor edit = sharedPreferences.edit();
+            edit.putString(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
+            edit.putString(Pref.USB_STOPBITS, Pref.USB_STOPBITS_DEFAULT);
+            edit.putString(Pref.USB_DATABITS, Pref.USB_DATABITS_DEFAULT);
+            edit.putString(Pref.USB_PARITY, Pref.USB_PARITY_DEFAULT);
+            edit.putString(Pref.IOIO_RX_PIN, Pref.IOIO_RX_PIN_DEFAULT);
+            edit.putString(Pref.IOIO_TX_PIN, Pref.IOIO_TX_PIN_DEFAULT);
+            edit.commit();
+
+
+            setStringSummary(Pref.USB_BAUDRATE, Pref.USB_BAUDRATE_DEFAULT);
+            setListSummary(Pref.USB_STOPBITS, Pref.USB_STOPBITS_DEFAULT);
+            setListSummary(Pref.USB_DATABITS, Pref.USB_DATABITS_DEFAULT);
+            setListSummary(Pref.USB_PARITY, Pref.USB_PARITY_DEFAULT);
+            setListSummary(Pref.IOIO_RX_PIN, Pref.IOIO_RX_PIN_DEFAULT);
+            setListSummary(Pref.IOIO_TX_PIN, Pref.IOIO_TX_PIN_DEFAULT);
+
+        }
+    }
+
     private void sendStringValueToService(String key, String value) {
         Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
         i.putExtra(IComm.MSG_UI_CALLBACK, key);
@@ -265,35 +298,40 @@ public class SettingsFragment extends PreferenceFragmentCompat
         String inputSource = sharedPref.getString(Pref.INPUT_SRC, "");
         if (inputSource.equals(getString(R.string.BLUETOOTH_HC_05))) {
             // BT - Hide baud rate etc.., and show device picker
-            findPreference("pref_input_tcpio_ip").setEnabled(false);
-            findPreference(Pref.USB_BAUDRATE  ).setEnabled(false);
+            findPreference(Pref.INPUT_TCPIO_IP).setEnabled(false);
+            findPreference(Pref.USB_BAUDRATE).setEnabled(false);
             findPreference(Pref.USB_STOPBITS).setEnabled(false);
             findPreference(Pref.USB_DATABITS).setEnabled(false);
             findPreference(Pref.USB_PARITY).setEnabled(false);
+            findPreference(Pref.RESET_BUTTON).setEnabled(false);
+
 
             findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(true);
 
         } else if (inputSource.equals(getString(R.string.Demo))) {
             // Demo mode - hide all options
-            findPreference("pref_input_tcpio_ip").setEnabled(false);
-            findPreference(Pref.USB_BAUDRATE  ).setEnabled(false);
+            findPreference(Pref.INPUT_TCPIO_IP).setEnabled(false);
+            findPreference(Pref.USB_BAUDRATE).setEnabled(false);
             findPreference(Pref.USB_STOPBITS).setEnabled(false);
             findPreference(Pref.USB_DATABITS).setEnabled(false);
             findPreference(Pref.USB_PARITY).setEnabled(false);
+            findPreference(Pref.RESET_BUTTON).setEnabled(false);
+
 
             findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(false);
         } else {
             // USB - Hide device picker, show baud rate etc..
             if (inputSource.equals(getString(R.string.TCP_IO))) {
-                findPreference("pref_input_tcpio_ip").setEnabled(true);
+                findPreference(Pref.INPUT_TCPIO_IP).setEnabled(true);
             } else {
-                findPreference("pref_input_tcpio_ip").setEnabled(false);
+                findPreference(Pref.INPUT_TCPIO_IP).setEnabled(false);
             }
 
             findPreference(Pref.USB_BAUDRATE  ).setEnabled(true);
             findPreference(Pref.USB_STOPBITS).setEnabled(true);
             findPreference(Pref.USB_DATABITS).setEnabled(true);
             findPreference(Pref.USB_PARITY).setEnabled(true);
+            findPreference(Pref.RESET_BUTTON).setEnabled(true);
 
             findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(false);
 
@@ -359,16 +397,27 @@ public class SettingsFragment extends PreferenceFragmentCompat
         }
     }
 
+    private void setStringSummary(String key, String value) {
+        Preference pref = findPreference(key);
+        if (pref instanceof EditTextPreference) {
+            pref.setSummary(value);
+        }
+    }
+
     private void setListSummary(String key) {
         Preference pref = findPreference(key);
         if (pref instanceof ListPreference) {
             ListPreference listPref = (ListPreference) pref;
             String value = (String) listPref.getEntry();
-            Log.d("PPP", "VAL = " + value);
-
             pref.setSummary(value);
-        } else {
-            Log.d("PPP", "NOT A LIST PREF");
+        }
+    }
+
+    private void setListSummary(String key, String value) {
+        Preference pref = findPreference(key);
+        if (pref instanceof ListPreference) {
+            ListPreference listPref = (ListPreference) pref;
+            pref.setSummary(value);
         }
     }
 

@@ -249,4 +249,5 @@
     <string name="de">Duitse</string>
     <string name="nl">Nederlands</string>
     <string name="es">Spaans</string>
+    <string name="reset_to_defaults">Reset naar standaardwaarden</string>
 </resources>

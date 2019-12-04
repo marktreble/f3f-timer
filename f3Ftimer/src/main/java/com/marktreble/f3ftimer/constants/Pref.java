@@ -3,6 +3,7 @@ package com.marktreble.f3ftimer.constants;
 public class Pref {
     public final static String INPUT_SRC = "pref_input_src";
     public final static String INPUT_SRC_DEVICE = "pref_input_src_device";
+    public final static String INPUT_TCPIO_IP = "pref_input_tcpio_ip";
 
     public final static String USB_BAUDRATE = "pref_usb_baudrate";
     public final static String USB_STOPBITS = "pref_usb_stopbits";
@@ -11,11 +12,10 @@ public class Pref {
     public final static String USB_TETHER = "pref_usb_tether";
 
     public final static String IOIO_RX_PIN = "pref_ioio_rx";
-    public final static String IOIO_RX_PIN_DEFAULT = "3";
     public final static String IOIO_TX_PIN = "pref_ioio_tx";
-    public final static String IOIO_TX_PIN_DEFAULT = "4";
     public final static String IOIO_START_PIN = "pref_ioio_start";
-    public final static String IOIO_START_PIN_DEFAULT = "46";
+
+    public final static String RESET_BUTTON = "pref_btn_reset_to_default";
 
     public final static String RESULTS = "pref_results";
     public final static String RESULTS_SERVER = "pref_results_server";
@@ -51,5 +51,9 @@ public class Pref {
     public final static String USB_DATABITS_DEFAULT = "8";
     public final static String USB_PARITY_DEFAULT = "None";
     public final static Boolean USB_TETHER_DEFAULT = false;
+
+    public final static String IOIO_RX_PIN_DEFAULT = "3";
+    public final static String IOIO_TX_PIN_DEFAULT = "4";
+    public final static String IOIO_START_PIN_DEFAULT = "46";
 
 }

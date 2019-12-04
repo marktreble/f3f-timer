@@ -248,4 +248,5 @@
     <string name="isl">Iceland</string>
     <string name="mco">Monaco</string>
     <string name="pol">Poland</string>
+    <string name="reset_to_defaults">Auf Standardeinstellung zurücksetzen</string>
 </resources>

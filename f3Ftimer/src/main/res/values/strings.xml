@@ -119,6 +119,7 @@
     <string name="usb_parity">Parity</string>
     <string name="ioio_rx" translatable="false">IOIO RX Pin</string>
     <string name="ioio_tx" translatable="false">IOIO TX Pin</string>
+    <string name="reset_to_defaults">Reset to Defaults</string>
     <string name="soft_buzz">Software Buzzer</string>
     <string name="none">None</string>
     <string name="enter_num_groups">Enter Number of Groups</string>

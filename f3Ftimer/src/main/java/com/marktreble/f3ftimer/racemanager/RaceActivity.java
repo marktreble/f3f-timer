@@ -136,6 +136,10 @@ public class RaceActivity extends BaseActivity
     private boolean mPrefWindMeasurement;
     private boolean mPrefResultsF3Fgear;
 
+    private int mRx;
+    private int mTx;
+    private int mStart;
+
     private boolean mRoundComplete;
     private boolean mRoundNotStarted;
     private boolean mGroupNotStarted;
@@ -453,6 +457,10 @@ public class RaceActivity extends BaseActivity
         boolean sPrefWifiHotspot = mPrefWifiHotspot;
         boolean sPrefResultsDisplay = mPrefResultsDisplay;
         String sPrefExternalDisplay = mPrefExternalDisplay;
+        Integer sIOIORx = mRx;
+        Integer sIOIOTx = mTx;
+        Integer sIOIOStart = mStart;
+
         getPreferences();
 
         if (!sInputSource.equals(mInputSource)                          // Input src changed
@@ -461,6 +469,9 @@ public class RaceActivity extends BaseActivity
                 || sPrefResultsDisplay != mPrefResultsDisplay           // External Display server toggled
                 || !sInputSourceDevice.equals(mInputSourceDevice)       // Input Source device changed
                 || !sPrefExternalDisplay.equals(mPrefExternalDisplay)   // External Display device changed
+                || !sIOIORx.equals(mRx)
+                || !sIOIOTx.equals(mTx)
+                || !sIOIOStart.equals(mStart)
         ) {
             stopServers();
             startServers();
@@ -519,6 +530,10 @@ public class RaceActivity extends BaseActivity
         mPrefExternalDisplay = sharedPref.getString("pref_external_display", "");
         mPrefWindMeasurement = sharedPref.getBoolean("pref_wind_measurement", false);
         mPrefResultsF3Fgear = sharedPref.getBoolean("pref_results_F3Fgear", false);
+
+        mRx = Integer.parseInt(sharedPref.getString(Pref.IOIO_RX_PIN, Pref.IOIO_RX_PIN_DEFAULT));
+        mTx = Integer.parseInt(sharedPref.getString(Pref.IOIO_TX_PIN, Pref.IOIO_TX_PIN_DEFAULT));
+        mStart = Integer.parseInt(sharedPref.getString(Pref.IOIO_START_PIN, Pref.IOIO_START_PIN_DEFAULT));
 
     }
 

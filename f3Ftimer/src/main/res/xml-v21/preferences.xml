@@ -56,6 +56,11 @@
             android:entries="@array/options_ioio_serial"
             android:entryValues="@array/options_ioio_serial"
             android:defaultValue="4" />
+
+        <Preference
+            android:key="pref_btn_reset_to_default"
+            android:title="@string/reset_to_defaults" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
