@@ -71,7 +71,7 @@ The following table lists known device compatibility:
 ### Installation
 
 The latest stable release can be downloaded here:
-<a href="https://www.marktreble.co.uk/clients/f3f/F3Ftimer2.1.0.apk">F3Ftimer2.1.0.apk</a>
+<a href="https://www.marktreble.co.uk/clients/f3f/F3Ftimer2.1.1.apk">F3Ftimer2.1.1.apk</a>
 
 Archived Release
 <a href="https://www.marktreble.co.uk/clients/f3f/F3Ftimer.11.9.17.apk">F3Ftimer.11.9.17.apk</a>
