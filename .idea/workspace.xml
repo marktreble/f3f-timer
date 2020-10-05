@@ -14,7 +14,7 @@
   <component name="ChangeListManager">
     <list default="true" id="6c21baa8-79e2-4dc9-affc-297f7bacfb2e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +137,14 @@
       <option name="project" value="LOCAL" />
       <updated>1601925297082</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added Instructions docx">
+      <created>1601925513927</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1601925513927</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -154,18 +161,18 @@
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="550" y="306" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.877@0.23.1440.877" timestamp="1601906981054" />
-    <state x="0" y="64" key="CommitChangelistDialog2" timestamp="1601925296421">
+    <state x="0" y="64" key="CommitChangelistDialog2" timestamp="1601925513360">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state x="0" y="64" key="CommitChangelistDialog2/0.23.1440.877@0.23.1440.877" timestamp="1601925296421" />
+    <state x="0" y="64" key="CommitChangelistDialog2/0.23.1440.877@0.23.1440.877" timestamp="1601925513360" />
     <state x="136" y="78" key="SettingsEditor" timestamp="1601910636210">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="136" y="78" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1601910636210" />
-    <state x="409" y="201" key="Vcs.Push.Dialog.v2" timestamp="1601925300140">
+    <state x="409" y="201" key="Vcs.Push.Dialog.v2" timestamp="1601925516083">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state x="409" y="201" key="Vcs.Push.Dialog.v2/0.23.1440.877@0.23.1440.877" timestamp="1601925300140" />
+    <state x="409" y="201" key="Vcs.Push.Dialog.v2/0.23.1440.877@0.23.1440.877" timestamp="1601925516083" />
     <state x="373" y="107" width="916" height="677" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1601919660375">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
