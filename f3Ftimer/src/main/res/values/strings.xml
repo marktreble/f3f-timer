@@ -7,7 +7,7 @@
     <string name="HC05_uuid" translatable="false">"00001101-0000-1000-8000-00805F9B34FB"</string>
     <string name="version">Version</string>
     <string name="credits">An open source project by Mark Treble</string>
-    <string name="repositary" translatable="false">https://www.github.com/marktreble/f3f-timer</string>
+    <string name="repository" translatable="false">https://www.github.com/marktreble/f3f-timer</string>
     <string name="instructions" translatable="false">https://www.github.com/marktreble/f3f-timer/wiki/instructions</string>
     <string name="help">Please see the link below for instruction on how to use this software.</string>
     <string name="menu_settings">Settings</string>
@@ -148,6 +148,7 @@
     <string name="ttl_completed_rounds">Completed Rounds</string>
     <string name="ttl_team_results">Team Results</string>
     <string name="ttl_leader_board">Leader Board</string>
+    <string name="ttl_auto_read">Read Results</string>
 
     <!-- Context Menu -->
     <string name="cmenu_reflight">Award Reflight</string>
@@ -287,7 +288,8 @@
     <string name="exporting">Exporting..</string>
     <string name="importing">Importing..</string>
 
-    <string name="empty" translatable="false"></string>
+    <string name="empty" translatable="false">
+    </string>
 
     <string name="ttl_race_imported">Race Imported</string>
     <string name="msg_race_imported">Your race has been imported</string>

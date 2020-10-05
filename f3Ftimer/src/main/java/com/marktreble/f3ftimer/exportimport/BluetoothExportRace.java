@@ -224,7 +224,7 @@ public class BluetoothExportRace extends BaseExport {
         StringBuilder response = new StringBuilder("[");
         for (Race r : allRaces) {
             if (response.length() > 1) response.append(",");
-            response.append(String.format("{\"id\":\"%s\", \"name\":\"%s\"}", Integer.toString(r.id), r.name));
+            response.append(String.format("{\"id\":\"%s\", \"name\":\"%s\"}", r.id, r.name));
         }
 
         response.append("]\n\n");
@@ -251,7 +251,7 @@ public class BluetoothExportRace extends BaseExport {
 
         String data = super.getSerialisedRaceData(r.id, r.round);
 
-        byte[] bytes = data.getBytes(Charset.forName("UTF-8"));
+        byte[] bytes = data.getBytes(StandardCharsets.UTF_8);
 
         try {
             mmOutStream.write(bytes, 0, bytes.length);

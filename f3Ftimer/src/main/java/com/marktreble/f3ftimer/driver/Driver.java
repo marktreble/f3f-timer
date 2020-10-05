@@ -11,17 +11,12 @@
 
 package com.marktreble.f3ftimer.driver;
 
-import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.media.SoundPool;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -37,6 +32,7 @@ import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
 import com.marktreble.f3ftimer.languages.Languages;
+import com.marktreble.f3ftimer.media.SoftBuzzer;
 import com.marktreble.f3ftimer.media.TTS;
 
 import org.apache.commons.lang3.StringUtils;
@@ -72,7 +68,6 @@ public class Driver implements TTS.onInitListenerProxy {
 
     private Integer mPenalty;
 
-    public MediaPlayer mPlayer;
     private boolean mSoundFXon;
     private boolean mSpeechFXon;
 
@@ -94,11 +89,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
     private final static int SPEECH_DELAY_TIME = 250;
 
-    HashMap<String, String> utterance_ids = new HashMap<>();
-
-    private static SoundPool soundPool;
-
-    private int[] soundArray;
+    private SoftBuzzer softBuzzer;
 
     private static boolean alreadyfinalised = false;
     private static boolean alreadyReceivedFinalizeReq = false;
@@ -129,19 +120,12 @@ public class Driver implements TTS.onInitListenerProxy {
         // Listen for inputs from the UI
         mContext.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
 
-        // TODO
-        // Sound Pool should be placed in it's own class under .media.SoftBuzzer
-        if (soundPool != null) {
-            soundPool.release();
-            soundPool = null;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            soundPool = new SoundPool.Builder().setMaxStreams(1).build();
-        } else {
-            soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
-        }
 
-        setSounds(intent);
+        softBuzzer = new SoftBuzzer();
+        softBuzzer.destroy();
+        softBuzzer.init();
+
+        softBuzzer.setSounds(mContext, intent, sounds);
 
         mSoundFXon = intent.getBooleanExtra("pref_buzzer", false);
         mSpeechFXon = intent.getBooleanExtra("pref_voice", false);
@@ -162,29 +146,6 @@ public class Driver implements TTS.onInitListenerProxy {
         // Check timeout status of the round on start
         mHandler.post(checkTimeout);
 
-    }
-
-    private void setSounds(Intent intent) {
-        // soundArray is loaded from preferences
-
-        soundArray = new int[sounds.length];
-        int i = 0;
-        for (String sound : sounds) {
-            String value = intent.getStringExtra(sound);
-            int id = mContext.getResources().getIdentifier(value, "raw", mContext.getPackageName());
-            soundArray[i++] = soundPool.load(mContext, id, 1);
-        }
-    }
-
-    private void setSound(String key, String value) {
-        int i = 0;
-        for (String sound : sounds) {
-            if (key.equals(sound)) {
-                int id = mContext.getResources().getIdentifier(value, "raw", mContext.getPackageName());
-                soundArray[i] = soundPool.load(mContext, id, 1);
-            }
-            i++;
-        }
     }
 
     // TTS.onInitListenerProxy
@@ -215,10 +176,7 @@ public class Driver implements TTS.onInitListenerProxy {
             e.printStackTrace();
         }
 
-        if (soundPool != null) {
-            soundPool.release();
-            soundPool = null;
-        }
+        softBuzzer.destroy();
 
         if (mTts != null) {
             mTts.release();
@@ -307,7 +265,7 @@ public class Driver implements TTS.onInitListenerProxy {
                         || data.equals("pref_buzz_turn9")
                         || data.equals("pref_buzz_penalty")) {
                     String value = extras.getString(IComm.MSG_VALUE);
-                    setSound(data, value);
+                    softBuzzer.setSound(mContext, data, value, sounds);
                     return;
                 }
 
@@ -325,7 +283,9 @@ public class Driver implements TTS.onInitListenerProxy {
                     if (mSpeechFXon) {
                         mDefaultSpeechLang = extras.getString(IComm.MSG_VALUE);
                         // Try to set speech lang - if not available then setSpeechFXLanguage returns the default Language
-                        mPilotLang = setSpeechFXLanguage(mPilotLang);
+                        if (mSpeechFXon && mTts != null) {
+                            mPilotLang = mTts.setSpeechFXLanguage(mPilotLang, mDefaultSpeechLang);
+                        }
                     }
                     return;
                 }
@@ -473,10 +433,10 @@ public class Driver implements TTS.onInitListenerProxy {
 					*/
 
                     // Try to set speech lang - if not available then setSpeechFXLanguage returns the default Language
-                    mPilotLang = setSpeechFXLanguage(mPilotLang);
+                    mPilotLang = mTts.setSpeechFXLanguage(mPilotLang, mDefaultSpeechLang);
 
                     if (mSpeechFXon)
-                        speak(String.format("%s %s", pilot.firstname, pilot.lastname), TextToSpeech.QUEUE_ADD);
+                        mTts.speak(String.format("%s %s", pilot.firstname, pilot.lastname), TextToSpeech.QUEUE_ADD);
 
                 }
             }, 200);
@@ -504,7 +464,7 @@ public class Driver implements TTS.onInitListenerProxy {
             Resources r = Languages.useLanguage(mContext, mPilotLang);
             String lang = r.getString(R.string.working_time_started);
             Languages.useLanguage(mContext, mDefaultLang);
-            speak(lang, TextToSpeech.QUEUE_ADD);
+            mTts.speak(lang, TextToSpeech.QUEUE_ADD);
         }
     };
 
@@ -520,14 +480,14 @@ public class Driver implements TTS.onInitListenerProxy {
             Resources r = Languages.useLanguage(mContext, mPilotLang);
             String lang = r.getString(R.string.model_launched);
             Languages.useLanguage(mContext, mDefaultLang);
-            speak(lang, TextToSpeech.QUEUE_ADD);
+            mTts.speak(lang, TextToSpeech.QUEUE_ADD);
         }
 
     }
 
     public void _count(String number) {
         if (mSpeechFXon)
-            speak(number, TextToSpeech.QUEUE_ADD);
+            mTts.speak(number, TextToSpeech.QUEUE_ADD);
     }
 
     public void offCourse() {
@@ -540,8 +500,8 @@ public class Driver implements TTS.onInitListenerProxy {
         //if (mSoundFXon) mPlayer.start();
 
         if (mSoundFXon) {
-            setAudioVolume();
-            SoftBuzzSound.soundOffCourse(soundPool, soundArray);
+            mTts.setAudioVolume();
+            softBuzzer.soundOffCourse();
         }
 
         // Synthesized Call
@@ -550,7 +510,7 @@ public class Driver implements TTS.onInitListenerProxy {
                 public void run() {
                     String lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.off_course);
                     Languages.useLanguage(mContext, mDefaultLang);
-                    speak(lang, TextToSpeech.QUEUE_ADD);
+                    mTts.speak(lang, TextToSpeech.QUEUE_ADD);
                 }
             }, SPEECH_DELAY_TIME);
         }
@@ -573,8 +533,8 @@ public class Driver implements TTS.onInitListenerProxy {
         // Buzzer Sound
         //if (mSoundFXon) mPlayer.start();
         if (mSoundFXon) {
-            setAudioVolume();
-            SoftBuzzSound.soundOnCourse(soundPool, soundArray);
+            mTts.setAudioVolume();
+            softBuzzer.soundOnCourse();
         }
 
         // Synthesized Call
@@ -589,7 +549,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
                     }
                     Languages.useLanguage(mContext, mDefaultLang);
-                    speak(lang, TextToSpeech.QUEUE_ADD);
+                    mTts.speak(lang, TextToSpeech.QUEUE_ADD);
 
                 }
             }, SPEECH_DELAY_TIME);
@@ -635,11 +595,11 @@ public class Driver implements TTS.onInitListenerProxy {
         // Buzzer Sound
         //if (mSoundFXon) mPlayer.start();
         if (mSoundFXon) {
-            setAudioVolume();
+            mTts.setAudioVolume();
             if (mLeg < 9) {
-                SoftBuzzSound.soundTurn(soundPool, soundArray);
+                softBuzzer.soundTurn();
             } else {
-                SoftBuzzSound.soundTurn9(soundPool, soundArray);
+                softBuzzer.soundTurn9();
             }
         }
 
@@ -650,7 +610,7 @@ public class Driver implements TTS.onInitListenerProxy {
             mHandler.postDelayed(new Runnable() {
                 public void run() {
 
-                    speak(leg, TextToSpeech.QUEUE_ADD);
+                    mTts.speak(leg, TextToSpeech.QUEUE_ADD);
                 }
             }, SPEECH_DELAY_TIME);
         }
@@ -660,8 +620,8 @@ public class Driver implements TTS.onInitListenerProxy {
         mPenalty++;
         // Buzzer Sound
         if (mSoundFXon) {
-            setAudioVolume();
-            SoftBuzzSound.soundPenalty(soundPool, soundArray);
+            mTts.setAudioVolume();
+            softBuzzer.soundPenalty();
         }
 
         Intent i = new Intent(IComm.RCV_LIVE_UPDATE);
@@ -734,7 +694,7 @@ public class Driver implements TTS.onInitListenerProxy {
                 }
 
                 // Speak the time
-                if (mSpeechFXon) speak(str_time, TextToSpeech.QUEUE_ADD);
+                if (mSpeechFXon) mTts.speak(str_time, TextToSpeech.QUEUE_ADD);
                 Log.d(TAG, "TIME SPOKEN");
 
                 // Update the .txt file
@@ -750,17 +710,20 @@ public class Driver implements TTS.onInitListenerProxy {
                 Results r = new Results();
                 r.getOrderedRoundInProgress(mContext, mRid);
 
-                String topthree = "";
+                StringBuilder topthree = new StringBuilder();
                 String[] position = {"1st", "2nd", "3rd"};
 
                 for (int count = 0; count < 3; count++) {
                     if (r.mArrNames.size() > count) {
                         Pilot p = r.mArrPilots.get(count);
-                        topthree += String.format("%s %s %.2f   ", position[count], StringUtils.stripAccents(r.mArrNames.get(count)), p.time);
+                        topthree.append(
+                                String.format("%s %s %.2f   ", position[count], StringUtils.stripAccents(r.mArrNames.get(count)), p.time)
+                        );
+
                     }
                 }
 
-                String str_round_results = String.format("Round %d positions: %s", mRnd, topthree);
+                String str_round_results = String.format("Round %d positions: %s", mRnd, topthree.toString());
 
                 //str_round_results = "Testing...";
 
@@ -827,7 +790,7 @@ public class Driver implements TTS.onInitListenerProxy {
                     String text = Languages.useLanguage(mContext, mDefaultSpeechLang).getString(R.string.wind_warning);
                     Languages.useLanguage(mContext, mDefaultLang);
                     //setSpeechFXLanguage(mDefaultSpeechLang);
-                    speak(text, TextToSpeech.QUEUE_ADD);
+                    mTts.speak(text, TextToSpeech.QUEUE_ADD);
                     //setSpeechFXLanguage(mPilotLang);
                 }
             }
@@ -847,6 +810,7 @@ public class Driver implements TTS.onInitListenerProxy {
 
     private void startSpeechSynthesiser() {
         mTts = TTS.sharedTTS(mContext, this);
+        mTts.mSetFullVolume = mSetFullVolume;
     }
 
 
@@ -977,75 +941,5 @@ public class Driver implements TTS.onInitListenerProxy {
             i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout_not_started");
             mContext.sendBroadcast(i);
         }
-    }
-
-    // TODO
-    // setSpeechFXLanguage and speak belong in .media.TTS class!
-    private String setSpeechFXLanguage(String language) {
-        String lang;
-        if (!mSpeechFXon) {
-            lang = language;
-        } else if (mTts == null) {
-            Log.i(TAG, "TTS IS NULL!");
-            lang = language;
-        } else {
-            lang = Languages.setSpeechLanguage(language, mDefaultSpeechLang, mTts.ttsengine());
-            if (mTts != null && lang != null && !lang.equals("")) {
-                Log.i(TAG, "TTS set speech engine language: " + lang);
-                mTts.ttsengine().setLanguage(Languages.stringToLocale(lang));
-            } else {
-                // Unchanged, so return the pilot language
-                lang = language;
-            }
-            Log.i(TAG, "TTS LANG: " + lang);
-        }
-
-        return lang;
-    }
-
-    @TargetApi(21)
-    public void speak(String text, int queueMode) {
-        if (mTts == null) return;
-        setAudioVolume();
-
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.KITKAT) {
-            utterance_ids.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, text);
-            mTts.ttsengine().speak(text, queueMode, utterance_ids);
-        } else {
-            mTts.ttsengine().speak(text, queueMode, null, text);
-        }
-
-    }
-
-    private void setAudioVolume() {
-        if (mSetFullVolume) {
-            AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-            if (audioManager != null) {
-                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
-            }
-        }
-    }
-
-    public static class SoftBuzzSound {
-        static void soundOffCourse(SoundPool player, int[] ref) {
-            player.play(ref[0], 1, 1, 1, 0, 1f);
-        }
-
-        static void soundOnCourse(SoundPool player, int[] ref) {
-            player.play(ref[1], 1, 1, 1, 0, 1f);
-        }
-
-        static void soundTurn(SoundPool player, int[] ref) {
-            player.play(ref[2], 1, 1, 1, 0, 1f);
-        }
-
-        static void soundTurn9(SoundPool player, int[] ref) {
-            player.play(ref[3], 1, 1, 1, 0, 1f);
-        }
-
-        static void soundPenalty(SoundPool player, int[] ref) {
-            player.play(ref[4], 1, 1, 1, 0, 1f);
-        }
-
     }
 }

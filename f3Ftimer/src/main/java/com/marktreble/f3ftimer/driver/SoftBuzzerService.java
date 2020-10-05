@@ -83,7 +83,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
     }
 
-    public static void startDriver(RaceActivity context, String inputSource, Integer race_id, Bundle params) {
+    public static void startDriver(Context context, String inputSource, Integer race_id, Bundle params) {
         if (inputSource.equals(context.getString(R.string.Demo))) {
             Intent i = new Intent(IComm.RCV_UPDATE);
             i.putExtra("icon", ICN_DISCONN);

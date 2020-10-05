@@ -125,6 +125,7 @@ public class PilotData {
             for (Pilot pe : arrPilots) { // pe excepted pilot
                 if ((pe.firstname.equals(p.firstname) && pe.lastname.equals(p.lastname))) {
                     excepted = true;
+                    break;
                 }
             }
             if (!excepted) allPilots.add(p);

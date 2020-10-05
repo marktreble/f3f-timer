@@ -76,7 +76,8 @@
         <ListPreference
             android:key="pref_voice_lang"
             android:title="Language for Voice Synthesis"
-            android:dependency="pref_voice" />
+            android:dependency="pref_voice"
+            android:defaultValue="en_GB" />
 
         <CheckBoxPreference
             android:key="pref_full_volume"
@@ -102,7 +103,7 @@
             android:dependency="pref_buzzer"
             android:entries="@array/sound_names"
             android:entryValues="@array/sound_values"
-            android:defaultValue="@string/whistle" />
+            android:defaultValue="whistle" />
 
         <ListPreference
             android:key="pref_buzz_on_course"
@@ -110,7 +111,7 @@
             android:dependency="pref_buzzer"
             android:entries="@array/sound_names"
             android:entryValues="@array/sound_values"
-            android:defaultValue="@string/whistle" />
+            android:defaultValue="whistle" />
 
         <ListPreference
             android:key="pref_buzz_turn"
@@ -118,7 +119,7 @@
             android:dependency="pref_buzzer"
             android:entries="@array/sound_names"
             android:entryValues="@array/sound_values"
-            android:defaultValue="@string/whistle" />
+            android:defaultValue="whistle" />
 
         <ListPreference
             android:key="pref_buzz_turn9"
@@ -126,7 +127,7 @@
             android:dependency="pref_buzzer"
             android:entries="@array/sound_names"
             android:entryValues="@array/sound_values"
-            android:defaultValue="@string/whistle" />
+            android:defaultValue="whistle" />
 
         <ListPreference
             android:key="pref_buzz_penalty"
@@ -134,7 +135,7 @@
             android:dependency="pref_buzzer"
             android:entries="@array/sound_names"
             android:entryValues="@array/sound_values"
-            android:defaultValue="@string/beep" />
+            android:defaultValue="beep" />
 
 
     </PreferenceCategory>

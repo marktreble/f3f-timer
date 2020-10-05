@@ -13,9 +13,14 @@ package com.marktreble.f3ftimer.media;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.media.AudioManager;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
+
+import com.marktreble.f3ftimer.languages.Languages;
+
+import java.util.HashMap;
 
 public class TTS implements TextToSpeech.OnInitListener {
 
@@ -24,6 +29,11 @@ public class TTS implements TextToSpeech.OnInitListener {
     private TextToSpeech mttsengine;
     private onInitListenerProxy mInitListener;
     public int mTTSStatus;
+    HashMap<String, String> utterance_ids = new HashMap<>();
+
+    private Context mContext;
+
+    public boolean mSetFullVolume = true;
 
 
     public interface onInitListenerProxy {
@@ -44,6 +54,7 @@ public class TTS implements TextToSpeech.OnInitListener {
     private TTS(Context context) {
         Log.i(TAG, "STARTING TTS ENGINE");
         mttsengine = new TextToSpeech(context, this);
+        mContext = context;
     }
 
 
@@ -104,6 +115,43 @@ public class TTS implements TextToSpeech.OnInitListener {
 
         initUtteranceListenerForMinICS();
         mInitListener.onInit(status);
+    }
+
+    public String setSpeechFXLanguage(String language, String defaultLang) {
+        String lang;
+        lang = Languages.setSpeechLanguage(language, defaultLang, ttsengine());
+        if (lang != null && !lang.equals("")) {
+            Log.i(TAG, "TTS set speech engine language: " + lang);
+            ttsengine().setLanguage(Languages.stringToLocale(lang));
+        } else {
+            // Unchanged, so return the pilot language
+            lang = language;
+        }
+        Log.i(TAG, "TTS LANG: " + lang);
+
+        return lang;
+    }
+
+    @TargetApi(21)
+    public void speak(String text, int queueMode) {
+        setAudioVolume();
+
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.KITKAT) {
+            utterance_ids.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, text);
+            ttsengine().speak(text, queueMode, utterance_ids);
+        } else {
+            ttsengine().speak(text, queueMode, null, text);
+        }
+
+    }
+
+    public void setAudioVolume() {
+        if (mSetFullVolume) {
+            AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+            if (audioManager != null) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
+            }
+        }
     }
 
     @TargetApi(15)

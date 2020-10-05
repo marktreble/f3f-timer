@@ -12,46 +12,21 @@
 package com.marktreble.f3ftimer.resultsmanager;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentTransaction;
-import android.view.Menu;
-import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.marktreble.f3ftimer.BaseActivity;
 import com.marktreble.f3ftimer.R;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
-import com.marktreble.f3ftimer.data.results.Results;
-import com.marktreble.f3ftimer.dialog.AboutActivity;
-import com.marktreble.f3ftimer.dialog.GenericAlert;
-import com.marktreble.f3ftimer.dialog.GenericListPicker;
-import com.marktreble.f3ftimer.dialog.HelpActivity;
-import com.marktreble.f3ftimer.exportimport.F3ftimerApiExportRace;
-import com.marktreble.f3ftimer.exportimport.F3xvaultApiExportRace;
-import com.marktreble.f3ftimer.filesystem.F3XVaultExport;
-import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
-import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
-import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class ResultsRaceActivity extends ResultsRaceBaseActivity
     implements ListView.OnClickListener {
@@ -96,6 +71,7 @@ public class ResultsRaceActivity extends ResultsRaceBaseActivity
         mOptions.add(getString(R.string.ttl_completed_rounds));
         mOptions.add(getString(R.string.ttl_leader_board));
         mOptions.add(getString(R.string.ttl_team_results));
+        mOptions.add(getString(R.string.ttl_auto_read));
 
     }
 
@@ -140,6 +116,9 @@ public class ResultsRaceActivity extends ResultsRaceBaseActivity
                 break;
             case 3:
                 intent = new Intent(this, ResultsTeamsActivity.class);
+                break;
+            case 4:
+                intent = new Intent(this, ResultsReadActivity.class);
                 break;
         }
         if (intent != null) {

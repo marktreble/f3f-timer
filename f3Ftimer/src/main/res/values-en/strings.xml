@@ -270,4 +270,5 @@
     <string name="mco">Monaco</string>
     <string name="pol">Poland</string>
     <string name="reset_to_defaults">Reset to Defaults</string>
+    <string name="ttl_auto_read">Read Results</string>
 </resources>

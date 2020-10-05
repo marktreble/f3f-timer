@@ -1,3 +1,14 @@
+/*
+ *     ___________ ______   _______
+ *    / ____/__  // ____/  /_  __(_)___ ___  ___  _____
+ *   / /_    /_ </ /_       / / / / __ `__ \/ _ \/ ___/
+ *  / __/  ___/ / __/      / / / / / / / / /  __/ /
+ * /_/    /____/_/        /_/ /_/_/ /_/ /_/\___/_/
+ *
+ * Open Source F3F timer UI and scores database
+ *
+ */
+
 package com.marktreble.f3ftimer.resultsmanager;
 
 import android.content.Intent;
@@ -9,7 +20,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.v4.app.FragmentTransaction;
+
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentTransaction;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -151,7 +164,7 @@ public class ResultsRaceBaseActivity extends BaseActivity {
         String[] email_list = new String[mArrNames.size()];
 
         for (int i = 0; i < mArrNames.size(); i++) {
-            results.append(String.format("%s %s %s\n", mArrNumbers.get(i), mArrNames.get(i), Float.toString(mArrScores.get(i))));
+            results.append(String.format("%s %s %s\n", mArrNumbers.get(i), mArrNames.get(i), mArrScores.get(i)));
 
             // Generate list of email addresses to send to
             Pilot p = mArrPilots.get(i);
@@ -318,13 +331,18 @@ public class ResultsRaceBaseActivity extends BaseActivity {
         intent.putExtra(Intent.EXTRA_SUBJECT, race.name);
         intent.putExtra(Intent.EXTRA_TEXT, "Results file attached");
 
+
         File file = exp.getDataStorageDir(this,race.name + ".txt");
         if (!file.exists() || !file.canRead()) {
             Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
-        Uri uri = Uri.fromFile(file);
+
+        Uri uri = FileProvider.getUriForFile(
+                this,
+                "com.marktreble.f3ftimer.provider",
+                file);
         intent.putExtra(Intent.EXTRA_STREAM, uri);
 
         Intent openInChooser = Intent.createChooser(intent, "Email Results File");
@@ -356,7 +374,10 @@ public class ResultsRaceBaseActivity extends BaseActivity {
             finish();
             return;
         }
-        Uri uri = Uri.fromFile(file);
+        Uri uri = FileProvider.getUriForFile(
+                this,
+                "com.marktreble.f3ftimer.provider",
+                file);
         intent.putExtra(Intent.EXTRA_STREAM, uri);
 
         Intent openInChooser = Intent.createChooser(intent, "Email Results File");

@@ -204,7 +204,7 @@
     <string name="external_results_files">Resultados externos (FileSystem)</string>
     <string name="external_results_http">Resultados externos (HTTP)</string>
     <string name="finish_race">Terminar carrera</string>
-    <string name="ftd_result">Tiempo más rápido: %1$.2f por %2$ s en la ronda %3$d</string>
+    <string name="ftd_result">Tiempo más rápido: %1$.2f por %2$s en la ronda %3$d</string>
     <string name="generate_start_number">Generar número de inicio</string>
     <string name="group_heading">Grupo %d</string>
     <string name="theme_blackwhite">Blanco/Negro</string>
@@ -249,5 +249,6 @@
     <string name="mco">Monaco</string>
     <string name="pol">Poland</string>
     <string name="reset_to_defaults">Restablecer los valores predeterminados</string>
+    <string name="ttl_auto_read">Read Results</string>
 
 </resources>

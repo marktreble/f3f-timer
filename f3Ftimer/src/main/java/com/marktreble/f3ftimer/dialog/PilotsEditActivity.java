@@ -15,12 +15,14 @@ package com.marktreble.f3ftimer.dialog;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -80,6 +82,11 @@ public class PilotsEditActivity extends AppCompatActivity {
         TextView teamlabel = findViewById(R.id.textView10);
         AutoCompleteTextView team = findViewById(R.id.editText8);
         Button done_button = findViewById(R.id.button1);
+
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = this.getTheme();
+        theme.resolveAttribute(R.attr.bg, typedValue, true);
+        team.setDropDownBackgroundResource(typedValue.resourceId);
 
         done_button.setOnClickListener(new View.OnClickListener() {
             @Override

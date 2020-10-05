@@ -12,7 +12,7 @@
     <dimen name="nav_button">16dp</dimen>
     <dimen name="nav_button_height">48dp</dimen>
 
-    <dimen name="ctrl_button">20dp</dimen>
+    <dimen name="ctrl_button">20sp</dimen>
 
     <dimen name="clock_time">60sp</dimen>
 

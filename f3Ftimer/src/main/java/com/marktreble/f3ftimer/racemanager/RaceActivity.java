@@ -13,7 +13,7 @@ package com.marktreble.f3ftimer.racemanager;
 
 import android.app.ActionBar;
 import android.app.ActivityManager;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -29,11 +29,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.print.PrintAttributes;
 import android.print.PrintManager;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -978,7 +978,7 @@ public class RaceActivity extends BaseActivity
             // First to fly
             // (only when r = 0!)
             boolean first = (r == 0);
-            int group_size = (int) Math.floor(num_pilots / mGroupScoring.num_groups);
+            int group_size = (int) Math.floor(num_pilots / (float)mGroupScoring.num_groups);
             int remainder = num_pilots - (mGroupScoring.num_groups * group_size);
 
             skipped = 0; // Tally of missing bib numbers

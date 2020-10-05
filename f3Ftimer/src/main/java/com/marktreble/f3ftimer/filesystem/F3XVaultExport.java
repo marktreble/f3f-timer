@@ -29,7 +29,7 @@ public class F3XVaultExport extends FileExport {
      *
      * @param context Context
      * @param race Race
-     * @return
+     * @return boolean if successfully written
      */
     public boolean writeResultsFile(Context context, Race race) {
 

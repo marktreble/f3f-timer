@@ -13,7 +13,7 @@ package com.marktreble.f3ftimer.data.pilot;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
 

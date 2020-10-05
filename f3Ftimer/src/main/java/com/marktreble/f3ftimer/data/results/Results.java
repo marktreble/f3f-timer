@@ -557,7 +557,7 @@ public class Results {
         int num_pilots = getActualPilotsCount(allPilots);
 
         boolean first = true;
-        int group_size = (int) Math.floor(num_pilots / mGroupScoring.num_groups);
+        int group_size = (int) Math.floor(num_pilots / (float)mGroupScoring.num_groups);
         int remainder = num_pilots - (mGroupScoring.num_groups * group_size);
 
         // Find ftr

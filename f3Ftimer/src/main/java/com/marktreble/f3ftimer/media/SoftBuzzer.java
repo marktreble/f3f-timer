@@ -11,8 +11,73 @@
 
 package com.marktreble.f3ftimer.media;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.Intent;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 
 public class SoftBuzzer {
-    // TODO
-    // Remove soundPool code from Driver and place in here
+    private static SoundPool soundPool;
+    private int[] soundArray;
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void init() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            soundPool = new SoundPool.Builder().setMaxStreams(1).build();
+        } else {
+            soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
+        }
+    }
+
+    public void setSounds(Context context, Intent intent, String[] sounds) {
+        // soundArray is loaded from preferences
+        soundArray = new int[sounds.length];
+        int i = 0;
+        for (String sound : sounds) {
+            String value = intent.getStringExtra(sound);
+            int id = context.getResources().getIdentifier(value, "raw", context.getPackageName());
+            soundArray[i++] = soundPool.load(context, id, 1);
+        }
+    }
+
+    public void setSound(Context context, String key, String value, String[] sounds) {
+        int i = 0;
+        for (String sound : sounds) {
+            if (key.equals(sound)) {
+                int id = context.getResources().getIdentifier(value, "raw", context.getPackageName());
+                soundArray[i] = soundPool.load(context, id, 1);
+            }
+            i++;
+        }
+    }
+
+    public void destroy() {
+        if (soundPool != null) {
+            soundPool.release();
+            soundPool = null;
+        }
+    }
+
+    public void soundOffCourse() {
+        soundPool.play(soundArray[0], 1, 1, 1, 0, 1f);
+    }
+
+    public void soundOnCourse() {
+        soundPool.play(soundArray[1], 1, 1, 1, 0, 1f);
+    }
+
+    public void soundTurn() {
+        soundPool.play(soundArray[2], 1, 1, 1, 0, 1f);
+    }
+
+    public void soundTurn9() {
+        soundPool.play(soundArray[3], 1, 1, 1, 0, 1f);
+    }
+
+    public void soundPenalty() {
+        soundPool.play(soundArray[4], 1, 1, 1, 0, 1f);
+    }
+
 }

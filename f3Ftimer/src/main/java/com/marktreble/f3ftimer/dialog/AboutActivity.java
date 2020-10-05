@@ -15,7 +15,7 @@ import android.app.Activity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
-import android.support.v4.content.pm.PackageInfoCompat;
+import androidx.core.content.pm.PackageInfoCompat;
 import android.view.View;
 import android.widget.TextView;
 

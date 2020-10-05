@@ -2,12 +2,12 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" filepath="$PROJECT_DIR$/f3Ftimer/f3Ftimer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/f3f-timer.iml" filepath="$PROJECT_DIR$/f3f-timer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" filepath="$PROJECT_DIR$/iOIOLibAccessory/iOIOLibAccessory.iml" />
-      <module fileurl="file://$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" filepath="$PROJECT_DIR$/iOIOLibAndroid/iOIOLibAndroid.iml" />
-      <module fileurl="file://$PROJECT_DIR$/iOIOLibBT/iOIOLibBT.iml" filepath="$PROJECT_DIR$/iOIOLibBT/iOIOLibBT.iml" />
-      <module fileurl="file://$PROJECT_DIR$/usbSerialForAndroid/usbSerialForAndroid.iml" filepath="$PROJECT_DIR$/usbSerialForAndroid/usbSerialForAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/f3Ftimer/f3Ftimer.iml" filepath="$PROJECT_DIR$/.idea/modules/f3Ftimer/f3Ftimer.iml" group="f3f-timer/f3Ftimer" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/f3f-timer.iml" filepath="$PROJECT_DIR$/.idea/modules/f3f-timer.iml" group="f3f-timer" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/iOIOLibAccessory.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/iOIOLibAccessory.iml" group="f3f-timer/iOIOLibAccessory" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/iOIOLibAndroid.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/iOIOLibAndroid.iml" group="f3f-timer/iOIOLibAndroid" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibBT/iOIOLibBT.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibBT/iOIOLibBT.iml" group="f3f-timer/iOIOLibBT" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/usbSerialForAndroid.iml" filepath="$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/usbSerialForAndroid.iml" group="f3f-timer/usbSerialForAndroid" />
     </modules>
   </component>
 </project>

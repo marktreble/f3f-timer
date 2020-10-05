@@ -13,27 +13,25 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.preference.EditTextPreference;
-import android.support.v7.preference.ListPreference;
-import android.support.v7.preference.Preference;
-import android.preference.PreferenceManager;
+
+import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.preference.PreferenceFragmentCompat;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceFragmentCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
@@ -42,16 +40,12 @@ import com.marktreble.f3ftimer.languages.Languages;
 import com.marktreble.f3ftimer.media.TTS;
 import com.marktreble.f3ftimer.wifi.Wifi;
 
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import static android.app.Activity.RESULT_OK;
-import static org.apache.commons.lang3.CharEncoding.US_ASCII;
 
 public class SettingsFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener, TTS.onInitListenerProxy {
@@ -167,6 +161,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
                     SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
                     pref.edit().putString("pref_results_F3Fgear_path", uri.toString()).apply();
 
+                    break;
+                default:
+                    // Nothing
                     break;
             }
         }

@@ -16,7 +16,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.v4.app.FragmentTransaction;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.api.API;
@@ -68,6 +68,7 @@ public class F3ftimerApiImportRace extends BaseImport
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_CANCELED) {
             finish();

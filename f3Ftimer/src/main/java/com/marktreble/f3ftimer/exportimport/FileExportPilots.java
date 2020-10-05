@@ -12,19 +12,12 @@
 package com.marktreble.f3ftimer.exportimport;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
-import android.util.Log;
 
-import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.dialog.GenericRadioPicker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by marktreble on 27/12/14.

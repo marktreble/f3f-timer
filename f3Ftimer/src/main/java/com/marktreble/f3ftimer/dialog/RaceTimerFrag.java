@@ -12,7 +12,7 @@
 package com.marktreble.f3ftimer.dialog;
 
 import android.graphics.drawable.Drawable;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.TextView;
