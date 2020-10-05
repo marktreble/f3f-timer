@@ -8,7 +8,7 @@
     <string name="version">Version</string>
     <string name="credits">An open source project by Mark Treble</string>
     <string name="repository" translatable="false">https://www.github.com/marktreble/f3f-timer</string>
-    <string name="instructions" translatable="false">https://www.github.com/marktreble/f3f-timer/wiki/instructions</string>
+    <string name="instructions" translatable="false">https://www.github.com/marktreble/f3f-timer/F3F+Timer+Software.docx</string>
     <string name="help">Please see the link below for instruction on how to use this software.</string>
     <string name="menu_settings">Settings</string>
     <string name="app_pilots">Pilot Manager</string>
