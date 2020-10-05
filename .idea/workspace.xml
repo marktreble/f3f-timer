@@ -14,14 +14,14 @@
   <component name="ChangeListManager">
     <list default="true" id="6c21baa8-79e2-4dc9-affc-297f7bacfb2e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/f3Ftimer/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="FA53FYJ03490" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="Nexus_5_Android_P_9_" />
   <component name="ExternalProjectsData">
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
@@ -34,6 +34,12 @@
       </state>
     </system>
   </component>
+  <component name="GenerateSignedApkSettings">
+    <option name="KEY_STORE_PATH" value="$PROJECT_DIR$/../marktreble.keystore" />
+    <option name="KEY_ALIAS" value="marktreble" />
+    <option name="REMEMBER_PASSWORDS" value="true" />
+    <option name="BUILD_TARGET_KEY" value="apk" />
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -44,8 +50,13 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ApkExportedModule" value="f3Ftimer" />
     <property name="DeviceAndSnapshotComboBoxAction.selectedDevice" value="FA53FYJ03490" />
     <property name="DeviceAndSnapshotComboBoxAction.selectionTime" value="2020-10-05T16:14:42.702Z" />
+    <property name="ExportApk.ApkPath" value="$PROJECT_DIR$/f3Ftimer" />
+    <property name="ExportApk.BuildVariants" value="release" />
+    <property name="ExportApk.SignV1" value="true" />
+    <property name="ExportApk.SignV2" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="android.sdk.path" value="$USER_HOME$/Library/Android/sdk" />
@@ -144,13 +155,21 @@
       <option name="project" value="LOCAL" />
       <updated>1601925513927</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Update to V2.2.1">
+      <created>1601925719874</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1601925719874</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Updates to 2.2" />
     <MESSAGE value="Added Instructions docx" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added Instructions docx" />
+    <MESSAGE value="Update to V2.2.1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update to V2.2.1" />
   </component>
   <component name="WindowStateProjectService">
     <state x="405" y="127" key="#Notifications" timestamp="1601923187948">
@@ -161,18 +180,18 @@
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="550" y="306" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.877@0.23.1440.877" timestamp="1601906981054" />
-    <state x="0" y="64" key="CommitChangelistDialog2" timestamp="1601925513360">
+    <state x="0" y="64" key="CommitChangelistDialog2" timestamp="1601925719555">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state x="0" y="64" key="CommitChangelistDialog2/0.23.1440.877@0.23.1440.877" timestamp="1601925513360" />
+    <state x="0" y="64" key="CommitChangelistDialog2/0.23.1440.877@0.23.1440.877" timestamp="1601925719555" />
     <state x="136" y="78" key="SettingsEditor" timestamp="1601910636210">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
     <state x="136" y="78" key="SettingsEditor/0.23.1440.877@0.23.1440.877" timestamp="1601910636210" />
-    <state x="409" y="201" key="Vcs.Push.Dialog.v2" timestamp="1601925516083">
+    <state x="409" y="201" key="Vcs.Push.Dialog.v2" timestamp="1601925722587">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
-    <state x="409" y="201" key="Vcs.Push.Dialog.v2/0.23.1440.877@0.23.1440.877" timestamp="1601925516083" />
+    <state x="409" y="201" key="Vcs.Push.Dialog.v2/0.23.1440.877@0.23.1440.877" timestamp="1601925722587" />
     <state x="373" y="107" width="916" height="677" key="com.android.tools.idea.avdmanager.AvdListDialog" timestamp="1601919660375">
       <screen x="0" y="23" width="1440" height="877" />
     </state>
