@@ -176,7 +176,10 @@ public class Driver implements TTS.onInitListenerProxy {
             e.printStackTrace();
         }
 
-        softBuzzer.destroy();
+        if (softBuzzer != null) {
+            softBuzzer.destroy();
+            softBuzzer = null;
+        }
 
         if (mTts != null) {
             mTts.release();
