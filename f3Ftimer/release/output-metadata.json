@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.marktreble.f3ftimer",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "properties": [],
+      "versionCode": 41,
+      "versionName": "2.2.1",
+      "enabled": true,
+      "outputFile": "f3Ftimer-release.apk"
+    }
+  ]
+}
