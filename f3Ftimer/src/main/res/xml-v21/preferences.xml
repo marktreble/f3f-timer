@@ -57,6 +57,16 @@
             android:entryValues="@array/options_ioio_serial"
             android:defaultValue="4" />
 
+        <EditTextPreference
+            android:key="pref_baseAIP"
+            android:title="@string/udp_baseAIP"
+            android:defaultValue="" />
+
+        <EditTextPreference
+            android:key="pref_baseBIP"
+            android:title="@string/udp_baseBIP"
+            android:defaultValue="" />
+
         <Preference
             android:key="pref_btn_reset_to_default"
             android:title="@string/reset_to_defaults" />

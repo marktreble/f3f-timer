@@ -105,7 +105,8 @@
     <string name="USB_IOIO">USB - IOIO</string>
     <string name="USB_OTHER">USB - Other</string>
     <string name="BLUETOOTH_HC_05" translatable="false">Bluetooth - HC-05</string>
-    <string name="TCP_IO">TCP/IP Socket - f3ftimer-server:1234</string>
+    <string name="TCP_IO" translatable="false">TCP/IP Socket - f3ftimer-server:1234</string>
+    <string name="UDP" translatable="false">UDP Socket - PiCam</string>
     <string name="Demo">Demo Mode - On Screen Buzzers</string>
     <string name="input_tcpio_ip">IP / host name for \"f3ftimer-server\"</string>
     <string name="bluetooth_paired_device">HC-05 Paired Device</string>
@@ -120,6 +121,8 @@
     <string name="ioio_rx" translatable="false">IOIO RX Pin</string>
     <string name="ioio_tx" translatable="false">IOIO TX Pin</string>
     <string name="reset_to_defaults">Reset to Defaults</string>
+    <string name="udp_baseAIP" translatable="false">Base A IP Address</string>
+    <string name="udp_baseBIP" translatable="false">Base B IP Address</string>
     <string name="soft_buzz">Software Buzzer</string>
     <string name="none">None</string>
     <string name="enter_num_groups">Enter Number of Groups</string>
@@ -148,7 +151,7 @@
     <string name="ttl_completed_rounds">Completed Rounds</string>
     <string name="ttl_team_results">Team Results</string>
     <string name="ttl_leader_board">Leader Board</string>
-    <string name="ttl_auto_read">Read Results</string>
+    <string name="ttl_auto_read">Announce Results</string>
 
     <!-- Context Menu -->
     <string name="cmenu_reflight">Award Reflight</string>

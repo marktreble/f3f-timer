@@ -8,6 +8,7 @@
         <item>@string/USB_OTHER</item>
         <item>@string/BLUETOOTH_HC_05</item>
         <item>@string/TCP_IO</item>
+        <item>@string/UDP</item>
     </string-array>
 
     <string-array name="options_stopbits" translatable="false">

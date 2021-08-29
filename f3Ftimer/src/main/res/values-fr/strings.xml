@@ -249,6 +249,6 @@
     <string name="mco">Monaco</string>
     <string name="pol">Poland</string>
     <string name="reset_to_defaults">Réinitialiser les paramètres par défaut</string>
-    <string name="ttl_auto_read">Read Results</string>
+    <string name="ttl_auto_read">Announce Results</string>
 
 </resources>

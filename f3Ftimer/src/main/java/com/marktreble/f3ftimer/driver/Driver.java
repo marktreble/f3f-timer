@@ -64,6 +64,7 @@ public class Driver implements TTS.onInitListenerProxy {
     private String mFastestFlightPilot = "";
 
     private boolean mAudibleWindWarning = false;
+    public boolean mModelLaunched = false;
 
 
     private Integer mPenalty;
@@ -403,6 +404,8 @@ public class Driver implements TTS.onInitListenerProxy {
         mLeg = 0;
         mPenalty = 0;
         mTimeOnCourse = 0;
+        mModelLaunched = false;
+
 
         if (mSpeechFXon && mTts.mTTSStatus == TextToSpeech.SUCCESS) {
             mHandler.postDelayed(new Runnable() {
@@ -486,6 +489,7 @@ public class Driver implements TTS.onInitListenerProxy {
             mTts.speak(lang, TextToSpeech.QUEUE_ADD);
         }
 
+        mModelLaunched = true;
     }
 
     public void _count(String number) {
@@ -576,6 +580,10 @@ public class Driver implements TTS.onInitListenerProxy {
         mLegTimes[mLeg] = time;
         mLeg++;
 
+        if (mLeg == 10) {
+            mModelLaunched = false;
+        }
+
         // calculate the mean
         long mean = (now - mTimeOnCourse) / mLeg;
 
@@ -652,6 +660,7 @@ public class Driver implements TTS.onInitListenerProxy {
         mContext.sendBroadcast(intent);
         alreadyfinalised = false;
         alreadyReceivedFinalizeReq = false;
+        mModelLaunched = false;
 
     }
 

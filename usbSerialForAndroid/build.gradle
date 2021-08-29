@@ -1,6 +1,13 @@
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'signing'
+// apply plugin: 'com.android.library'
+// apply plugin: 'maven-publish'
+// apply plugin: 'signing'
+
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+    id 'signing'
+}
+
 android {
     compileSdkVersion 29
     buildToolsVersion '29.0.2'
@@ -41,6 +48,8 @@ def getRepositoryPassword() {
 def isReleaseBuild() {
     return version.contains("SNAPSHOT") == false
 }
+
+/*
 uploadArchives {
     def sonatypeRepositoryUrl
     if (isReleaseBuild()) {
@@ -54,6 +63,40 @@ uploadArchives {
     }
 
     configuration = configurations.archives
+
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                pom {
+                    name = 'usb-serial-for-android'
+                    description = 'USB Serial Driver Library for Android'
+                    url = 'https://github.com/mik3y/usb-serial-for-android'
+                    packaging = 'aar'
+
+                    licenses {
+                        license {
+                            name = 'GNU LGPL v2.1'
+                            url = 'http://www.gnu.org/licenses/lgpl-2.1.txt'
+                            distribution = 'repo'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'mik3y'
+                            name = 'mik3y'
+                            email = 'opensource@hoho.com'
+                        }
+                    }
+                    scm {
+                        url = 'scm:git@github.com:mik3y/usb-serial-for-android.git'
+                        connection = 'scm:git@github.com:mik3y/usb-serial-for-android.git'
+                        developerConnection = 'scm:git@github.com:mik3y/usb-serial-for-android.git'
+                    }
+                }
+            }
+        }
+    }
+
     repositories.mavenDeployer {
         beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
@@ -93,6 +136,6 @@ uploadArchives {
         }
     }
 }
-
+*/
 dependencies {
 }

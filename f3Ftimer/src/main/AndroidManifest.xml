@@ -123,6 +123,16 @@
         </service>
 
         <service
+            android:name=".driver.UDPService"
+            android:label="F3F Race Timer Server"
+            android:exported="false"
+            android:process=".driver">
+            <intent-filter>
+                <action android:name=".RaceTimerService" />
+            </intent-filter>
+        </service>
+
+        <service
             android:name=".racemanager.RaceResultsService"
             android:label="F3F Race Results Server"
             android:exported="false">

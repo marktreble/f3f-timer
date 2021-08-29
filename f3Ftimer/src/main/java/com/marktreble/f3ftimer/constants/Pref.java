@@ -28,6 +28,9 @@ public class Pref {
 
     public final static String RESET_BUTTON = "pref_btn_reset_to_default";
 
+    public final static String BASEA_IP = "pref_baseAIP";
+    public final static String BASEB_IP = "pref_baseBIP";
+
     public final static String RESULTS = "pref_results";
     public final static String RESULTS_SERVER = "pref_results_server";
     public final static String WIFI_HOTSPOT = "pref_wifi_hotspot";

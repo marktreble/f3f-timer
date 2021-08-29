@@ -11,6 +11,7 @@
 
 package com.marktreble.f3ftimer.dialog;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -85,6 +86,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
         setListSummary(Pref.USB_PARITY);
         setListSummary(Pref.IOIO_RX_PIN);
         setListSummary(Pref.IOIO_TX_PIN);
+        setStringSummary(Pref.BASEA_IP);
+        setStringSummary(Pref.BASEB_IP);
+
 
         setBTDeviceSummary("pref_external_display");
 
@@ -144,6 +148,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
     }
 
 
+    @SuppressLint("WrongConstant")
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
@@ -300,8 +305,9 @@ public class SettingsFragment extends PreferenceFragmentCompat
             findPreference(Pref.USB_STOPBITS).setEnabled(false);
             findPreference(Pref.USB_DATABITS).setEnabled(false);
             findPreference(Pref.USB_PARITY).setEnabled(false);
+            findPreference(Pref.BASEA_IP).setEnabled(false);
+            findPreference(Pref.BASEB_IP).setEnabled(false);
             findPreference(Pref.RESET_BUTTON).setEnabled(false);
-
 
             findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(true);
 
@@ -312,8 +318,21 @@ public class SettingsFragment extends PreferenceFragmentCompat
             findPreference(Pref.USB_STOPBITS).setEnabled(false);
             findPreference(Pref.USB_DATABITS).setEnabled(false);
             findPreference(Pref.USB_PARITY).setEnabled(false);
+            findPreference(Pref.BASEA_IP).setEnabled(false);
+            findPreference(Pref.BASEB_IP).setEnabled(false);
             findPreference(Pref.RESET_BUTTON).setEnabled(false);
 
+            findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(false);
+        } else if (inputSource.equals(getString(R.string.UDP))) {
+            // Demo mode - hide all options
+            findPreference(Pref.INPUT_TCPIO_IP).setEnabled(false);
+            findPreference(Pref.USB_BAUDRATE).setEnabled(false);
+            findPreference(Pref.USB_STOPBITS).setEnabled(false);
+            findPreference(Pref.USB_DATABITS).setEnabled(false);
+            findPreference(Pref.USB_PARITY).setEnabled(false);
+            findPreference(Pref.BASEA_IP).setEnabled(true);
+            findPreference(Pref.BASEB_IP).setEnabled(true);
+            findPreference(Pref.RESET_BUTTON).setEnabled(false);
 
             findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(false);
         } else {
@@ -329,6 +348,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
             findPreference(Pref.USB_DATABITS).setEnabled(true);
             findPreference(Pref.USB_PARITY).setEnabled(true);
             findPreference(Pref.RESET_BUTTON).setEnabled(true);
+            findPreference(Pref.BASEA_IP).setEnabled(false);
+            findPreference(Pref.BASEB_IP).setEnabled(false);
 
             findPreference(Pref.INPUT_SRC_DEVICE).setEnabled(false);
 

@@ -110,8 +110,10 @@ public class F3FGearExport extends FileExport {
         Uri uri = Uri.parse(strPath);
         String[] strArrPath = uri.getPath().split(":");
         File base = Environment.getExternalStoragePublicDirectory("");
-        base = new File(base, strArrPath[1]);
-        base.mkdirs();
+        if (strArrPath.length > 1) {
+            base = new File(base, strArrPath[1]);
+            base.mkdirs();
+        }
         return new File(base.getAbsolutePath() + String.format("/%s", sanitise(name)));
     }
 }

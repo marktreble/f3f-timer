@@ -85,6 +85,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
 
     public static void startDriver(Context context, String inputSource, Integer race_id, Bundle params) {
         if (inputSource.equals(context.getString(R.string.Demo))) {
+            Log.i(TAG, "Starting");
             Intent i = new Intent(IComm.RCV_UPDATE);
             i.putExtra("icon", ICN_DISCONN);
             i.putExtra(IComm.MSG_SERVICE_CALLBACK, "driver_stopped");
@@ -138,7 +139,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-
+        Log.i(TAG, "onStartCommand");
         driverDisconnected();
 
         mBoardConnected = true;
@@ -199,6 +200,7 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         };
         mWindEmulator.post(runnable);
 
+        Log.i(TAG, "Started");
         return (START_STICKY);
     }
 

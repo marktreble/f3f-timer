@@ -75,6 +75,7 @@ import com.marktreble.f3ftimer.dialog.TimeEntryActivity;
 import com.marktreble.f3ftimer.driver.BluetoothHC05Service;
 import com.marktreble.f3ftimer.driver.SoftBuzzerService;
 import com.marktreble.f3ftimer.driver.TcpIoService;
+import com.marktreble.f3ftimer.driver.UDPService;
 import com.marktreble.f3ftimer.driver.USBIOIOService;
 import com.marktreble.f3ftimer.driver.USBOtherService;
 import com.marktreble.f3ftimer.filesystem.F3FGearExport;
@@ -366,6 +367,7 @@ public class RaceActivity extends BaseActivity
         SoftBuzzerService.startDriver(this, mInputSource, mRid, e);
         BluetoothHC05Service.startDriver(this, mInputSource, mRid, e);
         TcpIoService.startDriver(this, mInputSource, mRid, e);
+        UDPService.startDriver(this, mInputSource, mRid, e);
     }
 
     public void stopServers() {
@@ -384,6 +386,7 @@ public class RaceActivity extends BaseActivity
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
         TcpIoService.stop(this);
+        UDPService.stop(this);
     }
 
     @Override
@@ -1509,6 +1512,22 @@ public class RaceActivity extends BaseActivity
                 if (data.equals("finishRace")) {
                     finishRace();
                 }
+
+                if (data.equals(Pref.BASEA_IP)) {
+                    String baseA = extras.getString(Pref.BASEA_IP, "");
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString(Pref.BASEA_IP, baseA);
+                    editor.apply();
+                }
+
+                if (data.equals(Pref.BASEB_IP)) {
+                    String baseB = extras.getString(Pref.BASEB_IP, "");
+                    SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString(Pref.BASEB_IP, baseB);
+                    editor.apply();
+                }
 /*
                 if (data.equals("wind_legal")) {
 
@@ -1657,9 +1676,12 @@ public class RaceActivity extends BaseActivity
         datasource.setStatus(mRid, Race.STATUS_COMPLETE);
         datasource.close();
 
-        if (!new F3FGearExport().writeResultsFile(mContext, mRace)) {
-            // Failed to write
-            // Need some UI to indicate the problem
+        if (mPrefResultsF3Fgear) {
+            if (!new F3FGearExport().writeResultsFile(mContext, mRace)) {
+                // Failed to write
+                // Need some UI to indicate the problem
+                Log.d("PPP", "Failed to write F3FGear");
+            }
         }
 
         finish();
@@ -1688,6 +1710,7 @@ public class RaceActivity extends BaseActivity
             if (!new F3FGearExport().writeResultsFile(mContext, mRace)) {
                 // Failed to write
                 // Need some UI to indicate the problem
+                Log.d("PPP", "Failed to write F3FGear");
             }
         }
 
