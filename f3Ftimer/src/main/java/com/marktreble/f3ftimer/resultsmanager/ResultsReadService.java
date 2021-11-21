@@ -22,16 +22,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
-import android.widget.ArrayAdapter;
+
+import androidx.annotation.NonNull;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
-import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.media.TTS;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Locale;
 
 public class ResultsReadService extends Service implements Thread.UncaughtExceptionHandler, TTS.onInitListenerProxy {
@@ -62,8 +61,6 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
 
     public Handler mHandler = new Handler();
 
-    HashMap<String, String> utterance_ids = new HashMap<>();
-
     private MediaPlayer mMediaPlayer;
 
     private int phase;
@@ -72,7 +69,7 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
     private String toSpeak = null;
     private int pilotCursor;
 
-    private ArrayList<String> mArrNames = new ArrayList<String>();
+    private ArrayList<String> mArrNames = new ArrayList<>();
     private ArrayList<String> mArrNumbers;
     private ArrayList<Float> mArrScores;
 
@@ -85,7 +82,7 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
      */
 
     @Override
-    public void uncaughtException(Thread thread, Throwable ex) {
+    public void uncaughtException(@NonNull Thread thread, @NonNull Throwable ex) {
         stopSelf();
     }
 
@@ -199,7 +196,7 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
     }
 
     // Binding for UI->Service Communication
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d("UI->Service", "onReceive");
@@ -222,7 +219,6 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
 
                 if (data.equals("resume_reading")) {
                     resumeReading();
-                    return;
                 }
             }
         }
@@ -269,15 +265,12 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
             if (pilotCursor <= 10) phase = 4;
             if (pilotCursor <= 3) phase = 6;
             if (pilotCursor <= 1) phase = 7;
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    toSpeak = String.format("Results of %s", mRaceName);
-                    if (pause) {
-                        return;
-                    }
-                    mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
+            mHandler.postDelayed(() -> {
+                toSpeak = String.format("Results of %s", mRaceName);
+                if (pause) {
+                    return;
                 }
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
             }, 4000);
             return;
         }
@@ -285,21 +278,18 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
         if (phase == 2) {
             // From bottom to top 10
             int random = (int)(Math.random() * 500);
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (Math.random() > 0.3) {
-                        toSpeak = String.format("In %s place, %s", ssOrds(pilotCursor), mArrNames.get(pilotCursor - 1));
-                    } else {
-                        toSpeak = String.format("%s in %s", mArrNames.get(pilotCursor - 1), ssOrds(pilotCursor));
-                    }
-                    pilotCursor--;
-                    if (pilotCursor <= 10) phase = 3;
-                    if (pause) {
-                        return;
-                    }
-                    mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
+            mHandler.postDelayed(() -> {
+                if (Math.random() > 0.3) {
+                    toSpeak = String.format("In %s place, %s", ssOrds(pilotCursor), mArrNames.get(pilotCursor - 1));
+                } else {
+                    toSpeak = String.format("%s in %s", mArrNames.get(pilotCursor - 1), ssOrds(pilotCursor));
                 }
+                pilotCursor--;
+                if (pilotCursor <= 10) phase = 3;
+                if (pause) {
+                    return;
+                }
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
             }, (pilotCursor%5 == 0) ? 3000 + random : (int)(Math.random() * 500));
             return;
         }
@@ -307,32 +297,31 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
         if (phase == 3) {
             // Intro
             phase = 4;
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    toSpeak = "And now for the top 10";
-                    if (pause) {
-                        return;
-                    }
-                    mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
+            mHandler.postDelayed(() -> {
+                toSpeak = "And now for the top 10";
+                if (pause) {
+                    return;
                 }
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
             }, 4000);
             return;
         }
 
         if (phase == 4) {
             // From 10 to 4 ( + Read points)
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    toSpeak = String.format("In %s place with %.2f points, is %s", ssOrds(pilotCursor), mArrScores.get(pilotCursor - 1), mArrNames.get(pilotCursor - 1));
-                    pilotCursor--;
-                    if (pilotCursor <= 3) phase = 5;
-                    if (pause) {
-                        return;
-                    }
-                    mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
+            mHandler.postDelayed(() -> {
+                toSpeak = String.format(
+                        "In %s place with %d points, is %s",
+                        ssOrds(pilotCursor),
+                        (int)Math.floor(mArrScores.get(pilotCursor - 1)),
+                        mArrNames.get(pilotCursor - 1)
+                );
+                pilotCursor--;
+                if (pilotCursor <= 3) phase = 5;
+                if (pause) {
+                    return;
                 }
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
             }, 3000);
             return;
         }
@@ -340,32 +329,31 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
         if (phase == 5) {
             // Intro
             phase = 6;
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    toSpeak = "And now for the top 3";
-                    if (pause) {
-                        return;
-                    }
-                    mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
+            mHandler.postDelayed(() -> {
+                toSpeak = "And now for the top 3";
+                if (pause) {
+                    return;
                 }
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
             }, 4000);
             return;
         }
 
         if (phase == 6) {
             // Podium
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    toSpeak = String.format("In %s place, with %.2f points, is %s", ssOrds(pilotCursor), mArrScores.get(pilotCursor - 1), mArrNames.get(pilotCursor - 1));
-                    pilotCursor--;
-                    if (pilotCursor <= 1) phase = 7;
-                    if (pause) {
-                        return;
-                    }
-                    mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
+            mHandler.postDelayed(() -> {
+                toSpeak = String.format(
+                        "In %s place, with %d points, is %s",
+                        ssOrds(pilotCursor),
+                        (int)Math.floor(mArrScores.get(pilotCursor - 1)),
+                        mArrNames.get(pilotCursor - 1)
+                );
+                pilotCursor--;
+                if (pilotCursor <= 1) phase = 7;
+                if (pause) {
+                    return;
                 }
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
             }, 4000);
             return;
         }
@@ -373,34 +361,30 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
         if (phase == 7) {
             // Winner
             phase = 8;
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    toSpeak = String.format("And the Winner, with %.2f points", mArrScores.get(pilotCursor - 1));
-                    if (pause) {
-                        return;
-                    }
-                    mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
+            mHandler.postDelayed(() -> {
+                toSpeak = String.format(
+                        "And the Winner, with %d points",
+                        (int)Math.floor(mArrScores.get(pilotCursor - 1))
+                );
+                if (pause) {
+                    return;
                 }
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
             }, 8000);
             return;
         }
 
         if (phase == 8) {
             // Winner
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    toSpeak = String.format("is %s", mArrNames.get(pilotCursor - 1));
-                    pilotCursor--;
-                    if (pilotCursor <= 1) phase = 7;
-                    if (pause) {
-                        return;
-                    }
-                    mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
+            mHandler.postDelayed(() -> {
+                toSpeak = String.format("is %s", mArrNames.get(pilotCursor - 1));
+                pilotCursor--;
+                if (pilotCursor <= 1) phase = 7;
+                if (pause) {
+                    return;
                 }
+                mTts.speak(toSpeak, TextToSpeech.QUEUE_ADD);
             }, 4000);
-            return;
         }
     }
 

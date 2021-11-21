@@ -150,13 +150,14 @@ public class UDPService extends Service implements DriverInterface, Thread.Uncau
                     Log.i(TAG, String.format("%s %s", ipAddress, message));
 
                     if (message.equals("Event")) {
+                        // Handle buzz case ASAP
                         if (mBaseAConnected
                             && mBaseBConnected
                             && mDriver.mModelLaunched) {
                             buzz(ipAddress);
                         }
 
-                        // Reconnect
+                        // Reconnect if the IP is known
                         if (mBaseAIP.equals(ipAddress)) {
                             mBaseAConnected = true;
                         }
@@ -173,6 +174,10 @@ public class UDPService extends Service implements DriverInterface, Thread.Uncau
                         if (mBaseBIP.equals(ipAddress)) {
                             mBaseBConnected = true;
                         }
+
+                        // Connection from an unknown IP
+                        // Take the first unknown connection as base A
+                        // and the second unknown connection as base B
                         if (!mBaseAConnected) {
                             connectBaseA(ipAddress);
                         } else if (!mBaseBConnected) {
