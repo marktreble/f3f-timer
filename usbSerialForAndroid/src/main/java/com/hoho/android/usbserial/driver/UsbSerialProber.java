@@ -69,7 +69,7 @@ public class UsbSerialProber {
      * @return a list, possibly empty, of all compatible drivers
      */
     public List<UsbSerialDriver> findAllDrivers(final UsbManager usbManager) {
-        final List<UsbSerialDriver> result = new ArrayList<UsbSerialDriver>();
+        final List<UsbSerialDriver> result = new ArrayList<>();
 
         for (final UsbDevice usbDevice : usbManager.getDeviceList().values()) {
             final UsbSerialDriver driver = probeDevice(usbDevice);
@@ -93,6 +93,8 @@ public class UsbSerialProber {
 
         mVendorId = usbDevice.getVendorId();
         mProductId = usbDevice.getProductId();
+
+        Log.d("UsbSerialProber", "VendorId: " + vendorId + " productId: " + productId);
 
         final Class<? extends UsbSerialDriver> driverClass =
                 mProbeTable.findDriver(vendorId, productId);

@@ -427,8 +427,6 @@ public class RaceTimerActivity extends FragmentActivity {
                     // End the activity
                     mActivity.setResult(RaceActivity.RESULT_ABORTED);
                 }
-
-
             }
         }
     };

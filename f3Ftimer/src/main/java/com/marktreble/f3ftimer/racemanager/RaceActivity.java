@@ -14,6 +14,8 @@ package com.marktreble.f3ftimer.racemanager;
 import android.app.ActionBar;
 import android.app.ActivityManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,6 +29,7 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
 import androidx.preference.PreferenceManager;
@@ -77,6 +80,7 @@ import com.marktreble.f3ftimer.driver.SoftBuzzerService;
 import com.marktreble.f3ftimer.driver.TcpIoService;
 import com.marktreble.f3ftimer.driver.UDPService;
 import com.marktreble.f3ftimer.driver.USBIOIOService;
+import com.marktreble.f3ftimer.driver.USBOpenAccessoryService;
 import com.marktreble.f3ftimer.driver.USBOtherService;
 import com.marktreble.f3ftimer.filesystem.F3FGearExport;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
@@ -324,6 +328,7 @@ public class RaceActivity extends BaseActivity
 
         // Stop Any Timer Drivers
         USBIOIOService.stop(this);
+        USBOpenAccessoryService.stop(this);
         USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
@@ -363,6 +368,7 @@ public class RaceActivity extends BaseActivity
 
     public void startServers(Bundle e) {
         USBIOIOService.startDriver(this, mInputSource, mRid, e);
+        USBOpenAccessoryService.startDriver(this, mInputSource, mRid, e);
         USBOtherService.startDriver(this, mInputSource, mRid, e);
         SoftBuzzerService.startDriver(this, mInputSource, mRid, e);
         BluetoothHC05Service.startDriver(this, mInputSource, mRid, e);
@@ -382,6 +388,7 @@ public class RaceActivity extends BaseActivity
         RaceResultsDisplayService.stop(this);
 
         USBIOIOService.stop(this);
+        USBOpenAccessoryService.stop(this);
         USBOtherService.stop(this);
         SoftBuzzerService.stop(this);
         BluetoothHC05Service.stop(this);
@@ -1719,7 +1726,7 @@ public class RaceActivity extends BaseActivity
         mArrAdapter.notifyDataSetChanged();
         invalidateOptionsMenu(); // Refresh menu so that next round becomes active
 
-        new Handler().postDelayed(new Runnable() {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 mListView.smoothScrollToPositionFromTop(0, 0, 500);
@@ -1727,7 +1734,7 @@ public class RaceActivity extends BaseActivity
         }, 100);
 
         // Bring up next pilot's dialog
-        new Handler().postDelayed(new Runnable() {
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 showNextPilot();

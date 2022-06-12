@@ -4,10 +4,25 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/f3f-timer.iml" filepath="$PROJECT_DIR$/.idea/modules/f3f-timer.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/f3Ftimer/f3f-timer.f3Ftimer.iml" filepath="$PROJECT_DIR$/.idea/modules/f3Ftimer/f3f-timer.f3Ftimer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/f3Ftimer/f3f-timer.f3Ftimer.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/f3Ftimer/f3f-timer.f3Ftimer.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/f3Ftimer/f3f-timer.f3Ftimer.main.iml" filepath="$PROJECT_DIR$/.idea/modules/f3Ftimer/f3f-timer.f3Ftimer.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/f3Ftimer/f3f-timer.f3Ftimer.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/f3Ftimer/f3f-timer.f3Ftimer.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/f3f-timer.iOIOLibAccessory.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/f3f-timer.iOIOLibAccessory.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/f3f-timer.iOIOLibAccessory.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/f3f-timer.iOIOLibAccessory.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/f3f-timer.iOIOLibAccessory.main.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/f3f-timer.iOIOLibAccessory.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/f3f-timer.iOIOLibAccessory.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAccessory/f3f-timer.iOIOLibAccessory.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/f3f-timer.iOIOLibAndroid.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/f3f-timer.iOIOLibAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/f3f-timer.iOIOLibAndroid.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/f3f-timer.iOIOLibAndroid.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/f3f-timer.iOIOLibAndroid.main.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/f3f-timer.iOIOLibAndroid.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/f3f-timer.iOIOLibAndroid.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibAndroid/f3f-timer.iOIOLibAndroid.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibBT/f3f-timer.iOIOLibBT.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibBT/f3f-timer.iOIOLibBT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibBT/f3f-timer.iOIOLibBT.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibBT/f3f-timer.iOIOLibBT.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibBT/f3f-timer.iOIOLibBT.main.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibBT/f3f-timer.iOIOLibBT.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/iOIOLibBT/f3f-timer.iOIOLibBT.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/iOIOLibBT/f3f-timer.iOIOLibBT.unitTest.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/f3f-timer.usbSerialForAndroid.iml" filepath="$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/f3f-timer.usbSerialForAndroid.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/f3f-timer.usbSerialForAndroid.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/f3f-timer.usbSerialForAndroid.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/f3f-timer.usbSerialForAndroid.main.iml" filepath="$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/f3f-timer.usbSerialForAndroid.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/f3f-timer.usbSerialForAndroid.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/usbSerialForAndroid/f3f-timer.usbSerialForAndroid.unitTest.iml" />
     </modules>
   </component>
 </project>

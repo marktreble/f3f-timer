@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.marktreble.f3ftimer"
-    android:versionCode="41"
-    android:versionName="2.2.1">
+    android:versionCode="45"
+    android:versionName="2.4.1">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -77,6 +78,18 @@
             android:label="F3F Race Timer Server"
             android:exported="false"
             android:process=".driver">
+            <intent-filter>
+                <action android:name=".RaceTimerService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".driver.USBOpenAccessoryService"
+            android:label="F3F Race Timer Server"
+            android:exported="false"
+            android:process=".driver"
+            android:usesCleartextTraffic="true"
+            tools:targetApi="m">
             <intent-filter>
                 <action android:name=".RaceTimerService" />
             </intent-filter>

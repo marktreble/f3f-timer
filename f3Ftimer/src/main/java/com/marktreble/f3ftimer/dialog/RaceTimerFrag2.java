@@ -13,6 +13,7 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +26,7 @@ import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class RaceTimerFrag2 extends RaceTimerFrag {
 
-    private Handler mHandler = new Handler();
+    private Handler mHandler = new Handler(Looper.getMainLooper());
     public long mStart;
 
     public RaceTimerFrag2() {

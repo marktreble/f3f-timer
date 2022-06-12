@@ -250,5 +250,6 @@
     <string name="pol">Poland</string>
     <string name="reset_to_defaults">Restablecer los valores predeterminados</string>
     <string name="ttl_auto_read">Announce Results</string>
+    <string name="nzl">New Zealand</string>
 
 </resources>

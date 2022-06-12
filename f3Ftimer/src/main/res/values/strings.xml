@@ -103,6 +103,7 @@
     <string name="enter_time">Enter Time</string>
     <string name="audio">Audio Options</string>
     <string name="USB_IOIO">USB - IOIO</string>
+    <string name="USB_OA" translatable="false">USB - Open Accessory</string>
     <string name="USB_OTHER">USB - Other</string>
     <string name="BLUETOOTH_HC_05" translatable="false">Bluetooth - HC-05</string>
     <string name="TCP_IO" translatable="false">TCP/IP Socket - f3ftimer-server:1234</string>
@@ -312,6 +313,7 @@
     <string name="isl">Iceland</string>
     <string name="mco">Monaco</string>
     <string name="nld">Netherlands</string>
+    <string name="nzl">New Zealand</string>
     <string name="nor">Norway</string>
     <string name="pol">Poland</string>
     <string name="prt">Portugal</string>

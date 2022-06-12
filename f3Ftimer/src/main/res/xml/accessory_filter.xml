@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <usb-accessory model="IOIO" />
+    <usb-accessory model="Android Acessory FT312D" manufacturer="FTDI" version="2.0"/>
 </resources>

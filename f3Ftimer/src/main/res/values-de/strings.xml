@@ -93,6 +93,7 @@
     <string name="btn_open_pilot_manager">Öffne Pilot Manager</string>
     <string name="pilot_fai_id">FAI ID</string>
     <string name="USB_IOIO">USB - IOIO</string>
+    <string name="USB_OA" translatable="false">USB - Open Accessory</string>
     <string name="USB_OTHER">USB - Andere</string>
     <string name="USBJE">USB - Jon Edison Timer Box</string>
     <string name="TCP_IO">TCP/IP Socket - f3ftimer-server:1234</string>
@@ -250,4 +251,5 @@
     <string name="pol">Poland</string>
     <string name="reset_to_defaults">Auf Standardeinstellung zurücksetzen</string>
     <string name="ttl_auto_read">Announce Results</string>
+    <string name="nzl">New Zealand</string>
 </resources>

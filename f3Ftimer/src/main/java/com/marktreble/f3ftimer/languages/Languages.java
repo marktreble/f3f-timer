@@ -12,6 +12,7 @@
 package com.marktreble.f3ftimer.languages;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
@@ -40,7 +41,14 @@ public class Languages {
         DisplayMetrics metrics = new DisplayMetrics();
         Resources r = context.getResources();
         Configuration c = r.getConfiguration();
-        String[] tmp_languages = r.getAssets().getLocales();
+        AssetManager a = r.getAssets();
+
+        String[] tmp_languages = {};
+        try {
+            tmp_languages = a.getLocales();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         for (String _language : tmp_languages) {
             if (_language.split("_").length == 1) { // Language only locales (no country code)
                 c.locale = new Locale(_language);

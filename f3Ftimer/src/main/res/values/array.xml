@@ -5,6 +5,7 @@
     <string-array name="InputSources" translatable="false">
         <item>@string/Demo</item>
         <item>@string/USB_IOIO</item>
+        <item>@string/USB_OA</item>
         <item>@string/USB_OTHER</item>
         <item>@string/BLUETOOTH_HC_05</item>
         <item>@string/TCP_IO</item>
@@ -55,6 +56,7 @@
         <item>IS</item>
         <item>MC</item>
         <item>NL</item>
+        <item>NZ</item>
         <item>NO</item>
         <item>PL</item>
         <item>PT</item>
@@ -78,6 +80,7 @@
         <item>@string/isl</item>
         <item>@string/mco</item>
         <item>@string/nld</item>
+        <item>@string/nzl</item>
         <item>@string/nor</item>
         <item>@string/pol</item>
         <item>@string/prt</item>

@@ -23,6 +23,7 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.ParcelUuid;
 import android.util.Log;
 
@@ -84,7 +85,7 @@ public class RaceResultsDisplayService extends Service {
         Log.i(TAG, "Service started");
         this.registerReceiver(onBroadcast, new IntentFilter("com.marktreble.f3ftimer.onExternalUpdate"));
 
-        mHandler = new Handler();
+        mHandler = new Handler(Looper.getMainLooper());
 
         super.onCreate();
     }

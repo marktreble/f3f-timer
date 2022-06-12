@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -324,7 +325,7 @@ public class RaceListActivity extends BaseActivity
                     getString(R.string.err_no_pilots),
                     getString(R.string.err_no_pilots_instruction),
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -399,7 +400,7 @@ public class RaceListActivity extends BaseActivity
                 getString(R.string.select_export_destination),
                 options,
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);

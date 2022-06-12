@@ -126,9 +126,10 @@ public class Driver implements TTS.onInitListenerProxy {
         softBuzzer.destroy();
         softBuzzer.init();
 
-        softBuzzer.setSounds(mContext, intent, sounds);
-
         mSoundFXon = intent.getBooleanExtra("pref_buzzer", false);
+        if (mSoundFXon) {
+            softBuzzer.setSounds(mContext, intent, sounds);
+        }
         mSpeechFXon = intent.getBooleanExtra("pref_voice", false);
         mDefaultSpeechLang = intent.getStringExtra("pref_voice_lang");
         if (mDefaultSpeechLang == null || mDefaultSpeechLang.equals("")) {
@@ -507,7 +508,9 @@ public class Driver implements TTS.onInitListenerProxy {
         //if (mSoundFXon) mPlayer.start();
 
         if (mSoundFXon) {
-            mTts.setAudioVolume();
+            if (mSpeechFXon) {
+                mTts.setAudioVolume();
+            }
             softBuzzer.soundOffCourse();
         }
 
@@ -540,7 +543,9 @@ public class Driver implements TTS.onInitListenerProxy {
         // Buzzer Sound
         //if (mSoundFXon) mPlayer.start();
         if (mSoundFXon) {
-            mTts.setAudioVolume();
+            if (mSpeechFXon) {
+                mTts.setAudioVolume();
+            }
             softBuzzer.soundOnCourse();
         }
 
@@ -606,7 +611,9 @@ public class Driver implements TTS.onInitListenerProxy {
         // Buzzer Sound
         //if (mSoundFXon) mPlayer.start();
         if (mSoundFXon) {
-            mTts.setAudioVolume();
+            if (mSpeechFXon) {
+                mTts.setAudioVolume();
+            }
             if (mLeg < 9) {
                 softBuzzer.soundTurn();
             } else {
@@ -631,7 +638,9 @@ public class Driver implements TTS.onInitListenerProxy {
         mPenalty++;
         // Buzzer Sound
         if (mSoundFXon) {
-            mTts.setAudioVolume();
+            if (mSpeechFXon) {
+                mTts.setAudioVolume();
+            }
             softBuzzer.soundPenalty();
         }
 
