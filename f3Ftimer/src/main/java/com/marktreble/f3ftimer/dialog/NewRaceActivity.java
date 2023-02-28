@@ -12,6 +12,9 @@
 package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -45,16 +48,36 @@ public class NewRaceActivity extends FragmentActivity {
         NewRaceFrag1 f;
         if (savedInstanceState == null) {
             f = new NewRaceFrag1();
-            f.setRetainInstance(true);
+            //f.setRetainInstance(true);
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.dialog1, f, "newracefrag1");
             ft.commit();
         }
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                FragmentManager fm = getSupportFragmentManager();
+                NewRaceFrag2 f2 = (NewRaceFrag2) fm.findFragmentByTag("newracefrag2");
+                NewRaceFrag3 f3 = (NewRaceFrag3) fm.findFragmentByTag("newracefrag3");
+                if (f2 != null) {
+                    if (f2.onBackPressed())
+                        return;
+                }
+
+                if (f3 != null) {
+                    if (f3.onBackPressed())
+                        return;
+                }
+
+                finish();
+            }
+        });
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("name", this.name);
         outState.putInt("type", this.rpf);
@@ -94,7 +117,7 @@ public class NewRaceActivity extends FragmentActivity {
     }
 
     public void getFragment(Fragment f, String tag) {
-        f.setRetainInstance(true);
+        //f.setRetainInstance(true);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         ft.replace(R.id.dialog1, f, tag);
@@ -105,15 +128,20 @@ public class NewRaceActivity extends FragmentActivity {
     public void moveUp(View v) {
         FragmentManager fm = getSupportFragmentManager();
         NewRaceFrag3 f = (NewRaceFrag3) fm.findFragmentByTag("newracefrag3");
-        f.moveUp(v);
+        if (f != null) {
+            f.moveUp(v);
+        }
     }
 
     public void moveDown(View v) {
         FragmentManager fm = getSupportFragmentManager();
         NewRaceFrag3 f = (NewRaceFrag3) fm.findFragmentByTag("newracefrag3");
-        f.moveDown(v);
+        if (f != null) {
+            f.moveDown(v);
+        }
     }
 
+    /*
     @Override
     public void onBackPressed() {
         FragmentManager fm = getSupportFragmentManager();
@@ -133,4 +161,6 @@ public class NewRaceActivity extends FragmentActivity {
 
 
     }
+
+     */
 }

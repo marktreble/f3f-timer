@@ -18,6 +18,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -77,7 +79,7 @@ public class ResultsReadActivity extends ResultsRaceBaseActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("btnState", btnState);
     }
@@ -178,6 +180,7 @@ public class ResultsReadActivity extends ResultsRaceBaseActivity {
         sendBroadcast(i);
     }
 
+    @SuppressWarnings("deprecation")
     public boolean isServiceRunning(String serviceClassName) {
         final ActivityManager activityManager = (ActivityManager) getApplicationContext().getSystemService(Context.ACTIVITY_SERVICE);
         if (activityManager != null) {

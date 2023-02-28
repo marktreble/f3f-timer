@@ -21,6 +21,7 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -235,12 +236,12 @@ public class USBOtherService extends Service implements DriverInterface {
             @Override
             public void run() {
                 if (!connect(intent) && mDriver != null) {
-                    new Handler().postDelayed(this, 100);
+                    new Handler(Looper.getMainLooper()).postDelayed(this, 100);
                 }
             }
         };
 
-        new Handler().postDelayed(make_connection, 100);
+        new Handler(Looper.getMainLooper()).postDelayed(make_connection, 100);
 
         return (START_STICKY);
     }

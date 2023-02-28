@@ -11,16 +11,24 @@
 
 package com.marktreble.f3ftimer.dialog;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
@@ -37,6 +45,8 @@ import android.view.ViewGroup;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.constants.Pref;
+import com.marktreble.f3ftimer.helpers.bluetooth.BluetoothHelper;
+import com.marktreble.f3ftimer.helpers.locale.LocaleHelper;
 import com.marktreble.f3ftimer.languages.Languages;
 import com.marktreble.f3ftimer.media.TTS;
 import com.marktreble.f3ftimer.wifi.Wifi;
@@ -46,14 +56,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static android.app.Activity.RESULT_OK;
-
 public class SettingsFragment extends PreferenceFragmentCompat
         implements OnSharedPreferenceChangeListener, TTS.onInitListenerProxy {
 
     private TTS mTts;
 
     final private int REQUEST_PICK_FOLDER = 9999;
+    private int mRequestCode;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,8 +80,11 @@ public class SettingsFragment extends PreferenceFragmentCompat
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = super.onCreateView(inflater, container, savedInstanceState);
-        if (view != null)
-            view.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.background_dialog));
+        if (view != null) {
+            view.setBackgroundColor(
+                    ContextCompat.getColor(getActivity(), R.color.background_dialog)
+            );
+        }
 
         // Set values
         setInputSourceActiveFields();
@@ -92,7 +104,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
         setBTDeviceSummary("pref_external_display");
 
-        setStringSummary("pref_wind_angle_offset");
+        //setStringSummary("pref_wind_angle_offset");
+        setStringSummary("pref_wind_measurement_ble_device");
         setStringSummary("pref_wind_measurement");
 
         setListSummary("pref_buzz_off_course");
@@ -129,19 +142,18 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
                     Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
                     i.addCategory(Intent.CATEGORY_DEFAULT);
-                    startActivityForResult(Intent.createChooser(i, "Choose directory"), REQUEST_PICK_FOLDER);
+                    mRequestCode = REQUEST_PICK_FOLDER;
+                    mStartForResult.launch(Intent.createChooser(i, "Choose directory"));
                     return true;
                 }
             });
         }
 
         Preference myPref = findPreference(Pref.RESET_BUTTON);
-        myPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
-                resetToDefault(prefs, Pref.RESET_BUTTON);
-                return true;
-            }
+        myPref.setOnPreferenceClickListener(preference -> {
+            SharedPreferences prefs = getPreferenceScreen().getSharedPreferences();
+            resetToDefault(prefs, Pref.RESET_BUTTON);
+            return true;
         });
         return view;
 
@@ -149,30 +161,33 @@ public class SettingsFragment extends PreferenceFragmentCompat
 
 
     @SuppressLint("WrongConstant")
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            switch (requestCode) {
-                case REQUEST_PICK_FOLDER:
-                    Uri uri = data.getData();
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+                    switch (mRequestCode) {
+                        case REQUEST_PICK_FOLDER:
+                            Uri uri = intent.getData();
 
-                    final int takeFlags = getActivity().getIntent().getFlags()
-                            & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    // Check for the freshest data.
-                    getActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                            final int takeFlags = getActivity().getIntent().getFlags()
+                                    & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            // Check for the freshest data.
+                            getActivity().getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
-                    Preference filePicker = findPreference("pref_results_F3Fgear_path");
-                    filePicker.setSummary(uri.getLastPathSegment());
-                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                    pref.edit().putString("pref_results_F3Fgear_path", uri.toString()).apply();
+                            Preference filePicker = findPreference("pref_results_F3Fgear_path");
+                            filePicker.setSummary(uri.getLastPathSegment());
+                            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                            pref.edit().putString("pref_results_F3Fgear_path", uri.toString()).apply();
 
-                    break;
-                default:
-                    // Nothing
-                    break;
-            }
-        }
-    }
+                            break;
+                        default:
+                            // Nothing
+                            break;
+                    }
+                }
+            });
 
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
 
@@ -194,7 +209,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 || key.equals("pref_audible_wind_warning")
                 || key.equals("pref_full_volume")) {
             // Send to Service
-            sendBooleanValueToService(key, sharedPreferences.getBoolean(key, false));
+            boolean value = sharedPreferences.getBoolean(key, false);
+            sendBooleanValueToService(key, value);
         }
 
         if (key.equals(Pref.USB_BAUDRATE  )
@@ -207,7 +223,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 || key.equals("pref_buzz_on_course")
                 || key.equals("pref_buzz_turn")
                 || key.equals("pref_buzz_turn9")
-                || key.equals("pref_buzz_penalty")) {
+                || key.equals("pref_buzz_penalty")
+                || key.equals("pref_wind_measurement_ble_device")) {
             setStringSummary(key);
             sendStringValueToService(key, sharedPreferences.getString(key, ""));
         }
@@ -221,7 +238,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
             if (l.length == 2) {
                 Locale lo = new Locale(l[0], l[1]);
                 // set default text language
-                getResources().getConfiguration().locale = lo;
+                LocaleHelper.setLocale(getContext(), lo);
                 sendStringValueToService(key, sharedPreferences.getString(key, ""));
                 Log.i("SETTINGS", "Changed speech language to " + lo.getDisplayName());
             }
@@ -371,7 +388,8 @@ public class SettingsFragment extends PreferenceFragmentCompat
             String value = (String) listPref.getEntry();
             if (value == null) {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-                Locale current = getResources().getConfiguration().locale;
+                Locale current = LocaleHelper.getLocale(getContext());
+
                 String p = sharedPref.getString("pref_voice_lang", "");
                 String lang = (p.equals("")) ? current.getLanguage() : p.substring(0, 2);
                 String country = (p.equals("")) ? current.getCountry() : p.substring(3, 5);
@@ -388,7 +406,14 @@ public class SettingsFragment extends PreferenceFragmentCompat
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String value = sharedPref.getString(key, "No Devices Paired");
 
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
+                    return;
+                }
+            }
+
+            BluetoothAdapter bluetoothAdapter = BluetoothHelper.getAdapter(getContext());
             if (bluetoothAdapter != null) {
                 if (bluetoothAdapter.isEnabled()) {
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
@@ -510,7 +535,15 @@ public class SettingsFragment extends PreferenceFragmentCompat
         CharSequence[] labels = {"No Devices Paired"};
         CharSequence[] values = {""};
 
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothAdapter bluetoothAdapter = BluetoothHelper.getAdapter(getContext());
+
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
+                return;
+            }
+        }
+
         if (bluetoothAdapter != null) {
             if (bluetoothAdapter.isEnabled()) {
                 Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();

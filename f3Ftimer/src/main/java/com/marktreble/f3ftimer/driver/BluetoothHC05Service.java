@@ -22,12 +22,17 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.ParcelUuid;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.constants.Pref;
+import com.marktreble.f3ftimer.helpers.bluetooth.BluetoothHelper;
+import com.marktreble.f3ftimer.helpers.parcelable.ParcelableHelper;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.IOException;
@@ -96,7 +101,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
      */
 
     @Override
-    public void uncaughtException(Thread thread, Throwable ex) {
+    public void uncaughtException(@NonNull Thread thread, @NonNull Throwable ex) {
         stopSelf();
     }
 
@@ -108,7 +113,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
         this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
         registerReceiver(mReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
 
-        mHandler = new Handler();
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
@@ -171,7 +176,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
     }
 
     // Binding for UI->Service Communication
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
@@ -223,7 +228,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
         Log.d(TAG, "onStartCommand");
         mIntent = intent;
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothHelper.getAdapter(this);
         if (mBluetoothAdapter == null) {
             // Device does not support bluetooth
             Log.d(TAG, "NOT SUPPORTED");
@@ -326,24 +331,27 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
         mPairedDeviceNames = new ArrayList<>();
         mPairedDevices = new ArrayList<>();
 
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {
-            for (BluetoothDevice device : pairedDevices) {
-                mPairedDeviceNames.add(device.getName());
-                mPairedDevices.add(device);
+        try {
+            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            if (pairedDevices.size() > 0) {
+                for (BluetoothDevice device : pairedDevices) {
+                    mPairedDeviceNames.add(device.getName());
+                    mPairedDevices.add(device);
+                }
             }
+
+            mPairedAndDiscoveredDeviceNames = new ArrayList<>();
+            mPairedAndDiscoveredDeviceNames.addAll(mPairedDeviceNames);
+
+            mPairedAndDiscoveredDevices = new ArrayList<>();
+            mPairedAndDiscoveredDevices.addAll(mPairedDevices);
+
+            if (!attemptDeviceConnection()) {
+                mBluetoothAdapter.startDiscovery();
+            }
+        } catch (SecurityException e) {
+            Log.e(TAG, String.valueOf(e));
         }
-
-        mPairedAndDiscoveredDeviceNames = new ArrayList<>();
-        mPairedAndDiscoveredDeviceNames.addAll(mPairedDeviceNames);
-
-        mPairedAndDiscoveredDevices = new ArrayList<>();
-        mPairedAndDiscoveredDevices.addAll(mPairedDevices);
-
-        if (!attemptDeviceConnection()) {
-            mBluetoothAdapter.startDiscovery();
-        }
-
     }
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -352,28 +360,33 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Bundle extras = intent.getExtras();
+                BluetoothDevice device = ParcelableHelper.getParcelableBluetoothDevice(extras, BluetoothDevice.EXTRA_DEVICE);
                 // Add the name and address to an array adapter to show in a ListView
-                String name = device.getName();
-                if (name == null) name = "Unknown";
-                Log.i("FOUND BT DEVICE", name + "::" + device.getAddress());
+                try {
+                    String name = device.getName();
+                    if (name == null) name = "Unknown";
+                    Log.i("FOUND BT DEVICE", name + "::" + device.getAddress());
 
-                if (mDiscoveredDevices.contains(device)) return;
+                    if (mDiscoveredDevices.contains(device)) return;
 
-                mDiscoveredDeviceNames.add(name);
-                mDiscoveredDevices.add(device);
+                    mDiscoveredDeviceNames.add(name);
+                    mDiscoveredDevices.add(device);
 
-                mPairedAndDiscoveredDeviceNames = new ArrayList<>();
-                mPairedAndDiscoveredDeviceNames.addAll(mPairedDeviceNames);
-                mPairedAndDiscoveredDeviceNames.addAll(mDiscoveredDeviceNames);
+                    mPairedAndDiscoveredDeviceNames = new ArrayList<>();
+                    mPairedAndDiscoveredDeviceNames.addAll(mPairedDeviceNames);
+                    mPairedAndDiscoveredDeviceNames.addAll(mDiscoveredDeviceNames);
 
-                mPairedAndDiscoveredDevices = new ArrayList<>();
-                mPairedAndDiscoveredDevices.addAll(mPairedDevices);
-                mPairedAndDiscoveredDevices.addAll(mDiscoveredDevices);
+                    mPairedAndDiscoveredDevices = new ArrayList<>();
+                    mPairedAndDiscoveredDevices.addAll(mPairedDevices);
+                    mPairedAndDiscoveredDevices.addAll(mDiscoveredDevices);
 
-                // See if any paired or discovered devices accept the UUID
-                if (attemptDeviceConnection()) {
-                    mBluetoothAdapter.startDiscovery();
+                    // See if any paired or discovered devices accept the UUID
+                    if (attemptDeviceConnection()) {
+                        mBluetoothAdapter.startDiscovery();
+                    }
+                } catch (SecurityException e) {
+                    Log.e(TAG, String.valueOf(e));
                 }
             }
         }
@@ -383,14 +396,16 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
 
         for (int i = 0; i < mPairedAndDiscoveredDevices.size(); i++) {
             BluetoothDevice mmDevice = mPairedAndDiscoveredDevices.get(i);
-            Log.i(TAG, "CHECKING: " + mmDevice.getAddress() + ":" + mmDevice.getName());
 
             BluetoothSocket tmp = null;
+            String deviceName = "NOT CONNECTED";
             // uuid is standard for the HC-05
             UUID uuid = UUID.fromString(getString(R.string.HC05_uuid));
 
 
             try {
+                deviceName = mmDevice.getName();
+                Log.i(TAG, "CHECKING: " + mmDevice.getAddress() + ":" + mmDevice.getName());
                 ParcelUuid[] Uuids = mmDevice.getUuids();
 
                 for (ParcelUuid test : Uuids) {
@@ -403,13 +418,13 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
                         }
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | SecurityException e) {
                 Log.i(TAG, "Failed to connect to device " + mInputSourceDevice);
             }
 
             if (tmp != null) {
                 mmSocket = tmp;
-                Log.i(TAG, "connected to " + mmDevice.getName());
+                Log.i(TAG, "connected to " + deviceName);
                 startConnectThread();
                 return false;
             } else {
@@ -422,34 +437,31 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
 
     private void startConnectThread() {
 
-        Thread connectThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.i(TAG, "Starting Runnable");
-                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        Thread connectThread = new Thread(() -> {
+            Log.i(TAG, "Starting Runnable");
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
+            try {
+                // Connect the device through the socket. This will block
+                // until it succeeds or throws an exception
+                mmSocket.connect();
+
+            } catch (IOException | SecurityException e) {
+                // Unable to connect; close the socket and get out
+                e.printStackTrace();
                 try {
-                    // Connect the device through the socket. This will block
-                    // until it succeeds or throws an exception
-                    mmSocket.connect();
-
-                } catch (IOException connectException) {
-                    // Unable to connect; close the socket and get out
-                    connectException.printStackTrace();
-                    try {
-                        mmSocket.close();
-                    } catch (IOException closeException) {
-                        closeException.printStackTrace();
-                    }
-                    return;
+                    mmSocket.close();
+                } catch (IOException closeException) {
+                    closeException.printStackTrace();
                 }
-
-                // Do work to manage the connection (in a separate thread)
-                manageConnectedSocket();
+                return;
             }
+
+            // Do work to manage the connection (in a separate thread)
+            manageConnectedSocket();
         });
 
-        new Handler().post(connectThread);
+        new Handler(Looper.getMainLooper()).post(connectThread);
     }
 
     private void manageConnectedSocket() {
@@ -470,12 +482,7 @@ public class BluetoothHC05Service extends Service implements DriverInterface, Th
         mHandler.postDelayed(listener, 100);
     }
 
-    final Runnable listener = new Runnable() {
-        @Override
-        public void run() {
-            listen();
-        }
-    };
+    final Runnable listener = this::listen;
 
     private void listen() {
         if (!mIsListening) return;

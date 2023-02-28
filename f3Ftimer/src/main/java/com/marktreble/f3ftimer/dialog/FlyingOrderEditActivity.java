@@ -13,6 +13,8 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -51,7 +53,7 @@ public class FlyingOrderEditActivity extends FragmentActivity {
 
             f = new NewRaceFrag3();
             f.mRid = mRid;
-            f.setRetainInstance(true);
+            //f.setRetainInstance(true);
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.dialog1, f, "newracefrag3");
@@ -60,7 +62,7 @@ public class FlyingOrderEditActivity extends FragmentActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
     }

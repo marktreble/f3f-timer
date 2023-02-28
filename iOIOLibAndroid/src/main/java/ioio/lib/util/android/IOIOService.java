@@ -100,8 +100,8 @@ public abstract class IOIOService extends Service implements
 	 * overloaded. It takes care of connecting with the IOIO.
 	 */
 	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
+	public int onStartCommand(Intent intent, int flags, int startId) {
+		super.onStartCommand(intent, flags, startId);
 		if (!started_) {
 			helper_.start();
 			started_ = true;
@@ -110,6 +110,7 @@ public abstract class IOIOService extends Service implements
 				helper_.restart();
 			}
 		}
+		return START_NOT_STICKY;
 	}
 
 	/**

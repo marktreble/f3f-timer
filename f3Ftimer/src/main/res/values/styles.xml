@@ -15,7 +15,7 @@
 
     <style name="carbonActionBar" parent="@style/Theme.AppCompat.Light">
         <!--<item name="android:background">@drawable/gradient_background</item>-->
-        <item name="android:textColor">@color/text</item>
+        <item name="android:textColor">@drawable/text_selector</item>
         <item name="android:titleTextStyle">@style/titleTextStyle</item>
     </style>
 

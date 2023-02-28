@@ -1,6 +1,5 @@
 package com.marktreble.f3ftimer.wifi;
 
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
@@ -78,16 +77,18 @@ public class WifiApControl {
         }
     }
 
-    public WifiConfiguration getWifiApConfiguration() {
+    @SuppressWarnings("deprecation")
+    public android.net.wifi.WifiConfiguration getWifiApConfiguration() {
         try {
-            return (WifiConfiguration) getWifiApConfiguration.invoke(mgr);
+            return (android.net.wifi.WifiConfiguration) getWifiApConfiguration.invoke(mgr);
         } catch (Exception e) {
             Log.v("BatPhone", e.toString(), e); // shouldn't happen
             return null;
         }
     }
 
-    public boolean setWifiApEnabled(WifiConfiguration config, boolean enabled) {
+    @SuppressWarnings("deprecation")
+    public boolean setWifiApEnabled(android.net.wifi.WifiConfiguration config, boolean enabled) {
         try {
             return (Boolean) setWifiApEnabled.invoke(mgr, config, enabled);
         } catch (Exception e) {

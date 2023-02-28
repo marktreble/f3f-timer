@@ -179,6 +179,7 @@
     <string name="wind_measurement">Wind meting</string>
     <string name="wind_meter_settings">Windmeterinstellingen</string>
     <string name="wind_warning_audible">Windwaarschuwing hoorbaar</string>
+    <string name="wind_speed_announcement">%s meter per seconde</string>
     <string name="USB_OTHER">USB - Other</string>
     <string name="USB_IOIO">USB - IOIO</string>
     <string name="USBJE">USB - Jon Edison Timer Box</string>
@@ -194,8 +195,8 @@
     <string name="ttl_team_results">Teamresultaten</string>
     <string name="ttl_select_pilots">Selecteer Piloten om toe te voegen</string>
     <string name="ttl_round_number_short">R%1$d</string>
-    <string name="ttl_round_number_name">R%d - %s</string>
-    <string name="ttl_round_number_groups">R%d%s</string>
+    <string name="ttl_round_number_name">R%1$d - %2$s</string>
+    <string name="ttl_round_number_groups">R%1$d%2$s</string>
     <string name="ttl_round_number">Ronde %1$d</string>
     <string name="ttl_round_in_progress">Lopende Ronde (R%1$d)</string>
     <string name="ttl_round_groups">" - %1$d Groepen"</string>
@@ -217,10 +218,10 @@
     <string name="import_api_f3ft">Van Internet (f3ftimer api)</string>
     <string name="import_api_f3xv">Van Internet (f3xvault api)</string>
     <string name="import_file">Van bestand</string>
-    <string name="theme_whitered">Wit/Rood</string>
+    <string name="theme_white_red">Wit/Rood</string>
     <string name="theme_classic">Klassiek</string>
-    <string name="theme_blackyellow">Zwart/Geel</string>
-    <string name="theme_blackwhite">Zwart/Wit</string>
+    <string name="theme_black_yellow">Zwart/Geel</string>
+    <string name="theme_black_white">Zwart/Wit</string>
     <string name="share_social_media">Delen op sociale media</string>
     <string name="share_email">Delen via email</string>
 
@@ -252,4 +253,8 @@
     <string name="reset_to_defaults">Reset naar standaardwaarden</string>
     <string name="ttl_auto_read">Announce Results</string>
     <string name="nzl">New Zealand</string>
+    <string name="working_time_expired">Working Time Expired</string>
+    <string name="race_aborted">Race Aborted</string>
+    <string name="err_anemometer_no_device">Could not start Anemomter service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off</string>
+    <string name="err_anemometer">Anemomter</string>
 </resources>

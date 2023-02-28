@@ -16,13 +16,19 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import com.google.android.material.tabs.TabLayout;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.ViewPager;
+import androidx.lifecycle.Lifecycle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
+
+import android.os.Looper;
 import android.view.Window;
 
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
@@ -42,6 +48,9 @@ public class StartNumberEditActivity extends AppCompatActivity {
     private Context mContext;
     private float mAnimationDelay;
 
+    TabLayout tabLayout;
+    ViewPager2 viewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ((F3FtimerApplication) getApplication()).setTransparentTheme(this);
@@ -50,14 +59,9 @@ public class StartNumberEditActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.start_number);
 
-        TabLayout tabLayout;
-        ViewPager viewPager;
-
+        tabLayout = findViewById(R.id.tabs);
         viewPager = findViewById(R.id.viewpager);
         setupViewPager(viewPager);
-
-        tabLayout = findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
 
         int race_id = getIntent().getIntExtra("race_id", 0);
 
@@ -67,7 +71,7 @@ public class StartNumberEditActivity extends AppCompatActivity {
         mArrPilots = datasource.getAllPilotsForRace(race_id, 0, 0, 0);
         datasource.close();
 
-        mHandler = new Handler();
+        mHandler = new Handler(Looper.getMainLooper());
 
         mContext = this;
 
@@ -89,7 +93,7 @@ public class StartNumberEditActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString("mStartNumber", mStartNumber);
@@ -97,40 +101,43 @@ public class StartNumberEditActivity extends AppCompatActivity {
         outState.putFloat("mAnimationDelay", mAnimationDelay);
     }
 
-    private void setupViewPager(ViewPager viewPager) {
+    private void setupViewPager(ViewPager2 viewPager) {
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager(), getLifecycle());
         adapter.addFragment(new StartNumberEditFrag2(), "Set");
         adapter.addFragment(new StartNumberEditFrag1(), "Random");
         viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(tabLayout, viewPager,
+                (tab, position) -> tab.setText(
+                        adapter.mFragmentTitleList.get(position)
+                )
+        ).attach();
     }
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
+    static class ViewPagerAdapter extends FragmentStateAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
-        private final List<String> mFragmentTitleList = new ArrayList<>();
+        public final List<String> mFragmentTitleList = new ArrayList<>();
 
-        ViewPagerAdapter(FragmentManager manager) {
-            super(manager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        public ViewPagerAdapter(@NonNull FragmentManager fragmentManager, @NonNull Lifecycle lifecycle) {
+            super(fragmentManager, lifecycle);
         }
 
+
+        @NonNull
         @Override
-        public Fragment getItem(int position) {
+        public Fragment createFragment(int position) {
             return mFragmentList.get(position);
         }
 
         @Override
-        public int getCount() {
+        public int getItemCount() {
             return mFragmentList.size();
         }
 
         void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return mFragmentTitleList.get(position);
         }
     }
 

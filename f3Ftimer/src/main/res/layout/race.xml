@@ -5,13 +5,11 @@
     android:layout_height="match_parent"
     android:background="?attr/bg"
     xmlns:android="http://schemas.android.com/apk/res/android">
-
     <LinearLayout
         android:orientation="horizontal"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/bg2">
-
         <TextView
             android:id="@+id/race_title"
             android:layout_width="0dp"
@@ -26,9 +24,7 @@
             android:textColor="?attr/t3"
             android:textSize="@dimen/title"
             android:textStyle="normal">
-
         </TextView>
-
         <TextView
             android:id="@+id/battery_level"
             android:layout_width="wrap_content"
@@ -41,27 +37,32 @@
             android:textColor="?attr/t3"
             android:textSize="@dimen/title"
             android:textStyle="bold">
-
         </TextView>
-
+        <ImageView
+            android:id="@+id/anemometer_connection_status"
+            android:layout_width="@dimen/status_diameter"
+            android:layout_height="@dimen/status_diameter"
+            android:layout_marginEnd="4dp"
+            android:layout_marginTop="1dp"
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/anemometer_connection_status" />
         <ImageView
             android:id="@+id/external_display_connection_status"
             android:layout_width="@dimen/status_diameter"
             android:layout_height="@dimen/status_diameter"
             android:layout_marginEnd="4dp"
             android:layout_marginTop="1dp"
-            android:layout_gravity="center_vertical" />
-
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/anemometer_connection_status" />
         <ImageView
             android:id="@+id/connection_status"
             android:layout_width="@dimen/status_diameter"
             android:layout_height="@dimen/status_diameter"
             android:layout_marginEnd="4dp"
-            android:layout_gravity="center_vertical" />
-
+            android:layout_gravity="center_vertical"
+            android:contentDescription="@string/anemometer_connection_status" />
 
     </LinearLayout>
-
     <TextView
         android:id="@+id/results_ip"
         android:background="?attr/bg2"
@@ -72,31 +73,65 @@
         android:lines="1"
         android:ellipsize="end"
         android:gravity="center_vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="30dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="30dp"
         android:textColor="?attr/t3"
         android:textSize="@dimen/subtitle"
         android:textStyle="normal"
         android:visibility="gone">
-
     </TextView>
-
-    <TextView
+    <LinearLayout
         android:id="@+id/wind_readings"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:layout_weight="0"
-        android:lines="1"
-        android:gravity="center"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:background="?attr/t3"
-        android:textColor="?attr/bg"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:visibility="gone" />
+        android:layout_height="96dp"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:background="?attr/bg"
+        android:visibility="gone">
 
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_gravity="end|center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+            <TextView
+                android:id="@+id/wind_voltage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:lines="1"
+                android:textColor="?attr/t3"
+                android:textSize="24sp"
+                android:textStyle="normal">
+            </TextView>
+            <TextView
+                android:id="@+id/wind_speed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:lines="1"
+                android:textColor="?attr/t3"
+                android:textSize="32sp"
+                android:textStyle="bold">
+            </TextView>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="96dp"
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:layout_gravity="end">
+            <com.marktreble.f3ftimer.views.WindVane
+                android:id="@+id/wind_direction"
+                android:layout_width="84dp"
+                android:layout_height="84dp"
+                android:layout_gravity="start|center_vertical">
+            </com.marktreble.f3ftimer.views.WindVane>
+        </LinearLayout>
+    </LinearLayout>
     <ListView
         android:id="@android:id/list"
         android:layout_width="match_parent"
@@ -107,5 +142,4 @@
         android:dividerHeight="2dp"
         android:drawSelectorOnTop="false"
         android:listSelector="?attr/bg" />
-
 </LinearLayout>

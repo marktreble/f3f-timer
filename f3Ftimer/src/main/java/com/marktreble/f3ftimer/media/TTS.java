@@ -11,15 +11,16 @@
 
 package com.marktreble.f3ftimer.media;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.Build;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.languages.Languages;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 public class TTS implements TextToSpeech.OnInitListener {
@@ -31,7 +32,7 @@ public class TTS implements TextToSpeech.OnInitListener {
     public int mTTSStatus;
     HashMap<String, String> utterance_ids = new HashMap<>();
 
-    private Context mContext;
+    private final WeakReference<Context> mContext;
 
     public boolean mSetFullVolume = true;
 
@@ -54,7 +55,7 @@ public class TTS implements TextToSpeech.OnInitListener {
     private TTS(Context context) {
         Log.i(TAG, "STARTING TTS ENGINE");
         mttsengine = new TextToSpeech(context, this);
-        mContext = context;
+        mContext = new WeakReference<>(context);
     }
 
 
@@ -113,8 +114,13 @@ public class TTS implements TextToSpeech.OnInitListener {
     public void onInit(int status) {
         mTTSStatus = status;
 
-        initUtteranceListenerForMinICS();
-        mInitListener.onInit(status);
+        if (status == TextToSpeech.SUCCESS) {
+            Log.d("TTS", "Initilization Succeeded!");
+            initUtteranceListenerForMinICS();
+            mInitListener.onInit(status);
+        } else {
+            Log.e("TTS", "Initilization Failed!");
+        }
     }
 
     public String setSpeechFXLanguage(String language, String defaultLang) {
@@ -132,29 +138,28 @@ public class TTS implements TextToSpeech.OnInitListener {
         return lang;
     }
 
-    @TargetApi(21)
+    @SuppressWarnings("deprecation")
     public void speak(String text, int queueMode) {
         setAudioVolume();
 
-        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.KITKAT) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ttsengine().speak(text, queueMode, null, text);
+        } else {
             utterance_ids.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, text);
             ttsengine().speak(text, queueMode, utterance_ids);
-        } else {
-            ttsengine().speak(text, queueMode, null, text);
         }
 
     }
 
     public void setAudioVolume() {
         if (mSetFullVolume) {
-            AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+            AudioManager audioManager = (AudioManager) mContext.get().getSystemService(Context.AUDIO_SERVICE);
             if (audioManager != null) {
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, 20, 0);
             }
         }
     }
 
-    @TargetApi(15)
     private void initUtteranceListenerForMinICS() {
         mttsengine.setOnUtteranceProgressListener(new UtteranceProgressListener() {
             @Override
@@ -167,10 +172,15 @@ public class TTS implements TextToSpeech.OnInitListener {
                 mInitListener.onDone(utteranceId);
             }
 
+            @SuppressWarnings("deprecation")
             @Override
             public void onError(String utteranceId) {
                 mInitListener.onError(utteranceId);
+            }
 
+            @Override
+            public void onError(String utteranceId, final int errorCode) {
+                mInitListener.onError(utteranceId);
             }
         });
     }

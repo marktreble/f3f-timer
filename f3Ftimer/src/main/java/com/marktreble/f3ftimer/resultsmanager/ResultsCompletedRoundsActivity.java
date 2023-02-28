@@ -120,6 +120,6 @@ public class ResultsCompletedRoundsActivity extends ResultsRaceBaseActivity
         Intent intent = new Intent(this, ResultsCompletedRoundActivity.class);
         intent.putExtra("race_id", mRid);
         intent.putExtra("round_id", position + 1);
-        startActivityForResult(intent, mRid);
+        startActivity(intent);
     }
 }

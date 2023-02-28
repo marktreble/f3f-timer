@@ -14,9 +14,10 @@ package com.marktreble.f3ftimer.media;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+
+import com.marktreble.f3ftimer.helpers.soundpool.SoundPoolHelper;
 
 public class SoftBuzzer {
     private static SoundPool soundPool;
@@ -24,11 +25,7 @@ public class SoftBuzzer {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void init() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            soundPool = new SoundPool.Builder().setMaxStreams(1).build();
-        } else {
-            soundPool = new SoundPool(1, AudioManager.STREAM_MUSIC, 0);
-        }
+        soundPool = SoundPoolHelper.getSoundPool(1);
     }
 
     public void setSounds(Context context, Intent intent, String[] sounds) {

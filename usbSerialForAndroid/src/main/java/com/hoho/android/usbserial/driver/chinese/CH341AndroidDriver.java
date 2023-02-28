@@ -16,6 +16,7 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbEndpoint;
 import android.hardware.usb.UsbInterface;
 import android.hardware.usb.UsbManager;
+import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -41,7 +42,7 @@ public class CH341AndroidDriver {
 	private int readIndex;
 	private int readcount;
 	private int totalBytes;
-	private ArrayList<String> DeviceNum = new ArrayList();
+	private ArrayList<String> DeviceNum = new ArrayList<>();
 	protected final Object ReadQueueLock = new Object();
 	protected final Object WriteQueueLock = new Object();
 	private int DeviceCount;
@@ -645,6 +646,7 @@ public class CH341AndroidDriver {
 	}
 	
 	/***********USB broadcast receiver*******************************************/
+	@SuppressWarnings("deprecation")
 	private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() 
 	{
 		@Override
@@ -658,7 +660,12 @@ public class CH341AndroidDriver {
 			{
 				synchronized(this) 
 				{
-					UsbDevice localUsbDevice = intent.getParcelableExtra("device");
+					UsbDevice localUsbDevice;
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+						localUsbDevice = intent.getParcelableExtra("device", UsbDevice.class);
+					} else {
+						localUsbDevice = intent.getParcelableExtra("device");
+					}
 					if(intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false))
 					{
 						OpenUsbDevice(localUsbDevice);
@@ -727,7 +734,7 @@ public class CH341AndroidDriver {
 		}
 	}
 	
-	public final class UartModem {
+	public static final class UartModem {
 		public static final int TIOCM_LE = 0x001;
 		public static final int TIOCM_DTR = 0x002;
 		public static final int TIOCM_RTS = 0x004;
@@ -744,14 +751,14 @@ public class CH341AndroidDriver {
 		public static final int TIOCM_LOOP = 0x8000;
 	}
 	
-	public final class UsbType {
+	public static final class UsbType {
 		public static final int USB_TYPE_VENDOR = (0x02 << 5);
 		public static final int USB_RECIP_DEVICE = 0x00;
 		public static final int USB_DIR_OUT = 0x00;	/*to device*/
 		public static final int USB_DIR_IN = 0x80;  /*to host*/
 	}
 	
-	public final class UartCmd {
+	public static final class UartCmd {
 		public static final int VENDOR_WRITE_TYPE = 0x40;
 		public static final int VENDOR_READ_TYPE = 0xC0;
 		public static final int VENDOR_READ	= 0x95;
@@ -761,7 +768,7 @@ public class CH341AndroidDriver {
 		public static final int VENDOR_VERSION = 0x5F;
 	}
 	
-	public final class UartState {
+	public static final class UartState {
 		public static final int UART_STATE = 0x00;
 		public static final int UART_OVERRUN_ERROR = 0x01;
 		public static final int UART_PARITY_ERROR = 0x02;
@@ -770,7 +777,7 @@ public class CH341AndroidDriver {
 		public static final int UART_STATE_TRANSIENT_MASK = 0x07;
 	}
 	
-	public final class UartIoBits {
+	public static final class UartIoBits {
 		public static final int UART_BIT_RTS = (1 << 6);
 		public static final int UART_BIT_DTR = (1 << 5);
 	}

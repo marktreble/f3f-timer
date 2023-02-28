@@ -16,11 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
+/* Start Screen */
 public class RaceTimerFrag1 extends RaceTimerFrag {
 
 
@@ -74,9 +74,7 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
             }
         });
 
-        TextView status = mView.findViewById(R.id.status);
-        status.setVisibility(View.GONE);
-
+        super.hideStatus();
         super.setPilotName();
 
         return mView;
@@ -86,7 +84,7 @@ public class RaceTimerFrag1 extends RaceTimerFrag {
         RaceTimerActivity a = (RaceTimerActivity) getActivity();
 
         a.sendCommand("working_time");
-
+        a.sendWind();
         a.getFragment(new RaceTimerFrag2(), 2);
     }
 

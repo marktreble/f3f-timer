@@ -168,7 +168,7 @@ public class TcpIoService extends Service implements DriverInterface {
     }
 
     // Binding for UI->Service Communication
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
@@ -195,7 +195,7 @@ public class TcpIoService extends Service implements DriverInterface {
                 }
 
                 if (data.equals("pref_wind_angle_offset")) {
-                    mSlopeOrientation = Float.valueOf(intent.getExtras().getString(IComm.MSG_VALUE));
+                    mSlopeOrientation = Float.parseFloat(intent.getExtras().getString(IComm.MSG_VALUE));
                     Log.d("TcpIoService", "pref_wind_angle_offset=" + mSlopeOrientation);
                 }
 
@@ -234,19 +234,13 @@ public class TcpIoService extends Service implements DriverInterface {
         return null;
     }
 
-    private void callbackToUI(String cmd) {
-        Intent i = new Intent(IComm.RCV_UPDATE);
-        i.putExtra(IComm.MSG_SERVICE_CALLBACK, cmd);
-        this.sendBroadcast(i);
-    }
-
     private class SendThread extends Thread {
         private Handler handler;
         private Looper myLooper;
 
         @SuppressLint("HandlerLeak")
         private SendThread() {
-            handler = new Handler() {
+            handler = new Handler(Looper.getMainLooper()) {
                 public void handleMessage(Message msg) {
                     try {
                         String cmd = ((String) msg.obj);
@@ -261,6 +255,8 @@ public class TcpIoService extends Service implements DriverInterface {
             };
         }
 
+        @SuppressWarnings("deprecation")
+        @Override
         public void destroy() {
             myLooper.quit();
         }
@@ -352,13 +348,6 @@ public class TcpIoService extends Service implements DriverInterface {
         }
     }
 
-    public void sendSpeechText(String lang, String text) {
-        if (sendThread != null) {
-            Log.i(TAG, "sendSpeechText \"" + lang.substring(0, 2) + "\" \"" + text + "\"");
-            sendThread.sendCmd(FT_SPEECH + lang.substring(0, 2) + text + " ");
-        }
-    }
-
     // socket functions
     private void startConnectThread() {
         mConnected = false;
@@ -372,70 +361,64 @@ public class TcpIoService extends Service implements DriverInterface {
                 e.printStackTrace();
             }
         }
-        connectThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Thread.currentThread().setName("ConnectThread" + Thread.currentThread().getId());
-                stopConnectThread = false;
-                while (!stopConnectThread) {
-                    Log.d(TAG, "Starting Runnable");
-                    android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        connectThread = new Thread(() -> {
+            Thread.currentThread().setName("ConnectThread" + Thread.currentThread().getId());
+            stopConnectThread = false;
+            while (!stopConnectThread) {
+                Log.d(TAG, "Starting Runnable");
+                android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
 
-                    try {
-                        // Connect the device through the socket. This will block
-                        // until it succeeds or throws an exception
-                        InetSocketAddress rpiSocketAdr = new InetSocketAddress(mF3ftimerServerIp, F3FTIMER_SERVER_PORT);
-                        Log.i(TAG, "connecting to " + rpiSocketAdr.getHostName() + ":" + rpiSocketAdr.getPort());
-                        mmSocket = new Socket();
-                        mmSocket.setReuseAddress(true);
-                        mmSocket.setTcpNoDelay(true);
-                        mmSocket.setSoLinger(false, 0);
-                        mmSocket.setSoTimeout(1000);
-                        mmSocket.connect(rpiSocketAdr, 5000);
-                        // Do work to manage the connection (in a separate thread)
-                        Log.d(TAG, "GET IO STREAMS");
-                        mmInStream = mmSocket.getInputStream();
-                        mmOutStream = mmSocket.getOutputStream();
+                try {
+                    // Connect the device through the socket. This will block
+                    // until it succeeds or throws an exception
+                    InetSocketAddress rpiSocketAdr = new InetSocketAddress(mF3ftimerServerIp, F3FTIMER_SERVER_PORT);
+                    Log.i(TAG, "connecting to " + rpiSocketAdr.getHostName() + ":" + rpiSocketAdr.getPort());
+                    mmSocket = new Socket();
+                    mmSocket.setReuseAddress(true);
+                    mmSocket.setTcpNoDelay(true);
+                    mmSocket.setSoLinger(false, 0);
+                    mmSocket.setSoTimeout(1000);
+                    mmSocket.connect(rpiSocketAdr, 5000);
+                    // Do work to manage the connection (in a separate thread)
+                    Log.d(TAG, "GET IO STREAMS");
+                    mmInStream = mmSocket.getInputStream();
+                    mmOutStream = mmSocket.getOutputStream();
 
-                        mDriver.start(mIntent);
-                        mDriverDestroyed = false;
+                    mDriver.start(mIntent);
+                    mDriverDestroyed = false;
 
-                        if (listenThread != null) {
-                            listenThread.interrupt();
-                        }
-                        listenThread = new Thread(null, new Runnable() {
-                            @Override
-                            public void run() {
-                                Thread.currentThread().setName("ListenThread" + Thread.currentThread().getId());
-                                listen();
-                            }
-                        });
-                        listenThread.start();
-
-                        if (sendThread != null) {
-                            sendThread.interrupt();
-                        }
-                        sendThread = new SendThread();
-                        sendThread.start();
-
-                        mConnected = true;
-                        driverConnected();
-
-                        Log.i(TAG, "connected to " + rpiSocketAdr.getHostName() + ":" + rpiSocketAdr.getPort());
-                    } catch (IOException connectException) {
-                        closeSocketAndStop();
+                    if (listenThread != null) {
+                        listenThread.interrupt();
                     }
+                    listenThread = new Thread(null, () -> {
+                        Thread.currentThread().setName("ListenThread" + Thread.currentThread().getId());
+                        listen();
+                    });
+                    listenThread.start();
+
+                    if (sendThread != null) {
+                        sendThread.interrupt();
+                    }
+                    sendThread = new SendThread();
+                    sendThread.start();
+
+                    mConnected = true;
+                    driverConnected();
+
+                    Log.i(TAG, "connected to " + rpiSocketAdr.getHostName() + ":" + rpiSocketAdr.getPort());
+                } catch (IOException connectException) {
+                    closeSocketAndStop();
+                }
+                try {
+                    sleep(100);
+                } catch (InterruptedException e) {
+                    if (!stopConnectThread) e.printStackTrace();
+                }
+                while (mConnected && !stopConnectThread) {
                     try {
-                        sleep(100);
+                        sleep(500);
                     } catch (InterruptedException e) {
                         if (!stopConnectThread) e.printStackTrace();
-                    }
-                    while (mConnected && !stopConnectThread) {
-                        try {
-                            sleep(500);
-                        } catch (InterruptedException e) {
-                            if (!stopConnectThread) e.printStackTrace();
-                        }
                     }
                 }
             }
@@ -501,7 +484,7 @@ public class TcpIoService extends Service implements DriverInterface {
                                     break;
                                 case FT_TIME:
                                     Log.d(TAG, "received: \"" + strbuf + "\"");
-                                    String flight_time = str.substring(1, str.length());
+                                    String flight_time = str.substring(1);
                                     Log.i(TAG, "Flight time: " + flight_time);
                                     timeReceived = true;
                                     finished(flight_time);
@@ -544,7 +527,7 @@ public class TcpIoService extends Service implements DriverInterface {
                                 case FT_WIND:
                                     if (mDriver.mWindMeasurement) {
                                         wind_angle_str = str.substring(str.indexOf(",") + 1, str.lastIndexOf(","));
-                                        wind_speed_str = str.substring(str.lastIndexOf(",") + 1, str.length());
+                                        wind_speed_str = str.substring(str.lastIndexOf(",") + 1);
                                         try {
                                             wind_angle_absolute = (Float.parseFloat(wind_angle_str)) % 360;
                                             wind_angle_relative = wind_angle_absolute - mSlopeOrientation;
@@ -647,7 +630,7 @@ public class TcpIoService extends Service implements DriverInterface {
     }
 
     public String formatWindValues(boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
-        String str = "";
+        String str;
         if (windLegal && windSpeedCounter == 20) {
             str = String.format(" a: %.2f°", windAngleAbsolute)
                     + String.format(" r: %.2f°", windAngleRelative)

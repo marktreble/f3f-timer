@@ -13,7 +13,6 @@ package com.marktreble.f3ftimer.data.api;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -33,7 +32,7 @@ import okhttp3.Response;
 
 public class API {
 
-    private static final String TAG = "APIDEBUG";
+    private static final String TAG = "API_DEBUG";
 
     private static final String STATUS_KEY = "status";
     private static final String STATUS_OK = "ok";
@@ -48,7 +47,7 @@ public class API {
     public static final String F3XV_IMPORT_RACE = "getEventInfo";
     // public static final String F3XV_UPLOAD = "";
 
-    public class httpmethod {
+    public static class httpMethod {
         public static final int GET = 1;
         public static final int POST = 2;
     }
@@ -73,18 +72,18 @@ public class API {
     }
 
     public void cancel() {
-        api.cancel(true);
+        api.cancel();
     }
 
-
-    public static class apiCall extends AsyncTask<JSONObject, Void, String> {
-        private WeakReference<Context> mContext;
+    public static class apiCall {
+        private final WeakReference<Context> mContext;
         String mBase;
         int mMethod;
         boolean mAppendEndpoint;
         boolean mIsJSON;
         APICallbackInterface mCallback;
         String mRequest;
+        boolean isCancelled = false;
 
         apiCall(Context context, String base, int method, boolean appendEndpoint, boolean isJSON, APICallbackInterface callback, String request) {
             super();
@@ -97,49 +96,122 @@ public class API {
             mRequest = request;
         }
 
-        @Override
-        protected String doInBackground(JSONObject... params) {
-            JSONObject nvp = params[0];
-            String base = mBase;
-            try {
-                String endpoint = nvp.getString(ENDPOINT_KEY);
+        public void cancel() {
+            isCancelled = true;
+        }
 
-                nvp.remove(ENDPOINT_KEY);
+        public void execute(JSONObject nvp) {
+            new Thread(() -> {
+                String base = mBase;
+                try {
+                    String endpoint = nvp.getString(ENDPOINT_KEY);
 
-                String str_response = "";
+                    nvp.remove(ENDPOINT_KEY);
 
-                String url = base;
-                if (mAppendEndpoint) url += endpoint;
+                    String str_response = "";
 
-                if (mMethod == API.httpmethod.GET) {
-                    str_response = get(url, nvp);
+                    String url = base;
+                    if (mAppendEndpoint)
+                        url += endpoint;
+                    Log.i("EP", url);
+
+                    if (mMethod == httpMethod.GET) {
+                        str_response = get(url, nvp);
+                    }
+                    if (mMethod == httpMethod.POST) {
+                        str_response = post(url, nvp);
+                    }
+                    postExecute(str_response);
+                    return;
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                if (mMethod == API.httpmethod.POST) {
-                    str_response = post(url, nvp);
+                postExecute("");
+            }).start();
+        }
+
+        private void postExecute(String response) {
+            if (this.isCancelled)
+                return;
+
+            Log.i(TAG, "RESPONSE WAS: " + response);
+
+            if (mIsJSON) {
+                JSONObject o = null;
+
+                try {
+                    o = new JSONObject(response);
+                } catch (JSONException | NullPointerException e) {
+                    e.printStackTrace();
                 }
-                return str_response;
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+                if (o != null && o.has(STATUS_KEY)) {
+                    String status = "";
+                    try {
+                        status = o.getString(STATUS_KEY);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (mCallback != null) {
+                        if (status.equals(STATUS_OK)) {
+                            mCallback.onAPISuccess(mRequest, o);
+                        } else {
+                            mCallback.onAPIError(mRequest, o);
+                        }
+                    }
+                    return;
+                }
+            } else {
+                String success = "";
+                JSONObject o = new JSONObject();
+
+                if (response != null && response.length() > 0) {
+                    success = response.substring(0, 1);
+                    try {
+                        o.put("data", response.substring(1).trim());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if (success.equals("1")) {
+                    mCallback.onAPISuccess(mRequest, o);
+                } else {
+                    mCallback.onAPIError(mRequest, null);
+                }
+                return;
             }
-            return "";
+
+            if (response == null) {
+                ((Activity) mContext.get()).runOnUiThread(() -> {
+                    if (mCallback != null)
+                        mCallback.onAPIError(mRequest, null);
+                });
+
+            } else {
+                if (mCallback != null)
+                    mCallback.onAPIError(mRequest, null);
+            }
         }
 
         private String get(String url, JSONObject nvp) {
             try {
                 if (nvp.length() > 0) {
-                    StringBuilder urlbuilder = new StringBuilder(url);
-                    urlbuilder.append("?");
+                    StringBuilder urlBuilder = new StringBuilder(url);
+                    urlBuilder.append("?");
                     Iterator<String> keys = nvp.keys();
 
                     while (keys.hasNext()) {
                         String key = keys.next();
                         String val = nvp.getString(key);
-                        urlbuilder.append(key);
-                        urlbuilder.append("=");
-                        urlbuilder.append(val);
-                        urlbuilder.append("&");
+                        urlBuilder.append(key);
+                        urlBuilder.append("=");
+                        urlBuilder.append(val);
+                        urlBuilder.append("&");
                     }
-                    url = urlbuilder.toString();
+                    url = urlBuilder.toString();
                     url = url.substring(0, url.length() - 1);
                 }
 
@@ -220,76 +292,5 @@ public class API {
             }
             return "";
         }
-
-        @Override
-        protected void onPostExecute(String response) {
-            if (this.isCancelled()) return;
-
-            Log.i(TAG, "RESPONSE WAS: " + response);
-
-            if (mIsJSON) {
-                JSONObject o = null;
-
-                try {
-                    o = new JSONObject(response);
-                } catch (JSONException | NullPointerException e) {
-                    e.printStackTrace();
-                }
-
-                if (o != null && o.has(STATUS_KEY)) {
-                    String status = "";
-                    try {
-                        status = o.getString(STATUS_KEY);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    if (mCallback != null) {
-                        if (status.equals(STATUS_OK)) {
-                            mCallback.onAPISuccess(mRequest, o);
-                        } else {
-                            mCallback.onAPIError(mRequest, o);
-                        }
-                    }
-                    return;
-                }
-            } else {
-                String success = "";
-                JSONObject o = new JSONObject();
-
-                if (response != null && response.length() > 0) {
-                    success = response.substring(0, 1);
-                    try {
-                        o.put("data", response.substring(1).trim());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (success.equals("1")) {
-                    mCallback.onAPISuccess(mRequest, o);
-                } else {
-                    mCallback.onAPIError(mRequest, null);
-                }
-                return;
-            }
-
-            if (response == null) {
-                ((Activity) mContext.get()).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (mCallback != null)
-                            mCallback.onAPIError(mRequest, null);
-                    }
-                });
-
-            } else {
-                if (mCallback != null)
-                    mCallback.onAPIError(mRequest, null);
-            }
-        }
     }
-
-
 }

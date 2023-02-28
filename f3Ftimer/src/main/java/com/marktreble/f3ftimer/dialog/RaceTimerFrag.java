@@ -51,6 +51,16 @@ public class RaceTimerFrag extends Fragment {
         min_number.setText(a.mNumber);
     }
 
+    public void setStatus(String str) {
+        TextView status = mView.findViewById(R.id.status);
+        status.setText(str);
+    }
+
+    public void hideStatus() {
+        TextView status = mView.findViewById(R.id.status);
+        status.setVisibility(View.GONE);
+    }
+
     public void setWindWarning(boolean on) {
         TextView warning = mView.findViewById(R.id.wind_warning);
         warning.setVisibility((on) ? View.VISIBLE : View.INVISIBLE);

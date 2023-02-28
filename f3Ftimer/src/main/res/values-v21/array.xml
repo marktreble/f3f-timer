@@ -5,9 +5,9 @@
     <string-array name="theme_names" translatable="false">
         <item>@string/theme_classic</item>
         <item>@string/theme_f3f</item>
-        <item>@string/theme_blackyellow</item>
-        <item>@string/theme_blackwhite</item>
-        <item>@string/theme_whitered</item>
+        <item>@string/theme_black_yellow</item>
+        <item>@string/theme_black_white</item>
+        <item>@string/theme_white_red</item>
     </string-array>
 
     <string-array name="theme_values" translatable="false">

@@ -20,6 +20,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
 
@@ -59,7 +60,7 @@ public class ResultsReadService extends Service implements Thread.UncaughtExcept
 
     private TTS mTts;
 
-    public Handler mHandler = new Handler();
+    public Handler mHandler = new Handler(Looper.getMainLooper());
 
     private MediaPlayer mMediaPlayer;
 

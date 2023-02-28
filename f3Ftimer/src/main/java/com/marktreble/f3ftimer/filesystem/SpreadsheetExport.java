@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 public class SpreadsheetExport extends FileExport {
 
+    public SpreadsheetExportInterface callbackInterface = null;
+
     /**
      * Write the results [race.name].txt file for the given Race
      *
@@ -33,7 +35,9 @@ public class SpreadsheetExport extends FileExport {
      * @return boolean
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean writeResultsFile(Context context, Race race) {
+    public void writeResultsFile(Context context, Race race) {
+
+        boolean success = false;
 
         int MAX_ROUNDS = 10;
 
@@ -95,20 +99,20 @@ public class SpreadsheetExport extends FileExport {
                     }
                 }
 
-                row.append(String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds.toString()));
-                data.append(row.toString());
+                row.append(String.format(" , %d , 0 , %s\r\n", penalties_total, penalties_rounds));
+                data.append(row);
             }
 
 
             String meta_data = String.format("%d , \"%s\", 0, %d, %d\r\n", race.round + extra_discards, race.name, MAX_ROUNDS, extra_discards);
-            String output = meta_data + data.toString();
+            String output = meta_data + data;
 
             this.writeExportFile(context, output, race.name + ".txt");
+            success = true;
+        }
 
-            return true;
-        } else {
-            // External storage is not writable
-            return false;
+        if (callbackInterface != null) {
+            callbackInterface.onSpreadsheetWritten(success);
         }
     }
 

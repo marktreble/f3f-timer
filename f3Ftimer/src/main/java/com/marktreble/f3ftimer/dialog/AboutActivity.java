@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.helpers.packageman.PackageHelper;
 
 public class AboutActivity extends Activity {
 
@@ -34,7 +35,7 @@ public class AboutActivity extends Activity {
         String v = "";
         String b = "";
         try {
-            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            pInfo = PackageHelper.getPackageInfo(this, 0);
             v = pInfo.versionName;
             b = String.format("%d", PackageInfoCompat.getLongVersionCode(pInfo));
         } catch (NameNotFoundException e) {

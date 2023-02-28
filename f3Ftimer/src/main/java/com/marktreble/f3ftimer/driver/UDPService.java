@@ -16,11 +16,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
@@ -66,7 +68,7 @@ public class UDPService extends Service implements DriverInterface, Thread.Uncau
      */
 
     @Override
-    public void uncaughtException(Thread thread, Throwable ex) {
+    public void uncaughtException(@NonNull Thread thread, @NonNull Throwable ex) {
         stopSelf();
     }
 
@@ -254,7 +256,7 @@ public class UDPService extends Service implements DriverInterface, Thread.Uncau
             }
         }
 
-        mWindEmulator = new Handler();
+        mWindEmulator = new Handler(Looper.getMainLooper());
         Runnable runnable = new Runnable() {
 
             @Override

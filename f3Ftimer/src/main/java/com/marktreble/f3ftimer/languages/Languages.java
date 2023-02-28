@@ -16,11 +16,15 @@ import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.os.Build;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.helpers.locale.LocaleHelper;
+import com.marktreble.f3ftimer.helpers.resources.ResourcesHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,6 +40,7 @@ public class Languages {
      * @param context Context
      * @return String[]
      */
+    @SuppressWarnings("deprecation")
     public static String[] getAvailableLanguages(Context context) {
         ArrayList<String> al_languages = new ArrayList<>();
         DisplayMetrics metrics = new DisplayMetrics();
@@ -51,7 +56,7 @@ public class Languages {
         }
         for (String _language : tmp_languages) {
             if (_language.split("_").length == 1) { // Language only locales (no country code)
-                c.locale = new Locale(_language);
+                LocaleHelper.setLocale(context, new Locale(_language));
                 Resources res = new Resources(context.getAssets(), metrics, c);
                 try {
                     // check if the app_name key exists. If it does, the language is available
@@ -64,7 +69,7 @@ public class Languages {
             } else {
 
                 String[] l = _language.split("_");
-                c.locale = new Locale(l[0]);
+                LocaleHelper.setLocale(context, new Locale(l[0]));
                 Resources res = new Resources(context.getAssets(), metrics, c);
                 try {
                     // check if the app_name key exists. If it does, the language is available
@@ -93,11 +98,10 @@ public class Languages {
      * @return Resources
      */
     public static Resources useLanguage(Context context, String lang) {
-        Resources res = context.getResources();
-        Configuration config = res.getConfiguration();
-        config.locale = Languages.stringToLocale(lang);
-        res.updateConfiguration(config, null);
-        return res;
+        LocaleHelper.setLocale(context, Languages.stringToLocale(lang));
+
+        Configuration config = ResourcesHelper.getConfiguration(context);
+        return ResourcesHelper.updateConfiguration(context, config);
     }
 
     /**
@@ -111,9 +115,18 @@ public class Languages {
      * @param engine TextToSpeech
      * @return String
      */
+    @SuppressWarnings("deprecation")
     public static String setSpeechLanguage(String to_lang, String fallback, TextToSpeech engine) {
         Locale lang = Languages.stringToLocale(to_lang);
-        Locale currLang = engine.getLanguage();
+        Locale currLang = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Voice v = engine.getVoice();
+            if (v != null) {
+                currLang = v.getLocale();
+            }
+        } else {
+            engine.getLanguage();
+        }
         String ret = "";
 
         if ((currLang == null)

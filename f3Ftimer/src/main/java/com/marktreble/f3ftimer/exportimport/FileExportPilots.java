@@ -13,6 +13,8 @@ package com.marktreble.f3ftimer.exportimport;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
 import com.marktreble.f3ftimer.dialog.GenericRadioPicker;
 
 import org.json.JSONArray;
@@ -26,10 +28,6 @@ public class FileExportPilots extends BaseExport {
 
     // final static String TAG = "FileExportPilots";
 
-    static final String DIALOG = "dialog";
-
-    GenericRadioPicker mDLG3;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +37,7 @@ public class FileExportPilots extends BaseExport {
         }
     }
 
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 

@@ -13,6 +13,8 @@ package com.marktreble.f3ftimer.data.pilot;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import org.json.JSONObject;
@@ -82,6 +84,7 @@ public class Pilot {
         return ContextCompat.getDrawable(context, imageResource);
     }
 
+    @NonNull
     public String toString() {
         return String.format("{\"id\":\"%s\", \"race_id\":\"%s\", \"pilot_id\":\"%d\", \"status\":\"%d\", \"firstname\":\"%s\", \"lastname\":\"%s\", \"nationality\":\"%s\", \"language\":\"%s\", \"nac_no\":\"%s\", \"fai_id\":\"%s\", \"team\":\"%s\"}", id, race_id, pilot_id, status, firstname, lastname, nationality, language, nac_no, fai_id, team);
 

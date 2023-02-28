@@ -16,6 +16,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.preference.PreferenceManager;
+
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,9 +28,10 @@ import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.constants.Pref;
 
+/* On Course */
 public class RaceTimerFrag4 extends RaceTimerFrag {
 
-    private Handler mHandler = new Handler();
+    private Handler mHandler = new Handler(Looper.getMainLooper());
     private long mStart;
     private int mLap = 0;
     private long mEstimate = 0;
@@ -72,7 +75,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
                 RaceTimerActivity a = (RaceTimerActivity) getActivity();
                 a.sendCommand("abort");
                 a.sendCommand("begin_timeout");
-                a.getFragment(new RaceTimerFrag6(), 6); // Abort submenu (reflight or score 0)
+                a.getFragment(new RaceTimerFragAborted(getString(R.string.race_aborted)), 6); // Abort submenu (reflight or score 0)
             }
         });
 
@@ -128,8 +131,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
         }
 
-        TextView status = mView.findViewById(R.id.status);
-        status.setText(getString(R.string.on_course));
+        super.setStatus(getString(R.string.on_course));
 
         setLeg(mLap, mEstimate, 0, 0, 0, "");
         if (mFinalTime >= 0)
@@ -266,7 +268,7 @@ public class RaceTimerFrag4 extends RaceTimerFrag {
 
     public void cont() {
         RaceTimerActivity a = (RaceTimerActivity) getActivity();
-        RaceTimerFrag5 f = new RaceTimerFrag5();
+        RaceTimerFragRunComplete f = new RaceTimerFragRunComplete();
         f.mFinalTime = mFinalTime;
         a.getFragment(f, 5);
     }

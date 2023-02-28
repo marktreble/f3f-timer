@@ -55,9 +55,6 @@ import android.hardware.usb.UsbManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
-//import com.android.future.usb.UsbAccessory;
-//import com.android.future.usb.UsbManager;
-
 public class AccessoryConnectionBootstrap extends BroadcastReceiver implements
 		ContextWrapperDependent, IOIOConnectionBootstrap, IOIOConnectionFactory {
 	private static final String ACTION_USB_PERMISSION = "ioio.lib.accessory.action.USB_PERMISSION";

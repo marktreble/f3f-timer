@@ -14,6 +14,8 @@ package com.marktreble.f3ftimer.dialog;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.fragment.app.Fragment;
+
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +29,7 @@ public class RaceRoundTimeoutFrag extends Fragment {
 
     View mView;
 
-    private Handler mHandler = new Handler();
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

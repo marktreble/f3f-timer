@@ -14,7 +14,12 @@ package com.marktreble.f3ftimer.dialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,6 +28,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.helpers.parcelable.ParcelableHelper;
+
+import java.util.Objects;
 
 public class GenericAlert extends DialogFragment
         implements View.OnClickListener {
@@ -41,17 +49,27 @@ public class GenericAlert extends DialogFragment
         mTitle = args.getString("title");
         mMessage = args.getString("message");
         mButtons = args.getStringArray("buttons");
-        mReceiver = getArguments().getParcelable("receiver");
+        mReceiver = ParcelableHelper.getParcelableResultReceiver(args, "receiver");
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity(), getTheme()){
             @Override
-            public void onBackPressed() {
-                super.onBackPressed();
-                //do your stuff
-                dismiss();
+            protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+
+                requireActivity()
+                        .getOnBackPressedDispatcher()
+                        .addCallback(
+                                requireActivity(),
+                                new OnBackPressedCallback(true) {
+                                    @Override
+                                    public void handleOnBackPressed() {
+                                        dismiss();
+                                    }
+                                });
             }
         };
 
@@ -74,7 +92,7 @@ public class GenericAlert extends DialogFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 

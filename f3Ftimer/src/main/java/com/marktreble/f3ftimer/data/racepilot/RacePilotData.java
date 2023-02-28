@@ -58,23 +58,6 @@ public class RacePilotData {
         return p;
     }
 
-    /*
-    public float getPilotTimeInRound(int race_id, int pilot_id, int round) {
-        String where = "pilot_id=" + pilot_id + " and race_id=" + race_id + " and round=" + round + " and reflight is null or reflight=0";
-        String[] cols = {"time"};
-        Cursor cursor = database.query("racetimes", cols, where, null, null, null, null);
-        if (cursor.getCount() == 0) {
-            cursor.close();
-            return 0;
-        }
-        cursor.moveToFirst();
-        float time = cursor.getFloat(0);
-
-        cursor.close();
-        return time;
-    }
-    */
-
     public void setPilotTimeInRound(int race_id, int pilot_id, int round, float time) {
         database.delete("racetimes", "race_id = '" + race_id + "' and pilot_id='" + pilot_id + "' and round='" + round + "'", null);
 
@@ -170,12 +153,6 @@ public class RacePilotData {
         if (p.fai_id != null) values.put("fai_id", p.fai_id);
         database.update("racepilots", values, "id=" + p.id, null);
     }
-
-    /*
-    public void deletePilot(int id) {
-        database.delete("racepilots", "id = '" + id + "'", null);
-    }
-    */
 
     public void deleteAllPilots(int race_id) {
         database.delete("racepilots", "race_id = '" + race_id + "'", null);

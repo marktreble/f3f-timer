@@ -123,7 +123,7 @@ public class ResultsRaceActivity extends ResultsRaceBaseActivity
         }
         if (intent != null) {
             intent.putExtra("race_id", mRid);
-            startActivityForResult(intent, mRid);
+            startActivity(intent);
         }
     }
 }

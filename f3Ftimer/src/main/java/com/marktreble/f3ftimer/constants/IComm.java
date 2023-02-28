@@ -25,4 +25,8 @@ public class IComm {
     public final static String MSG_VALUE = "com.marktreble.f3ftimer.value";
 
     public final static String MSG_UI_UPDATE = "com.marktreble.f3ftimer.ui_update";
+
+    public final static String MSG_WIND_SPEED = "com.marktreble.f3ftimer.wind_speed";
+    public final static String MSG_WIND_DIRECTION = "com.marktreble.f3ftimer.wind_direction";
+
 }

@@ -21,6 +21,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -125,7 +127,7 @@ public class PilotsEditActivity extends AppCompatActivity {
                     row = convertView;
                 }
 
-                CharSequence[] codes = getResources().getTextArray(R.array.countrycodes);
+                CharSequence[] codes = getResources().getTextArray(R.array.country_codes);
 
                 TextView label = row.findViewById(R.id.ics_label);
                 label.setText(getItem(position));
@@ -137,7 +139,7 @@ public class PilotsEditActivity extends AppCompatActivity {
                 if (!code.equals("")) {
                     String uri = "@mipmap/" + code;
                     int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-                    img = getResources().getDrawable(imageResource);
+                    img = ContextCompat.getDrawable(mContext, imageResource);
                 }
                 icon.setImageDrawable(img);
 
@@ -208,7 +210,7 @@ public class PilotsEditActivity extends AppCompatActivity {
 
             int pos;
 
-            String[] countrycodes = getResources().getStringArray(R.array.countrycodes);
+            String[] countrycodes = getResources().getStringArray(R.array.country_codes);
             pos = 0;
             for (i = 0; i < countrycodes.length; i++) {
                 if (countrycodes[i].equals(p.nationality))
@@ -225,7 +227,7 @@ public class PilotsEditActivity extends AppCompatActivity {
             language.setSelection(pos);
 
         } else {
-            String[] countrycodes = getResources().getStringArray(R.array.countrycodes);
+            String[] countrycodes = getResources().getStringArray(R.array.country_codes);
             int pos = 0;
             String dflt = "GB";
             for (i = 0; i < countrycodes.length; i++) {
@@ -293,7 +295,7 @@ public class PilotsEditActivity extends AppCompatActivity {
         p.email = email.getText().toString().trim().toLowerCase();
         p.frequency = frequency.getText().toString().trim();
         p.models = capitalise(models.getText().toString().trim());
-        p.nationality = getResources().getStringArray(R.array.countrycodes)[nationality.getSelectedItemPosition()];
+        p.nationality = getResources().getStringArray(R.array.country_codes)[nationality.getSelectedItemPosition()];
         String[] languages = Languages.getAvailableLanguages(mContext);
         if (language.getSelectedItemPosition() >= 0)
             p.language = languages[language.getSelectedItemPosition()];
@@ -334,17 +336,10 @@ public class PilotsEditActivity extends AppCompatActivity {
             return true;
         } else {
             // Invalid email address, so show toast
-            LayoutInflater inflater = getLayoutInflater();
-            View layout = inflater.inflate(R.layout.custom_toast,
-                    (ViewGroup) findViewById(R.id.toast_layout_root));
-
-            TextView text = layout.findViewById(R.id.text);
-            text.setText(getString(R.string.invalid_email));
-
             Toast toast = new Toast(getApplicationContext());
             toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
             toast.setDuration(Toast.LENGTH_LONG);
-            toast.setView(layout);
+            toast.setText(R.string.invalid_email);
             toast.show();
         }
         return false;

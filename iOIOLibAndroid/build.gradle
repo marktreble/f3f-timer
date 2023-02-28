@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 android {
-    compileSdkVersion 26
+    namespace 'ioio.lib'
+    compileSdkVersion 32
 
     defaultConfig {
     }
@@ -14,4 +15,8 @@ android {
 }
 
 dependencies {
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs  << "-Xlint:deprecation"
 }

@@ -15,7 +15,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
+import android.util.Log;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.marktreble.f3ftimer.R;
@@ -59,33 +64,37 @@ public class F3ftimerApiImportRace extends BaseImport
 
         if (savedInstanceState == null) {
             Intent intent = new Intent(mActivity, F3fTimerAPILoginActivity.class);
-            startActivityForResult(intent, DLG_LOGIN);
+            mRequestCode = DLG_LOGIN;
+            mStartForResult.launch(intent);
+            //startActivityForResult(intent, DLG_LOGIN);
         }
 
 
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
 
-        if (resultCode == Activity.RESULT_CANCELED) {
+        if (result.getResultCode() == Activity.RESULT_CANCELED) {
             finish();
             return;
         }
 
-        if (requestCode == DLG_LOGIN) {
-            if (resultCode == RESULT_OK) {
-                mDataSource = data.getStringExtra("datasource");
-                String username = data.getStringExtra("username");
-                String password = data.getStringExtra("password");
+        if (mRequestCode == DLG_LOGIN) {
+            if (result.getResultCode() == RESULT_OK) {
+                Intent intent = result.getData();
+                assert intent != null;
+                mDataSource = intent.getStringExtra("datasource");
+                String username = intent.getStringExtra("username");
+                String password = intent.getStringExtra("password");
 
                 showProgress(getString(R.string.connecting_to_server));
 
                 // Auto prepend the http if needed
-                if (!mDataSource.substring(0, 7).equals("http://")
-                        && !mDataSource.substring(0, 8).equals("https://")) {
+                if (!mDataSource.startsWith("http://")
+                        && !mDataSource.startsWith("https://")) {
                     mDataSource = "http://" + mDataSource;
                 }
 
@@ -94,14 +103,15 @@ public class F3ftimerApiImportRace extends BaseImport
                 params.put("u", username);
                 params.put("p", password);
 
+                Log.i("EP", mDataSource);
                 mAPITask = new API();
                 mAPITask.mCallback = this;
                 mAPITask.request = API.API_IMPORT;
-                mAPITask.makeAPICall(this, mDataSource, API.httpmethod.POST, params);
+                mAPITask.makeAPICall(this, mDataSource, API.httpMethod.POST, params);
 
             }
         }
-    }
+    });
 
     public void onAPISuccess(String request, JSONObject data) {
         mAPITask = null;
@@ -128,7 +138,7 @@ public class F3ftimerApiImportRace extends BaseImport
                         getString(R.string.ttl_no_races_available),
                         getString(R.string.msg_no_races_available),
                         buttons_array,
-                        new ResultReceiver(new Handler()) {
+                        new ResultReceiver(new Handler(Looper.getMainLooper())) {
                             @Override
                             protected void onReceiveResult(int resultCode, Bundle resultData) {
                                 super.onReceiveResult(resultCode, resultData);
@@ -166,7 +176,7 @@ public class F3ftimerApiImportRace extends BaseImport
                         getString(R.string.ttl_import_failed),
                         getString(R.string.msg_import_failed),
                         buttons_array,
-                        new ResultReceiver(new Handler()) {
+                        new ResultReceiver(new Handler(Looper.getMainLooper())) {
                             @Override
                             protected void onReceiveResult(int resultCode, Bundle resultData) {
                                 super.onReceiveResult(resultCode, resultData);
@@ -198,7 +208,7 @@ public class F3ftimerApiImportRace extends BaseImport
                     getString(R.string.ttl_network_error),
                     getString(R.string.msg_network_error),
                     buttons_array,
-                    new ResultReceiver(new Handler()) {
+                    new ResultReceiver(new Handler(Looper.getMainLooper())) {
                         @Override
                         protected void onReceiveResult(int resultCode, Bundle resultData) {
                             super.onReceiveResult(resultCode, resultData);
@@ -221,7 +231,9 @@ public class F3ftimerApiImportRace extends BaseImport
             if (message.equals("LOGIN_FAILED")) {
 
                 Intent intent = new Intent(mActivity, F3fTimerAPILoginActivity.class);
-                startActivityForResult(intent, DLG_LOGIN);
+                mRequestCode = DLG_LOGIN;
+                mStartForResult.launch(intent);
+                //startActivityForResult(intent, DLG_LOGIN);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -246,7 +258,7 @@ public class F3ftimerApiImportRace extends BaseImport
                 getString(R.string.ttl_select_race_import),
                 racelist,
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -274,12 +286,10 @@ public class F3ftimerApiImportRace extends BaseImport
 
         showProgress(getString(R.string.downloading_race));
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                downloadRace(mAvailableRaceIds.get(which));
-            }
-        }, 1000);
+        new Handler(Looper.getMainLooper()).postDelayed(
+                () -> downloadRace(mAvailableRaceIds.get(which)),
+                1000
+        );
     }
 
     public void downloadRace(String id) {
@@ -291,6 +301,6 @@ public class F3ftimerApiImportRace extends BaseImport
         mAPITask = new API();
         mAPITask.mCallback = this;
         mAPITask.request = API.API_IMPORT_RACE;
-        mAPITask.makeAPICall(this, mDataSource, API.httpmethod.POST, params);
+        mAPITask.makeAPICall(this, mDataSource, API.httpMethod.POST, params);
     }
 }

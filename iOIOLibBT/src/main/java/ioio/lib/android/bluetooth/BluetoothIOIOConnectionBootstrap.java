@@ -39,6 +39,9 @@ import java.util.Set;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
+import android.os.Build;
 import android.util.Log;
 
 public class BluetoothIOIOConnectionBootstrap implements
@@ -47,9 +50,19 @@ public class BluetoothIOIOConnectionBootstrap implements
 	private static final String TAG = "BTIOIOConnDiscovery";
 	private final BluetoothAdapter adapter_;
 
-	public BluetoothIOIOConnectionBootstrap() throws NoRuntimeSupportException {
+	@SuppressWarnings("deprecation")
+	public BluetoothIOIOConnectionBootstrap(Context context) throws NoRuntimeSupportException {
 		try {
-			adapter_ = BluetoothAdapter.getDefaultAdapter();
+			if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+				BluetoothManager bluetoothManager = (BluetoothManager) context.getSystemService(Context.BLUETOOTH_SERVICE);
+				if (bluetoothManager != null) {
+					adapter_ = bluetoothManager.getAdapter();
+				} else {
+					adapter_ = null;
+				}
+			} else {
+				adapter_ = BluetoothAdapter.getDefaultAdapter();
+			}
 			if (adapter_ != null) {
 				return;
 			}

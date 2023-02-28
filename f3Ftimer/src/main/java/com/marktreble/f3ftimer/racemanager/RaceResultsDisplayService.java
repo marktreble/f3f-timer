@@ -29,6 +29,7 @@ import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
+import com.marktreble.f3ftimer.helpers.bluetooth.BluetoothHelper;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
@@ -118,29 +119,35 @@ public class RaceResultsDisplayService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "Onstart Command");
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothHelper.getAdapter(this);
         if (intent == null) return START_NOT_STICKY;
 
         String chosenDevice = intent.getStringExtra(BT_DEVICE);
         if (mBluetoothAdapter != null && !chosenDevice.equals("")) {
-            Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-            if (pairedDevices.size() > 0) {
-                for (BluetoothDevice d : pairedDevices) {
-                    if (d.getAddress().equals(chosenDevice))
-                        device = d;
+
+            try {
+                Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+                if (pairedDevices.size() > 0) {
+                    for (BluetoothDevice d : pairedDevices) {
+                        if (d.getAddress().equals(chosenDevice))
+                            device = d;
+                    }
                 }
-            }
-            if (device == null) {
-                Log.d(TAG, "No device... stopping");
-                return START_NOT_STICKY;
-            }
-            deviceName = device.getName();
-            mMacAddress = device.getAddress();
-            if (mMacAddress != null && mMacAddress.length() > 0) {
-                Log.d(TAG, "Connecting to: " + deviceName);
-                connectToDevice(mMacAddress);
-            } else {
-                Log.d(TAG, "No macAddress... stopping");
+                if (device == null) {
+                    Log.d(TAG, "No device... stopping");
+                    return START_NOT_STICKY;
+                }
+                deviceName = device.getName();
+                mMacAddress = device.getAddress();
+                if (mMacAddress != null && mMacAddress.length() > 0) {
+                    Log.d(TAG, "Connecting to: " + deviceName);
+                    connectToDevice(mMacAddress);
+                } else {
+                    Log.d(TAG, "No macAddress... stopping");
+                    stopSelf();
+                    return START_NOT_STICKY;
+                }
+            } catch (SecurityException ex) {
                 stopSelf();
                 return START_NOT_STICKY;
             }
@@ -214,7 +221,11 @@ public class RaceResultsDisplayService extends Service {
             mConnectedThread = null;
         }
         if (mBluetoothAdapter != null) {
-            mBluetoothAdapter.cancelDiscovery();
+            try {
+                mBluetoothAdapter.cancelDiscovery();
+            } catch (SecurityException ex) {
+
+            }
         }
         stopSelf();
     }
@@ -232,7 +243,11 @@ public class RaceResultsDisplayService extends Service {
             mConnectedThread.cancel();
             mConnectedThread = null;
         }
-        mBluetoothAdapter.cancelDiscovery();
+        try {
+            mBluetoothAdapter.cancelDiscovery();
+        } catch (SecurityException ex) {
+
+        }
         return super.stopService(name);
     }
 
@@ -332,7 +347,7 @@ public class RaceResultsDisplayService extends Service {
                         }
                     }
                 }
-            } catch (IOException e) {
+            } catch (IOException | SecurityException e) {
                 Log.i(TAG, "Failed to connect to device " + device.getName());
             }
 
@@ -347,10 +362,10 @@ public class RaceResultsDisplayService extends Service {
                 connectionFailed();
                 return;
             }
-            mBluetoothAdapter.cancelDiscovery();
             try {
+                mBluetoothAdapter.cancelDiscovery();
                 mmSocket.connect();
-            } catch (IOException e) {
+            } catch (IOException | SecurityException e) {
                 try {
                     mmSocket.close();
                 } catch (IOException e1) {

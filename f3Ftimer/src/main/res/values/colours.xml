@@ -13,6 +13,7 @@
     <color name="dark_border">#aaa</color>
 
     <color name="text">#0ea4e3</color>
+    <color name="text_disabled">#cccccc</color>
     <color name="text1">#075271</color>
     <color name="text2">#ffffff</color>
     <color name="text3">#ffa500</color>

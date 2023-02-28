@@ -17,7 +17,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
@@ -82,7 +81,7 @@ public class RaceResultsService extends Service {
     @Override
     public void onDestroy() {
         if (mListener != null)
-            mListener.cancel(false);
+            mListener.cancel();
 
         if (mServerSocket != null) {
             try {
@@ -109,6 +108,7 @@ public class RaceResultsService extends Service {
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d("RaceResultsService", "onStartCommand");
         if (intent == null) return START_REDELIVER_INTENT;
         if (intent.hasExtra("com.marktreble.f3ftimer.race_id")) {
 
@@ -129,89 +129,106 @@ public class RaceResultsService extends Service {
         }
 
         if (mServerSocket != null) {
+            Log.d("RaceResultsService", "Socket Server Running");
             mListener = new Listener();
             mListener.execute(mServerSocket);
         }
         return (START_STICKY);
     }
 
-    private class Listener extends AsyncTask<ServerSocket, Integer, Long> {
+    private class Listener {
 
         ServerSocket ss;
+        boolean isCancelled = false;
 
-        @Override
-        protected Long doInBackground(ServerSocket... serverSocket) {
-            Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-            ss = serverSocket[0];
-            Socket clientSocket = null;
-            try {
-                clientSocket = ss.accept();
-                clientSocket.setTcpNoDelay(true);
-                clientSocket.setSoLinger(false, 0);
-                clientSocket.setSoTimeout(1000);
-            } catch (IOException e) {
-                return null;
-            }
-            if (clientSocket != null) {
-                InputStream input = null;
-                OutputStream output = null;
+        Listener() {
+
+        }
+
+        public void cancel() {
+            isCancelled = true;
+        }
+
+        public void execute(ServerSocket serverSocket) {
+            Log.d("RaceResultsService", "Starting thread...");
+            new Thread(() -> {
+                Log.d("RaceResultsService", "Listener Running");
+
+                Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+                ss = serverSocket;
+                Socket clientSocket = null;
                 try {
-                    byte[] buffer = new byte[1024];
-                    input = clientSocket.getInputStream();
-                    input.read(buffer);
-                    String[] request_headers = parseHeaders(buffer);
-
-                    if (request_headers != null) {
-                        String[] req = request_headers[0].split(" ");
-
-                        if (req.length != 3) {
-                            Log.e("F3fHTTPServerRequest", "Malformed Request");
-                        } else {
-                            String request_type = req[0];
-                            String request_path = req[1];
-
-                            if (request_path.equals("/"))
-                                request_path = "/index.html"; // Default page
-
-
-                            output = clientSocket.getOutputStream();
-
-                            String ext = "";
-                            String[] parts = request_path.split("\\?");
-                            String path = parts[0];
-                            String query = "";
-                            if (parts.length > 1) query = parts[1];
-
-                            int i = path.lastIndexOf('.');
-                            if (i > 0) ext = path.substring(i + 1);
-
-                            if (request_path.contains("getRaceLiveData.jsp")) {
-                                if (0 == mLastRequestTime || (System.currentTimeMillis() - mLastRequestTime) > 500) {
-                                    mLastRequestTime = System.currentTimeMillis();
-
-                                    mOut = getLivePage(request_type, path, ext, query);
-                                }
-                            } else if (request_path.contains("getRaceData.jsp")) {
-                                if (0 == mLastRequestTime || (System.currentTimeMillis() - mLastRequestTime) > 500) {
-                                    mLastRequestTime = System.currentTimeMillis();
-
-                                    mOut = getDynamicPage(request_type, path, ext, query);
-                                }
-                            } else {
-                                mOut = getStaticPage(path, ext);
-                            }
-
-                            output.write(mOut);
-                            output.close();
-                        }
-                    }
-                    input.close();
+                    clientSocket = ss.accept();
+                    clientSocket.setTcpNoDelay(true);
+                    clientSocket.setSoLinger(false, 0);
+                    clientSocket.setSoTimeout(1000);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    postExecute(null);
                 }
-                return (long) 1;
-            }
-            return null;
+                if (clientSocket != null) {
+                    InputStream input = null;
+                    OutputStream output = null;
+                    try {
+                        byte[] buffer = new byte[1024];
+                        input = clientSocket.getInputStream();
+                        input.read(buffer);
+                        String[] request_headers = parseHeaders(buffer);
+
+                        if (request_headers != null) {
+                            String[] req = request_headers[0].split(" ");
+
+                            if (req.length != 3) {
+                                Log.e("F3fHTTPServerRequest", "Malformed Request");
+                            } else {
+                                String request_type = req[0];
+                                String request_path = req[1];
+
+                                if (request_path.equals("/"))
+                                    request_path = "/index.html"; // Default page
+
+
+                                output = clientSocket.getOutputStream();
+
+                                String ext = "";
+                                String[] parts = request_path.split("\\?");
+                                String path = parts[0];
+                                String query = "";
+                                if (parts.length > 1)
+                                    query = parts[1];
+
+                                int i = path.lastIndexOf('.');
+                                if (i > 0)
+                                    ext = path.substring(i + 1);
+
+                                if (request_path.contains("getRaceLiveData.jsp")) {
+                                    if (0 == mLastRequestTime || (System.currentTimeMillis() - mLastRequestTime) > 500) {
+                                        mLastRequestTime = System.currentTimeMillis();
+
+                                        mOut = getLivePage(request_type, path, ext, query);
+                                    }
+                                } else if (request_path.contains("getRaceData.jsp")) {
+                                    if (0 == mLastRequestTime || (System.currentTimeMillis() - mLastRequestTime) > 500) {
+                                        mLastRequestTime = System.currentTimeMillis();
+
+                                        mOut = getDynamicPage(request_type, path, ext, query);
+                                    }
+                                } else {
+                                    mOut = getStaticPage(path, ext);
+                                }
+
+                                output.write(mOut);
+                                output.close();
+                            }
+                        }
+                        input.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    postExecute((long) 1);
+                    return;
+                }
+                postExecute(null);
+            }).start();
         }
 
         private String[] parseHeaders(byte[] buffer) {
@@ -407,9 +424,7 @@ public class RaceResultsService extends Service {
             return type;
         }
 
-        @Override
-        protected void onPostExecute(Long result) {
-            super.onPostExecute(result);
+        private void postExecute(Long result) {
             if (null != result && result == 1) {
                 mListener = new Listener();
                 mListener.execute(ss);

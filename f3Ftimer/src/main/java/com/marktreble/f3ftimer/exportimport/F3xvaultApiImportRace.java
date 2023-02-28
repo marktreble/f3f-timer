@@ -11,10 +11,15 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.FragmentTransaction;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -48,6 +53,7 @@ public class F3xvaultApiImportRace extends BaseImport
         implements API.APICallbackInterface {
 
     private static final int DLG_LOGIN = 1;
+    private int mRequestCode = 0;
 
     private API mAPITask = null;
 
@@ -70,52 +76,54 @@ public class F3xvaultApiImportRace extends BaseImport
         // Show source/auth dialog
         if (savedInstanceState == null) {
             Intent intent = new Intent(mActivity, F3xvaultAPILoginActivity.class);
-            startActivityForResult(intent, DLG_LOGIN);
+            mRequestCode = DLG_LOGIN;
+            mStartForResult.launch(intent);
+            //startActivityForResult(intent, DLG_LOGIN);
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                if (mRequestCode == DLG_LOGIN) {
+                    Intent data = result.getData();
+                    assert data != null;
+                    final String username = data.getStringExtra("username");
+                    final String password = data.getStringExtra("password");
 
-        super.onActivityResult(requestCode, resultCode, data);
+                    showProgress(getString(R.string.connecting_to_server));
 
-        if (resultCode == RESULT_OK) {
-            if (requestCode == DLG_LOGIN) {
-                final String username = data.getStringExtra("username");
-                final String password = data.getStringExtra("password");
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                        mDataSource = "https://www.f3xvault.com/api.php";
+                        Map<String, String> params = new HashMap<>();
+                        params.put(API.ENDPOINT_KEY, API.F3XV_IMPORT);
+                        params.put("login", username);
+                        params.put("password", password);
+                        params.put("function", API.F3XV_IMPORT);
+                        params.put("event_type_code", "f3f");
+                        params.put("show_future", "1");
+                        params.put("date_from", DateFormat.format("yyyy-MM-dd", new Date()).toString());
 
-                showProgress(getString(R.string.connecting_to_server));
+                        mUsername = username;
+                        mPassword = password;
 
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                    mDataSource = "http://www.f3xvault.com/api.php";
-                    Map<String, String> params = new HashMap<>();
-                    params.put(API.ENDPOINT_KEY, API.F3XV_IMPORT);
-                    params.put("login", username);
-                    params.put("password", password);
-                    params.put("function", API.F3XV_IMPORT);
-                    params.put("event_type_code", "f3f");
-                    params.put("show_future", "1");
-                    params.put("date_from", DateFormat.format("yyyy-MM-dd", new Date()).toString());
+                        mAPITask = new API();
+                        mAPITask.mCallback = F3xvaultApiImportRace.this;
+                        mAPITask.request = API.F3XV_IMPORT;
+                        mAPITask.mAppendEndpoint = false;
+                        mAPITask.mIsJSON = false;
+                        mAPITask.makeAPICall(F3xvaultApiImportRace.this, mDataSource, API.httpMethod.GET, params);
+                        }
+                    }, PROGRESS_DELAY);
 
-                    mUsername = username;
-                    mPassword = password;
-
-                    mAPITask = new API();
-                    mAPITask.mCallback = F3xvaultApiImportRace.this;
-                    mAPITask.request = API.F3XV_IMPORT;
-                    mAPITask.mAppendEndpoint = false;
-                    mAPITask.mIsJSON = false;
-                    mAPITask.makeAPICall(F3xvaultApiImportRace.this, mDataSource, API.httpmethod.GET, params);
-                    }
-                }, PROGRESS_DELAY);
-
+                }
+            } else {
+                finish();
             }
-        } else {
-            finish();
-        }
-    }
+        });
 
     public void onAPISuccess(String request, JSONObject data) {
         mAPITask = null;
@@ -147,7 +155,7 @@ public class F3xvaultApiImportRace extends BaseImport
                         race_list.put(race);
                     }
                 } catch (IOException e) {
-                    Log.e("Exception", "File write failed: " + e.toString());
+                    Log.e("Exception", "File write failed: " + e);
                 }
 
             } catch (JSONException e) {
@@ -167,7 +175,7 @@ public class F3xvaultApiImportRace extends BaseImport
                         getString(R.string.ttl_no_races_available),
                         getString(R.string.msg_no_races_available),
                         buttons_array,
-                        new ResultReceiver(new Handler()) {
+                        new ResultReceiver(new Handler(Looper.getMainLooper())) {
                             @Override
                             protected void onReceiveResult(int resultCode, Bundle resultData) {
                                 super.onReceiveResult(resultCode, resultData);
@@ -209,7 +217,7 @@ public class F3xvaultApiImportRace extends BaseImport
                         getString(R.string.ttl_import_failed),
                         getString(R.string.msg_import_failed),
                         buttons_array,
-                        new ResultReceiver(new Handler()) {
+                        new ResultReceiver(new Handler(Looper.getMainLooper())) {
                             @Override
                             protected void onReceiveResult(int resultCode, Bundle resultData) {
                                 super.onReceiveResult(resultCode, resultData);
@@ -242,7 +250,7 @@ public class F3xvaultApiImportRace extends BaseImport
                     getString(R.string.ttl_network_error),
                     getString(R.string.msg_network_error),
                     buttons_array,
-                    new ResultReceiver(new Handler()) {
+                    new ResultReceiver(new Handler(Looper.getMainLooper())) {
                         @Override
                         protected void onReceiveResult(int resultCode, Bundle resultData) {
                             super.onReceiveResult(resultCode, resultData);
@@ -269,7 +277,9 @@ public class F3xvaultApiImportRace extends BaseImport
         if (message != null) {
 
             Intent intent = new Intent(mActivity, F3xvaultAPILoginActivity.class);
-            startActivityForResult(intent, DLG_LOGIN);
+            mRequestCode = DLG_LOGIN;
+            mStartForResult.launch(intent);
+            //startActivityForResult(intent, DLG_LOGIN);
         }
     }
 
@@ -291,7 +301,7 @@ public class F3xvaultApiImportRace extends BaseImport
                 getString(R.string.ttl_select_race_import),
                 racelist,
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -321,12 +331,7 @@ public class F3xvaultApiImportRace extends BaseImport
 
         showProgress(getString(R.string.downloading_race));
 
-        new Handler().postDelayed(new Runnable() {
-          @Override
-          public void run() {
-              downloadRace(mAvailableRaceIds.get(which));
-          }
-        }, PROGRESS_DELAY);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> downloadRace(mAvailableRaceIds.get(which)), PROGRESS_DELAY);
 
     }
 
@@ -344,6 +349,6 @@ public class F3xvaultApiImportRace extends BaseImport
         mAPITask.request = API.F3XV_IMPORT_RACE;
         mAPITask.mAppendEndpoint = false;
         mAPITask.mIsJSON = false;
-        mAPITask.makeAPICall(this, mDataSource, API.httpmethod.GET, params);
+        mAPITask.makeAPICall(this, mDataSource, API.httpMethod.GET, params);
     }
 }

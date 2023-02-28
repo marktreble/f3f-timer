@@ -19,6 +19,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ResultReceiver;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentTransaction;
@@ -67,6 +70,8 @@ public class RaceListActivity extends BaseActivity
     static int DLG_IMPORT = 2;
     static int DLG_SETTINGS = 9;
     static final int PERMISSIONS_REQUEST = 101;
+
+    private int mRequestCode = 0;
 
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
@@ -193,25 +198,27 @@ public class RaceListActivity extends BaseActivity
         // Now start race activity with the modified bundle!
         Intent intent = new Intent(this, RaceActivity.class);
         intent.putExtras(extras);
-        startActivityForResult(intent, RaceListActivity.START_RACE);
+        mRequestCode = START_RACE;
+        mStartForResult.launch(intent);
+        //startActivityForResult(intent, RaceListActivity.START_RACE);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        /*
-         * Update the race list
-         */
-        getNamesArray();
-        mArrAdapter.notifyDataSetChanged();
+    protected ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            /*
+             * Update the race list
+             */
+            getNamesArray();
+            mArrAdapter.notifyDataSetChanged();
 
-        /*
-         * Restart the app if the theme has changed
-         */
-        if (requestCode == RaceListActivity.DLG_SETTINGS) {
-            ((F3FtimerApplication) getApplication()).restartApp();
-        }
-    }
+            /*
+             * Restart the app if the theme has changed
+             */
+            if (mRequestCode == RaceListActivity.DLG_SETTINGS) {
+                ((F3FtimerApplication) getApplication()).restartApp();
+            }
+        });
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
@@ -345,7 +352,9 @@ public class RaceListActivity extends BaseActivity
         } else {
 
             Intent intent = new Intent(RaceListActivity.this, NewRaceActivity.class);
-            startActivityForResult(intent, RaceListActivity.DLG_NEW_RACE);
+            mRequestCode = DLG_NEW_RACE;
+            mStartForResult.launch(intent);
+            //startActivityForResult(intent, RaceListActivity.DLG_NEW_RACE);
         }
     }
 
@@ -358,7 +367,7 @@ public class RaceListActivity extends BaseActivity
                 getString(R.string.select_import_source),
                 options,
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -366,19 +375,27 @@ public class RaceListActivity extends BaseActivity
                         switch (resultCode) {
                             case IMPORT_SRC_BT:
                                 intent = new Intent(mContext, BluetoothImportRace.class);
-                                startActivityForResult(intent, DLG_IMPORT);
+                                mRequestCode = DLG_IMPORT;
+                                mStartForResult.launch(intent);
+                                //startActivityForResult(intent, DLG_IMPORT);
                                 break;
                             case IMPORT_SRC_FILE:
                                 intent = new Intent(mContext, FileImportRace.class);
-                                startActivityForResult(intent, DLG_IMPORT);
+                                mRequestCode = DLG_IMPORT;
+                                mStartForResult.launch(intent);
+                                //startActivityForResult(intent, DLG_IMPORT);
                                 break;
                             case IMPORT_SRC_F3FTIMER_API:
                                 intent = new Intent(mContext, F3ftimerApiImportRace.class);
-                                startActivityForResult(intent, DLG_IMPORT);
+                                mRequestCode = DLG_IMPORT;
+                                mStartForResult.launch(intent);
+                                //startActivityForResult(intent, DLG_IMPORT);
                                 break;
                             case IMPORT_SRC_F3XVAULT_API:
                                 intent = new Intent(mContext, F3xvaultApiImportRace.class);
-                                startActivityForResult(intent, DLG_IMPORT);
+                                mRequestCode = DLG_IMPORT;
+                                mStartForResult.launch(intent);
+                                //startActivityForResult(intent, DLG_IMPORT);
                                 break;
                         }
                     }
@@ -427,7 +444,9 @@ public class RaceListActivity extends BaseActivity
 
     public void settings() {
         Intent intent = new Intent(mContext, SettingsActivity.class);
-        startActivityForResult(intent, DLG_SETTINGS);
+        mRequestCode = DLG_SETTINGS;
+        mStartForResult.launch(intent);
+        //startActivityForResult(intent, DLG_SETTINGS);
     }
 
     public void pilotManager() {

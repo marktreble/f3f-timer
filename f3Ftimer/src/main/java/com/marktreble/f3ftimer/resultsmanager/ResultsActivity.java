@@ -79,7 +79,7 @@ public class ResultsActivity extends BaseActivity
         Intent intent = new Intent(this, ResultsRaceActivity.class);
         Integer pid = mArrIds.get(position);
         intent.putExtra("race_id", pid);
-        startActivityForResult(intent, pid);
+        startActivity(intent);
     }
 
     private void getNamesArray() {
@@ -140,24 +140,21 @@ public class ResultsActivity extends BaseActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.menu_pilot_manager:
-                pilotManager();
-                return true;
-            case R.id.menu_race_manager:
-                raceManager();
-                return true;
-            case R.id.menu_help:
-                help();
-                return true;
-            case R.id.menu_about:
-                about();
-                return true;
-
-
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_pilot_manager) {
+            pilotManager();
+            return true;
+        } else if (itemId == R.id.menu_race_manager) {
+            raceManager();
+            return true;
+        } else if (itemId == R.id.menu_help) {
+            help();
+            return true;
+        } else if (itemId == R.id.menu_about) {
+            about();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     public void pilotManager() {

@@ -26,6 +26,8 @@ import java.io.File;
 
 public class F3FGearExport extends FileExport {
 
+    public F3FGearExportInterface callbackInterface = null;
+
     /**
      * Write the results pilots.txt & flights.txt file for the given Race
      *
@@ -34,7 +36,9 @@ public class F3FGearExport extends FileExport {
      * @return boolean
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean writeResultsFile(Context context, Race race) {
+    public void writeResultsFile(Context context, Race race) {
+
+        boolean success = false;
 
         // Update the pilots.txt and flights.txt files
         if (isExternalStorageWritable()) {
@@ -81,18 +85,18 @@ public class F3FGearExport extends FileExport {
                 row.append("\r\n");
 
 
-                flights.append(row.toString());
+                flights.append(row);
             }
 
             this.writeExportFile(context, pilots.toString(), "pilots.txt");
             this.writeExportFile(context, flights.toString(),"flights.txt");
 
-            return true;
-        } else {
-            // External storage is not writable
-            return false;
+            success = true;
         }
 
+        if (callbackInterface != null) {
+            callbackInterface.onF3FGearFileWritten(success);
+        }
     }
 
     /**

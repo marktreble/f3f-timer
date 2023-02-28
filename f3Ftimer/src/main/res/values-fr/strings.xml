@@ -119,6 +119,7 @@
     <string name="wind_meter_settings">Réglages de vent</string>
     <string name="wind_measurement">Mesure du vent</string>
     <string name="wind_angle_offset">Orientation de la pente en degrés</string>
+    <string name="wind_speed_announcement">%s mètres par seconde</string>
     <string name="whistle">Sifflet</string>
     <string name="username">Nom d\'utilisateur</string>
     <string name="usb_stopbits">Bits d\'arrêt</string>
@@ -132,8 +133,8 @@
     <string name="ttl_select_file_type">Sélectionnez le type de fichier</string>
     <string name="ttl_save_location">Enregistrer la position</string>
     <string name="ttl_round_number_short">R%1$d</string>
-    <string name="ttl_round_number_name">R%d - %s</string>
-    <string name="ttl_round_number_groups">R%d%s</string>
+    <string name="ttl_round_number_name">R%1$d - %2$s</string>
+    <string name="ttl_round_number_groups">R%1$d%2$s</string>
     <string name="ttl_round_number">Round %1$d</string>
     <string name="ttl_round_in_progress">Ronde en cours (R%1$d)</string>
     <string name="ttl_round_groups">" - %1$d Groupes"</string>
@@ -203,10 +204,10 @@
     <string name="generate_start_number">Générer un numéro de départ</string>
     <string name="group_heading">Groupe %d</string>
     <string name="usa">États Unis</string>
-    <string name="theme_blackwhite">Noir/Blanc</string>
-    <string name="theme_blackyellow">Noir/Jaune</string>
+    <string name="theme_black_white">Noir/Blanc</string>
+    <string name="theme_black_yellow">Noir/Jaune</string>
     <string name="theme_classic">Classique</string>
-    <string name="theme_whitered">Blanc/Rouge</string>
+    <string name="theme_white_red">Blanc/Rouge</string>
     <string name="share_social_media">Partager sur les médias sociaux</string>
     <string name="share_email">Partager par email</string>
     <string name="prt">Portugal</string>
@@ -251,5 +252,9 @@
     <string name="reset_to_defaults">Réinitialiser les paramètres par défaut</string>
     <string name="ttl_auto_read">Announce Results</string>
     <string name="nzl">New Zealand</string>
+    <string name="working_time_expired">Working Time Expired</string>
+    <string name="race_aborted">Race Aborted</string>
+    <string name="err_anemometer">Anemomter</string>
+    <string name="err_anemometer_no_device">Could not start Anemomter service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off</string>
 
 </resources>

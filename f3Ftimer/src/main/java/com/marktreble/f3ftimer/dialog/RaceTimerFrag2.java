@@ -23,7 +23,7 @@ import android.widget.TextView;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
-
+/* Working Time */
 public class RaceTimerFrag2 extends RaceTimerFrag {
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
@@ -88,9 +88,7 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
             }
         });
 
-        TextView status = mView.findViewById(R.id.status);
-        status.setText(getString(R.string.working_time));
-
+        super.setStatus(getString(R.string.working_time));
         super.setPilotName();
 
         if (((RaceTimerActivity) getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
@@ -133,11 +131,9 @@ public class RaceTimerFrag2 extends RaceTimerFrag {
 
             if (seconds == 30) {
                 // Runout of working time
-                // -- pilot scores zero!
+                // Bring up Dialog
 
-                a.scorePilotZero(a.mPilot);
-                a.setResult(RaceActivity.RESULT_OK, null);
-                a.finish();
+                a.getFragment(new RaceTimerFragAborted(getString(R.string.working_time_expired)), 6);
             } else {
                 mHandler.postDelayed(updateClock, 10);
             }

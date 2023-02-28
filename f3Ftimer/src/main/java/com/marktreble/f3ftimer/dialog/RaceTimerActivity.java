@@ -13,14 +13,16 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.animation.LayoutTransition;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -32,9 +34,15 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.marktreble.f3ftimer.F3FtimerApplication;
 import com.marktreble.f3ftimer.R;
@@ -43,6 +51,7 @@ import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.race.Race;
 import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
+import com.marktreble.f3ftimer.services.anemometer.AnemometerServiceInstance;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 public class RaceTimerActivity extends FragmentActivity {
@@ -57,12 +66,15 @@ public class RaceTimerActivity extends FragmentActivity {
     private int mCurrentFragmentId;
     private Context mContext;
     private FragmentActivity mActivity;
-    private ProgressDialog mPDialog;
+    private AlertDialog mLoadingDialog;
+
     private AlertDialog mADialog;
     private ImageView mResize;
     public int mWindowState;
 
     private int mNaturalHeight;
+
+    private boolean mPrefWindMeasurement = false;
 
     public static int WINDOW_STATE_FULL = 0;
     public static int WINDOW_STATE_MINIMIZED = 1;
@@ -101,6 +113,7 @@ public class RaceTimerActivity extends FragmentActivity {
             rid = extras.getInt("race_id");
             mRound = extras.getInt("round");
             mNumber = extras.getString("bib_no");
+            mPrefWindMeasurement = extras.getBoolean("pref_wind");
 
             RaceData datasource = new RaceData(this);
             datasource.open();
@@ -140,7 +153,7 @@ public class RaceTimerActivity extends FragmentActivity {
 
             RaceTimerFrag1 f;
             f = new RaceTimerFrag1();
-            f.setRetainInstance(true);
+            //f.setRetainInstance(true);
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.dialog1, f, "racetimerfrag1");
@@ -157,27 +170,24 @@ public class RaceTimerActivity extends FragmentActivity {
 
         mResize = findViewById(R.id.window_resize);
         mResize.setVisibility(View.VISIBLE);
-        mResize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mWindowState == WINDOW_STATE_FULL) {
-                    mWindowState = WINDOW_STATE_MINIMIZED;
-                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.expand));
-                    setMinimized(true);
+        mResize.setOnClickListener(v -> {
+            if (mWindowState == WINDOW_STATE_FULL) {
+                mWindowState = WINDOW_STATE_MINIMIZED;
+                mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.expand));
+                setMinimized(true);
 
-                } else {
-                    mWindowState = WINDOW_STATE_FULL;
-                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.minimize));
-                    setExpanded();
-
-                }
-
-                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt("pref_window_minized_state", mWindowState);
-                editor.apply();
+            } else {
+                mWindowState = WINDOW_STATE_FULL;
+                mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.minimize));
+                setExpanded();
 
             }
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(mContext);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putInt("pref_window_minized_state", mWindowState);
+            editor.apply();
+
         });
 
     }
@@ -189,7 +199,7 @@ public class RaceTimerActivity extends FragmentActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("race_id", mRace.id);
         outState.putInt("pilot_id", mPilot.id);
@@ -228,14 +238,11 @@ public class RaceTimerActivity extends FragmentActivity {
         registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE));
 
         FrameLayout layout = (FrameLayout) findViewById(R.id.dialog1).getRootView();
-        layout.post(new Runnable() {
-            @Override
-            public void run() {
-                // Retain the mimimized state when rotated
-                if (mWindowState == WINDOW_STATE_MINIMIZED) {
-                    mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.expand));
-                    setMinimized(false);
-                }
+        layout.post(() -> {
+            // Retain the mimimized state when rotated
+            if (mWindowState == WINDOW_STATE_MINIMIZED) {
+                mResize.setImageDrawable(ContextCompat.getDrawable(mContext, R.mipmap.expand));
+                setMinimized(false);
             }
         });
 
@@ -262,7 +269,7 @@ public class RaceTimerActivity extends FragmentActivity {
     }
 
     public void getFragment(Fragment f, int id) {
-        f.setRetainInstance(true);
+        //f.setRetainInstance(true);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         String tag = "racetimerfrag" + id;
@@ -272,14 +279,6 @@ public class RaceTimerActivity extends FragmentActivity {
         mCurrentFragment = (RaceTimerFrag) f;
         mCurrentFragmentId = id;
     }
-
-    /*
-    public void stopTimerService() {
-        Intent serviceIntent = new Intent("com.marktreble.f3ftimer.RaceTimerService");
-        stopService(serviceIntent);
-    }
-    */
-
 
     public void scorePilotZero(Pilot p) {
         RacePilotData datasource = new RacePilotData(this);
@@ -315,8 +314,22 @@ public class RaceTimerActivity extends FragmentActivity {
         sendOrderedBroadcast(i, null);
     }
 
+    public void sendWind() {
+        if (mPrefWindMeasurement) {
+            if (AnemometerServiceInstance.getInstance().anemometerService != null) {
+                Double avgWindSpeed = AnemometerServiceInstance.getInstance().anemometerService.getAvgWindSpeed();
+                Double avgWindDirection = AnemometerServiceInstance.getInstance().anemometerService.getAvgWindDirection();
+
+                Intent i = new Intent(IComm.RCV_UPDATE_FROM_UI);
+                i.putExtra(IComm.MSG_WIND_SPEED, String.format("%.1f", avgWindSpeed));
+                i.putExtra(IComm.MSG_WIND_DIRECTION, String.format("%.1f", avgWindDirection));
+                sendBroadcast(i);
+            }
+        }
+    }
+
     // Binding for Service->UI Communication
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(IComm.MSG_SERVICE_CALLBACK)) {
@@ -333,6 +346,7 @@ public class RaceTimerActivity extends FragmentActivity {
                 if (mCurrentFragment == null) {
                     return;
                 }
+
                 if (data.equals("show_progress")) {
                     showProgress();
                 }
@@ -388,12 +402,12 @@ public class RaceTimerActivity extends FragmentActivity {
                     }
                 }
 
-                if (data.equals("wind_illegal")) {
+                if (data.equals("conditions_illegal")) {
                     mWindLegal = false;
                     (mCurrentFragment).setWindWarning(true);
                 }
 
-                if (data.equals("wind_legal")) {
+                if (data.equals("conditions_legal")) {
                     mWindLegal = true;
                     (mCurrentFragment).setWindWarning(false);
                 }
@@ -432,17 +446,53 @@ public class RaceTimerActivity extends FragmentActivity {
     };
 
     private void showProgress() {
-        mPDialog = new ProgressDialog(mContext);
-        mPDialog.setMessage("Loading Language...");
-        mPDialog.setCancelable(false);
-        mPDialog.show();
+        int llPadding = 30;
+        LinearLayout ll = new LinearLayout(this);
+        ll.setOrientation(LinearLayout.HORIZONTAL);
+        ll.setPadding(llPadding, llPadding, llPadding, llPadding);
+        ll.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams llParam = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        llParam.gravity = Gravity.CENTER;
+        ll.setLayoutParams(llParam);
+
+        ProgressBar progressBar = new ProgressBar(this);
+        progressBar.setIndeterminate(true);
+        progressBar.setPadding(0, 0, llPadding, 0);
+        progressBar.setLayoutParams(llParam);
+
+        llParam = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT);
+        llParam.gravity = Gravity.CENTER;
+        TextView tvText = new TextView(this);
+        tvText.setText("Loading Language...");
+        tvText.setTextColor(Color.parseColor("#000000"));
+        tvText.setTextSize(20);
+        tvText.setLayoutParams(llParam);
+
+        ll.addView(progressBar);
+        ll.addView(tvText);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(true);
+        builder.setView(ll);
+
+        mLoadingDialog = builder.create();
+        mLoadingDialog.show();
+        Window window = mLoadingDialog.getWindow();
+        if (window != null) {
+            WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+            layoutParams.copyFrom(mLoadingDialog.getWindow().getAttributes());
+            layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            layoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            mLoadingDialog.getWindow().setAttributes(layoutParams);
+        }
     }
 
     private void hideProgress() {
-        if (mPDialog != null) {
-            mPDialog.cancel();
-            mPDialog.dismiss();
-            mPDialog = null;
+        if (mLoadingDialog != null) {
+            mLoadingDialog.dismiss();
         }
     }
 

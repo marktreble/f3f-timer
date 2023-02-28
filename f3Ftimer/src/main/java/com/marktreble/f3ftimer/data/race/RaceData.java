@@ -168,24 +168,6 @@ public class RaceData {
         database.insert("fastestLegTimes", null, values);
     }
 
-    /*
-    public void getFastestLegTimes(Integer race_id, Integer round, Integer[] pilot_id, long[] fastestLegTimes) {
-        Cursor cursor = database.query("fastestLegTimes", null, "race_id = '" + race_id + "' and round = '" + round + "'", null, null, null, null);
-        cursor.moveToFirst();
-        if (!cursor.isAfterLast()) {
-            pilot_id[0] = cursor.getInt(2);
-            if (cursor.getColumnCount() == 3 + fastestLegTimes.length) {
-                for (int i = 0; i < fastestLegTimes.length; i++) {
-                    fastestLegTimes[i] = cursor.getLong(i + 3);
-                }
-            } else {
-                Log.e("RaceData", "Invalid FastestLegTime data in database.");
-            }
-        }
-        cursor.close();
-    }
-    */
-
     public void setFastestFlightTime(Integer race_id, Integer round, Integer pilot_id, Float time) {
         database.delete("fastestFlightTime", "race_id = '" + race_id + "' and round = '" + round + "'", null);
 
@@ -196,18 +178,6 @@ public class RaceData {
         values.put("time", time);
         database.insert("fastestFlightTime", null, values);
     }
-
-    /*
-    public void getFastestFlightTime(Integer race_id, Integer round, Integer[] pilot_id, float[] time) {
-        Cursor cursor = database.query("fastestFlightTime", null, "race_id = '" + race_id + "' and round = '" + round + "'", null, null, null, null);
-        cursor.moveToFirst();
-        if (!cursor.isAfterLast()) {
-            pilot_id[0] = cursor.getInt(2);
-            time[0] = cursor.getFloat(3);
-        }
-        cursor.close();
-    }
-     */
 
     private Race cursorToRace(Cursor cursor) {
         Race r = new Race();
@@ -249,12 +219,12 @@ public class RaceData {
         return groups;
     }
 
-    public class Group {
+    public static class Group {
         public int num_groups = 1;
         public int start_pilot = 1;
     }
 
-    public class Time {
+    public static class Time {
         public Integer round;
         public Float time;
         public Float raw_points; // Normalised points value

@@ -36,9 +36,9 @@ import java.util.List;
 
 public class PilotListDocumentAdapter extends PrintDocumentAdapter {
 
-    private Context mContext;
-    private ArrayList<Pilot> mPilots;
-    private String mRaceName;
+    private final Context mContext;
+    private final ArrayList<Pilot> mPilots;
+    private final String mRaceName;
     private float mPageHeight;
     private float mPageWidth;
     private int mNumPages;

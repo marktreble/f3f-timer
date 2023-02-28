@@ -11,6 +11,9 @@
 
 package com.marktreble.f3ftimer.driver;
 
+import static org.apache.commons.lang3.ArrayUtils.contains;
+import static java.lang.Math.floor;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,9 +22,12 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
@@ -31,6 +37,7 @@ import com.marktreble.f3ftimer.data.race.RaceData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
 import com.marktreble.f3ftimer.data.results.Results;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
+import com.marktreble.f3ftimer.filesystem.SpreadsheetExportInterface;
 import com.marktreble.f3ftimer.languages.Languages;
 import com.marktreble.f3ftimer.media.SoftBuzzer;
 import com.marktreble.f3ftimer.media.TTS;
@@ -40,13 +47,13 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.HashMap;
 import java.util.Locale;
 
-public class Driver implements TTS.onInitListenerProxy {
+public class Driver implements TTS.onInitListenerProxy, SpreadsheetExportInterface {
 
     private static final String TAG = "Driver";
 
     private static final String[] sounds = {"pref_buzz_off_course", "pref_buzz_on_course", "pref_buzz_turn", "pref_buzz_turn9", "pref_buzz_penalty"};
 
-    private Context mContext;
+    private final Context mContext;
 
 
     Integer mPid;
@@ -56,15 +63,17 @@ public class Driver implements TTS.onInitListenerProxy {
     Float mPilot_Time = .0f;
     private long mTimeOnCourse;
     private long mLastLegTime;
-    private long[] mLegTimes = new long[10];
+    private final long[] mLegTimes = new long[10];
     private Integer mLeg = 0;
     private boolean mWindLegal = true;
-    private long[] mFastestLegTime = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private final long[] mFastestLegTime = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     private float mFastestFlightTime = 0.0f;
     private String mFastestFlightPilot = "";
+    private Pilot mPilot;
 
     private boolean mAudibleWindWarning = false;
     public boolean mModelLaunched = false;
+    private int mDelayed;
 
 
     private Integer mPenalty;
@@ -79,14 +88,16 @@ public class Driver implements TTS.onInitListenerProxy {
     private TTS mTts;
     private boolean mSetFullVolume;
 
-    public Handler mHandler = new Handler();
+    public Handler mHandler = new Handler(Looper.getMainLooper());
 
     private String mCalled;
     private boolean mOmitOffCourse;
     private boolean mLateEntry;
 
     static float SHOW_TIMEOUT_DELAY = 3f; // minutes
-    static int ROUND_TIMEOUT = 33; // minutes
+    static int ROUND_TIMEOUT = 30; // minutes
+
+    boolean mShowTimeoutExplicit = false;
 
     private final static int SPEECH_DELAY_TIME = 250;
 
@@ -172,6 +183,8 @@ public class Driver implements TTS.onInitListenerProxy {
     public void destroy() {
         Log.i(TAG, "Destroyed");
 
+        mHandler.removeCallbacks(checkTimeout);
+
         try {
             mContext.unregisterReceiver(onBroadcast);
         } catch (IllegalArgumentException e) {
@@ -190,20 +203,39 @@ public class Driver implements TTS.onInitListenerProxy {
     }
 
     // Binding for UI->Service Communication
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, @NonNull Intent intent) {
             Log.d("UI->Service", "onReceive");
+            if (intent.hasExtra(IComm.MSG_WIND_SPEED)) {
+                Bundle extras = intent.getExtras();
+                String windSpeed = extras.getString(IComm.MSG_WIND_SPEED);
+                String windDirection = extras.getString(IComm.MSG_WIND_DIRECTION);
+
+                if (windSpeed != null && windDirection != null) {
+                    if (mSpeechFXon) {
+                        mTts.setAudioVolume();
+
+                        Resources r = Languages.useLanguage(mContext, mPilotLang);
+                        String lang = String.format(
+                                r.getString(R.string.wind_speed_announcement),
+                                windSpeed
+                        );
+                        mHandler.postDelayed(
+                                () -> mTts.speak(lang, TextToSpeech.QUEUE_ADD),
+                                1);
+                    }
+                }
+            }
             if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
                 Bundle extras = intent.getExtras();
                 String data = extras.getString(IComm.MSG_UI_CALLBACK);
-                Log.d("UI->Service", data);
 
                 if (data == null) return;
 
                 if (data.equals("show_round_timeout")) {
                     Log.i("DRIVER", "SHOW_ROUND_TIMEOUT");
-                    show_round_timeout_explicitly();
+                    showRoundTimeoutExplicitly();
                     return;
                 }
                 if (data.equals("start_pilot")) {
@@ -238,7 +270,7 @@ public class Driver implements TTS.onInitListenerProxy {
                 }
 
                 if (data.equals("finalise")) {
-                    int delayed = extras.getInt("com.marktreble.f3ftimer.delayed");
+                    int delayed = extras.getInt("com.marktreble.f3ftimer.delayed", 0);
                     runFinalised(delayed);
                     return;
                 }
@@ -249,12 +281,13 @@ public class Driver implements TTS.onInitListenerProxy {
                 }
 
                 if (data.equals("timeout_resumed")) {
-                    startTimeoutDelay();
+                    //startTimeoutDelay();
+                    resumeRoundTimeout();
                     return;
                 }
 
                 if (data.equals("cancel_timeout")) {
-                    cancelTimeout();
+                    cancelRoundTimeout();
                     return;
                 }
 
@@ -296,7 +329,9 @@ public class Driver implements TTS.onInitListenerProxy {
                 }
 
                 if (data.equals("pref_full_volume")) {
+
                     mSetFullVolume = extras.getBoolean(IComm.MSG_VALUE);
+                    mTts.mSetFullVolume = mSetFullVolume;
                     return;
                 }
 
@@ -322,7 +357,7 @@ public class Driver implements TTS.onInitListenerProxy {
                 }
 
                 if (data.length() > 2) {
-                    if (data.substring(0, 2).equals("::"))
+                    if (data.startsWith("::"))
                         ((DriverInterface) mContext).finished(data.substring(2));
                     return;
                 }
@@ -386,7 +421,7 @@ public class Driver implements TTS.onInitListenerProxy {
         callbackToUI("driver_stopped", params);
     }
 
-    public void startPilot(Bundle extras) {
+    public void startPilot(@NonNull Bundle extras) {
 
         mPid = extras.getInt("com.marktreble.f3ftimer.pilot_id");
         mRid = extras.getInt("com.marktreble.f3ftimer.race_id");
@@ -409,53 +444,46 @@ public class Driver implements TTS.onInitListenerProxy {
 
 
         if (mSpeechFXon && mTts.mTTSStatus == TextToSpeech.SUCCESS) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i(TAG, "SHOWING TTS PROGRESS");
-                    Intent i = new Intent(IComm.RCV_UPDATE);
-                    i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_progress");
-                    mContext.sendBroadcast(i);
-                }
+            mTts.setAudioVolume();
+            mHandler.postDelayed(() -> {
+                Log.i(TAG, "SHOWING TTS PROGRESS");
+                Intent i = new Intent(IComm.RCV_UPDATE);
+                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_progress");
+                mContext.sendBroadcast(i);
             }, 100);
 
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    RacePilotData datasource2 = new RacePilotData(mContext);
-                    datasource2.open();
-                    Pilot pilot = datasource2.getPilot(mPid, mRid);
-                    datasource2.close();
-                    if (pilot.language != null && !pilot.language.equals("")) {
-                        mPilotLang = String.format("%s_%s", pilot.language, pilot.nationality);
-                    } else {
-                        mPilotLang = mDefaultSpeechLang;
-                    }
-					/*
-                    Log.i("startPilot:", "Race ID = "+Integer.toString(mRid));
-                    Log.i("startPilot:", "Pilot ID = "+Integer.toString(mPid));
-                    Log.i("startPilot:", "Round ID = "+Integer.toString(mRnd));
-                    Log.i("startPilot:", pilot.toString());
-                    Log.i("startPilot:", "lang = "+pilot.language + ":" + mPilotLang);
-					*/
-
-                    // Try to set speech lang - if not available then setSpeechFXLanguage returns the default Language
-                    mPilotLang = mTts.setSpeechFXLanguage(mPilotLang, mDefaultSpeechLang);
-
-                    if (mSpeechFXon)
-                        mTts.speak(String.format("%s %s", pilot.firstname, pilot.lastname), TextToSpeech.QUEUE_ADD);
-
+            mHandler.postDelayed(() -> {
+                RacePilotData datasource2 = new RacePilotData(mContext);
+                datasource2.open();
+                Pilot pilot = datasource2.getPilot(mPid, mRid);
+                datasource2.close();
+                if (pilot.language != null && !pilot.language.equals("")) {
+                    mPilotLang = String.format("%s_%s", pilot.language, pilot.nationality);
+                } else {
+                    mPilotLang = mDefaultSpeechLang;
                 }
+
+                Log.i(TAG, "SETTING LANGUAGE: " + mPilotLang + " " + mDefaultSpeechLang);
+                // Try to set speech lang - if not available then setSpeechFXLanguage returns the default Language
+                mPilotLang = mTts.setSpeechFXLanguage(mPilotLang, mDefaultSpeechLang);
+
+                if (mSpeechFXon) {
+                    Log.i(TAG, "SETTING VOLUME");
+                    mTts.setAudioVolume();
+                    Log.i(TAG, "SPEAKING");
+                    mTts.speak(String.format("%s %s", pilot.firstname, pilot.lastname), TextToSpeech.QUEUE_ADD);
+                }
+
             }, 200);
         }
-        startTimeoutDelay();
+        resumeRoundTimeout();
     }
 
     public void startWorkingTime() {
-        cancelTimeout();
+        cancelRoundTimeout();
         if (mSpeechFXon) {
-            mHandler.postDelayed(announceWorkingTime, 1000);
-
+            mTts.setAudioVolume();
+            mHandler.postDelayed(announceWorkingTime, 1);
         }
     }
 
@@ -477,13 +505,14 @@ public class Driver implements TTS.onInitListenerProxy {
 
     public void modelLaunched() {
         cancelWorkingTime();
-        cancelTimeout();
+        cancelRoundTimeout();
 
         // Send Launch command to HID
         ((DriverInterface) mContext).sendLaunch();
 
         // Synthesized Call
         if (mSpeechFXon) {
+            mTts.setAudioVolume();
             Resources r = Languages.useLanguage(mContext, mPilotLang);
             String lang = r.getString(R.string.model_launched);
             Languages.useLanguage(mContext, mDefaultLang);
@@ -494,8 +523,10 @@ public class Driver implements TTS.onInitListenerProxy {
     }
 
     public void _count(String number) {
-        if (mSpeechFXon)
+        if (mSpeechFXon) {
+            mTts.setAudioVolume();
             mTts.speak(number, TextToSpeech.QUEUE_ADD);
+        }
     }
 
     public void offCourse() {
@@ -508,20 +539,17 @@ public class Driver implements TTS.onInitListenerProxy {
         //if (mSoundFXon) mPlayer.start();
 
         if (mSoundFXon) {
-            if (mSpeechFXon) {
-                mTts.setAudioVolume();
-            }
+            mTts.setAudioVolume();
             softBuzzer.soundOffCourse();
         }
 
         // Synthesized Call
         if (mSpeechFXon && !mOmitOffCourse) {
-            mHandler.postDelayed(new Runnable() {
-                public void run() {
-                    String lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.off_course);
-                    Languages.useLanguage(mContext, mDefaultLang);
-                    mTts.speak(lang, TextToSpeech.QUEUE_ADD);
-                }
+            mTts.setAudioVolume();
+            mHandler.postDelayed(() -> {
+                String lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.off_course);
+                Languages.useLanguage(mContext, mDefaultLang);
+                mTts.speak(lang, TextToSpeech.QUEUE_ADD);
             }, SPEECH_DELAY_TIME);
         }
     }
@@ -543,27 +571,24 @@ public class Driver implements TTS.onInitListenerProxy {
         // Buzzer Sound
         //if (mSoundFXon) mPlayer.start();
         if (mSoundFXon) {
-            if (mSpeechFXon) {
-                mTts.setAudioVolume();
-            }
+            mTts.setAudioVolume();
             softBuzzer.soundOnCourse();
         }
 
         // Synthesized Call
         if (mSpeechFXon) {
-            mHandler.postDelayed(new Runnable() {
-                public void run() {
-                    String lang;
-                    if (mLateEntry) {
-                        lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.late_entry);
-                    } else {
-                        lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.on_course);
-
-                    }
-                    Languages.useLanguage(mContext, mDefaultLang);
-                    mTts.speak(lang, TextToSpeech.QUEUE_ADD);
+            mTts.setAudioVolume();
+            mHandler.postDelayed(() -> {
+                String lang;
+                if (mLateEntry) {
+                    lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.late_entry);
+                } else {
+                    lang = Languages.useLanguage(mContext, mPilotLang).getString(R.string.on_course);
 
                 }
+                Languages.useLanguage(mContext, mDefaultLang);
+                mTts.speak(lang, TextToSpeech.QUEUE_ADD);
+
             }, SPEECH_DELAY_TIME);
         }
     }
@@ -611,9 +636,8 @@ public class Driver implements TTS.onInitListenerProxy {
         // Buzzer Sound
         //if (mSoundFXon) mPlayer.start();
         if (mSoundFXon) {
-            if (mSpeechFXon) {
-                mTts.setAudioVolume();
-            }
+            mTts.setAudioVolume();
+
             if (mLeg < 9) {
                 softBuzzer.soundTurn();
             } else {
@@ -623,14 +647,10 @@ public class Driver implements TTS.onInitListenerProxy {
 
         // Synthesized Call
         if (mSpeechFXon && mLeg < 10 && mLeg > 0) {
+            mTts.setAudioVolume();
             final String leg = mLeg + ((mLeg == 9) ? " " + Languages.useLanguage(mContext, mPilotLang).getString(R.string.and_last) : "");
 
-            mHandler.postDelayed(new Runnable() {
-                public void run() {
-
-                    mTts.speak(leg, TextToSpeech.QUEUE_ADD);
-                }
-            }, SPEECH_DELAY_TIME);
+            mHandler.postDelayed(() -> mTts.speak(leg, TextToSpeech.QUEUE_ADD), SPEECH_DELAY_TIME);
         }
     }
 
@@ -638,9 +658,7 @@ public class Driver implements TTS.onInitListenerProxy {
         mPenalty++;
         // Buzzer Sound
         if (mSoundFXon) {
-            if (mSpeechFXon) {
-                mTts.setAudioVolume();
-            }
+            mTts.setAudioVolume();
             softBuzzer.soundPenalty();
         }
 
@@ -674,8 +692,12 @@ public class Driver implements TTS.onInitListenerProxy {
     }
 
     public void runFinalised(int delayed) {
+        Log.d(TAG, "FINALISE");
+        mDelayed = delayed;
         if (!alreadyfinalised) {
+            Log.d(TAG, "!ALREADY FINALISED");
             if (!alreadyReceivedFinalizeReq) {
+                Log.d(TAG, "!ALREADY RECEIVED FINALISE REQ");
                 alreadyReceivedFinalizeReq = true;
                 // Save the time to the database
                 RacePilotData datasource1 = new RacePilotData(mContext);
@@ -687,9 +709,7 @@ public class Driver implements TTS.onInitListenerProxy {
                 str_time = str_time.replace(".", " ");
 
                 // Get the pilot's name
-                Pilot pilot = datasource1.getPilot(mPid, mRid);
-                String str_name = String.format("%s %s", pilot.firstname, pilot.lastname);
-                String str_nationality = pilot.nationality;
+                mPilot = datasource1.getPilot(mPid, mRid);
 
                 datasource1.close();
 
@@ -697,10 +717,10 @@ public class Driver implements TTS.onInitListenerProxy {
                 datasource.open();
                 if (mFastestFlightTime == 0 || mPilot_Time < mFastestFlightTime) {
                     mFastestFlightTime = mPilot_Time;
-                    mFastestFlightPilot = String.format("%s %s", pilot.firstname, pilot.lastname);
-                    datasource.setFastestFlightTime(mRid, mRnd, pilot.id, mFastestFlightTime);
+                    mFastestFlightPilot = String.format("%s %s", mPilot.firstname, mPilot.lastname);
+                    datasource.setFastestFlightTime(mRid, mRnd, mPilot.id, mFastestFlightTime);
                 }
-                datasource.setFastestLegTimes(mRid, mRnd, pilot.id, mFastestLegTime);
+                datasource.setFastestLegTimes(mRid, mRnd, mPilot.id, mFastestLegTime);
                 datasource.close();
 
                 if (mPenalty > 0) {
@@ -715,84 +735,89 @@ public class Driver implements TTS.onInitListenerProxy {
                 }
 
                 // Speak the time
-                if (mSpeechFXon) mTts.speak(str_time, TextToSpeech.QUEUE_ADD);
+                if (mSpeechFXon) {
+                    mTts.setAudioVolume();
+                    mTts.speak(str_time, TextToSpeech.QUEUE_ADD);
+                }
                 Log.d(TAG, "TIME SPOKEN");
 
-                // Update the .txt file
-                if (!new SpreadsheetExport().writeResultsFile(mContext, mRace)) {
-                    // Failed to write
-                    // Need some UI to indicate the problem
-                }
-
-                Log.d(TAG, "EXPORT FILE WRITTEN");
-                SystemClock.sleep(1000);
-
-                // Post to the Race Results Display Service
-                Results r = new Results();
-                r.getOrderedRoundInProgress(mContext, mRid);
-
-                StringBuilder topthree = new StringBuilder();
-                String[] position = {"1st", "2nd", "3rd"};
-
-                for (int count = 0; count < 3; count++) {
-                    if (r.mArrNames.size() > count) {
-                        Pilot p = r.mArrPilots.get(count);
-                        topthree.append(
-                                String.format("%s %s %.2f   ", position[count], StringUtils.stripAccents(r.mArrNames.get(count)), p.time)
-                        );
-
-                    }
-                }
-
-                String str_round_results = String.format("Round %d positions: %s", mRnd, topthree.toString());
-
-                //str_round_results = "Testing...";
-
-                Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
-                intent2.putExtra("com.marktreble.f3ftimer.external_results_callback", "run_finalised");
-                intent2.putExtra("com.marktreble.f3ftimer.pilot_nationality", str_nationality);
-                intent2.putExtra("com.marktreble.f3ftimer.pilot_name", str_name);
-                intent2.putExtra("com.marktreble.f3ftimer.pilot_time", String.format("%.2f", mPilot_Time));
-                intent2.putExtra("com.marktreble.f3ftimer.current_round", String.format("%d", mRnd));
-                intent2.putExtra("com.marktreble.f3ftimer.current_round_results", str_round_results);
-
-
-                mContext.sendBroadcast(intent2);
-                Log.d(TAG, "POST BACK TO EXTERNAL RESULTS: " + str_round_results);
-            }
-
-            if (delayed != 0) {
-                // Post back to the UI (RaceTimerActivity) after timeout;
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!alreadyfinalised) {
-                            alreadyfinalised = true;
-                            Intent intent = new Intent(IComm.RCV_UPDATE);
-                            intent.putExtra(IComm.MSG_SERVICE_CALLBACK, "run_finalised");
-                            mContext.sendOrderedBroadcast(intent, null);
-                            Log.d(TAG, "POST BACK TO UI");
-                        }
-                    }
-                }, 5000);
-            } else {
-                // Post back to the UI (RaceTimerActivity), when the user clicks the button before the timeout runs out;
-                alreadyfinalised = true;
-                Intent intent = new Intent(IComm.RCV_UPDATE);
-                intent.putExtra(IComm.MSG_SERVICE_CALLBACK, "run_finalised");
-                mContext.sendOrderedBroadcast(intent, null);
-                Log.d(TAG, "POST BACK TO UI");
+                SpreadsheetExport e = new SpreadsheetExport();
+                e.callbackInterface = this;
+                e.writeResultsFile(mContext, mRace);
             }
         }
     }
 
+    private void postUpdateToDisplay() {
+        // Post to the Race Results Display Service
+        Results r = new Results();
+        r.getOrderedRoundInProgress(mContext, mRid);
+
+        StringBuilder topthree = new StringBuilder();
+        String[] position = {"1st", "2nd", "3rd"};
+
+        for (int count = 0; count < 3; count++) {
+            if (r.mArrNames.size() > count) {
+                Pilot p = r.mArrPilots.get(count);
+                topthree.append(
+                        String.format("%s %s %.2f   ", position[count], StringUtils.stripAccents(r.mArrNames.get(count)), p.time)
+                );
+
+            }
+        }
+
+        String str_name = String.format("%s %s", mPilot.firstname, mPilot.lastname);
+        String str_nationality = mPilot.nationality;
+
+        String str_round_results = String.format("Round %d positions: %s", mRnd, topthree);
+
+        //str_round_results = "Testing...";
+
+        Intent intent2 = new Intent("com.marktreble.f3ftimer.onExternalUpdate");
+        intent2.putExtra("com.marktreble.f3ftimer.external_results_callback", "run_finalised");
+        intent2.putExtra("com.marktreble.f3ftimer.pilot_nationality", str_nationality);
+        intent2.putExtra("com.marktreble.f3ftimer.pilot_name", str_name);
+        intent2.putExtra("com.marktreble.f3ftimer.pilot_time", String.format("%.2f", mPilot_Time));
+        intent2.putExtra("com.marktreble.f3ftimer.current_round", String.format("%d", mRnd));
+        intent2.putExtra("com.marktreble.f3ftimer.current_round_results", str_round_results);
+
+
+        mContext.sendBroadcast(intent2);
+        Log.d(TAG, "POST BACK TO EXTERNAL RESULTS: " + str_round_results);
+    }
+
+    @Override
+    public void onSpreadsheetWritten(boolean success) {
+        Log.d(TAG, "SPREADSHEETWRITTENDr");
+        postUpdateToDisplay();
+
+        if (mDelayed != 0) {
+            // Post back to the UI (RaceTimerActivity) after timeout;
+            mHandler.postDelayed(() -> {
+                if (!alreadyfinalised) {
+                    alreadyfinalised = true;
+                    Intent intent = new Intent(IComm.RCV_UPDATE);
+                    intent.putExtra(IComm.MSG_SERVICE_CALLBACK, "run_finalised");
+                    mContext.sendOrderedBroadcast(intent, null);
+                    Log.d(TAG, "POST BACK TO UI");
+                }
+            }, 5000);
+        } else {
+            // Post back to the UI (RaceTimerActivity), when the user clicks the button before the timeout runs out;
+            alreadyfinalised = true;
+            Intent intent = new Intent(IComm.RCV_UPDATE);
+            intent.putExtra(IComm.MSG_SERVICE_CALLBACK, "run_finalised");
+            mContext.sendOrderedBroadcast(intent, null);
+            Log.d(TAG, "POST BACK TO UI");
+        }
+    }
 
     void windLegal() {
         if (mWindMeasurement) {
             if (!mWindLegal) {
                 mWindLegal = true;
                 Intent i = new Intent(IComm.RCV_UPDATE);
-                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "wind_legal");
+                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "conditions_legal");
                 mContext.sendBroadcast(i);
             }
         }
@@ -803,10 +828,11 @@ public class Driver implements TTS.onInitListenerProxy {
             if (mWindLegal) {
                 mWindLegal = false;
                 Intent i = new Intent(IComm.RCV_UPDATE);
-                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "wind_illegal");
+                i.putExtra(IComm.MSG_SERVICE_CALLBACK, "conditions_illegal");
                 mContext.sendBroadcast(i);
 
                 if (mSpeechFXon) {
+                    mTts.setAudioVolume();
                     // use contest language instead of pilot language here, so that the operator can understand this
                     String text = Languages.useLanguage(mContext, mDefaultSpeechLang).getString(R.string.wind_warning);
                     Languages.useLanguage(mContext, mDefaultLang);
@@ -846,25 +872,22 @@ public class Driver implements TTS.onInitListenerProxy {
         SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = timeout.edit();
         editor.putLong("start", startRoundTimeout);
+        editor.putLong("last_show_dialog", startRoundTimeout);
         editor.apply();
 
-        startTimeoutDelay();
+        //startTimeoutDelay();
+        mHandler.postDelayed(checkTimeout, 60000);
     }
 
-    private void startTimeoutDelay() {
+    public void resumeRoundTimeout() {
         String key = "Timeout" + mRid;
         SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
-        long start = timeout.getLong("start", 0);
-        if (start > 0) {
-            long elapsed = System.currentTimeMillis() - start;
-            Log.i(TAG, "Time Elapsed: " + elapsed);
-            // Check again in 3 minutes, or time remaining if <3 mins remaining
-            long t = (long) Math.min(SHOW_TIMEOUT_DELAY * 60 * 1000, (60 * 1000 * ROUND_TIMEOUT) - elapsed);
-            mHandler.postDelayed(checkTimeout, t);
-        }
+        SharedPreferences.Editor editor = timeout.edit();
+        editor.putLong("last_show_dialog", System.currentTimeMillis());
+        editor.apply();
     }
 
-    private void cancelTimeout() {
+    private void cancelRoundTimeout() {
         // Reset the round timeout
         SharedPreferences timeout = mContext.getSharedPreferences("Timeout" + mRid, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = timeout.edit();
@@ -879,84 +902,82 @@ public class Driver implements TTS.onInitListenerProxy {
         mContext.sendBroadcast(i);
     }
 
-    private Runnable checkTimeout = new Runnable() {
+    private final Runnable checkTimeout = new Runnable() {
         public void run() {
             String key = "Timeout" + mRid;
             SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
             final long start = timeout.getLong("start", 0);
+            final long last_show_dialog = timeout.getLong("last_show_dialog", 0);
             if (start > 0) {
-                long elapsed = System.currentTimeMillis() - start;
-                float seconds = (float) elapsed / 1000;
+                float totalSeconds = (float) (System.currentTimeMillis() - start) / 1000;
+                float secondsSinceLastShow = (float) (System.currentTimeMillis() - last_show_dialog) / 1000;
+                double iTime = floor(((60 * ROUND_TIMEOUT) - (totalSeconds-1)) / 60);
 
-                if (seconds > 60 * ROUND_TIMEOUT) {
+                /* Round Timer Expired */
+                if (totalSeconds > 60 * ROUND_TIMEOUT) {
                     // Hide the Pilot dialog if it's listening
                     cancelDialog();
 
                     // Invoke the scrub round dialog
-                    mHandler.postDelayed(new Runnable() {
-                        public void run() {
-                            Intent i = new Intent(IComm.RCV_UPDATE);
-                            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout_complete");
-                            mContext.sendBroadcast(i);
-                        }
+                    mHandler.postDelayed(() -> {
+                        Intent i = new Intent(IComm.RCV_UPDATE);
+                        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout_complete");
+                        mContext.sendBroadcast(i);
                     }, 500);
+                    return;
 
-                } else if (seconds > 60 * SHOW_TIMEOUT_DELAY) { // minutes
+                } else if (secondsSinceLastShow >= 60 * SHOW_TIMEOUT_DELAY
+                    || mShowTimeoutExplicit
+                    || iTime < 3) { // minutes
                     // Hide the Pilot dialog if it's listening
                     cancelDialog();
 
                     // Invoke the round timeout countdown dialog
-                    mHandler.postDelayed(new Runnable() {
-                        public void run() {
-                            Intent i = new Intent(IComm.RCV_UPDATE);
-                            i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout");
-                            i.putExtra("start", start);
-                            mContext.sendBroadcast(i);
-                        }
+                    mHandler.postDelayed(() -> {
+                        Intent i = new Intent(IComm.RCV_UPDATE);
+                        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout");
+                        i.putExtra("start", start);
+                        mContext.sendBroadcast(i);
                     }, 500);
-                } else {
-                    // Check again in SHOW_TIMEOUT_DELAY minutes less the elapsed time
-                    startTimeoutDelay();
+                }
+                long nextIterationTimeInterval = 60 - ((long)totalSeconds % 60);
+
+                mHandler.postDelayed(checkTimeout, nextIterationTimeInterval * 1000);
+
+                // If showed explicit then don't speak!
+                if (mShowTimeoutExplicit) {
+                    mShowTimeoutExplicit = false;
+                    return;
+                }
+
+                int[] speakOn = { 25, 20, 15, 10, 5, 4, 3, 2, 1 };
+                if (contains(speakOn, (int)iTime)) {
+                    Resources r = Languages.useLanguage(mContext, mDefaultSpeechLang);
+                    mTts.setSpeechFXLanguage(mDefaultSpeechLang, mDefaultSpeechLang);
+
+                    final String str_time = String.format(
+                            "%d %s",
+                            (int) iTime,
+                            r.getString(R.string.minutes_remaining)
+                    );
+                    Languages.useLanguage(mContext, mDefaultLang);
+                    if (mSpeechFXon) {
+                        mTts.setAudioVolume();
+                        mTts.speak(str_time, TextToSpeech.QUEUE_ADD);
+                    }
                 }
             }
         }
     };
 
-    private void show_round_timeout_explicitly() {
+    private void showRoundTimeoutExplicitly() {
         String key = "Timeout" + mRid;
         SharedPreferences timeout = mContext.getSharedPreferences(key, Context.MODE_PRIVATE);
         final long start = timeout.getLong("start", 0);
         if (start > 0) {
-            long elapsed = System.currentTimeMillis() - start;
-            float seconds = (float) elapsed / 1000;
-
-            if (seconds > 60 * ROUND_TIMEOUT) {
-                // Hide the Pilot dialog if it's listening
-                cancelDialog();
-
-                // Invoke the scrub round dialog
-                mHandler.postDelayed(new Runnable() {
-                    public void run() {
-                        Intent i = new Intent(IComm.RCV_UPDATE);
-                        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout_complete");
-                        mContext.sendBroadcast(i);
-                    }
-                }, 500);
-
-            } else { // minutes
-                // Hide the Pilot dialog if it's listening
-                cancelDialog();
-
-                // Invoke the round timeout countdown dialog
-                mHandler.postDelayed(new Runnable() {
-                    public void run() {
-                        Intent i = new Intent(IComm.RCV_UPDATE);
-                        i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout");
-                        i.putExtra("start", start);
-                        mContext.sendBroadcast(i);
-                    }
-                }, 500);
-            }
+            mShowTimeoutExplicit = true;
+            mHandler.removeCallbacks(checkTimeout);
+            mHandler.post(checkTimeout);
         } else {
             Intent i = new Intent(IComm.RCV_UPDATE);
             i.putExtra(IComm.MSG_SERVICE_CALLBACK, "show_timeout_not_started");

@@ -176,7 +176,7 @@ public class USBIOIOService extends IOIOService implements DriverInterface {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStart(intent, startId);
+        super.onStartCommand(intent, flags, startId);
 
 
         if (intent != null) {

@@ -61,7 +61,7 @@ class SpiMasterImpl extends AbstractResource implements SpiMaster,
 		}
 	}
 
-	class OutgoingPacket implements Packet {
+	static class OutgoingPacket implements Packet {
 		int writeSize_;
 		byte[] writeData_;
 		int ssPin_;

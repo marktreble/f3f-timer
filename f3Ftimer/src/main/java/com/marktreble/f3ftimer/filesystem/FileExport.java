@@ -12,9 +12,7 @@
 package com.marktreble.f3ftimer.filesystem;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Environment;
-import android.os.ParcelFileDescriptor;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,37 +37,6 @@ public class FileExport {
         OutputStream stream = null;
         try {
             stream = new FileOutputStream(file);
-            stream.write(output.getBytes());
-            stream.flush();
-            stream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.flush();
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    /**
-     * Writes the text in `output` to the file `filename`
-     *
-     * @param context Context
-     * @param output String
-     * @param uri Uri
-     */
-    void writeExportFile(Context context, String output, Uri uri) {
-
-        FileOutputStream stream = null;
-        try {
-            ParcelFileDescriptor pfd = context.getContentResolver().
-                    openFileDescriptor(uri, "w");
-            stream = new FileOutputStream(pfd.getFileDescriptor());
             stream.write(output.getBytes());
             stream.flush();
             stream.close();

@@ -11,18 +11,22 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
-import android.annotation.TargetApi;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.os.ResultReceiver;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,6 +61,7 @@ public abstract class BaseExport extends AppCompatActivity {
     final static int EXPORT_FILE_TYPE_CSV = 1;
 
     private static final int WRITE_REQUEST_CODE = 2;
+    private int mRequestCode = 0;
 
     Context mContext;
     Activity mActivity;
@@ -96,7 +101,7 @@ public abstract class BaseExport extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString("progress_message", mProgressMessage);
@@ -105,13 +110,10 @@ public abstract class BaseExport extends AppCompatActivity {
 
     protected void showProgress(final String msg) {
         mProgressMessage = msg;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                View progress = findViewById(R.id.progress);
-                TextView progressLabel = progress.findViewById(R.id.progressLabel);
-                progressLabel.setText(msg);
-            }
+        runOnUiThread(() -> {
+            View progress = findViewById(R.id.progress);
+            TextView progressLabel = progress.findViewById(R.id.progressLabel);
+            progressLabel.setText(msg);
         });
 
     }
@@ -128,41 +130,40 @@ public abstract class BaseExport extends AppCompatActivity {
         this.unregisterReceiver(onBroadcast);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_CANCELED) {
-            finish();
-            return;
-        }
+    @SuppressLint("WrongConstant")
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == Activity.RESULT_CANCELED) {
+                finish();
+                return;
+            }
 
-        if (requestCode == WRITE_REQUEST_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                if (data != null) {
-                    showProgress(getString(R.string.exporting));
+            if (mRequestCode == WRITE_REQUEST_CODE) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+                    if (intent != null) {
+                        showProgress(getString(R.string.exporting));
 
-                    final Uri uri = data.getData();
+                        final Uri uri = intent.getData();
 
-                    final int takeFlags = getIntent().getFlags()
-                            & (Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-                    // Check for the freshest data.
-                    getContentResolver().takePersistableUriPermission(uri, takeFlags);
+                        final int takeFlags = getIntent().getFlags()
+                                & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                        // Check for the freshest data.
+                        getContentResolver().takePersistableUriPermission(uri, takeFlags);
 
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            writeDocument(uri);
-                        }
-                    }, PROGRESS_DELAY);
+                        new Handler(Looper.getMainLooper()).postDelayed(
+                            () -> writeDocument(uri),
+                            PROGRESS_DELAY
+                        );
 
-                } else {
-                    finish();
+                    } else {
+                        finish();
+                    }
                 }
             }
-        }
-    }
+        });
 
     protected void beginExport() {
 
@@ -172,16 +173,16 @@ public abstract class BaseExport extends AppCompatActivity {
         RaceData datasource = new RaceData(mContext);
         datasource.open();
         String race = datasource.getSerialized(race_id);
-        String racegroups = datasource.getGroupsSerialized(race_id, round);
+        String raceGroups = datasource.getGroupsSerialized(race_id, round);
         datasource.close();
 
         RacePilotData datasource2 = new RacePilotData(mContext);
         datasource2.open();
-        String racepilots = datasource2.getPilotsSerialized(race_id);
-        String racetimes = datasource2.getTimesSerialized(race_id, round);
+        String racePilots = datasource2.getPilotsSerialized(race_id);
+        String raceTimes = datasource2.getTimesSerialized(race_id, round);
         datasource2.close();
 
-        return String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racepilots, racetimes, racegroups);
+        return String.format("{\"race\":%s, \"racepilots\":%s,\"racetimes\":%s,\"racegroups\":%s}\n\n", race, racePilots, raceTimes, raceGroups);
     }
 
     protected String getSerialisedPilotData() {
@@ -199,72 +200,72 @@ public abstract class BaseExport extends AppCompatActivity {
         RaceData datasource = new RaceData(mContext);
         datasource.open();
         Race race = datasource.getRace(race_id);
-        RaceData.Group[] racegroups = datasource.getGroups(race_id, round);
+        RaceData.Group[] raceGroups = datasource.getGroups(race_id, round);
         datasource.close();
 
         RacePilotData datasource2 = new RacePilotData(mContext);
         datasource2.open();
-        ArrayList<Pilot> racepilots = datasource2.getAllPilotsForRace(race_id, 0, race.offset, 0);
+        ArrayList<Pilot> racePilots = datasource2.getAllPilotsForRace(race_id, 0, race.offset, 0);
         datasource2.close();
 
-        StringBuilder csvdata = new StringBuilder();
+        StringBuilder csvData = new StringBuilder();
 
-        String race_params = "";
-        race_params += String.format("\"%d\",", race.race_id);
-        race_params += String.format("\"%s\",", race.name);
-        race_params += String.format("\"%s\",", " "); // F3XV Location
-        race_params += String.format("\"%s\",", " "); // F3XV Start Date
-        race_params += String.format("\"%s\",", " "); // F3XV End Date
-        race_params += String.format("\"%s\",", " "); // F3XV Type
-        race_params += String.format("\"%s\",", " "); // F3XV Num Rounds
-        race_params += String.format("\"%d\",", race.round);
-        race_params += String.format("\"%d\",", race.type);
-        race_params += String.format("\"%d\",", race.offset);
-        race_params += String.format("\"%d\",", race.status);
-        race_params += String.format("\"%d\",", race.rounds_per_flight);
-        race_params += String.format("\"%d\",\r\n", race.start_number);
+        String raceParams = "";
+        raceParams += String.format("\"%d\",", race.race_id);
+        raceParams += String.format("\"%s\",", race.name);
+        raceParams += String.format("\"%s\",", " "); // F3XV Location
+        raceParams += String.format("\"%s\",", " "); // F3XV Start Date
+        raceParams += String.format("\"%s\",", " "); // F3XV End Date
+        raceParams += String.format("\"%s\",", " "); // F3XV Type
+        raceParams += String.format("\"%s\",", " "); // F3XV Num Rounds
+        raceParams += String.format("\"%d\",", race.round);
+        raceParams += String.format("\"%d\",", race.type);
+        raceParams += String.format("\"%d\",", race.offset);
+        raceParams += String.format("\"%d\",", race.status);
+        raceParams += String.format("\"%d\",", race.rounds_per_flight);
+        raceParams += String.format("\"%d\",\r\n", race.start_number);
 
-        csvdata.append(race_params);
-        csvdata.append("\r\n");
+        csvData.append(raceParams);
+        csvData.append("\r\n");
 
-        for (Pilot p : racepilots) {
-            String pilot_params = "";
-            pilot_params += String.format("%d,", p.pilot_id);
-            pilot_params += String.format("\" %s\",", p.number);
-            pilot_params += String.format("\" %s\",", p.firstname);
-            pilot_params += String.format("\" %s\",", p.lastname);
-            pilot_params += ","; // F3XV Pilot Class - not required?
-            pilot_params += String.format("\" %s\",", p.nac_no);
-            pilot_params += String.format("\" %s\",", p.fai_id);
-            pilot_params += ","; // F3XV FAI License?
-            pilot_params += String.format("\" %s\",", p.team);
+        for (Pilot p : racePilots) {
+            String pilotParams = "";
+            pilotParams += String.format("%d,", p.pilot_id);
+            pilotParams += String.format("\" %s\",", p.number);
+            pilotParams += String.format("\" %s\",", p.firstname);
+            pilotParams += String.format("\" %s\",", p.lastname);
+            pilotParams += ","; // F3XV Pilot Class - not required?
+            pilotParams += String.format("\" %s\",", p.nac_no);
+            pilotParams += String.format("\" %s\",", p.fai_id);
+            pilotParams += ","; // F3XV FAI License?
+            pilotParams += String.format("\" %s\",", p.team);
             // Extra data not in f3xvault api
-            pilot_params += String.format(" %d,", p.status);
-            pilot_params += String.format("\" %s\",", p.email);
-            pilot_params += String.format("\" %s\",", p.frequency);
-            pilot_params += String.format("\" %s\",", p.models);
-            pilot_params += String.format("\" %s\",", p.nationality);
-            pilot_params += String.format("\" %s\",\r\n", p.language);
-            csvdata.append(pilot_params);
+            pilotParams += String.format(" %d,", p.status);
+            pilotParams += String.format("\" %s\",", p.email);
+            pilotParams += String.format("\" %s\",", p.frequency);
+            pilotParams += String.format("\" %s\",", p.models);
+            pilotParams += String.format("\" %s\",", p.nationality);
+            pilotParams += String.format("\" %s\",\r\n", p.language);
+            csvData.append(pilotParams);
         }
 
-        csvdata.append("\r\n");
+        csvData.append("\r\n");
 
-        StringBuilder group_params = new StringBuilder();
-        StringBuilder start_params = new StringBuilder();
-        for (RaceData.Group group : racegroups) {
-            if (group_params.length() > 0) group_params.append(",");
-            group_params.append(String.format("%d", group.num_groups));
+        StringBuilder groupParams = new StringBuilder();
+        StringBuilder startParams = new StringBuilder();
+        for (RaceData.Group group : raceGroups) {
+            if (groupParams.length() > 0) groupParams.append(",");
+            groupParams.append(String.format("%d", group.num_groups));
 
-            if (start_params.length() > 0) start_params.append(",");
-            start_params.append(String.format("%d", group.start_pilot));
+            if (startParams.length() > 0) startParams.append(",");
+            startParams.append(String.format("%d", group.start_pilot));
         }
 
-        csvdata.append(group_params).append("\r\n");
-        csvdata.append(start_params).append("\r\n");
-        csvdata.append("\r\n");
+        csvData.append(groupParams).append("\r\n");
+        csvData.append(startParams).append("\r\n");
+        csvData.append("\r\n");
 
-        return csvdata.toString();
+        return csvData.toString();
     }
 
     protected String getCSVPilotData() {
@@ -293,7 +294,7 @@ public abstract class BaseExport extends AppCompatActivity {
                 getString(R.string.ttl_select_file_type),
                 new ArrayList<>(Arrays.asList(filetypes)),
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -359,7 +360,9 @@ public abstract class BaseExport extends AppCompatActivity {
         // Create a file with the requested MIME type.
         intent.setType(mimeType);
         intent.putExtra(Intent.EXTRA_TITLE, fileName);
-        startActivityForResult(intent, WRITE_REQUEST_CODE);
+        mRequestCode = WRITE_REQUEST_CODE;
+        mStartForResult.launch(intent);
+        //startActivityForResult(intent, WRITE_REQUEST_CODE);
     }
 
     private void writeDocument(Uri uri) {
@@ -403,7 +406,7 @@ public abstract class BaseExport extends AppCompatActivity {
         }
     }
 
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra("cmd")) {
@@ -412,7 +415,7 @@ public abstract class BaseExport extends AppCompatActivity {
                     return;
                 }
                 String cmd = extras.getString("cmd", "");
-                String dta = extras.getString("dta");
+                //String dta = extras.getString("dta");
 
                 if (cmd.equals("beginExport")) {
                     beginExport();

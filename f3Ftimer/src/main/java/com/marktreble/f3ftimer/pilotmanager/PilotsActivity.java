@@ -15,6 +15,9 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import android.util.Log;
 import android.util.TypedValue;
@@ -49,7 +52,10 @@ public class PilotsActivity extends BaseActivity
     // Dialogs
     static int DLG_ADD_PILOT = 1;
     static int DLG_EDIT_PILOT = 2;
-    static int DLG_IMPORT = 2;
+    static int DLG_IMPORT = 3;
+    static int DLG_EXPORT = 4;
+
+    private int mRequestCode = 0;
 
     private ArrayAdapter<String> mArrAdapter;
     private ArrayList<String> mArrNames;
@@ -140,26 +146,21 @@ public class PilotsActivity extends BaseActivity
         Integer pid = mArrIds.get(position);
         intent.putExtra("pilot_id", pid);
         intent.putExtra("caller", "pilotmanager");
-        startActivityForResult(intent, DLG_EDIT_PILOT);
+        mRequestCode = DLG_EDIT_PILOT;
+        mStartForResult.launch(intent);
+        //startActivityForResult(intent, DLG_EDIT_PILOT);
     }
 
-    /**
-     * Standard Activity class function
-     *
-     * @param requestCode int
-     * @param resultCode int
-     * @param data Intent
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == DLG_ADD_PILOT)
-                mArrAdapter.add("");
-            getNamesArray();
-            mArrAdapter.notifyDataSetChanged();
-        }
-    }
+    private final ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                if (mRequestCode == DLG_ADD_PILOT)
+                    mArrAdapter.add("");
+                getNamesArray();
+                mArrAdapter.notifyDataSetChanged();
+            }
+        });
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v,
@@ -230,49 +231,47 @@ public class PilotsActivity extends BaseActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case R.id.menu_add_pilot:
-                addPilot();
-                return true;
-            case R.id.menu_import_pilots:
-                importPilots();
-                return true;
-            case R.id.menu_export_pilots:
-                exportPilots();
-                return true;
-            case R.id.menu_race_manager:
-                raceManager();
-                return true;
-            case R.id.menu_results_manager:
-                resultsManager();
-                return true;
-            case R.id.menu_help:
-                help();
-                return true;
-            case R.id.menu_about:
-                about();
-                return true;
-
-
-            default:
-                return super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+        if (id == R.id.menu_add_pilot) {
+            addPilot();
+        } else if (id == R.id.menu_import_pilots) {
+            importPilots();
+        } else if (id == R.id.menu_export_pilots) {
+            exportPilots();
+        } else if (id == R.id.menu_race_manager) {
+            raceManager();
+        } else if (id == R.id.menu_results_manager) {
+            resultsManager();
+        } else if (id == R.id.menu_help) {
+            help();
+        } else if (id == R.id.menu_about) {
+            about();
+        } else {
+            return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
     public void addPilot() {
         Intent intent = new Intent(mContext, PilotsEditActivity.class);
         intent.putExtra("caller", "pilotmanager");
-        startActivityForResult(intent, PilotsActivity.DLG_ADD_PILOT);
+        mRequestCode = DLG_ADD_PILOT;
+        mStartForResult.launch(intent);
+        //startActivityForResult(intent, PilotsActivity.DLG_ADD_PILOT);
     }
 
     public void importPilots() {
         Intent intent = new Intent(mContext, FileImportPilots.class);
-        startActivityForResult(intent, DLG_IMPORT);
+        mRequestCode = DLG_IMPORT;
+        mStartForResult.launch(intent);
+        //startActivityForResult(intent, DLG_IMPORT);
     }
 
     public void exportPilots() {
         Intent intent = new Intent(mContext, FileExportPilots.class);
-        startActivityForResult(intent, DLG_IMPORT);
+        mRequestCode = DLG_EXPORT;
+        mStartForResult.launch(intent);
+        //startActivityForResult(intent, DLG_IMPORT);
     }
 
     public void raceManager() {

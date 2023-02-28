@@ -24,7 +24,7 @@
     <content url="file://$MODULE_DIR$/../../../usbSerialForAndroid/build/generated/ap_generated_sources/debugUnitTest/out" />
     <content url="file://$MODULE_DIR$/../../../usbSerialForAndroid/src/test" />
     <content url="file://$MODULE_DIR$/../../../usbSerialForAndroid/src/testDebug" />
-    <orderEntry type="jdk" jdkName="Android API 29 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 33 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="f3f-timer.usbSerialForAndroid.main" scope="TEST" />
   </component>

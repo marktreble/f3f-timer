@@ -13,7 +13,10 @@ package com.marktreble.f3ftimer.exportimport;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentTransaction;
 import android.util.Log;
 
@@ -66,7 +69,7 @@ public class FileExportRace extends BaseExport {
         }
     }
 
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putStringArray("options", _options);
@@ -125,7 +128,7 @@ public class FileExportRace extends BaseExport {
                 getString(R.string.ttl_select_race),
                 mArrNames,
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);

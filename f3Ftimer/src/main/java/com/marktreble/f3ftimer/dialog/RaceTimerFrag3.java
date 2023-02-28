@@ -15,6 +15,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.preference.PreferenceManager;
+
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +26,10 @@ import android.widget.TextView;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.Pref;
 
+/* Model Launched */
 public class RaceTimerFrag3 extends RaceTimerFrag {
 
-    private Handler mHandler = new Handler();
+    private Handler mHandler = new Handler(Looper.getMainLooper());
     private long mStart;
 
     public RaceTimerFrag3() {
@@ -65,7 +68,7 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
                 RaceTimerActivity a = (RaceTimerActivity) getActivity();
                 a.sendCommand("abort");
                 a.sendCommand("begin_timeout");
-                a.getFragment(new RaceTimerFrag6(), 6); // Abort submenu (reflight or score 0)
+                a.getFragment(new RaceTimerFragAborted(getString(R.string.race_aborted)), 6); // Abort submenu (reflight or score 0)
             }
         });
 
@@ -96,9 +99,7 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
 
         }
 
-        TextView status = mView.findViewById(R.id.status);
-        status.setText(getString(R.string.model_launched));
-
+        super.setStatus(getString(R.string.model_launched));
         super.setPilotName();
 
         if (((RaceTimerActivity) getActivity()).mWindowState == RaceTimerActivity.WINDOW_STATE_MINIMIZED) {
@@ -154,8 +155,7 @@ public class RaceTimerFrag3 extends RaceTimerFrag {
     };
 
     public void setOffCourse() {
-        TextView status = mView.findViewById(R.id.status);
-        status.setText(getString(R.string.off_course));
+        super.setStatus(getString(R.string.off_course));
     }
 
     public void next() {

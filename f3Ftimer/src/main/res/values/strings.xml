@@ -55,10 +55,12 @@
     <string name="thirty" translatable="false">30.00</string>
     <string name="start_working_time">Start Working Time</string>
     <string name="working_time_started">Working Time Started</string>
+    <string name="working_time_expired">Working Time Expired</string>
     <string name="late_entry">Late Entry</string>
     <string name="model_launched">Model Launched</string>
     <string name="model_launch">Model Launch</string>
     <string name="abort">Abort</string>
+    <string name="race_aborted">Race Aborted</string>
     <string name="resume">Resume</string>
     <string name="ignore">Ignore</string>
     <string name="scrub_round">Scrub Round</string>
@@ -141,11 +143,11 @@
     <string name="nl">Dutch</string>
     <string name="es">Spanish</string>
 
-    <string name="ttl_round_number">Round %1$d</string>
-    <string name="ttl_round_number_short">R%1$d</string>
-    <string name="ttl_round_number_name">R%d - %s</string>
+    <string name="ttl_round_number">Round %d</string>
+    <string name="ttl_round_number_short">R%d</string>
+    <string name="ttl_round_number_name">R%1$d - %2$s</string>
     <string name="ttl_round_groups"> - %1$d Groups</string>
-    <string name="ttl_round_number_groups">R%d%s</string>
+    <string name="ttl_round_number_groups">R%1$d%2$s</string>
     <string name="ftd_result" formatted="true">Fastest Time: %1$.2f by %2$s in round %3$d</string>
 
     <string name="ttl_round_in_progress">Round in Progress (R%1$d)</string>
@@ -188,6 +190,8 @@
     <string name="wind_angle_offset">Slope Orientation in degrees</string>
     <string name="wind_measurement">Wind Measurement</string>
     <string name="wind_warning_audible">Wind Warning Audible</string>
+
+    <string name="wind_speed_announcement">%s metres per second</string>
 
     <!-- Soft Buzzers -->
     <string name="A" translatable="false">A</string>
@@ -245,7 +249,7 @@
     <string name="msg_fs_permission_denied">You will not be able to export files</string>
 
     <!-- Bluetooth Import/Export -->
-    <string name="select_device">Searching for Devices...</string>
+    <string name="select_device">Searching for Devices…</string>
     <string name="ttl_connection_denied">Connection Denied</string>
     <string name="msg_connection_denied">Failed to connect to %1$s</string>
     <string name="ttl_available_races">Races Available for Import</string>
@@ -333,9 +337,9 @@
     <!-- Theme Names -->
     <string name="theme_classic">Classic</string>
     <string name="theme_f3f" translatable="false">F3F</string>
-    <string name="theme_blackyellow">Black/Yellow</string>
-    <string name="theme_blackwhite">Black/White</string>
-    <string name="theme_whitered">White/Red</string>
+    <string name="theme_black_yellow">Black/Yellow</string>
+    <string name="theme_black_white">Black/White</string>
+    <string name="theme_white_red">White/Red</string>
 
     <!-- Import Sources -->
     <string name="import_bt" translatable="false">Bluetooth</string>
@@ -355,5 +359,10 @@
     <!-- Share Destinations -->
     <string name="share_email">Share by email</string>
     <string name="share_social_media">Share on Social Media</string>
+
+    <!-- Anemometer -->
+    <string name="err_anemometer">Anemometer</string>
+    <string name="err_anemometer_no_device">Could not start Anemometer service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off</string>
+    <string name="anemometer_connection_status" translatable="false">Anemometer Connection Status</string>
 
 </resources>

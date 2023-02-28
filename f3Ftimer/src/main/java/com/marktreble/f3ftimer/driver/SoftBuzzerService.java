@@ -13,13 +13,17 @@ package com.marktreble.f3ftimer.driver;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.os.Binder;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
@@ -38,49 +42,25 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
     static final String ICN_CONN = "on";
     static final String ICN_DISCONN = "off";
 
-    private Handler mWindEmulator;
-    private static float mSlopeOrientation = 0.0f;
+    static ServiceConnection softBuzzerServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            Log.d(TAG, "SoftBuzzerService BOUND = true");
+        }
 
-    int mWindSpeedCounterSeconds = 0;
-    int mWindSpeedCounter = 0;
-    long mWindTimestamp;
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            Log.d(TAG, "SoftBuzzerService BOUND = false");
+        }
+    };
 
     /*
      * General life-cycle function overrides
      */
 
     @Override
-    public void uncaughtException(Thread thread, Throwable ex) {
+    public void uncaughtException(@NonNull Thread thread, @NonNull Throwable ex) {
         stopSelf();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mDriver = new Driver(this);
-
-        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
-
-        Thread.setDefaultUncaughtExceptionHandler(this);
-    }
-
-    @Override
-    public void onDestroy() {
-        Log.i(TAG, "Destroyed");
-        super.onDestroy();
-        if (mDriver != null)
-            mDriver.destroy();
-
-        try {
-            this.unregisterReceiver(onBroadcast);
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
-        mBoardConnected = false;
-        driverDisconnected();
-
-        mWindEmulator.removeCallbacksAndMessages(null);
-
     }
 
     public static void startDriver(Context context, String inputSource, Integer race_id, Bundle params) {
@@ -94,13 +74,41 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
             Intent serviceIntent = new Intent(context, SoftBuzzerService.class);
             serviceIntent.putExtras(params);
             serviceIntent.putExtra("com.marktreble.f3ftimer.race_id", race_id);
+            Log.i(TAG, "Calling StartService");
+            Log.i(TAG, context.toString());
             context.startService(serviceIntent);
+            context.bindService(serviceIntent, softBuzzerServiceConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mDriver = new Driver(this);
+
+        this.registerReceiver(onBroadcast, new IntentFilter(IComm.RCV_UPDATE_FROM_UI));
+
+        Thread.setDefaultUncaughtExceptionHandler(this);
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        Log.d(TAG, "ONBIND");
+        return mBinder;
+    }
+
+    private class LocalBinder extends Binder {
+        SoftBuzzerService getService() {
+            return SoftBuzzerService.this;
+        }
+    }
+
+
+    private final IBinder mBinder = new LocalBinder();
+
     public static boolean stop(RaceActivity context) {
         if (context.isServiceRunning("com.marktreble.f3ftimer.driver.SoftBuzzerService")) {
-            Log.d("SERVER STOPPED", Log.getStackTraceString(new Exception()));
+            //Log.d("SERVER STOPPED", Log.getStackTraceString(new Exception()));
             Intent serviceIntent = new Intent(context, SoftBuzzerService.class);
             context.stopService(serviceIntent);
             return true;
@@ -108,8 +116,24 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         return false;
     }
 
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+
+        Log.i(TAG, "onStartCommand");
+        driverDisconnected();
+
+        mBoardConnected = true;
+        mDriver.start(intent);
+        driverConnected();
+
+        Log.i(TAG, "Started");
+        return (START_STICKY);
+    }
+
     // Binding for UI->Service Communication
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
@@ -127,86 +151,25 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
                         driverDisconnected();
                     }
                 }
-
-                if (data.equals("pref_wind_angle_offset")) {
-                    mSlopeOrientation = Float.valueOf(intent.getExtras().getString(IComm.MSG_VALUE));
-                }
             }
         }
     };
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
+    public void onDestroy() {
+        Log.i(TAG, "Destroyed");
+        super.onDestroy();
+        if (mDriver != null)
+            mDriver.destroy();
 
-        Log.i(TAG, "onStartCommand");
+        try {
+            this.unregisterReceiver(onBroadcast);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
+        mBoardConnected = false;
         driverDisconnected();
 
-        mBoardConnected = true;
-        mDriver.start(intent);
-        driverConnected();
-
-        // Output dummy wind readings
-        if (intent != null) {
-            Bundle extras = intent.getExtras();
-            mWindTimestamp = System.currentTimeMillis();
-            mSlopeOrientation = 0.f;
-            if (extras != null) {
-                mSlopeOrientation = Float.parseFloat(extras.getString("pref_wind_angle_offset", "0.0"));
-            }
-        }
-
-        mWindEmulator = new Handler();
-        Runnable runnable = new Runnable() {
-
-            @Override
-            public void run() {
-                Intent i = new Intent(IComm.RCV_UPDATE);
-                float wind_angle_absolute = mSlopeOrientation + (float) (Math.random() * 2) - 1.f;
-                float wind_angle_relative = wind_angle_absolute - mSlopeOrientation;
-                if (wind_angle_absolute > 180 + mSlopeOrientation) {
-                    wind_angle_relative -= 360;
-                }
-                float wind_speed = 6f + (float) (Math.random() * 3) - 1.5f;
-                if (wind_speed < 3 || wind_speed > 25) {
-                    mWindSpeedCounter++;
-                } else {
-                    mWindSpeedCounter = 0;
-                    mWindSpeedCounterSeconds = 0;
-                    mWindTimestamp = System.currentTimeMillis();
-                }
-                if (mWindSpeedCounter == 2) {
-                    mWindSpeedCounterSeconds++;
-                    mWindSpeedCounter = 0;
-                }
-
-                boolean windLegal;
-                if ((wind_angle_relative > 45 || wind_angle_relative < -45) || mWindSpeedCounterSeconds >= 20
-                        || (System.currentTimeMillis() - mWindTimestamp >= 20000)) {
-                    mWindSpeedCounterSeconds = 20;
-                    mDriver.windIllegal();
-                    windLegal = false;
-                } else {
-                    mDriver.windLegal();
-                    windLegal = true;
-                }
-
-                String wind_data = formatWindValues(windLegal, wind_angle_absolute, wind_angle_relative, wind_speed, 20 - mWindSpeedCounterSeconds);
-                i.putExtra("com.marktreble.f3ftimer.value.wind_values", wind_data);
-                sendBroadcast(i);
-
-                mWindEmulator.postDelayed(this, 1000);
-            }
-        };
-        mWindEmulator.post(runnable);
-
-        Log.i(TAG, "Started");
-        return (START_STICKY);
-    }
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
     }
 
     // Input - Listener Loop
@@ -269,27 +232,5 @@ public class SoftBuzzerService extends Service implements DriverInterface, Threa
         mTimerStatus = 0;
         mDriver.ready();
 
-    }
-
-    public String formatWindValues(boolean windLegal, float windAngleAbsolute, float windAngleRelative, float windSpeed, int windSpeedCounter) {
-        String str;
-        if (windLegal && windSpeedCounter == 20) {
-            str = String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
-                    + "   legal";
-        } else if (windLegal) {
-            str = String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
-                    + String.format(" legal (%d s)", windSpeedCounter);
-        } else {
-            str = String.format(" a: %.2f°", windAngleAbsolute)
-                    + String.format(" r: %.2f°", windAngleRelative)
-                    + String.format(" %.2fm/s", windSpeed)
-                    + " illegal";
-        }
-
-        return str;
     }
 }

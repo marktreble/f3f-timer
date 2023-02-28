@@ -71,18 +71,18 @@ import java.util.Map;
  * <p>
  * Supported and tested devices:
  * <ul>
- * <li>{@value DeviceType#TYPE_R}</li>
+ * <li>{@link DeviceType#TYPE_R}</li>
  * </ul>
  * </p>
  * <p>
  * Unsupported but possibly working devices (please contact the author with
  * feedback or patches):
  * <ul>
- * <li>{@value DeviceType#TYPE_2232C}</li>
- * <li>{@value DeviceType#TYPE_2232H}</li>
- * <li>{@value DeviceType#TYPE_4232H}</li>
- * <li>{@value DeviceType#TYPE_AM}</li>
- * <li>{@value DeviceType#TYPE_BM}</li>
+ * <li>{@link DeviceType#TYPE_2232C}</li>
+ * <li>{@link DeviceType#TYPE_2232H}</li>
+ * <li>{@link DeviceType#TYPE_4232H}</li>
+ * <li>{@link DeviceType#TYPE_AM}</li>
+ * <li>{@link DeviceType#TYPE_BM}</li>
  * </ul>
  * </p>
  *
@@ -101,7 +101,7 @@ public class FtdiSerialDriver implements UsbSerialDriver {
      * FTDI chip types.
      */
     private enum DeviceType {
-        TYPE_BM, TYPE_AM, TYPE_2232C, TYPE_R, TYPE_2232H, TYPE_4232H;
+        TYPE_BM, TYPE_AM, TYPE_2232C, TYPE_R, TYPE_2232H, TYPE_4232H
     }
 
     public FtdiSerialDriver(UsbDevice device) {
@@ -277,6 +277,7 @@ public class FtdiSerialDriver implements UsbSerialDriver {
         }
 
         @Override
+        @SuppressWarnings("deprecation")
         public int read(byte[] dest, int timeoutMillis) throws IOException {
             final UsbEndpoint endpoint = mDevice.getInterface(0).getEndpoint(0);
 

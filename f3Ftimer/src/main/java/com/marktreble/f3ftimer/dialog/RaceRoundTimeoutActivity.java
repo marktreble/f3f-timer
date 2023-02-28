@@ -87,9 +87,9 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putLong(K_START, mStart);
         outState.putInt(K_CUR_FRAG_ID, mCurrentFragmentId);
+        super.onSaveInstanceState(outState);
     }
 
     public void onResume() {
@@ -109,7 +109,7 @@ public class RaceRoundTimeoutActivity extends FragmentActivity {
     }
 
     public void getFragment(Fragment f, int id) {
-        f.setRetainInstance(true);
+        //f.setRetainInstance(true);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         String tag = RACE_ROUND_TIMEOUT_FRAG_TAG + id;

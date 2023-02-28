@@ -11,6 +11,8 @@
 
 package com.marktreble.f3ftimer.data.race;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONObject;
 
 public class Race {
@@ -29,24 +31,7 @@ public class Race {
     public Integer start_number = 0;
     public Integer race_id = 0;
 
-    /*
-    public static String translateStatus(int status) {
-        String result = "";
-        switch (status) {
-            case STATUS_PENDING:
-                result = "Pending";
-                break;
-            case STATUS_IN_PROGRESS:
-                result = "In Progress";
-                break;
-            case STATUS_COMPLETE:
-                result = "Complete";
-                break;
-        }
-        return result;
-    }
-     */
-
+    @NonNull
     public String toString() {
         return String.format("{\"name\":\"%s\",\"type\":\"%d\",\"offset\":\"%d\",\"status\":\"%d\",\"round\":\"%d\",\"rounds_per_flight\":\"%d\",\"start_number\":\"%d\",\"race_id\":\"%d\"}", name, type, offset, status, round, rounds_per_flight, start_number, race_id);
     }

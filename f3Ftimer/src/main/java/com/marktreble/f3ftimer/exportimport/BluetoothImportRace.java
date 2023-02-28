@@ -11,6 +11,8 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
+import android.Manifest;
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -18,14 +20,25 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentTransaction;
+
 import android.util.Log;
 
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.dialog.GenericListPicker;
+import com.marktreble.f3ftimer.helpers.bluetooth.BluetoothHelper;
+import com.marktreble.f3ftimer.helpers.parcelable.ParcelableHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -71,16 +84,18 @@ public class BluetoothImportRace extends BaseImport {
     private ArrayList<String> mAvailableRaceIds;
 
     public static int REQUEST_ENABLE_BT = 100;
+    private int mRequestCode = 0;
 
-    private static String CMD_LS = "LS";
-    private static String CMD_GET = "GET";
+    final private static String CMD_LS = "LS";
+    final private static String CMD_GET = "GET";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
 
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        mBluetoothAdapter = BluetoothHelper.getAdapter(this);
+
         if (mBluetoothAdapter == null) {
             // Device does not support bluetooth
 
@@ -90,25 +105,27 @@ public class BluetoothImportRace extends BaseImport {
         if (savedInstanceState == null) {
             if (!mBluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                mRequestCode = REQUEST_ENABLE_BT;
+                mStartForResult.launch(enableBtIntent);
+                //startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             } else {
                 getBluetoothDevices();
             }
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == BluetoothImportRace.REQUEST_ENABLE_BT) {
-            if (resultCode == RESULT_OK) {
-                getBluetoothDevices();
-            } else {
-                Log.i("BT", "FINISHING ACTIVITY");
-                mActivity.finish();
-            }
-        }
-    }
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (mRequestCode == BluetoothImportRace.REQUEST_ENABLE_BT) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        getBluetoothDevices();
+                    } else {
+                        Log.i("BT", "FINISHING ACTIVITY");
+                        mActivity.finish();
+                    }
+                }
+            });
 
     @Override
     public void onBackPressed() {
@@ -129,13 +146,31 @@ public class BluetoothImportRace extends BaseImport {
         unregisterReceiver(mReceiver);
     }
 
+    private boolean permissionNotGranted(String permission) {
+        if (ContextCompat.checkSelfPermission(mContext, permission) == PackageManager.PERMISSION_DENIED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                ActivityCompat.requestPermissions((Activity) mContext, new String[]{
+                        permission
+                }, 2);
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void getBluetoothDevices() {
+
         mDiscoveredDeviceNames = new ArrayList<>();
         mDiscoveredDevices = new ArrayList<>();
 
         mPairedDeviceNames = new ArrayList<>();
         mPairedDevices = new ArrayList<>();
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            if (permissionNotGranted(Manifest.permission.BLUETOOTH_SCAN)) {
+                return;
+            }
+        }
         mBluetoothAdapter.startDiscovery();
 
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -161,11 +196,16 @@ public class BluetoothImportRace extends BaseImport {
                 getString(R.string.select_device),
                 mPairedAndDiscoveredDeviceNames,
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
                         if (resultCode == 0) {
+                            if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                                if (permissionNotGranted(Manifest.permission.BLUETOOTH_SCAN)) {
+                                    return;
+                                }
+                            }
                             mBluetoothAdapter.cancelDiscovery();
 
                             mPairedAndDiscoveredDeviceNames = null;
@@ -191,8 +231,14 @@ public class BluetoothImportRace extends BaseImport {
             // When discovery finds a device
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 // Get the BluetoothDevice object from the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                Bundle extras = intent.getExtras();
+                BluetoothDevice device = ParcelableHelper.getParcelableBluetoothDevice(extras, BluetoothDevice.EXTRA_DEVICE);
                 // Add the name and address to an array adapter to show in a ListView
+                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    if (permissionNotGranted(Manifest.permission.BLUETOOTH_CONNECT)) {
+                        return;
+                    }
+                }
                 String name = device.getName();
                 if (name == null) name = "Unknown";
                 Log.i("FOUND BT DEVICE", name + "::" + device.getAddress());
@@ -206,7 +252,6 @@ public class BluetoothImportRace extends BaseImport {
                 mPairedAndDiscoveredDevices.add(device);
 
 
-
             }
         }
     };
@@ -215,49 +260,56 @@ public class BluetoothImportRace extends BaseImport {
     public void deviceClicked(int which) {
         showProgress(getString(R.string.connecting));
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            if (permissionNotGranted(Manifest.permission.BLUETOOTH_SCAN)) {
+                return;
+            }
+        }
         mBluetoothAdapter.cancelDiscovery();
         final BluetoothDevice mmDevice = mPairedAndDiscoveredDevices.get(which);
         final String deviceName = mPairedAndDiscoveredDeviceNames.get(which);
 
-        Thread createSocketThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                BluetoothSocket tmp;
-                // uuid is the app's UUID string, also used by the server code
-                UUID uuid = UUID.fromString(getResources().getString(R.string.app_uuid));
-                try {
-                    tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
-                    Log.i("BT", "connected to " + mmDevice.getName());
-                } catch (IOException e) {
-                    Log.i("BT", "Failed to connect to device");
-                    return;
-                }
-                mmSocket = tmp;
-
-                Log.i("BT", "Starting Runnable");
-
-                try {
-                    // Connect the device through the socket. This will block
-                    // until it succeeds or throws an exception
-                    mmSocket.connect();
-                } catch (IOException connectException) {
-                    // Unable to connect; close the socket and get out
-                    connectException.printStackTrace();
-
-                    call("connectionDenied", deviceName);
-
-                    try {
-                        mmSocket.close();
-                    } catch (IOException closeException) {
-                        closeException.printStackTrace();
+        Thread createSocketThread = new Thread(() -> {
+            BluetoothSocket tmp;
+            // uuid is the app's UUID string, also used by the server code
+            UUID uuid = UUID.fromString(getResources().getString(R.string.app_uuid));
+            try {
+                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    if (permissionNotGranted(Manifest.permission.BLUETOOTH_CONNECT)) {
+                        return;
                     }
-                    return;
                 }
-
-                // Do work to manage the connection (in a separate thread)
-                manageConnectedSocket();
-
+                tmp = mmDevice.createRfcommSocketToServiceRecord(uuid);
+                Log.i("BT", "connected to " + mmDevice.getName());
+            } catch (IOException e) {
+                Log.i("BT", "Failed to connect to device");
+                return;
             }
+            mmSocket = tmp;
+
+            Log.i("BT", "Starting Runnable");
+
+            try {
+                // Connect the device through the socket. This will block
+                // until it succeeds or throws an exception
+                mmSocket.connect();
+            } catch (IOException connectException) {
+                // Unable to connect; close the socket and get out
+                connectException.printStackTrace();
+
+                call("connectionDenied", deviceName);
+
+                try {
+                    mmSocket.close();
+                } catch (IOException closeException) {
+                    closeException.printStackTrace();
+                }
+                return;
+            }
+
+            // Do work to manage the connection (in a separate thread)
+            manageConnectedSocket();
+
         });
         createSocketThread.start();
 
@@ -298,23 +350,12 @@ public class BluetoothImportRace extends BaseImport {
 
                 if (mCommandSent.equals(CMD_LS)) {
                     mIsListening = false;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            showRaceNamesDialog(response);
-                        }
-                    });
+                    runOnUiThread(() -> showRaceNamesDialog(response));
                 }
 
                 if (mCommandSent.equals(CMD_GET)) {
                     mIsListening = false;
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            importRace(response);
-                        }
-                    });
+                    runOnUiThread(() -> importRace(response));
                 }
 
             } catch (IOException e) {
@@ -391,11 +432,16 @@ public class BluetoothImportRace extends BaseImport {
                     getString(R.string.ttl_available_races),
                     racelist,
                     buttons_array,
-                    new ResultReceiver(new Handler()) {
+                    new ResultReceiver(new Handler(Looper.getMainLooper())) {
                         @Override
                         protected void onReceiveResult(int resultCode, Bundle resultData) {
                             super.onReceiveResult(resultCode, resultData);
                             if (resultCode == 0) {
+                                if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                                    if (permissionNotGranted(Manifest.permission.BLUETOOTH_SCAN)) {
+                                        return;
+                                    }
+                                }
                                 mBluetoothAdapter.cancelDiscovery();
                                 if (!mCommandSent.equals(CMD_GET)) {
                                     mActivity.finish();
@@ -419,12 +465,7 @@ public class BluetoothImportRace extends BaseImport {
 
     public void raceClicked(int which) {
         sendRequest(CMD_GET, mAvailableRaceIds.get(which));
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                listen();
-            }
-        }, 100);
+        new Handler(Looper.getMainLooper()).postDelayed(this::listen, 100);
         mDLG2.dismiss();
     }
 

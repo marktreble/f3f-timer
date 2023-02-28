@@ -19,6 +19,7 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
 
 import androidx.core.content.FileProvider;
@@ -39,7 +40,9 @@ import com.marktreble.f3ftimer.dialog.HelpActivity;
 import com.marktreble.f3ftimer.exportimport.F3ftimerApiExportRace;
 import com.marktreble.f3ftimer.exportimport.F3xvaultApiExportRace;
 import com.marktreble.f3ftimer.filesystem.F3XVaultExport;
+import com.marktreble.f3ftimer.filesystem.F3XVaultExportInterface;
 import com.marktreble.f3ftimer.filesystem.SpreadsheetExport;
+import com.marktreble.f3ftimer.filesystem.SpreadsheetExportInterface;
 import com.marktreble.f3ftimer.pilotmanager.PilotsActivity;
 import com.marktreble.f3ftimer.racemanager.RaceListActivity;
 
@@ -48,7 +51,9 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class ResultsRaceBaseActivity extends BaseActivity {
+public class ResultsRaceBaseActivity extends BaseActivity
+        implements SpreadsheetExportInterface,
+        F3XVaultExportInterface {
 
     static int DLG_EXPORT = 2;
 
@@ -77,6 +82,7 @@ public class ResultsRaceBaseActivity extends BaseActivity {
     /* END */
 
     protected Integer mRid;
+    private Race mRace;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,16 +136,16 @@ public class ResultsRaceBaseActivity extends BaseActivity {
                 getString(R.string.select_share_results_destination),
                 options,
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
                         switch (resultCode) {
                             case SHARE_EMAIL:
-                                share_email();
+                                shareEmail();
                                 break;
                             case SHARE_SOCIAL_MEDIA:
-                                share_social_media();
+                                shareSocialMedia();
                                 break;
                         }
                     }
@@ -152,7 +158,7 @@ public class ResultsRaceBaseActivity extends BaseActivity {
 
     }
 
-    private void share_email() {
+    private void shareEmail() {
         RaceData datasource = new RaceData(this);
         datasource.open();
         Race race = datasource.getRace(mRid);
@@ -192,11 +198,11 @@ public class ResultsRaceBaseActivity extends BaseActivity {
         intent.putExtra(Intent.EXTRA_TEXT, results.toString());
 
         Intent openInChooser = Intent.createChooser(intent, "Share Leaderboard");
-        startActivityForResult(openInChooser, 0);
+        startActivity(openInChooser);
     }
 
     @SuppressWarnings("SetWorldReadable")
-    private void share_social_media() {
+    private void shareSocialMedia() {
         RaceData datasource = new RaceData(this);
         datasource.open();
         Race race = datasource.getRace(mRid);
@@ -265,22 +271,22 @@ public class ResultsRaceBaseActivity extends BaseActivity {
                 getString(R.string.select_export_results_destination),
                 options,
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
                         switch (resultCode) {
                             case EXPORT_EMAIL:
-                                export_email();
+                                exportEmail();
                                 break;
                             case EXPORT_EMAIL_F3XV:
-                                export_email_f3xv();
+                                exportEmailF3Xv();
                                 break;
                             case EXPORT_F3F_TIMER:
-                                export_f3ftimer();
+                                exportF3Ftimer();
                                 break;
                             case EXPORT_F3X_VAULT:
-                                export_f3xvault();
+                                exportF3Xvault();
                                 break;
                         }
                     }
@@ -312,27 +318,33 @@ public class ResultsRaceBaseActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    private void export_email() {
+    private void exportEmail() {
         RaceData datasource = new RaceData(this);
         datasource.open();
-        Race race = datasource.getRace(mRid);
+        mRace = datasource.getRace(mRid);
         datasource.close();
 
         // re-write the results file just in case this has just been imported into this device.
-        SpreadsheetExport exp = new SpreadsheetExport();
+        SpreadsheetExport e = new SpreadsheetExport();
+        e.callbackInterface = this;
+        e.writeResultsFile(mContext, mRace);
 
-        if (!exp.writeResultsFile(mContext, race)) {
+    }
+
+    @Override
+    public void onSpreadsheetWritten(boolean success) {
+        if (!success) {
             finish();
             return;
         }
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
-        intent.putExtra(Intent.EXTRA_SUBJECT, race.name);
+        intent.putExtra(Intent.EXTRA_SUBJECT, mRace.name);
         intent.putExtra(Intent.EXTRA_TEXT, "Results file attached");
 
 
-        File file = exp.getDataStorageDir(this,race.name + ".txt");
+        File file =  new SpreadsheetExport().getDataStorageDir(this, mRace.name + ".txt");
         if (!file.exists() || !file.canRead()) {
             Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
             finish();
@@ -349,26 +361,30 @@ public class ResultsRaceBaseActivity extends BaseActivity {
         startActivity(openInChooser);
     }
 
-    private void export_email_f3xv() {
+    private void exportEmailF3Xv() {
         RaceData datasource = new RaceData(this);
         datasource.open();
-        Race race = datasource.getRace(mRid);
+        mRace = datasource.getRace(mRid);
         datasource.close();
 
         // write the results file in F3XVault format
-        F3XVaultExport exp = new F3XVaultExport();
+        F3XVaultExport e = new F3XVaultExport();
+        e.callbackInterface = this;
+        e.writeResultsFile(mContext, mRace);
+    }
 
-        if (!exp.writeResultsFile(mContext, race)) {
+    public void onF3XVaultFileWritten(boolean success) {
+        if (!success) {
             finish();
             return;
         }
 
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("message/rfc822");
-        intent.putExtra(Intent.EXTRA_SUBJECT, race.name);
+        intent.putExtra(Intent.EXTRA_SUBJECT, mRace.name);
         intent.putExtra(Intent.EXTRA_TEXT, "Results file attached");
 
-        File file = exp.getDataStorageDir(this,race.name + ".f3xv.txt");
+        File file = new F3XVaultExport().getDataStorageDir(this,mRace.name + ".f3xv.txt");
         if (!file.exists() || !file.canRead()) {
             Toast.makeText(this, "Attachment Error", Toast.LENGTH_SHORT).show();
             finish();
@@ -384,14 +400,14 @@ public class ResultsRaceBaseActivity extends BaseActivity {
         startActivity(openInChooser);
     }
 
-    private void export_f3ftimer() {
+    private void exportF3Ftimer() {
         Intent intent = new Intent(mContext, F3ftimerApiExportRace.class);
-        startActivityForResult(intent, DLG_EXPORT);
+        startActivity(intent);
     }
 
-    private void export_f3xvault() {
+    private void exportF3Xvault() {
         Intent intent = new Intent(mContext, F3xvaultApiExportRace.class);
-        startActivityForResult(intent, DLG_EXPORT);
+        startActivity(intent);
     }
 
     private void getNamesArray2() {

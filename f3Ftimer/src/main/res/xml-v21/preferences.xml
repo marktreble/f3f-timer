@@ -27,14 +27,14 @@
         <ListPreference
             android:key="pref_usb_stopbits"
             android:title="@string/usb_stopbits"
-            android:entries="@array/options_stopbits"
-            android:entryValues="@array/options_stopbits"
+            android:entries="@array/options_stop_bits"
+            android:entryValues="@array/options_stop_bits"
             android:defaultValue="1" />
         <ListPreference
             android:key="pref_usb_databits"
             android:title="@string/usb_databits"
-            android:entries="@array/options_databits"
-            android:entryValues="@array/options_databits"
+            android:entries="@array/options_data_bits"
+            android:entryValues="@array/options_data_bits"
             android:defaultValue="8" />
         <ListPreference
             android:key="pref_usb_parity"
@@ -161,12 +161,21 @@
             android:title="@string/wind_measurement" />
 
         <EditTextPreference
+            android:id="@+id/wind_measurement_ble_device"
+            android:defaultValue="XoomSpeed_Anemometer"
+            android:key="pref_wind_measurement_ble_device"
+            android:singleLine="true"
+            android:title="Preferred BLE Anemometer" />
+
+        <!--
+        <EditTextPreference
             android:id="@+id/wind_angle_offset"
             android:defaultValue="0"
             android:key="pref_wind_angle_offset"
             android:inputType="numberDecimal"
             android:singleLine="true"
             android:title="@string/wind_angle_offset" />
+            -->
 
         <CheckBoxPreference
             android:id="@+id/audible_wind_warning"

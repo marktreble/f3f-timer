@@ -1,8 +1,10 @@
 -dontobfuscate
 
--keep public class <CdcAcmSerialDriver>
--keep public class <Cp21xxSerialDriver>
--keep public class <FtdiSerialDriver>
--keep public class <ProlificSerialDriver>
--keep public class <JSPPages>
--keep public class <JSPPagesLive>
+-keep public class CdcAcmSerialDriver.** { *; }
+-keep public class Cp21xxSerialDriver.** { *; }
+-keep public class FtdiSerialDriver.** { *; }
+-keep public class ProlificSerialDriver.** { *; }
+-keep public class CH340AndroidDriver.** { *; }
+-keep public class CH341AndroidDriver.** { *; }
+-keep public class JSPPages.** { *; }
+-keep public class JSPPagesLive.** { *; }

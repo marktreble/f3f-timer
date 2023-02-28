@@ -13,8 +13,12 @@ package com.marktreble.f3ftimer.wifi;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.wifi.WifiConfiguration;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.net.wifi.WifiManager;
+import android.net.wifi.WifiNetworkSpecifier;
+import android.os.Build;
 import android.util.Log;
 
 import java.net.InetAddress;
@@ -33,6 +37,7 @@ public class Wifi {
         return (apControl != null);
     }
 
+    @SuppressWarnings("deprecation")
     public static boolean enableWifiHotspot(Activity context) {
         boolean wifiwasenabled = false;
         WifiManager wifiManager = (WifiManager) context.getBaseContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -45,33 +50,56 @@ public class Wifi {
                 wifiwasenabled = true;
             }
 
-            WifiConfiguration config = apControl.getWifiApConfiguration();
-            // Set the network name
-            config.SSID = "f3f";
-            // Remove all authentication!
-            config.allowedKeyManagement.clear();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                WifiNetworkSpecifier wifiNetworkSpecifier = new WifiNetworkSpecifier.Builder()
+                        .setSsid("f3f")
+                        .build();
+                NetworkRequest networkRequest = new NetworkRequest.Builder()
+                        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                        .setNetworkSpecifier(wifiNetworkSpecifier)
+                        .build();
+                ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                connectivityManager.requestNetwork(networkRequest, new ConnectivityManager.NetworkCallback());
+            } else {
+                android.net.wifi.WifiConfiguration config = apControl.getWifiApConfiguration();
+                // Set the network name
+                config.SSID = "f3f";
+                // Remove all authentication!
+                config.allowedKeyManagement.clear();
 
-            apControl.setWifiApEnabled(config, true);
+                apControl.setWifiApEnabled(config, true);
+            }
             Log.i(TAG, "Wifi Hotspot Enabled");
         }
 
         return wifiwasenabled;
     }
 
-    public static void disableWifiHotspot(Activity context, boolean enablewifi) {
-        WifiManager wifiManager = (WifiManager) context.getBaseContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    @SuppressWarnings("deprecation")
+    public static void disableWifiHotspot(Activity context, boolean enableWifi) {
+        WifiManager wifiManager = (WifiManager) context
+                .getBaseContext()
+                .getApplicationContext()
+                .getSystemService(Context.WIFI_SERVICE);
 
-        WifiApControl apControl = WifiApControl.getApControl(wifiManager);
+        WifiApControl apControl = WifiApControl
+                .getApControl(wifiManager);
+
         if (apControl != null) {
-
-            apControl.setWifiApEnabled(apControl.getWifiApConfiguration(), false);
+            android.net.wifi.WifiConfiguration config = apControl.getWifiApConfiguration();
+            apControl.setWifiApEnabled(config, false);
             Log.i(TAG, "Wifi Hotspot Disabled");
 
-            if (enablewifi && wifiManager != null)
-                wifiManager.setWifiEnabled(true);
+            if (enableWifi && wifiManager != null) {
+                if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.Q) {
+                    // Intent panelIntent = new Intent(Settings.Panel.ACTION_WIFI);
+                    // context.startActivityForResult(panelIntent,1);
+                } else {
+                    wifiManager.setWifiEnabled(false);
+                }
+            }
 
-            Log.i(TAG, "Wifi Restored to " + ((enablewifi) ? "On" : "Off"));
-
+            Log.i(TAG, "Wifi Restored to " + ((enableWifi) ? "On" : "Off"));
         }
     }
 
@@ -87,8 +115,6 @@ public class Wifi {
                 for (InetAddress addr : addrs) {
                     if (!addr.isLoopbackAddress()) {
                         String sAddr = addr.getHostAddress();
-                        Log.d("PPP", sAddr);
-                        //boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
                         boolean isIPv4 = (sAddr.trim().length() > 0) && (sAddr.indexOf(':') < 0);
 
                         if (useIPv4) {

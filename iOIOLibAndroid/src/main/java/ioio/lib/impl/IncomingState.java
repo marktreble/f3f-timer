@@ -60,7 +60,7 @@ class IncomingState implements IncomingHandler {
 		void reportAdditionalBuffer(int bytesToAdd);
 	}
 
-	class InputPinState {
+	static class InputPinState {
 		private Queue<InputPinListener> listeners_ = new ConcurrentLinkedQueue<InputPinListener>();
 		private boolean currentOpen_ = false;
 
@@ -88,7 +88,7 @@ class IncomingState implements IncomingHandler {
 		}
 	}
 
-	class DataModuleState {
+	static class DataModuleState {
 		private Queue<DataModuleListener> listeners_ = new ConcurrentLinkedQueue<IncomingState.DataModuleListener>();
 		private boolean currentOpen_ = false;
 

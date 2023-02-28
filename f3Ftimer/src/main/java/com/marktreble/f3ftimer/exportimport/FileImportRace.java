@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -49,7 +50,9 @@ public class FileImportRace extends BaseImport {
             intent.setType("*/*");
             String[] mimetypes = {"application/json", "text/csv"};
             intent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
-            startActivityForResult(intent, ACTION_PICK_FILE);
+            mRequestCode = ACTION_PICK_FILE;
+            mStartForResult.launch(intent);
+            //startActivityForResult(intent, ACTION_PICK_FILE);
 
         }
     }
@@ -75,20 +78,10 @@ public class FileImportRace extends BaseImport {
             final String fileData = data;
             switch (type) {
                 case "application/json":
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            importRaceJSON(fileData);
-                        }
-                    }, PROGRESS_DELAY);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> importRaceJSON(fileData), PROGRESS_DELAY);
                     break;
                 case "text/csv":
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            importRaceCSV(fileData);
-                        }
-                    }, PROGRESS_DELAY);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> importRaceCSV(fileData), PROGRESS_DELAY);
                     break;
             }
             return IMPORT_RESULT_SUCCESS;
@@ -114,7 +107,7 @@ public class FileImportRace extends BaseImport {
                     getString(R.string.ttl_import_failed),
                     getString(R.string.msg_import_failed),
                     buttons_array,
-                    new ResultReceiver(new Handler()) {
+                    new ResultReceiver(new Handler(Looper.getMainLooper())) {
                         @Override
                         protected void onReceiveResult(int resultCode, Bundle resultData) {
                             super.onReceiveResult(resultCode, resultData);

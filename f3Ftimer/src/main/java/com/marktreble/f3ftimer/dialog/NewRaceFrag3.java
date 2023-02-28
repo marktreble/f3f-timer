@@ -16,6 +16,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.ListFragment;
 import android.view.LayoutInflater;
@@ -31,7 +34,6 @@ import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.data.pilot.Pilot;
 import com.marktreble.f3ftimer.data.pilot.PilotData;
 import com.marktreble.f3ftimer.data.racepilot.RacePilotData;
-import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -163,7 +165,8 @@ public class NewRaceFrag3 extends ListFragment {
                 // This would be much better done with an AlertDialog rater than an activity
                 // Code would be simpler & shorter, and it would be visually better from a UI perspective.
                 Intent intent = new Intent(getContext(), RotateEditActivity.class);
-                startActivityForResult(intent, 1);
+                mStartForResult.launch(intent);
+                //startActivityForResult(intent, 1);
             }
         });
 
@@ -185,19 +188,20 @@ public class NewRaceFrag3 extends ListFragment {
         return v;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Intent intent = result.getData();
 
-        if (resultCode == RaceActivity.RESULT_OK) {
             if (mArrSelectedIds.size() > 1) {
-                int rotate_offset = Integer.parseInt(data.getStringExtra("rotate_offset"));
+                int rotate_offset = Integer.parseInt(intent.getStringExtra("rotate_offset"));
                 rotateSelectedArray(rotate_offset);
                 getSelectedArray();
                 mArrAdapter.notifyDataSetChanged();
             }
         }
-    }
+    });
 
     private void setList() {
         mArrAdapter = new ArrayAdapter<String>(getActivity(), R.layout.listrow_reorder, R.id.text1, mArrNames) {
@@ -281,7 +285,7 @@ public class NewRaceFrag3 extends ListFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putStringArray("names", _names);
         ArrayList<Integer> ids = new ArrayList<>(Arrays.asList(_ids));

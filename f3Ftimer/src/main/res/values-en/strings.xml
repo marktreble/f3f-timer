@@ -140,6 +140,8 @@
     <string name="wind_measurement">Wind Measurement</string>
     <string name="wind_warning_audible">Wind Warning Audible</string>
 
+    <string name="wind_speed_announcement">%s metres per second</string>
+
     <!-- Soft Buzzers -->
     <string name="end_of_round">End of Round</string>
     <string name="run_complete">Run Complete</string>
@@ -176,6 +178,8 @@
     <string name="downloading_race">Downloading Race..</string>
     <string name="err_external_display">External Display</string>
     <string name="err_external_display_no_device">Could not start external display service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off</string>
+    <string name="err_anemometer">Anemomter</string>
+    <string name="err_anemometer_no_device">Could not start Anemomter service because there is no device to connect to. Please check the settings and either connect a device, or turn the service off</string>
     <string name="err_no_pilots">No Pilots</string>
     <string name="err_no_pilots_instruction">Before you create a race, you must set up a database of pilots in the Pilot Manager</string>
     <string name="err_round_timeout">Timeout Not Started</string>
@@ -220,8 +224,8 @@
     <string name="ttl_team_results">Team Results</string>
     <string name="ttl_select_pilots">Select Pilots to Add</string>
     <string name="ttl_round_number_short">R%1$d</string>
-    <string name="ttl_round_number_name">R%d - %s</string>
-    <string name="ttl_round_number_groups">R%d%s</string>
+    <string name="ttl_round_number_name">R%1$d - %2$s</string>
+    <string name="ttl_round_number_groups">R%1$d%2$s</string>
     <string name="ttl_round_number">Round %1$d</string>
     <string name="ttl_round_in_progress">Round in Progress (R%1$d)</string>
     <string name="ttl_round_groups">" - %1$d Groups"</string>
@@ -256,10 +260,10 @@
     <string name="import_api_f3ft">From Web (f3ftimer api)</string>
     <string name="import_api_f3xv">From Web (f3xvault api)</string>
     <string name="import_file">From File</string>
-    <string name="theme_whitered">White/Red</string>
+    <string name="theme_white_red">White/Red</string>
     <string name="theme_classic">Classic</string>
-    <string name="theme_blackyellow">Black/Yellow</string>
-    <string name="theme_blackwhite">Black/White</string>
+    <string name="theme_black_yellow">Black/Yellow</string>
+    <string name="theme_black_white">Black/White</string>
     <string name="share_social_media">Share on Social Media</string>
     <string name="share_email">Share by email</string>
     <string name="msg_connection_denied">Failed to connect to %1$s</string>
@@ -272,4 +276,6 @@
     <string name="reset_to_defaults">Reset to Defaults</string>
     <string name="ttl_auto_read">Announce Results</string>
     <string name="nzl">New Zealand</string>
+    <string name="working_time_expired">Working Time Expired</string>
+    <string name="race_aborted">Race Aborted</string>
 </resources>

@@ -14,6 +14,9 @@ package com.marktreble.f3ftimer.dialog;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.os.ResultReceiver;
+
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +26,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.marktreble.f3ftimer.R;
+import com.marktreble.f3ftimer.helpers.parcelable.ParcelableHelper;
 
 import java.util.ArrayList;
 
@@ -42,7 +46,7 @@ public class GenericListPicker extends DialogFragment
         Bundle args = getArguments();
         mTitle = args.getString("title");
         mButtons = args.getStringArray("buttons");
-        mReceiver = getArguments().getParcelable("receiver");
+        mReceiver = ParcelableHelper.getParcelableResultReceiver(args,"receiver");
 
         if (savedInstanceState == null) {
             mOptions = args.getStringArrayList("options");
@@ -52,14 +56,24 @@ public class GenericListPicker extends DialogFragment
         }
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = new Dialog(getActivity(), getTheme()){
             @Override
-            public void onBackPressed() {
-                //do your stuff
-                dismiss();
-                //getActivity().finish();
+            protected void onCreate(Bundle savedInstanceState) {
+                super.onCreate(savedInstanceState);
+
+                requireActivity()
+                        .getOnBackPressedDispatcher()
+                        .addCallback(
+                                requireActivity(),
+                                new OnBackPressedCallback(true) {
+                                    @Override
+                                    public void handleOnBackPressed() {
+                                        dismiss();
+                                    }
+                                });
             }
         };
 
@@ -82,7 +96,7 @@ public class GenericListPicker extends DialogFragment
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putStringArrayList("options", mOptions);

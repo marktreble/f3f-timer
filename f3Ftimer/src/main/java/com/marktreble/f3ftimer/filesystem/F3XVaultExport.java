@@ -24,6 +24,8 @@ import java.util.ArrayList;
 
 public class F3XVaultExport extends FileExport {
 
+    public F3XVaultExportInterface callbackInterface = null;
+
     /**
      * Write the results [race.name].f3xv.txt file for the given Race
      *
@@ -31,7 +33,9 @@ public class F3XVaultExport extends FileExport {
      * @param race Race
      * @return boolean if successfully written
      */
-    public boolean writeResultsFile(Context context, Race race) {
+    public void writeResultsFile(Context context, Race race) {
+
+        boolean success = false;
 
         // Update the race (.f3f) file
         if (isExternalStorageWritable()) {
@@ -62,20 +66,22 @@ public class F3XVaultExport extends FileExport {
                 row.append("\r\n");
 
 
-                data.append(row.toString());
+                data.append(row);
             }
 
             String start_date = "[ENTER START DATE]";
             String end_date = "[ENTER END DATE]";
             String meta_data = String.format("0, \"%s\",\"%s\",\"%s\",f3f_group\r\n", race.name, start_date, end_date);
 
-            String output = meta_data + data.toString();
+            String output = meta_data + data;
 
             this.writeExportFile(context, output, race.name + ".f3xv.txt");
-            return true;
-        } else {
-            // External storage is not writable
-            return false;
+
+            success = true;
+        }
+
+        if (callbackInterface != null) {
+            callbackInterface.onF3XVaultFileWritten(success);
         }
     }
 

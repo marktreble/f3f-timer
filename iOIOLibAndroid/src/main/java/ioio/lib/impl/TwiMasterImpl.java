@@ -61,7 +61,7 @@ class TwiMasterImpl extends AbstractResource implements TwiMaster,
 		}
 	}
 
-	class OutgoingPacket implements Packet {
+	static class OutgoingPacket implements Packet {
 		int writeSize_;
 		byte[] writeData_;
 		boolean tenBitAddr_;

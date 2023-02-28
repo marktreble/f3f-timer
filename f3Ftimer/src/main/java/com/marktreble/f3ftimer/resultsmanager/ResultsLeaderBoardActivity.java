@@ -102,7 +102,7 @@ public class ResultsLeaderBoardActivity extends ResultsRaceBaseActivity
         Intent intent = new Intent(this, ResultsIndividualPilotActivity.class);
         intent.putExtra("race_id", mRid);
         intent.putExtra("pilot_pos", position);
-        startActivityForResult(intent, mRid);
+        startActivity(intent);
     }
 
 
@@ -164,7 +164,7 @@ public class ResultsLeaderBoardActivity extends ResultsRaceBaseActivity
                     p_name.setCompoundDrawablePadding(padding);
                 }
 
-                row.setBackgroundColor(getResources().getColor(R.color.background));
+                row.setBackgroundColor(ContextCompat.getColor(mContext, R.color.background));
 
                 TextView time = row.findViewById(R.id.time);
                 time.setText(String.format("%.2f", p.points));

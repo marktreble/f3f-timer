@@ -11,10 +11,11 @@
 
 package com.marktreble.f3ftimer;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+
+import androidx.multidex.MultiDexApplication;
 import androidx.preference.PreferenceManager;
 import androidx.core.content.ContextCompat;
 import android.util.TypedValue;
@@ -29,7 +30,7 @@ import org.acra.annotation.ReportsCrashes;
         mailTo = "mark.treble@marktreble.co.uk",
         mode = ReportingInteractionMode.SILENT)
 
-public class F3FtimerApplication extends Application {
+public class F3FtimerApplication extends MultiDexApplication {
 
 
     @Override

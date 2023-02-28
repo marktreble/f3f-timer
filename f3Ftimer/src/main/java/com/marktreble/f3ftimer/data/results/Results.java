@@ -282,7 +282,7 @@ public class Results {
                 calcScores(allPilots);
 
                 for (Pilot p : mArrPilots) {
-                    RaceData.Time pilot_time = new RaceData(null).new Time();
+                    RaceData.Time pilot_time = new RaceData.Time();
                     pilot_time.time = p.time;
                     pilot_time.raw_points = p.raw_points;
                     pilot_time.points = p.points;
@@ -508,22 +508,6 @@ public class Results {
 
         return (float) rounded;
     }
-
-    /*
-    private int getStartPilot(ArrayList<Pilot> allPilots, Race race) {
-
-        // Deprecated - see (RaceData.Group)mGroupScoring.start_pilot
-        int start = 0;
-        int numPilots = allPilots.size();
-        if (race.start_number > 0) {
-            start = race.start_number;
-        } else {
-            if (numPilots > 0)
-                start = ((race.round - 1) * race.offset) % numPilots;
-        }
-        return start;
-    }
-    */
 
     private float[] initFTG() {
         float[] ftg = new float[mGroupScoring.num_groups + 1]; // Fastest time in group (used for calculating normalised scores)

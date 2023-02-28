@@ -11,17 +11,20 @@
 
 package com.marktreble.f3ftimer.exportimport;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.ResultReceiver;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.appcompat.app.AppCompatActivity;
@@ -75,6 +78,8 @@ public abstract class BaseImport extends AppCompatActivity {
     protected static final int IMPORT_RESULT_NO_PERMISSION = 2;
     protected static final int IMPORT_RESULT_SUCCESS = 3;
 
+    protected int mRequestCode = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -95,87 +100,72 @@ public abstract class BaseImport extends AppCompatActivity {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString("progress_message", mProgressMessage);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+    protected ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
 
-        if (resultCode == Activity.RESULT_CANCELED) {
-            finish();
-            return;
-        }
+            if (result.getResultCode() == Activity.RESULT_CANCELED) {
+                finish();
+                return;
+            }
 
-        if (requestCode == ACTION_PICK_FILE) {
-            if (resultCode == Activity.RESULT_OK) {
-                if (data != null) {
-                    Uri uri = data.getData();
-                    if (uri != null) {
-                        final String type = mContext.getContentResolver().getType(uri);
-                        switch (importFile(uri, type)) {
-                            case IMPORT_RESULT_WRONG_TYPE:
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
+            if (mRequestCode == ACTION_PICK_FILE) {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent intent = result.getData();
+                    if (intent != null) {
+                        Uri uri = intent.getData();
+                        if (uri != null) {
+                            final String type = mContext.getContentResolver().getType(uri);
+                            switch (importFile(uri, type)) {
+                                case IMPORT_RESULT_WRONG_TYPE:
+                                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
                                         hideProgress();
                                         call("wrongFileType", type);
-                                    }
-                                }, PROGRESS_DELAY);
-                                break;
-                            case IMPORT_RESULT_NO_PERMISSION:
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
+                                    }, PROGRESS_DELAY);
+                                    break;
+                                case IMPORT_RESULT_NO_PERMISSION:
+                                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
                                         hideProgress();
                                         call("permissionDenied", type);
-                                    }
-                                }, PROGRESS_DELAY);
-                                break;
-                            case IMPORT_RESULT_SUCCESS:
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
+                                    }, PROGRESS_DELAY);
+                                    break;
+                                case IMPORT_RESULT_SUCCESS:
+                                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
                                         hideProgress();
                                         importComplete();
-                                    }
-                                }, PROGRESS_DELAY);
-                                break;
+                                    }, PROGRESS_DELAY);
+                                    break;
 
+                            }
                         }
                     }
                 }
             }
-        }
-    }
+        });
 
     protected void showProgress(final String msg) {
         mProgressMessage = msg;
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                View progress = findViewById(R.id.progress);
-                progress.setVisibility(View.VISIBLE);
-                TextView progressLabel = progress.findViewById(R.id.progressLabel);
-                progressLabel.setText(msg);
-            }
+        runOnUiThread(() -> {
+            View progress = findViewById(R.id.progress);
+            progress.setVisibility(View.VISIBLE);
+            TextView progressLabel = progress.findViewById(R.id.progressLabel);
+            progressLabel.setText(msg);
         });
 
     }
 
     protected void hideProgress() {
         mProgressMessage = "";
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                View progress = findViewById(R.id.progress);
-                progress.setVisibility(View.GONE);
-                TextView progressLabel = progress.findViewById(R.id.progressLabel);
-                progressLabel.setText("");
-            }
+        runOnUiThread(() -> {
+            View progress = findViewById(R.id.progress);
+            progress.setVisibility(View.GONE);
+            TextView progressLabel = progress.findViewById(R.id.progressLabel);
+            progressLabel.setText("");
         });
 
     }
@@ -232,7 +222,7 @@ public abstract class BaseImport extends AppCompatActivity {
                 getString(R.string.ttl_connection_denied),
                 String.format(getString(R.string.msg_connection_denied), deviceName),
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -256,7 +246,7 @@ public abstract class BaseImport extends AppCompatActivity {
                 String.format(getString(R.string.err_wrong_file_type_s), extension),
                 getString(R.string.msg_wrong_file_type_s),
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -282,7 +272,7 @@ public abstract class BaseImport extends AppCompatActivity {
                 getString(R.string.err_permission_denied),
                 getString(R.string.msg_permission_denied),
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -308,7 +298,7 @@ public abstract class BaseImport extends AppCompatActivity {
                 getString(R.string.ttl_race_imported),
                 getString(R.string.msg_race_imported),
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -334,7 +324,7 @@ public abstract class BaseImport extends AppCompatActivity {
                 getString(R.string.ttl_pilots_imported),
                 getString(R.string.msg_pilots_imported),
                 buttons_array,
-                new ResultReceiver(new Handler()) {
+                new ResultReceiver(new Handler(Looper.getMainLooper())) {
                     @Override
                     protected void onReceiveResult(int resultCode, Bundle resultData) {
                         super.onReceiveResult(resultCode, resultData);
@@ -352,7 +342,7 @@ public abstract class BaseImport extends AppCompatActivity {
         ft.commit();
     }
 
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra("cmd")) {
@@ -554,7 +544,7 @@ public abstract class BaseImport extends AppCompatActivity {
                 race_data.put("racegroups", new JSONArray());
 
             } catch (IOException e) {
-                Log.e("Exception", "File write failed: " + e.toString());
+                Log.e("Exception", "File write failed: " + e);
                 return null;
             }
 

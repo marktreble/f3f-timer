@@ -13,6 +13,7 @@ package com.marktreble.f3ftimer.dialog;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,9 +119,9 @@ public class NewRaceFrag2 extends ListFragment {
                     int index = mArrSelectedIds.lastIndexOf(pid) + 1;
                     nm.setText(String.format("%d", index));
                     nm.setVisibility(View.VISIBLE);
-                    row.setBackgroundColor(getResources().getColor(R.color.lt_grey));
+                    row.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.lt_grey));
                 } else {
-                    row.setBackgroundColor(getResources().getColor(R.color.transparent));
+                    row.setBackgroundColor(ContextCompat.getColor(getActivity(), R.color.transparent));
                     nm.setVisibility(View.GONE);
                 }
 
@@ -133,7 +134,7 @@ public class NewRaceFrag2 extends ListFragment {
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onListItemClick(@NonNull ListView l, @NonNull View v, int position, long id) {
         // Add the race id to this bundle
         Integer pid = mArrIds.get(position);
 
@@ -166,7 +167,7 @@ public class NewRaceFrag2 extends ListFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
     }
 

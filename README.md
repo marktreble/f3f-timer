@@ -37,14 +37,14 @@ Devices connect using Android's <a href="http://source.android.com/accessories/p
 
 The following table lists known device compatibility:
 
-| Device                  | IOIO (ADB) | IOIO (Open Accessory) | Arduino |
-| ----------------------- | ---------- | --------------------- | ------- |
-| Nexus 7                 |            | ✔                     |         |
-| Asus Transformer TF101  | ✔          |                       |         |
-| Samsung Galaxy S4       |            |                       |✔        |
-| Leagoo Lead 3           |            | ✔                     |         |
-| HTC One M9              |            | ✔                     |         |
-| Cruiser BT67            |            | ✔                     |         |
+| Device                 | IOIO (ADB) | IOIO (Open Accessory) | Arduino |
+|------------------------|------------|-----------------------|---------|
+| Nexus 7                |            | ✔                     |         |
+| Asus Transformer TF101 | ✔          |                       |         |
+| Samsung Galaxy S4      |            |                       | ✔       |
+| Leagoo Lead 3          |            | ✔                     |         |
+| HTC One M9             |            | ✔                     |         |
+| Cruiser BT67           |            | ✔                     |         |
 
 ### Features
 
@@ -70,8 +70,12 @@ The following table lists known device compatibility:
 
 ### Installation
 
+
 The latest stable release can be downloaded here:
 <a href="https://www.marktreble.co.uk/clients/f3f/F3Ftimer2.4.1.apk">F3Ftimer2.4.1.apk</a>
+
+The latest (in test) release can be downloaded here:
+<a href="https://www.marktreble.co.uk/clients/f3f/F3Ftimer2.5.0.apk">F3Ftimer2.5.0.apk</a>
 
 Archived Release
 <a href="https://www.marktreble.co.uk/clients/f3f/F3Ftimer2.2.1.apk">F3Ftimer2.2.1.apk</a>

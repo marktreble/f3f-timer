@@ -24,7 +24,7 @@
     <content url="file://$MODULE_DIR$/../../../iOIOLibBT/build/generated/ap_generated_sources/debugUnitTest/out" />
     <content url="file://$MODULE_DIR$/../../../iOIOLibBT/src/test" />
     <content url="file://$MODULE_DIR$/../../../iOIOLibBT/src/testDebug" />
-    <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 32 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="f3f-timer.iOIOLibBT.main" scope="TEST" />
     <orderEntry type="module" module-name="f3f-timer.iOIOLibAndroid.main" scope="TEST" />

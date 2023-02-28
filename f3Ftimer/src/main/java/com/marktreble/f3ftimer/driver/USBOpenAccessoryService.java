@@ -22,11 +22,13 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import com.marktreble.f3ftimer.R;
 import com.marktreble.f3ftimer.constants.IComm;
 import com.marktreble.f3ftimer.constants.Pref;
+import com.marktreble.f3ftimer.helpers.parcelable.ParcelableHelper;
 import com.marktreble.f3ftimer.racemanager.RaceActivity;
 
 import java.io.FileDescriptor;
@@ -34,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 
 public class USBOpenAccessoryService extends Service implements DriverInterface {
 
@@ -73,7 +76,6 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
     private byte [] usbdata;
 
     private Intent mIntent;
-    private PendingIntent mPermissionIntent;
     private UsbManager mUsbmanager;
     private UsbAccessory mUsbaccessory;
 
@@ -86,9 +88,9 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
     private boolean isRunning = false;
 
     static class UsbDeviceDescriptor {
-        private String model;
-        private String manufacturer;
-        private String version;
+        private final String model;
+        private final String manufacturer;
+        private final String version;
 
         public UsbDeviceDescriptor(String mod, String man, String ver) {
             model = mod;
@@ -97,7 +99,7 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
         }
     }
 
-    private UsbDeviceDescriptor[] supportedUsbDevices = {
+    private final UsbDeviceDescriptor[] supportedUsbDevices = {
             new UsbDeviceDescriptor("Android Acessory FT312D", "FTDI", "2.0")
     };
 
@@ -134,18 +136,24 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
             if(filedescriptor != null)
                 filedescriptor.close();
 
-        } catch (IOException e){}
+        } catch (IOException e){
+            e.printStackTrace();
+        }
 
         try {
             if(inputstream != null)
                 inputstream.close();
-        } catch(IOException e){}
+        } catch(IOException e){
+            e.printStackTrace();
+        }
 
         try {
             if(outputstream != null)
                 outputstream.close();
 
-        } catch (IOException e){}
+        } catch (IOException e){
+            e.printStackTrace();
+        }
 
         filedescriptor = null;
         inputstream = null;
@@ -176,7 +184,7 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
     }
 
     // Binding for UI->Service Communication
-    private BroadcastReceiver onBroadcast = new BroadcastReceiver() {
+    private final BroadcastReceiver onBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.hasExtra(IComm.MSG_UI_CALLBACK)) {
@@ -201,7 +209,9 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
             String action = intent.getAction();
             if (action.equals(ACTION_USB_PERMISSION)) {
                 mPermissionRequestPending = false;
-                UsbAccessory accessory = (UsbAccessory) intent.getParcelableExtra(UsbManager.EXTRA_ACCESSORY);
+                Bundle extras = intent.getExtras();
+                UsbAccessory accessory = ParcelableHelper.getParcelableUSBAccessory(extras, UsbManager.EXTRA_ACCESSORY);
+
                 if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                     Log.d("DBG", "Permission Granted");
                     openAccessory(accessory);
@@ -248,12 +258,12 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
             @Override
             public void run() {
                 if (!connect() && mDriver != null) {
-                    new Handler().postDelayed(this, 100);
+                    new Handler(Looper.getMainLooper()).postDelayed(this, 100);
                 }
             }
         };
 
-        new Handler().postDelayed(make_connection, 100);
+        new Handler(Looper.getMainLooper()).postDelayed(make_connection, 100);
 
         Log.d("DBG", "onStartCommand::Good Startup");
 
@@ -287,8 +297,14 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
             Log.d("DBG", "Permission Required");
             Log.d("DBG", "Permission Pending: " + mPermissionRequestPending);
             if (!mPermissionRequestPending) {
-                mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
-                mUsbmanager.requestPermission(mUsbaccessory, mPermissionIntent);
+                PendingIntent permissionIntent = PendingIntent.getBroadcast(
+                    this,
+                    0,
+                    new Intent(ACTION_USB_PERMISSION),
+                        (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M)
+                                ? PendingIntent.FLAG_IMMUTABLE : 0
+                );
+                mUsbmanager.requestPermission(mUsbaccessory, permissionIntent);
                 mPermissionRequestPending = true;
                 mRequiresConfig = true;
             }
@@ -314,7 +330,7 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
             inputstream = new FileInputStream(fd);
             outputstream = new FileOutputStream(fd);
             /*check if any of them are null*/
-            if (inputstream == null || outputstream == null) {
+            if (inputstream == null) {
                 return;
             }
 
@@ -389,7 +405,6 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
             byte parity = 0;
             switch (strParity) {
                 case "None":
-                    parity = 0;
                     break;
                 case "Odd":
                     parity = 1;
@@ -421,7 +436,7 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
 
             /*send the UART configuration packet*/
             Log.d("DBG","Sending Config");
-            Log.d("DBG", configdata.toString());
+            Log.d("DBG", Arrays.toString(configdata));
             try {
                 outputstream.write(configdata, 0, configdata.length);
             } catch (IOException e) {
@@ -450,7 +465,7 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
 
         public void run() {
             isRunning = true;
-            while(isRunning == true) {
+            while(isRunning) {
                 Log.d("ReadThread", "Running");
                 try {
                     Thread.sleep(50);
@@ -485,66 +500,73 @@ public class USBOpenAccessoryService extends Service implements DriverInterface 
                             }
                             Log.d("ReadThread", hexString.toString());
 
-                            String str_in = mBuffer + sb.toString().trim();
-                            int len = str_in.length();
+                            String strIn = mBuffer + sb.toString().trim();
+                            int len = strIn.length();
                             if (len > 0) {
 
-                                String lastchar = hexString.substring(hexString.length() - 2, hexString.length());
-                                if (lastchar.equals("0d") || lastchar.equals("0a")) {
+                                String lastChar = hexString.substring(hexString.length() - 2, hexString.length());
+                                if (lastChar.equals("0d") || lastChar.equals("0a")) {
                                     // Clear the buffer
                                     mBuffer = "";
 
-                                    Log.d("ReadThread", "TAKING: " + str_in);
+                                    Log.d("ReadThread", "TAKING: " + strIn);
 
                                     // Get code (first char)
-                                    String code = str_in.substring(0, 1);
+                                    String code = strIn.substring(0, 1);
 
                                     // We have data/command from the timer, pass this on to the server
-                                    if (code.equals(FT_START_BUTTON)) {
-                                        mDriver.startPressed();
-                                    } else if (code.equals(FT_WIND_LEGAL)) {
-                                        mDriver.windLegal();
-                                    } else if (code.equals(FT_WIND_ILLEGAL)) {
-                                        mDriver.windIllegal();
-                                    } else if (code.equals(FT_READY)) {
-                                        mTimerStatus = 0;
-                                        mDriver.ready();
-                                    } else if (code.equals(FT_LEG_COMPLETE)) {
-                                        switch (mTimerStatus) {
-                                            case 0:
-                                                mDriver.offCourse();
-                                                break;
-                                            case 1:
-                                                mDriver.onCourse();
-                                                break;
-                                            default:
-                                                mDriver.legComplete();
-                                                break;
-
-                                        }
-                                        mTimerStatus++;
-                                    } else if (code.equals(FT_RACE_COMPLETE)) {
-                                        // Make sure we get 8 bytes before proceeding
-                                        Log.d("ReadThread", "LENGTH: " + str_in.length());
-                                        if (str_in.length() < 8) {
-                                            mBuffer = str_in;
-                                        } else {
-                                            // Any more than 8 chars should be passed on to the next loop
-                                            mBuffer = str_in.substring(8);
-                                            // Don't take more than 8 or parseFloat will cause an exception + reflight!
-                                            str_in = str_in.substring(0, 8);
-                                            mDriver.mPilot_Time = Float.parseFloat(str_in.substring(2).trim());
-                                            mDriver.runComplete();
-                                            // Reset these here, as sometimes READY is not received!?
+                                    switch (code) {
+                                        case FT_START_BUTTON:
+                                            mDriver.startPressed();
+                                            break;
+                                        case FT_WIND_LEGAL:
+                                            mDriver.windLegal();
+                                            break;
+                                        case FT_WIND_ILLEGAL:
+                                            mDriver.windIllegal();
+                                            break;
+                                        case FT_READY:
                                             mTimerStatus = 0;
                                             mDriver.ready();
-                                            mBuffer = "";
-                                        }
+                                            break;
+                                        case FT_LEG_COMPLETE:
+                                            switch (mTimerStatus) {
+                                                case 0:
+                                                    mDriver.offCourse();
+                                                    break;
+                                                case 1:
+                                                    mDriver.onCourse();
+                                                    break;
+                                                default:
+                                                    mDriver.legComplete();
+                                                    break;
+
+                                            }
+                                            mTimerStatus++;
+                                            break;
+                                        case FT_RACE_COMPLETE:
+                                            // Make sure we get 8 bytes before proceeding
+                                            Log.d("ReadThread", "LENGTH: " + strIn.length());
+                                            if (strIn.length() < 8) {
+                                                mBuffer = strIn;
+                                            } else {
+                                                // Any more than 8 chars should be passed on to the next loop
+                                                mBuffer = strIn.substring(8);
+                                                // Don't take more than 8 or parseFloat will cause an exception + reflight!
+                                                strIn = strIn.substring(0, 8);
+                                                mDriver.mPilot_Time = Float.parseFloat(strIn.substring(2).trim());
+                                                mDriver.runComplete();
+                                                // Reset these here, as sometimes READY is not received!?
+                                                mTimerStatus = 0;
+                                                mDriver.ready();
+                                                mBuffer = "";
+                                            }
+                                            break;
                                     }
 
                                 } else {
                                     // Save the characters to the buffer for the next cycle
-                                    mBuffer = str_in;
+                                    mBuffer = strIn;
                                 }
                             }
                         }

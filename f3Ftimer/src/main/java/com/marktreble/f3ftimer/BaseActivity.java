@@ -17,7 +17,9 @@ import android.os.Bundle;
 import androidx.preference.PreferenceManager;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
-import android.text.Html;
+import com.marktreble.f3ftimer.helpers.html.HtmlHelper;
+
+import java.util.Objects;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -31,7 +33,7 @@ public class BaseActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        getSupportActionBar().setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.gradient_background));
+        Objects.requireNonNull(getSupportActionBar()).setBackgroundDrawable(ContextCompat.getDrawable(this, R.drawable.gradient_background));
         getSupportActionBar().setHomeAsUpIndicator(R.mipmap.ic_launcher);// set drawable icon
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         int t1 = F3FtimerApplication.themeAttributeToColor(
@@ -39,7 +41,7 @@ public class BaseActivity extends AppCompatActivity {
                 this,
                 R.color.light_grey);
         String hexColour = String.format("#%06X", (0xFFFFFF & Color.argb(0, Color.red(t1), Color.green(t1), Color.blue(t1))));
-        getSupportActionBar().setTitle(Html.fromHtml("<font color=\"" + hexColour + "\">" + mPageTitle + "</font>"));
+        getSupportActionBar().setTitle(HtmlHelper.fromHtml("<font color=\"" + hexColour + "\">" + mPageTitle + "</font>"));
 
         mContext = this;
     }
